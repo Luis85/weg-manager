@@ -1,4 +1,5 @@
 .obsidian
 
-docs/archiv
-docs/research
+docs/_intake
+__pycache__/
+*.py[cod]

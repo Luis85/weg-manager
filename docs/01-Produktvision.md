@@ -1,131 +1,83 @@
 ---
 type: Productvision
 product: WEG Manager
-status: open
-version: "1.0"
+status: entwurf
+version: "1.1"
 date: 2026-11-15
 ---
 
 # WEG Manager Produktvision
 
-**Version 1.0 · Stand 15. November 2026 · Produktgrundlage für das erste MVP**
+**Version 1.1 · 15. November 2026 · Konzeptentwurf nach Pilotinput**
 
-WEG Manager beginnt als kostenloses Obsidian Plugin für eine Person, die die operative Verwaltung ihrer eigenen Wohnungseigentümergemeinschaft übernimmt. Das Produkt verbindet Handwerkervorgänge, Kommunikation, Entscheidungsgrundlagen, Aufgaben sowie Rechnungs- und Zahlungsdokumentation.
+> WEG Manager hilft Menschen, die Verantwortung für gemeinschaftliches Eigentum tragen, offene Anliegen mit Quelle, Zuständigkeit und nächstem Schritt verlässlich zu verfolgen. Der erste Einstieg gibt Beiräten einen überschaubaren Wochenarbeitsplatz gegenüber ihrer Verwaltung: Zusagen bleiben sichtbar, Entscheidungen nachvollziehbar und Kommunikation unter menschlicher Kontrolle.
 
-Die festgelegte Reihenfolge lautet: **MVP entwickeln → intern auf Releasefähigkeit prüfen → im Obsidian Community-Verzeichnis veröffentlichen → mit dem vorhandenen Pilotnutzer validieren → aus den Erkenntnissen die nächste Version entwickeln.** Die Pilotphase beginnt nach der Veröffentlichung.
+## Zielgruppe und Problem
 
+Der erste Pilot ist Verwaltungsbeirat gegenüber einer externen Verwaltung und betreut eine WEG sowie eine angeschlossene Tiefgaragengemeinschaft. Er benötigt keine vollständige eigene Beschaffungs- und Zahlungsverwaltung. Sein Problem sind verstreute Zusagen, fehlende Termine, unklare Antworten und Unterlagen, die sich nicht ungeprüft weitergeben lassen.
 
-## Vision
+Sein Arbeitsauftrag lautet: **Wenn ich meine Wochenarbeit beginne oder zwischendurch nachsehe, möchte ich erkennen, was seit meiner letzten Bearbeitung passiert ist, welche Entscheidung ansteht und was nicht warten kann.**
 
-> WEG Manager gibt Menschen, die ihre eigene Wohnungseigentümergemeinschaft organisieren, einen verlässlichen Überblick über die Arbeit am gemeinsamen Eigentum. Von der ersten Handwerkeranfrage bis zur dokumentierten Zahlung bleiben Aufgaben, Unterlagen und Entscheidungen verständlich verbunden. Die Verwaltung behält ihre Daten unter eigener Kontrolle und kann die Zusammenarbeit mit den Beteiligten schrittweise erweitern.
+Der Pilot berichtet von 97 Punkten im bestehenden WCS. Das ist Nutzungskontext, keine Produktgrenze und kein Validierungsnachweis für WEG Manager. Eine Stunde pro Woche bleibt ein zu prüfendes Nutzenziel einschließlich Vor- und Nachbereitung.
 
-Langfristig soll WEG Manager einen persönlichen Arbeitsplatz mit einem optionalen Onlinedienst verbinden. Das Plugin bleibt als eigenständig nutzbarer Client bestehen. Ein späterer Browserzugang erleichtert Eigentümern, Beirat und Handwerkern die Mitwirkung; der Dienst ergänzt Rechte, Synchronisation und Hintergrundbenachrichtigungen.
-
-## Zielgruppe und Ausgangsproblem
-
-Der erste Nutzer übernimmt die Verwaltung seiner eigenen WEG. Er ist bereits als Pilot verfügbar und wird nach Veröffentlichung mit dem fertigen MVP arbeiten. Die formelle Verwalterbestellung und konkrete Befugnisse sind damit nicht vorausgesetzt; das Produkt dokumentiert die jeweilige Handlungsgrundlage.
-
-Die zentrale Problemhypothese ist eine über E-Mail, Telefon, Dateien und persönliche Erinnerungen verteilte Bearbeitung. Wiederkehrend muss der Nutzer rekonstruieren, welche Antwort noch fehlt, welches Angebot maßgeblich ist, worauf eine Entscheidung beruht und ob eine Rechnung bereits bearbeitet wurde.
-
-Sein wichtigster Arbeitsauftrag an das Produkt lautet:
-
-> Wenn an unserer WEG etwas erledigt werden muss, möchte ich den nächsten notwendigen Schritt erkennen, die passenden Unterlagen finden und offene Rückmeldungen verfolgen können.
-
-| Beteiligter | Erwarteter Nutzen |
+| Beteiligter | Nutzen im ersten Einstieg |
 | --- | --- |
-| Operativ verantwortliche Person | Überblick, klare nächste Schritte und weniger Such- und Nachfassarbeit. |
-| Weitere Eigentümer und gegebenenfalls Beirat | Verständliche Sachstände und nachvollziehbare Entscheidungsunterlagen. |
-| Handwerker | Eindeutige Anfragen, Leistungsbeschreibungen und Ansprechpartner. |
-| Person für Buchhaltung oder Zahlungsprüfung | Zugeordnete Originalbelege und verständlicher Bearbeitungsstand. |
+| Beirat als einziger Bearbeiter | Quellenbezogene Übersicht, begründete nächste Schritte, weniger Such- und Nachfassarbeit. |
+| Verwaltung | Verständliche, je Gemeinschaft gebündelte und menschlich geprüfte Rückfragen. |
+| Eigentümer | Bewusst ausgewählter Sachstand auf Deutsch und Englisch. |
+| Vertretung / Nachfolger | Lesbare Übergabe mit Quellen und offenen Punkten; noch kein eigener paralleler Bearbeitungszugang. |
 
-Im MVP bedient eine Person das Plugin. Andere Beteiligte erhalten ausgewählte Informationen über vorhandene Kommunikationswege. Eine neue Benutzerverwaltung ist dafür nicht erforderlich.
+## Nutzenversprechen und Kernreise
 
-## Nutzenversprechen
+**WEG Manager macht offene Zusagen, notwendige Entscheidungen und den nächsten eigenen Schritt in einer überschaubaren Wochenarbeit sichtbar.**
 
-**WEG Manager zeigt bei jedem offenen Vorgang, was als Nächstes ansteht, auf wen gewartet wird und welche Grundlage noch fehlt.**
+1. Gemeinschaften getrennt einrichten und vorhandene Registerpunkte übernehmen.
+2. Nachrichten, Unterlagen und einzelne erledigbare Punkte mit Quelle erfassen.
+3. Eine aktuelle Wochenlage mit Fristen, begrenzter Entscheidungsauswahl und sichtbaren Datenlücken prüfen.
+4. Eigene Entscheidungen mit Notiz festhalten und passende Entwürfe und Aufgaben vorbereiten.
+5. Nachrichten bewusst außerhalb des Plugins senden und den tatsächlichen Versand dokumentieren.
+6. Ausstehende Reaktionen fristgerecht nachverfolgen, Dringliches im Lagecheck erkennen und die nächste Woche vorbereiten.
+7. Ausgewählte Sachstände und Quellen verständlich übergeben.
 
-Der erste Nutzen entsteht aus einem zusammenhängenden Handwerkerprozess:
-
-- Einen Bedarf mit Beschreibung und Fotos aufnehmen.
-
-- Eine Angebotsanfrage mit konsistentem Leistungsumfang vorbereiten.
-
-- Rückmeldungen und Angebote vergleichen.
-
-- Positionen, Empfehlung und Handlungsgrundlage dokumentieren.
-
-- Auftrag, Ausführung und offene Mängel verfolgen.
-
-- Rechnung prüfen, Zahlung im bestehenden Banking vorbereiten und das Ergebnis erfassen.
-
-- Den Vorgang mit seinen Unterlagen verständlich übergeben.
-
-Erwartete Entlastung und regelmäßige Nutzung werden im Pilot geprüft. Eine Zeitersparnis oder breite Marktnachfrage wird vor dieser Beobachtung nicht vorausgesetzt.
+Ein Thema kann mehrere Punkte bündeln. Die Einheit für Nachverfolgung und Abschluss ist der einzelne Punkt, beispielsweise „Verwaltung nennt Ausführungstermin“. Ein vorhandenes Angebot, eine Rechnung oder ein Beschlussprotokoll kann dessen Quelle sein, ohne ein eigenes Fachmodul zu verlangen.
 
 ## Produktprinzipien
 
-| Prinzip | Gestaltung des Produkts |
+| Prinzip | Konsequenz |
 | --- | --- |
-| Der Vorgang verbindet die Informationen | Aufgaben, Angebote, Kommunikation und Rechnungen behalten ihren Zusammenhang. |
-| Offene Arbeit bleibt sichtbar | Jeder aktive Fall hat eine nächste Aktion oder einen dokumentierten Grund für das Warten. |
-| Dokumentation bleibt präzise | Diskussion, Beschlussnachweis, Auftrag, Leistung und Zahlung sind unterscheidbar. |
-| Der Alltag bleibt einfach | Drei Hauptansichten und verständliche deutsche Begriffe genügen für den Einstieg. |
-| Daten bleiben nutzbar | Lokale lesbare Akten, unveränderte Originale und Export gehören zum Kern. |
-| Teilen geschieht bewusst | Interne Notizen und externe Unterlagen werden vor der Weitergabe ausgewählt. |
-| Grenzen sind an der passenden Stelle erkennbar | Lokale Hinweise, manuelle Zahlungsangaben und dokumentierte fremde Zustimmungen werden zutreffend bezeichnet. |
+| Der Punkt verbindet Arbeit und Nachweis | Ein überprüfbares Ergebnis, Verantwortlichkeit, Quelle und nächster Schritt je Punkt. |
+| Fakten, Bewertungen und Handlungen bleiben unterscheidbar | Überfälligkeit ist ein Hinweis; „nicht eingehalten“ ein bewusstes Beiratsurteil. Entscheidung, Entwurf und Versand sind getrennt. |
+| Begrenzte Aufmerksamkeit braucht vollständige Warnsignale | Höchstens sieben reguläre Entscheidungen insgesamt; dringender Überlauf und übriger Rückstand bleiben sichtbar. |
+| Gemeinschaften bleiben getrennt | Kontext ist bei Bearbeitung, Entscheidung und Ausgabe eindeutig; WEG und Tiefgarage werden nicht vermischt. |
+| Weitergabe wird geprüft | Interne Bewertungen, ungeprüfte Unterlagen und private Angaben gelangen nicht still in externe Ausgaben. |
+| Notizen bleiben unabhängig nutzbar | Markdown und dokumentiertes Frontmatter sind der maßgebliche Bestand: ohne Plugin, Obsidian oder MCP lesbar und bearbeitbar; Originalerhalt, Sicherung und Wiederherstellung gehören dazu. |
+| Nutzung erfolgt auch unterwegs | Wochenarbeit und Lagecheck sind vollständig mobil bedienbar, nicht nur lesbar. |
+| Entlastung wird ehrlich gemessen | Manuelle Erfassung und Doppelpflege zählen zur Wochenzeit; unbekannte Eingänge bleiben als Lücken erkennbar. |
 
-Die Oberfläche verwendet Formulare und klare Aktionen. Markdown und Properties sind die Datenbasis; ihre manuelle Bearbeitung ist keine Voraussetzung für die Nutzung.
+## Erstes Produktangebot und Grenzen
 
-## Erstes Produktangebot
+Der erste MVP ist ein kostenloser lokaler Obsidian-Client für einen Bearbeiter und mindestens zwei getrennte Gemeinschaften. Hauptabläufe sind **Wochenarbeit**, **Punkteregister mit Detailakte** und **Lagecheck**. Kontaktpflege, Quellenablage und Übergabe ergänzen sie. Die Nutzung erfordert keine manuelle Markdown-Bearbeitung. Die normale Pluginbedienung bleibt geführt; zugleich sind die gespeicherten Vorgänge unmittelbar als Markdown-/Frontmatter-Notizen im Ordner verfügbar. Der Nutzer kann einem externen AI-Agent Zugriff geben, damit dieser Kontext und Beziehungen versteht und erlaubte Änderungen direkt an denselben Notizen vornimmt. Dafür sind weder ein laufendes Plugin noch Obsidian oder MCP erforderlich. Externe und eigene Änderungen müssen ohne stille Überschreibung zusammengeführt beziehungsweise zur Klärung gestellt werden. [[K-14 - Markdown und Frontmatter als offene Datengrundlage]] hält diese Produktvorgabe fest.
 
-Der MVP umfasst eine aktive WEG je Vault und einen Bearbeiter. Er funktioniert lokal ohne eigenes Konto oder erforderlichen Onlinedienst. Die Bedienung richtet sich zunächst an Desktopnutzer; Windows ist die Referenzplattform für die Releaseprüfung.
+Enthalten sind Registerübernahme, Quellen und Verlauf, Termine, Arbeitsentscheidungen, vorbereitete bearbeitbare Texte, Nachfassvorschläge, mobile Kernarbeit und kontrollierte Ausgabe. Der Kern bleibt ohne verpflichtende KI nutzbar. Zusätzlich ist ein nativer AI-Chat über die offizielle Claude-Code-Laufzeit und das berechtigte eigene Nutzerabo vorgesehen. Er ist optionaler Assistenzweg, zunächst auf Desktop zu prüfen; die mobile lokale Kernarbeit bleibt unabhängig. [[K-17 - Nativer AI-Chat über das Nutzerabo]] trennt dieses Produktziel vom noch offenen Integrations- und Abrechnungsnachweis. Bestehende Mail- und Telefonwege bleiben bestehen. Optional kann der Nutzer bereits im MVP über einen bereitgestellten Claude Skill und seinen vorhandenen Gmail-Connector ausgewählte Nachrichten als Markdown-/Frontmatter-Quellen in den freigegebenen Vault übernehmen; die lokale Kernarbeit bleibt ohne KI möglich. Es wird weder automatischer Versand noch eine vollständige Überwachung aller Postfächer oder Portale zugesagt.
 
-Die drei Hauptansichten sind **Heute**, **Vorgänge** und **Vorgangsakte**. WEG-Daten, Kontakte und Einstellungen ergänzen diese Ansichten.
+Vollständige Angebotsvergleiche, Auftrags-/Nachtragsführung, formelle Abnahme, Rechnungsrestberechnung und Zahlungsvorbereitung werden gegenüber Version 1.0 auf später verschoben. Gleiches gilt für Buchhaltung, elektronische Abstimmung, eine vollständige Beschluss-Sammlung, Portale, Mehrpersonenbearbeitung, eigene Hintergrunddienste und bestimmte Mail-/KI-Integrationen. Eine Frage zu einem dieser Themen bleibt bereits als Punkt bearbeitbar.
 
-Zahlungsvorbereitung und manuelle Zahlungsverfolgung sind enthalten. Die eigentliche Überweisung findet im vorhandenen Banking statt. Kommunikation verwendet zunächst vorhandene E-Mail- und Telefonkanäle. Lokale Erinnerungen werden durch einen bewusst ausgelösten Kalenderexport ergänzt.
+Diese Schwerpunktsetzung ist der aus dem Intake abgeleitete **Scopevorschlag**. Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`) dokumentiert Änderungen, Alternativen und offene Entscheidungen; der bisherige Umfang bleibt als historische Vision (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/history/01-Produktvision-v1.0.md`) nachvollziehbar.
 
-Vollständige WEG-Buchhaltung, elektronische Abstimmungen, ein Eigentümerportal, automatische Postfachintegration, Bankabgleich, KI-Funktionen und ein frei konfigurierbarer Workflowdesigner folgen gegebenenfalls nach dem MVP. Ihr Nutzen wird gegen die Erfahrungen aus der veröffentlichten Version abgewogen.
+## Veröffentlichung, Pilot und Erfolg
 
-Die Beschränkung auf eine WEG, Desktop und externe Kommunikations- und Zahlungswege ist der Umsetzungsvorschlag für den ersten Release. Diese Annahmen können durch die spätere Nutzung überprüft werden.
+Die festgelegte Reihenfolge bleibt: **Entwicklung → interne fachliche und technische Releaseprüfung → Veröffentlichung im Obsidian Community-Verzeichnis → öffentliche Neuinstallation prüfen → Pilot → Folgeversion.** Die vorliegende Arbeit bleibt vollständig in der Konzeptphase. Das bestehende WCS ist fachlicher Input, kein vorgezogener Pilot unseres Plugins.
 
-## Veröffentlichung und Pilot
+Vor Veröffentlichung werden Trennung, Import, Fristen, Entscheidungen, sichere Ausgabe, mobile Bedienung und Datenerhalt intern mit synthetischen beziehungsweise freigegebenen anonymisierten Fällen geprüft. Erst danach wird die tatsächliche Gebrauchstauglichkeit beobachtet.
 
-Die Veröffentlichung ist ein eigener Meilenstein: Der MVP muss über das Obsidian Community-Verzeichnis in einem frischen Vault installierbar sein. Die aktuelle Obsidian-Dokumentation unterscheidet Einreichung und tatsächliche Installierbarkeit nach abgeschlossener Prüfung. [Quelle: Obsidian Einreichung](https://docs.obsidian.md/Plugins/Releasing/Submit%20your%20plugin)
+Pilotziel sind höchstens 60 Minuten gesamte aktive Arbeit in vier von fünf geeigneten Normalwochen. Vorbereitung, Prüfen, Versand, Nachhalten und Doppelpflege zählen mit. Außergewöhnliche Wochen werden begründet dokumentiert. Bei zu wenigen Anlässen wird keine Zielerreichung behauptet. Zusätzlich zählen selbstständige Wiederaufnahme, verständliche nächste Schritte, erneute Nutzung und verständliche Übergabe. Das Produkt kann rechtzeitiges Nachfassen ermöglichen, aber keinen Antworttermin der Verwaltung erzwingen.
 
-Vor der Veröffentlichung werden Kernabläufe, Datenerhalt, Berechnungen und Exporte mit synthetischen Fällen intern geprüft. Das ist die Qualitätsprüfung des Produkts. Die anschließende Pilotphase untersucht seine Gebrauchstauglichkeit und seinen Nutzen im Alltag.
+## Langfristige Richtung
 
-| Phase | Ergebnis |
-| --- | --- |
-| Entwicklung und interne Prüfung | Ein vollständiger, verständlicher und technisch geprüfter MVP. |
-| Veröffentlichung | Die Version ist im Community-Verzeichnis auffindbar und installierbar. |
-| Pilot mit vorhandenem Nutzer | Echte Nutzungserfahrungen, beobachtete Hürden und konkrete Verbesserungsbedarfe. |
-| Folgeversion | Priorisierte Verbesserungen aus der Nutzung. |
-| Späterer Onlinedienst | Gemeinsam bearbeitbare Vorgänge, passende Zugänge und Hintergrunddienste. |
+Beirat, selbstverwaltende Eigentümer und operative Verwaltung bleiben langfristige Zielgruppen. Der erste MVP bildet dafür einen klaren Einstieg. Ein optionaler späterer Onlinedienst kann gemeinsame Arbeit, gezielte Zugänge und Hintergrundbenachrichtigungen ergänzen; das Plugin bleibt eigenständig nutzbar und möglicher Client. Ein kostenpflichtiger Zusatzdienst ist eine Geschäftsmodellhypothese, kein festgelegter Tarif.
 
-Für den Pilot sind zunächst vier bis sechs Wochen vorgesehen. Die Dauer wird bei wenigen oder lang laufenden Handwerkerfällen anhand der tatsächlich beobachtbaren Ereignisse angepasst. Ein einzelner Pilot kann konkrete Probleme und Nutzen sichtbar machen; seine Ergebnisse sind kein Nachweis für den gesamten Markt.
+Die nächste Erweiterung folgt beobachtetem Nutzen und Aufwand. Der Handwerker- und Zahlungsprozess wird nicht vergessen, aber auch nicht vorsorglich parallel gebaut. [MVP-PRD](02-MVP-PRD.md) und [[Product Backlog.base#Backlog|Backlog-Notes]] konkretisieren diese Vision. Freigabe des Beiratsfokus, Pilotgerät und tatsächliche Übergabebedürfnisse bleiben im Konzeptreview zu klären.
 
-## Erfolg und Weiterentwicklung
+## Hypothesenregister
 
-Das erste Produkt ist erfolgreich, wenn der Pilotnutzer echte Vorgänge selbstständig führen kann, den nächsten Schritt schnell findet und den Nutzen höher bewertet als die zusätzliche Pflege. Eine zweite Person sollte einen bewusst geteilten Export verstehen können.
-
-Wiederverwendung wird an tatsächlichen Verwaltungsanlässen gemessen. Eine Woche ohne anstehende Arbeit ist kein Nutzungsabbruch. Aktive Verwaltungszeit wird von der Wartezeit auf Handwerker oder Eigentümer getrennt.
-
-Der Onlinedienst wird entwickelt, wenn die beobachteten Bedürfnisse gemeinsame Arbeit, gezielte Zugänge oder verlässliche Hintergrundbenachrichtigungen rechtfertigen. Das kostenlose Plugin soll weiterhin sinnvolle lokale Arbeit sowie den Zugang zu den eigenen Akten ermöglichen.
-
-Als Geschäftsmodell ist ein kostenpflichtiger optionaler Dienst vorgesehen. Ein konkreter Tarif wird erst anhand eines bestimmten Leistungsumfangs und beobachteter Nachfrage festgelegt. Kostenlose Plugininstallationen und wirtschaftliche Tragfähigkeit des Dienstes bleiben unterschiedliche Erfolgskriterien.
-
-## Verbindliche Entscheidungen und Annahmen
-
-| Gegenstand | Stand |
-| --- | --- |
-| Produktname WEG Manager | Vom Nutzer vorgegeben; Verfügbarkeit der Plugin-ID wird vor Einreichung geprüft. |
-| MVP als Obsidian Plugin | Vom Nutzer vorgegeben. |
-| Veröffentlichung vor Pilotvalidierung | Vom Nutzer vorgegeben. |
-| Vorhandener Pilot verwaltet seine eigene WEG | Vom Nutzer angegeben. |
-| Optionaler Onlinedienst mit Plugin als Client | Vom Nutzer als spätere Ausbaustufe vorgegeben. |
-| Eine aktive WEG, ein Bearbeiter, Desktop, deutsche Oberfläche und EUR | Umfangsvorschlag für den ersten Release. |
-| Banking und Versand außerhalb des Plugins | Umfangsvorschlag, dessen Nutzen im Pilot überprüft wird. |
-| Lokaler Kern kostenlos | Empfohlenes Einstiegsmodell. |
-
-Das zugehörige MVP-PRD konkretisiert diese Produktvision durch Funktionsanforderungen, Geschäftsregeln, Datenmodell, Abnahmeszenarien, Veröffentlichungskriterien und den anschließenden Pilotplan.
-
+Die prüfbaren Annahmen zu Nutzen, Alltagstauglichkeit, Scope und Geschäftsmodell sind im [[Product Backlog.base#Hypothesis|Hypothesenregister]] mit Herkunft, vorgeschlagener Prüfung und Evidenzgrenzen ausgegliedert. Die Extraktion ändert weder die hier beschriebenen Vorgaben noch den Freigabestand.

@@ -1,0 +1,1220 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WEG Manager Prototyp</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: Prototypleiste oben; darunter App-Rahmen wie im Obsidian-Tab. Ab 860px Sidebar, darunter mobiles Layout mit Segmentnavigation und Erfassen-Button. */
+:root{
+  --bg:#F6F6F3;--surface:#FFFFFF;--surface2:#FAFAF8;--sunk:#EDEDE8;--line:#E4E4DF;--line2:#D4D4D8;
+  --fg:#18181B;--fg2:#52525B;--fg3:#5F5F67;--primary:#18181B;--on:#FFFFFF;--accent:#2563EB;
+  --aw:#0F766E;--awbg:#E3F3EF;--awfg:#0B5F55;--tg:#6D28D9;--tgbg:#F1EBFE;--tgfg:#5B21B6;
+  --warn:#B45309;--warnbg:#FEF3E2;--warnfg:#92400E;--bad:#B42318;--badbg:#FDECEA;--badfg:#9F1D14;
+  --ok:#15803D;--okbg:#ECFDF3;--okfg:#166534;--info:#4F46E5;--infobg:#EEF2FF;--infofg:#3730A3;
+  --judge:#6D28D9;--judgebg:#F5F3FF;--judgefg:#5B21B6;--mark:#FEF9C3;--scrim:rgba(24,24,27,.45);--pbar:#E7E7E3;
+  --sans:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111113;--surface:#1A1A1D;--surface2:#1F1F22;--sunk:#232327;--line:#2C2C30;--line2:#3A3A3F;
+  --fg:#EDEDEF;--fg2:#A1A1AA;--fg3:#9A9AA3;--primary:#EDEDEF;--on:#18181B;--accent:#60A5FA;
+  --aw:#2BB3A3;--awbg:#0F2E2A;--awfg:#5EEAD4;--tg:#A78BFA;--tgbg:#2A1F45;--tgfg:#C4B5FD;
+  --warn:#F59E0B;--warnbg:#3A2A12;--warnfg:#FCD34D;--bad:#F87171;--badbg:#3B1A1A;--badfg:#FCA5A5;
+  --ok:#22C55E;--okbg:#11291C;--okfg:#86EFAC;--info:#818CF8;--infobg:#1E1B4B;--infofg:#A5B4FC;
+  --judge:#A78BFA;--judgebg:#2A1F45;--judgefg:#C4B5FD;--mark:#4A3F0B;--scrim:rgba(0,0,0,.6);--pbar:#0B0B0C;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111113;--surface:#1A1A1D;--surface2:#1F1F22;--sunk:#232327;--line:#2C2C30;--line2:#3A3A3F;
+  --fg:#EDEDEF;--fg2:#A1A1AA;--fg3:#9A9AA3;--primary:#EDEDEF;--on:#18181B;--accent:#60A5FA;
+  --aw:#2BB3A3;--awbg:#0F2E2A;--awfg:#5EEAD4;--tg:#A78BFA;--tgbg:#2A1F45;--tgfg:#C4B5FD;
+  --warn:#F59E0B;--warnbg:#3A2A12;--warnfg:#FCD34D;--bad:#F87171;--badbg:#3B1A1A;--badfg:#FCA5A5;
+  --ok:#22C55E;--okbg:#11291C;--okfg:#86EFAC;--info:#818CF8;--infobg:#1E1B4B;--infofg:#A5B4FC;
+  --judge:#A78BFA;--judgebg:#2A1F45;--judgefg:#C4B5FD;--mark:#4A3F0B;--scrim:rgba(0,0,0,.6);--pbar:#0B0B0C;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--fg2)}
+.ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:21px;padding:0 6px;border-radius:5px;font-size:11px;font-weight:600;color:var(--on);flex-shrink:0}
+.b-AW{background:var(--aw)}.b-TG{background:var(--tg)}.b-A14{background:#1D4ED8}.b-BH{background:#9A3412}.b-LS{background:#475569}.b-PN{background:#0E7490}
+select[data-on="true"]{border:1.5px solid var(--fg)!important;font-weight:600}
+.ftag{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 4px 0 6px;border-radius:999px;background:var(--surface);border:1.5px solid var(--fg);font-size:13px;font-weight:600}
+.ftag button{width:26px;height:26px;border:0;border-radius:50%;background:var(--sunk);display:inline-flex;align-items:center;justify-content:center;color:var(--fg)}
+.cpick{display:flex;flex-direction:column;border:1px solid var(--line2);border-radius:10px;overflow:hidden;background:var(--surface)}
+.cpick button{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left;font-size:14px}
+.cpick button[aria-checked="true"]{background:var(--sunk);font-weight:600}
+.cpick .sub{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);padding:8px 12px 4px;border-top:1px solid var(--line)}
+.filebox{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--surface2)}.b-none{background:transparent;border:1px dashed var(--line2);color:var(--fg2)}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.c-bad{background:var(--badbg);color:var(--badfg)}.c-warn{background:var(--warnbg);color:var(--warnfg)}.c-info{background:var(--infobg);color:var(--infofg)}
+.c-ok{background:var(--okbg);color:var(--okfg)}.c-n{background:var(--sunk);color:var(--fg)}.c-judge{background:var(--judgebg);color:var(--judgefg)}
+.pid{font-family:var(--mono);font-size:12px;color:var(--fg3)}
+.btn{min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;border-radius:10px;border:1px solid var(--line2);background:var(--surface);font-weight:500;text-decoration:none;color:var(--fg)}
+.btn:hover{background:var(--surface2)}
+.btn.pri{background:var(--primary);border-color:var(--primary);color:var(--on);font-weight:600}
+.btn.pri:hover{opacity:.92}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:var(--on);font-weight:600}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--sunk)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{min-height:34px;padding:0 11px;font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.lab{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .fl{font-size:13px;font-weight:600}
+.inp{min-height:42px;padding:0 12px;border:1px solid var(--line2);border-radius:9px;background:var(--surface);width:100%}
+textarea.inp{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5}
+.seg{display:flex;flex-wrap:wrap;gap:3px;padding:3px;border-radius:10px;background:var(--sunk)}
+.seg button{flex:1 1 auto;min-height:38px;padding:0 12px;border:0;border-radius:8px;background:transparent;font-size:13px;font-weight:500;color:var(--fg2);white-space:nowrap}
+@media (hover:hover){
+.seg button:not([aria-pressed="true"]):not(:disabled):hover{background:color-mix(in srgb,var(--surface) 55%,transparent);color:var(--fg)}
+.kpi:hover,.msg:hover,.opt:hover{border-color:var(--line2);background:var(--surface2)}
+.opt[aria-checked="true"]:hover{border-color:var(--fg)}
+.tabs button:not([aria-selected="true"]):hover{background:var(--sunk);color:var(--fg)}
+.cpick button:not([aria-checked="true"]):hover{background:var(--surface2)}
+.ftag button:hover{background:var(--line2)}
+.kpi,.msg,.opt,.seg button,.tabs button,.cpick button{transition:background-color .12s,border-color .12s,color .12s}
+}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.1),0 0 0 1px var(--line)}
+
+/* Kontakte */
+.klist{display:flex;flex-direction:column;gap:12px}
+.av{width:36px;height:36px;border-radius:50%;background:var(--sunk);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;color:var(--fg2)}
+.av.org{border-radius:9px}.av.lst{border-radius:9px;background:var(--infobg);color:var(--infofg)}
+.av.lg{width:52px;height:52px;font-size:18px}
+.row[aria-current="true"]{background:var(--sunk)}
+.row.off .tx{color:var(--fg2)}
+.kv{display:grid;grid-template-columns:minmax(110px,150px) minmax(0,1fr) auto;gap:4px 12px;align-items:center;font-size:14px}
+.kv>span:nth-child(3n+1){color:var(--fg2);font-size:13px}
+.kv>*{min-height:34px;display:flex;align-items:center;min-width:0;overflow-wrap:anywhere}
+.lnk{border:0;background:none;padding:0;color:inherit;font:inherit;font-weight:inherit;text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:3px;text-align:left;cursor:pointer}
+.lnk:hover{text-decoration-color:currentColor}
+.rolerow{display:flex;gap:8px;align-items:center}
+.scrim.center{align-items:center;justify-content:center;padding:24px}
+.sheet.dlg{width:min(620px,100%);height:auto;max-height:calc(100vh - 48px);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.25)}
+.kcall{display:flex;gap:8px;flex-wrap:wrap}.kcall .btn{flex:1 1 140px}
+.kgrp{display:flex;align-items:center;gap:10px;padding:14px 16px 6px;border-top:1px solid var(--line)}
+.kgrp:first-child{border-top:0}
+.kgrp .lab{flex:1}
+.krow{display:flex;align-items:center;border-top:1px solid var(--line)}
+.kgrp+.krow{border-top:0}
+.kmain{flex:1;min-width:0;display:flex;gap:12px;align-items:center;min-height:58px;padding:9px 8px 9px 16px;border:0;background:transparent;text-align:left;color:var(--fg)}
+.krow:hover{background:var(--surface2)}
+.krow.off .kmain{color:var(--fg2)}
+.krow[aria-current="true"]{background:var(--sunk)}
+.kacts{display:flex;gap:2px;padding-right:8px}
+.kacts .iconbtn{width:40px;height:40px;color:var(--fg2)}
+.ctog{min-width:180px;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border:1.5px solid var(--line2);border-radius:10px;background:var(--surface);font-size:14px;font-weight:500;flex:0 0 auto}
+.ctog[aria-checked="true"]{border-color:var(--fg);background:var(--sunk)}
+.ctog .cb{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line2);display:inline-flex;align-items:center;justify-content:center}
+.ctog[aria-checked="true"] .cb{background:var(--fg);border-color:var(--fg);color:var(--on)}
+.err{color:var(--badfg);font-size:13px;font-weight:500}
+.inp[aria-invalid="true"]{border-color:var(--bad)}
+.dupe{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;font-size:13px;padding:8px 10px;border-radius:9px;background:var(--warnbg);color:var(--warnfg)}
+.klist .feed>.row:first-child{border-top:0}
+/* Einstellungen */
+.ewrap{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start}
+.esub{flex:1 1 200px;max-width:240px;display:flex;flex-direction:column;gap:2px}
+.econt{flex:999 1 480px;min-width:0;display:flex;flex-direction:column;gap:16px;max-width:820px}
+.inp[readonly]{background:var(--sunk);color:var(--fg2)}
+.ttl{display:flex;flex-wrap:wrap;align-items:center;column-gap:14px;row-gap:6px;min-height:40px}
+.ttl h1{line-height:40px}
+.ftag-all{border-color:transparent;background:transparent;font-weight:500;color:var(--fg2);padding:0;font-size:14px}
+.plink{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 9px;border:1px solid var(--line2);border-radius:7px;background:var(--surface);font-size:13px;color:var(--fg);text-align:left}
+.plink .pid{color:var(--fg2)}
+.plink:hover{background:var(--sunk);border-color:var(--fg3)}
+.whint{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--infobg);color:var(--fg);border:1px solid color-mix(in srgb,var(--info) 30%,transparent)}
+.artrow{display:flex;flex-wrap:wrap;gap:10px 12px;padding:14px 16px;border-top:1px solid var(--line)}
+.setrow{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;padding:16px 18px;border-top:1px solid var(--line)}
+.setrow:first-child{border-top:0}
+.setl{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.setc{flex:0 1 auto;min-width:0}
+.swatch{width:34px;height:34px;border-radius:50%;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.swatch[aria-checked="true"]{border-color:var(--fg);box-shadow:0 0 0 2px var(--surface) inset}
+.swatch:disabled{opacity:.25;cursor:not-allowed}
+/* Tour */
+.tspot{position:fixed;z-index:70;border-radius:14px;box-shadow:0 0 0 4px var(--accent),0 0 0 9999px var(--scrim);pointer-events:none;transition:all .2s ease}
+.tblock{position:fixed;inset:0;z-index:69}
+.tpop{position:fixed;z-index:71;width:min(340px,calc(100vw - 32px));background:var(--surface);color:var(--fg);border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.28);padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.tpop h2{font-size:17px}
+.tdots{display:flex;gap:4px}.tdots span{width:6px;height:6px;border-radius:50%;background:var(--line2)}.tdots span.on{background:var(--fg);width:16px;border-radius:3px}
+.twel{position:fixed;inset:0;z-index:71;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:16px}
+.twel>section{width:min(460px,100%);background:var(--surface);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+@media (prefers-reduced-motion: reduce){.tspot{transition:none}}
+/* Prototypleiste */
+.pbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--pbar);border-bottom:1px solid var(--line);font-size:13px}
+.pbar .tag{font-weight:600}
+.pbar .sp{flex:1}
+.pbar .btn{min-height:34px;font-size:13px;padding:0 11px}
+
+/* App-Rahmen */
+.shell{display:flex;min-height:calc(100% - 51px)}
+.side{width:236px;flex-shrink:0;position:sticky;top:var(--pbh,51px);align-self:flex-start;height:calc(100vh - var(--pbh,51px));overflow-y:auto;padding:18px 14px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px;font-weight:600}
+.logo{width:28px;height:28px;border-radius:8px;background:var(--primary);color:var(--on);display:flex;align-items:center;justify-content:center}
+.nav{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border-radius:9px;border:0;background:transparent;width:100%;text-align:left;font-weight:500;color:var(--fg2)}
+.nav:hover{background:var(--sunk);color:var(--fg)}
+.nav[aria-current="page"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.06),0 0 0 1px var(--line)}
+.nav .n{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--fg3)}
+.nav .n.bad{color:var(--bad)}
+.side .grp{display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid var(--line)}
+.side .foot{margin-top:auto;display:flex;align-items:center;gap:6px;padding:0 12px;font-size:12px;color:var(--fg3)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
+.main{flex:1;min-width:0;padding:26px 32px 110px;display:flex;flex-direction:column;gap:20px}
+.mtop,.fab{display:none}
+
+/* Woche: Fokuskopf */
+.whead{display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--line)}
+.steps{flex:1 1 360px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;list-style:none;margin:0;padding:0}
+.steps li{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:var(--fg3)}
+.steps .sd{width:23px;height:23px;border-radius:50%;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.steps li.done .sd{background:var(--primary);border-color:var(--primary);color:var(--on)}
+.steps li.cur{color:var(--fg);font-weight:600}
+.steps li.cur .sd{border-color:var(--fg);box-shadow:0 0 0 3px var(--line)}
+.steps .bar{flex:1;min-width:14px;height:2px;background:var(--line)}
+.steps .bar.done{background:var(--primary)}
+.wbody{display:flex;flex-wrap:wrap;flex:1;min-height:0}
+.wmain{flex:999 1 520px;min-width:0;padding:24px 28px 120px;display:flex;flex-direction:column;gap:16px}
+.wside{flex:1 1 320px;min-width:0;padding:24px 22px;background:var(--surface);border-left:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.wfoot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;padding-top:6px}
+
+/* Lage */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);text-align:left}
+.kpi .k{font-size:13px;font-weight:600}
+.kpi .v{font-size:40px;line-height:44px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:13px;color:var(--fg2)}
+.two{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.two>.l{flex:2 1 480px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.two>.r{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.wcta{display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:20px 22px;border-radius:16px;background:var(--primary);color:var(--on)}
+[data-theme="dark"] .wcta{background:var(--sunk);color:var(--fg);border:1px solid var(--line2)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .wcta{background:var(--sunk);color:var(--fg);border:1px solid var(--line2)}}
+.wcta .t{font-size:21px;font-weight:600}
+.wcta .pills{display:flex;flex-wrap:wrap;gap:6px;font-size:13px}
+.wcta .pills span{padding:4px 10px;border-radius:999px;background:color-mix(in srgb,currentColor 14%,transparent)}
+.wcta .btn{background:var(--on);color:var(--primary);border-color:var(--on);font-weight:600}
+[data-theme="dark"] .wcta .btn{background:var(--primary);color:var(--on);border-color:var(--primary)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .wcta .btn{background:var(--primary);color:var(--on);border-color:var(--primary)}}
+.feed{overflow:hidden}
+.feed .day{padding:14px 16px 4px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3)}
+.row{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;padding:10px 16px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left}
+.row:hover{background:var(--surface2)}
+.row .tx{flex:1;min-width:0}
+.ri{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--sunk);color:var(--fg2)}
+.ri.bad{background:var(--badbg);color:var(--bad)}.ri.warn{background:var(--warnbg);color:var(--warn)}.ri.act{background:var(--primary);color:var(--on)}
+.strip{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:3px;align-items:end}
+.strip span{height:8px;border-radius:4px;background:var(--sunk)}
+.strip span.on{height:26px}
+
+/* Nachhalten */
+.wait{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.wait.cur{border:2px solid var(--fg)}
+.wait .meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--fg2)}
+.age{display:inline-flex;width:110px;height:6px;border-radius:3px;background:var(--sunk);overflow:hidden;vertical-align:middle}
+.age i{display:block;height:100%}
+.wait.decided{flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px}
+.tick{width:22px;height:22px;border-radius:50%;background:var(--ok);color:var(--on);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* Timeline */
+.tl{list-style:none;margin:0;padding:0}
+.tl li{border-top:1px solid var(--line)}
+.tlb{display:flex;gap:14px;align-items:flex-start;width:100%;padding:12px 8px;margin:0 -8px;border:0;border-radius:10px;background:transparent;text-align:left;color:var(--fg)}
+.tlb>.ico{align-self:center;color:var(--fg3)}
+.tlb:hover{background:var(--sunk)}
+.tl li:first-child{border-top:0}
+.mk{width:20px;display:flex;justify-content:center;padding-top:4px;flex-shrink:0}
+.m-fact{width:12px;height:12px;border-radius:50%;border:2px solid var(--fg3)}
+.m-act{width:12px;height:12px;border-radius:50%;background:var(--fg)}
+.m-bad{width:12px;height:12px;border-radius:50%;background:var(--bad)}
+.m-judge{width:11px;height:11px;background:var(--judge);transform:rotate(45deg)}
+.m-plan{width:12px;height:12px;border-radius:50%;border:2px dashed var(--accent)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.fact{padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.fact .fl{font-size:12px;color:var(--fg2);font-weight:500}
+.fact .fv{font-size:15px;font-weight:600}
+.fact.next{background:var(--primary);border-color:var(--primary);color:var(--on)}
+.fact.next .fl{color:inherit;opacity:.7}
+
+/* Entscheiden */
+.opt{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);text-align:left;width:100%}
+.opt[aria-checked="true"]{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center}
+.opt[aria-checked="true"] .radio{border-color:var(--fg)}
+.opt[aria-checked="true"] .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--fg)}
+.q{display:flex;align-items:center;gap:9px;width:100%;min-height:42px;padding:6px 10px;border-radius:10px;border:0;background:transparent;font-size:13px;color:var(--fg2);text-align:left}
+.q:hover{background:var(--sunk)}
+.q[aria-current="true"]{background:var(--surface);color:var(--fg);font-weight:600;box-shadow:0 0 0 1.5px var(--fg)}
+.q.urg{background:var(--badbg)}
+.q .n{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line2);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.q.done .n{background:var(--ok);border-color:var(--ok);color:var(--on)}
+.budget{display:flex;gap:3px}
+.budget span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.budget span.on{background:var(--fg)}
+.budget span.u{background:var(--bad)}
+.follow{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:12px;border:1px solid var(--line);font-size:14px}
+.ph{background:var(--warnbg);color:var(--warnfg);border-radius:4px;padding:0 3px;font-weight:600}
+
+/* Post */
+.post{display:flex;flex-wrap:wrap;gap:24px;min-height:0;align-items:flex-start}
+.plist{flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.peditor{flex:2 1 460px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;flex-direction:column;gap:5px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-align:left;width:100%}
+.msg[aria-current="true"]{border:2px solid var(--fg)}
+.letter{padding:16px 18px;font-size:15px;line-height:1.6;white-space:pre-wrap;min-height:220px;border:0;width:100%;background:transparent;resize:vertical}
+.tabs{display:flex;gap:4px;padding:8px 8px 0;background:var(--surface2);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tabs button{min-height:38px;padding:0 14px;border:0;border-radius:8px 8px 0 0;background:transparent;font-size:13px;font-weight:500;color:var(--fg2);display:inline-flex;gap:8px;align-items:center}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--fg);font-weight:600;box-shadow:0 0 0 1px var(--line)}
+.sendbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;background:var(--sunk)}
+
+/* Overlays */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:50;display:flex;justify-content:flex-end}
+.sheet{width:min(460px,100%);height:100%;background:var(--surface);overflow:auto;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet .sh{display:flex;align-items:center;gap:10px;padding:16px 12px 10px 20px;border-bottom:1px solid var(--line)}
+.sheet .sb{padding:18px 20px;display:flex;flex-direction:column;gap:16px;flex:1}
+.sheet .sf{padding:14px 20px 20px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+.iconbtn{width:44px;height:44px;border:0;background:transparent;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:var(--fg)}
+.iconbtn:hover{background:var(--sunk)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(12px + env(safe-area-inset-top,0px));z-index:60;background:var(--primary);color:var(--on);padding:10px 16px;border-radius:10px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:calc(100% - 32px)}
+.tasks{display:flex;flex-direction:column;gap:10px;padding:16px 18px;border-radius:14px;background:var(--infobg);color:var(--fg)}
+.tasks ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+
+@media (min-width:861px){.pbar{position:sticky;top:0;z-index:45}}
+@media (max-width:860px){
+  .side{display:none}
+  .shell{flex-direction:column}
+  .mtop{display:flex;flex-direction:column;gap:10px;padding:12px max(16px,env(safe-area-inset-right,0px)) 4px max(16px,env(safe-area-inset-left,0px))}
+  .mtop .seg button{min-height:36px}
+  .mtop .iconbtn{width:40px;height:40px;flex-shrink:0}
+  .main{padding:14px max(16px,env(safe-area-inset-right,0px)) 140px max(16px,env(safe-area-inset-left,0px));gap:16px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi .v{font-size:32px;line-height:36px}
+  .side-only,.side-h{display:none!important}
+  .pbar .muted{display:none}
+  .pbar .btn{min-height:32px;padding:0 9px}
+  .fab{display:inline-flex;position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:40;min-height:52px;padding:0 20px 0 16px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  .whead{padding:10px 16px}
+  .steps li .sl{display:none}
+  .steps li.cur .sl{display:inline}
+  .wmain{padding:16px 16px 140px}
+  .wside{border-left:0;border-top:1px solid var(--line);padding:16px}
+  .plist{padding-right:0}
+  .esub{max-width:none;flex-direction:row;flex-wrap:wrap;gap:4px}
+  .esub .nav{width:auto;min-height:36px;background:var(--sunk)}
+  .esub .nav[aria-current="page"]{background:var(--surface)}
+  .kv{grid-template-columns:minmax(0,1fr) auto}
+  .kv>span:nth-child(3n+1){grid-column:1/-1;min-height:0;padding-top:6px}
+  .sheet{width:100%;height:auto;max-height:92%;margin-top:auto;border-radius:18px 18px 0 0}
+  .scrim{align-items:flex-end}
+  .scrim.center{padding:0;align-items:flex-end}
+  .sheet.dlg{max-height:92%;border-radius:18px 18px 0 0}
+}
+@media (prefers-reduced-motion: no-preference){.toast{animation:tin .2s ease-out}@keyframes tin{from{opacity:0;transform:translate(-50%,-8px)}}}
+</style>
+</head>
+<body>
+
+
+<div class="pbar" role="region" aria-label="Prototyp-Steuerung">
+  <span class="tag">Prototyp</span><span class="muted">WEG Manager · synthetische Daten · Montag 16.11.2026</span>
+  <span class="sp"></span>
+  <button class="btn" data-act="tasks" type="button">Testaufgaben</button>
+  <button class="btn" data-act="theme" type="button" aria-label="Hell oder dunkel umschalten">Hell/Dunkel</button>
+  <button class="btn" data-act="tourStart" type="button">Tour</button>
+  <button class="btn" data-act="many" type="button">2 ↔ 6 Gemeinschaften</button>
+  <button class="btn" data-act="reset" type="button">Neu starten</button>
+</div>
+<div id="app"></div>
+<div id="overlay"></div>
+<div id="toastRoot" aria-live="polite"></div>
+<div id="tourRoot"></div>
+
+<script>
+(function(){
+"use strict";
+const I={
+ lage:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+ woche:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/>',
+ punkte:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+ post:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ warn:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+ mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+ file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+ phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>',
+ right:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+ left:'<path d="M19 12H5M11 18l-6-6 6-6"/>',
+ pause:'<path d="M10 4H6v16h4zM18 4h-4v16h4z"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ chev:'<path d="m9 18 6-6-6-6"/>',
+ back:'<path d="m15 18-6-6 6-6"/>',
+ task:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/>',
+ users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+ at:'<circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/>',
+ copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+ building:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+ link:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>'
+};
+const ic=(n,s)=>'<svg class="ico" '+(s?'style="width:'+s+'px;height:'+s+'px" ':'')+'viewBox="0 0 24 24" aria-hidden="true">'+I[n]+'</svg>';
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const B=c=>'<span class="badge b-'+(c||'none')+'">'+(c||'?')+'</span>';
+const COMM={AW:{name:'WEG Ahornweg 12',short:'Ahornweg 12'},TG:{name:'Tiefgarage Ahornweg',short:'Tiefgarage'},A14:{name:'WEG Ahornweg 14',short:'Ahornweg 14'},BH:{name:'WEG Birkenhof',short:'Birkenhof'},LS:{name:'WEG Lindenstraße 3',short:'Lindenstraße 3'},PN:{name:'Parkhaus Nord',short:'Parkhaus Nord'}};
+const comms=()=>(S&&S.many?['AW','TG','A14','BH','LS','PN']:['AW','TG']).concat(S&&S.extraComms?S.extraComms.filter(k=>!(S.many&&['A14','BH','LS','PN'].indexOf(k)>=0)):[]);
+function vaultPath(f){ return S.folders.quellen+'/'+(f.c||'…')+'/2026-11-16 '+((f.files||[]).length===1?f.files[0].name:'<Dateiname>'); }
+function pTitles(ids){ return [...new Set(ids)].filter(id=>S.points[id]).map(id=>'<button class="lnk" type="button" data-act="akte" data-id="'+id+'">'+esc(P(id).title)+'</button>').join('<br>'); }
+function sentRow(x,showDate){ const ids=[...new Set(x.pids||[])].filter(id=>S.points[id]); const lbl=ids.length===1?'<button class="lnk" type="button" data-act="akte" data-id="'+ids[0]+'">'+esc(x.label)+'</button>':esc(x.label); return '<div style="display:flex;flex-direction:column;gap:2px;padding:6px 2px"><div style="display:flex;gap:10px;align-items:center;font-size:14px">'+B(x.c)+'<span style="flex:1;min-width:0">'+lbl+'</span><span class="pid">'+(showDate?'gesendet ':'')+x.date+'</span></div>'+(ids.length>1?'<div style="padding-left:38px;font-size:13px;line-height:1.7">'+pTitles(ids)+'</div>':'')+'</div>'; }
+function pLinks(ids,short){ return [...new Set(ids)].filter(id=>S.points[id]).map(id=>'<button class="plink" type="button" data-act="akte" data-id="'+id+'"><span class="pid">'+id+'</span>'+(short?'':esc(P(id).theme))+'</button>').join(''); }
+const KK=id=>S.contacts.find(x=>x.id===id)||S.lists.find(x=>x.id===id);
+function initials(n){ const w=n.replace(/^(Herr|Frau|Hr\.|Fr\.)\s+/,'').split(/\s+/).filter(Boolean); return ((w[0]||'?')[0]+(w.length>1?w[w.length-1][0]:'')).toUpperCase(); }
+function avatar(k,lg){ return '<span class="av'+(k.kind==='org'?' org':k.kind==='list'?' lst':'')+(lg?' lg':'')+'" aria-hidden="true">'+(k.kind==='org'?ic('building',lg?24:18):k.kind==='list'?ic('users',lg?24:18):initials(k.name))+'</span>'; }
+const kComms=k=>k.kind==='list'?[k.c]:[...new Set(k.roles.map(r=>r.c))];
+const kVis=k=>kComms(k).some(c=>vis(c));
+function filterTag(){ return S.filter==='all'?'<span class="ftag ftag-all">Alle Gemeinschaften</span>':'<span class="ftag">'+B(S.filter)+esc(COMM[S.filter].name)+'<button type="button" data-act="filter" data-f="all" aria-label="Filter '+esc(COMM[S.filter].short)+' entfernen">'+ic('x',14)+'</button></span>'; }
+function commPicker(sel,act,attr,q){
+ const cs=comms();
+ if(cs.length<=3) return '<div class="seg" role="radiogroup" aria-label="Gemeinschaft">'+cs.map(c=>'<button type="button" role="radio" data-act="'+act+'" data-'+attr+'="'+c+'" aria-checked="'+(sel===c)+'" aria-pressed="'+(sel===c)+'">'+COMM[c].short+'</button>').join('')+'</div>';
+ const ql=(q||'').toLowerCase(); const hit=cs.filter(c=>!ql||COMM[c].name.toLowerCase().indexOf(ql)>=0||c.toLowerCase().indexOf(ql)>=0);
+ const recent=hit.filter(c=>c==='AW'||c==='TG'), rest=hit.filter(c=>recent.indexOf(c)<0);
+ const row=c=>'<button type="button" role="radio" data-act="'+act+'" data-'+attr+'="'+c+'" aria-checked="'+(sel===c)+'">'+B(c)+'<span style="flex:1">'+esc(COMM[c].name)+'</span>'+(sel===c?ic('check',16):'')+'</button>';
+ return '<div class="cpick" role="radiogroup" aria-label="Gemeinschaft"><input class="inp" style="border:0;border-radius:0" placeholder="Gemeinschaft suchen" aria-label="Gemeinschaft suchen" data-act-input="cq" value="'+esc(q||'')+'">'+(recent.length?'<div class="sub">Zuletzt</div>'+recent.map(row).join(''):'')+(rest.length?'<div class="sub">Weitere</div>'+rest.map(row).join(''):'')+(hit.length?'':'<div class="sub" style="text-transform:none;letter-spacing:0">Keine Treffer</div>')+'</div>';
+}
+const REC={
+ vAW:{c:'AW',k:'k1',label:'Verwaltung · Fr. Berger',anrede:'Sehr geehrte Frau Berger,',lang:['DE']},
+ vTG:{c:'TG',k:'k2',label:'Verwaltung · Hr. Kaya',anrede:'Sehr geehrter Herr Kaya,',lang:['DE']},
+ oAW:{c:'AW',k:'l1',label:'Eigentümer AW · 24',anrede:'Liebe Miteigentümerinnen und Miteigentümer,',anredeEN:'Dear co-owners,',lang:['DE','EN']},
+ oTG:{c:'TG',k:'l2',label:'Stellplatzeigentümer TG · 38',anrede:'Liebe Stellplatzeigentümerinnen und -eigentümer,',anredeEN:'Dear parking space owners,',lang:['DE','EN']}
+};
+const GRUSS={DE:'Mit freundlichen Grüßen\nLuis M., Verwaltungsbeirat',EN:'Kind regards\nLuis M., Advisory Board'};
+
+let S;
+function seed(){
+ S={
+  route:'lage',akte:'P-041',back:'lage',filter:'all',seg:'punkte',postSel:null,lang:'DE',
+  week:{started:false,step:1,start:null,inIdx:0,decIdx:0,done:false,mins:0},
+  handover:{date:'9.11.',items:[{c:'AW',pid:'P-041',t:'Termin Kellerabdichtung einfordern',st:'überfällig',k:'bad'},{c:'AW',pid:'P-063',t:'Belegeinsicht HGA 2025 vorbereiten',st:'in Arbeit · 20.11.',k:'info'},{c:'TG',pid:'P-053',t:'Brandschutztor: Unterschrift klären',st:'offen · 18.11.',k:'n'}],note:'Verwaltung ist bis 13.11. im Urlaub, erst danach nachfassen.'},
+  nh:{s:['','',''],c:['AW','TG','AW'],p:['','',''],note:'',extra:0},
+  points:{
+   'P-041':{respId:'k1',c:'AW',title:'Verwaltung nennt Ausführungstermin Kellerabdichtung',theme:'Feuchtigkeit Keller',status:'offen',resp:'Verwaltung · Fr. Berger',due:'10.11.',dueNote:'zugesagt am 30.10.',dueState:'bad',wv:'23.11.',next:'Nachfassen',judged:false,
+    ev:[{d:'30.10.',k:'fact',t:'<b>Verwaltung</b> sagt Termin bis <b>10.11.</b> zu',src:'Mail 30.10. · Original',body:'Sehr geehrte Mitglieder des Beirats,\nfür die Abdichtung im Keller Haus B sagen wir Ihnen einen Ausführungstermin bis zum 10.11. zu. Die Firma Bautenschutz Rhein ist angefragt.\n\nMit freundlichen Grüßen\nS. Berger, Hausverwaltung Kern'},{d:'28.10.',k:'act',t:'<b>Du</b> hast den Termin angefragt',src:'Mail · Fassung 1',body:'Sehr geehrte Frau Berger,\nbitte nennen Sie uns einen verbindlichen Termin für die Kellerabdichtung Haus B, wie in der ETV unter TOP 4 beschlossen.\n\nMit freundlichen Grüßen\nLuis M., Verwaltungsbeirat'},{d:'10.11.',k:'bad',t:'Zugesagter Termin <b>10.11.</b> verstrichen'}],
+    src:[{i:'mail',t:'Mail Verwaltung',m:'30.10. · Original'},{i:'file',t:'Protokoll ETV 2026',m:'TOP 4 · Original'},{i:'file',t:'Fotos Keller (3)',m:'privat'}]},
+   'P-044':{respId:'k1',c:'AW',title:'Sonnensegel Spielplatz: Angebote liegen vollständig vor',theme:'Spielplatz',status:'offen',resp:'Verwaltung · Fr. Berger',due:'—',dueNote:'Beschluss TOP 9: 3 Angebote',dueState:'warn',wv:'—',next:'Entscheiden',ev:[{d:'12.11.',k:'fact',t:'Angebot B eingegangen: <b>3.640 €</b> inkl. 2 J. Wartung',src:'PDF · Original',body:'Angebot B · Schattenwelt GmbH\nSonnensegel 5 × 5 m, Montage inklusive\n3.640 € brutto · 2 Jahre Wartung inklusive · gültig bis 31.12.'},{d:'21.10.',k:'fact',t:'Angebot A eingegangen: <b>4.180 €</b>',src:'PDF · Original',body:'Angebot A · Garten & Schatten KG\nSonnensegel 5 × 5 m, Montage inklusive\n4.180 € brutto · ohne Wartung'}],src:[{i:'file',t:'Angebot A',m:'21.10. · Original'},{i:'file',t:'Angebot B',m:'12.11. · Original'},{i:'link',t:'Beschluss ETV TOP 9',m:'Link'}]},
+   'P-052':{respId:'k2',c:'TG',title:'Verwaltung schickt Prüfprotokoll Brandschutztor',theme:'Brandschutz',status:'offen',resp:'Verwaltung · Hr. Kaya',due:'—',dueNote:'kein Termin genannt',dueState:'warn',wv:'16.11.',next:'Nachhalten',ev:[{d:'03.11.',k:'act',t:'<b>Du</b> hast das Prüfprotokoll angefordert',src:'Mail · Fassung 1',body:'Sehr geehrter Herr Kaya,\nbitte senden Sie uns das Protokoll der letzten Prüfung des Brandschutztors.\n\nMit freundlichen Grüßen\nLuis M., Verwaltungsbeirat'}],src:[]},
+   'P-053':{c:'TG',title:'Prüfauftrag Brandschutztor unterschreiben',theme:'Brandschutz',status:'offen',resp:'Du',due:'18.11.',dueNote:'Frist der Prüffirma',dueState:'bad',wv:'—',next:'Unterschrift',ev:[{d:'12.11.',k:'fact',t:'Prüffirma: Auftrag bis <b>18.11.</b> unterschrieben zurück',src:'Mail · Original',body:'Guten Tag,\nanbei der Prüfauftrag für das Brandschutztor. Bitte senden Sie ihn bis zum 18.11. unterschrieben zurück, damit wir den Termin halten können.\nPrüfdienst Brandschutz West'}],src:[]},
+   'P-058':{respId:'k5',c:'TG',title:'Wartung Rolltor durchgeführt',theme:'Rolltor',status:'offen',resp:'Wartungsfirma über Verwaltung',due:'27.11.',dueNote:'genannt am 13.11.',dueState:'n',wv:'—',next:'Nachhalten',ev:[{d:'13.11.',k:'fact',t:'Wartungsfirma nennt Termin <b>27.11.</b>',src:'Mail · Original',body:'Die Wartung des Rolltors ist für den 27.11. ab 8 Uhr geplant. Die Zufahrt ist dann für etwa zwei Stunden gesperrt.\nTorservice Rhein'}],src:[]},
+   'P-063':{c:'AW',title:'Belegeinsicht Hausgeldabrechnung 2025 durchgeführt',theme:'Abrechnung 2025',status:'offen',resp:'Du + Verwaltung',due:'20.11.',dueNote:'bestätigt 11.11.',dueState:'n',wv:'—',next:'Vorbereiten',ev:[{d:'11.11.',k:'fact',t:'Verwaltung bestätigt Termin <b>20.11.</b>',src:'Mail · Original',body:'Die Belegeinsicht zur Hausgeldabrechnung 2025 bestätigen wir für den 20.11., 15 Uhr, in unseren Räumen.\nS. Berger'}],src:[]},
+   'P-029':{respId:'k1',c:'AW',title:'Protokollkorrektur ETV TOP 6 liegt vor',theme:'ETV 2026',status:'offen',resp:'Verwaltung · Fr. Berger',due:'24.11.',dueNote:'Antwortfrist',dueState:'n',wv:'24.11.',next:'Warten',ev:[{d:'10.11.',k:'act',t:'<b>Du</b> hast die Korrektur angefordert',src:'Mail · Fassung 1',body:'Sehr geehrte Frau Berger,\nim Protokoll der ETV ist unter TOP 6 das Abstimmungsergebnis falsch wiedergegeben. Bitte korrigieren Sie es bis zum 24.11.\n\nMit freundlichen Grüßen\nLuis M.'}],src:[]},
+   'P-066':{respId:'k2',c:'TG',title:'Beleuchtung Rampe wieder in Betrieb',theme:'Beleuchtung',status:'offen',resp:'Verwaltung · Hr. Kaya',due:'—',dueNote:'akut',dueState:'bad',wv:'—',next:'Entscheiden',ev:[{d:'14.11.',k:'fact',t:'Hausmeister meldet: Rampenlicht seit 13.11. aus',src:'Telefonat',body:'Telefonnotiz 14.11., Hr. Wolff:\nRampenlicht der Tiefgarage brennt seit Freitag nicht. Elektriker ist informiert, aber noch kein Termin.'}],src:[]},
+   'P-071':{c:'AW',title:'Rückschnitt Hecke Nordseite erledigt',theme:'Außenanlage',status:'offen',resp:'unklar',due:'—',dueNote:'kein Termin',dueState:'warn',wv:'—',next:'—',ev:[{d:'13.10.',k:'fact',t:'Eigentümer meldet überwachsenen Gehweg',src:'Notiz',body:'Notiz 13.10.:\nEigentümer Whg. 7 meldet, dass die Hecke an der Nordseite in den Gehweg ragt.'}],src:[]}
+  },
+  inbox:[
+   {id:'i1',c:'AW',ch:'Portal',from:'Verwaltung Berger',date:'13.11.',title:'Abdichtung Keller Haus B',body:'Sehr geehrte Eigentümerinnen und Eigentümer,\ndie Abdichtungsarbeiten im Keller Haus B sind für den 2. Dezember geplant. Der Zugang erfolgt über den Hausmeister. Bitte räumen Sie die Kellerabteile an der Nordwand bis dahin frei.',hl:'für den 2. Dezember geplant',sug:'P-041',termin:'02.12.',useT:true,done:null},
+   {id:'i2',c:'TG',ch:'Mail',from:'Hr. Kaya',date:'14.11.',title:'Prüfprotokoll Brandschutztor',body:'Guten Tag, anbei das Prüfprotokoll der letzten Prüfung des Brandschutztors. Die nächste Prüfung ist im Mai fällig.',hl:'anbei das Prüfprotokoll',sug:'P-052',termin:null,useT:false,done:null},
+   {id:'i3',c:null,ch:'Telefonat',from:'Hausmeister',date:'14.11.',title:'Anruf Hausmeister',body:'Rampenlicht der Tiefgarage brennt seit Freitag nicht. Elektriker sei informiert, aber noch kein Termin.',hl:'seit Freitag nicht',sug:'P-066',termin:null,useT:false,done:null}
+  ],
+  waits:[
+   {pid:'P-041',who:'Verwaltung · Fr. Berger',asked:'28.10.',days:19,prom:'10.11.',check:'heute',due:true,stage:1,ans:null},
+   {pid:'P-052',who:'Verwaltung · Hr. Kaya',asked:'03.11.',days:13,prom:null,check:'heute',due:true,stage:1,ans:null},
+   {pid:'P-058',who:'Wartungsfirma',asked:'05.11.',days:11,prom:'27.11.',check:'heute',due:true,stage:1,ans:null},
+   {pid:'P-063',who:'Verwaltung · Fr. Berger',asked:'04.11.',days:12,prom:'20.11.',check:'heute',due:true,stage:1,ans:null},
+   {pid:'P-029',who:'Verwaltung · Fr. Berger',asked:'10.11.',days:6,prom:'24.11.',check:'24.11.',due:false,stage:1,ans:null}
+  ],
+  decisions:[
+   {id:'d1',pid:'P-044',kind:'E2',q:'Wie gehst du mit dem zweiten Angebot Sonnensegel um?',why:'2 von 3 Angeboten',facts:[['Angebot A · 21.10.','4.180 €','ohne Wartung'],['Angebot B · 12.11.','3.640 €','inkl. 2 J. Wartung']],gap:'Beschluss TOP 9 verlangt 3 Angebote',
+    opts:[{k:'kenntnis',l:'Zur Kenntnis nehmen',f:'Kein Entwurf'},{k:'rueck',l:'Rückfrage an Verwaltung',f:'Mail an Fr. Berger · Prüfung 23.11.',sug:true},{k:'empf',l:'Angebot B empfehlen',f:'Mail an Fr. Berger + Eigentümer-Info DE/EN'},{k:'vorm',l:'Für Besprechung vormerken',f:'Aufgabe für dich'}],ch:null,note:'',done:false},
+   {id:'d2',pid:'P-063',kind:'E4',q:'Sollen die Eigentümer von der Belegeinsicht am 20.11. erfahren?',why:'Termin in 4 Tagen',facts:[['Termin','20.11.','bestätigt 11.11.']],
+    opts:[{k:'info',l:'Eigentümer informieren',f:'Info DE/EN an Eigentümer AW',sug:true},{k:'nicht',l:'Nicht informieren',f:'Kein Entwurf'},{k:'spaeter',l:'Später',f:'Wiedervorlage 19.11.'}],ch:null,note:'',done:false},
+   {id:'d3',pid:'P-058',kind:'E4',q:'Müssen die Stellplatzeigentümer für die Rolltor-Wartung am 27.11. etwas wissen?',why:'Termin 27.11. · Zufahrt betroffen',facts:[['Termin','27.11.','genannt 13.11.']],
+    opts:[{k:'info',l:'Stellplatzeigentümer informieren',f:'Info DE/EN an Eigentümer TG',sug:true},{k:'nicht',l:'Nicht informieren',f:'Kein Entwurf'},{k:'spaeter',l:'Später',f:'Wiedervorlage 23.11.'}],ch:null,note:'',done:false},
+   {id:'d4',pid:'P-071',kind:'E5',q:'Wie geht es mit der Hecke Nordseite weiter?',why:'34 Tage ohne nächsten Schritt',facts:[['Verantwortlich','unklar','']],
+    opts:[{k:'schritt',l:'Eigenen nächsten Schritt festlegen',f:'Aufgabe für dich · 23.11.'},{k:'klaeren',l:'Zuständigkeit bei Verwaltung klären',f:'Mail an Fr. Berger'},{k:'hinf',l:'Hinfällig setzen',f:'Punkt wird geschlossen'}],ch:null,note:'',done:false},
+   {id:'u1',urgent:true,pid:'P-066',kind:'E6',q:'Was tust du wegen der ausgefallenen Rampenbeleuchtung?',why:'akut · seit 13.11.',facts:[['Gemeldet','14.11.','Hausmeister']],
+    opts:[{k:'beheb',l:'Behebung bis 19.11. anfordern',f:'Mail an Hr. Kaya',sug:true},{k:'selbst',l:'Selbst prüfen',f:'Aufgabe für dich · morgen'},{k:'warn',l:'Stellplatzeigentümer warnen',f:'Info DE/EN an Eigentümer TG'}],ch:null,note:'',done:false},
+   {id:'u2',urgent:true,pid:'P-053',kind:'E5',q:'Wer unterschreibt den Prüfauftrag Brandschutztor bis 18.11.?',why:'Frist 18.11.',facts:[['Frist','18.11.','Prüffirma']],
+    opts:[{k:'selbst',l:'Selbst unterschreiben',f:'Aufgabe für dich · 17.11.',sug:true},{k:'verw',l:'Verwaltung um Unterschrift bitten',f:'Mail an Hr. Kaya'}],ch:null,note:'',done:false}
+  ],
+  paras:[],tasks:[{id:'t0',c:'AW',t:'Unterlagen Belegeinsicht zusammenstellen',due:'19.11.',st:'in Arbeit',from:'P-063'}],
+  msgs:{},sent:[{key:'s1',rec:'vAW',c:'AW',label:'Protokollkorrektur TOP 6',date:'10.11.',pids:['P-029']},{key:'s2',rec:'vTG',c:'TG',label:'Wartung Rolltor',date:'05.11.',pids:['P-058']}],
+  kSeg:'pers',kq:'',eSec:'gem',
+  me:{name:'Luis M.',role:'Verwaltungsbeirat',sigDE:'Mit freundlichen Grüßen\nLuis M., Verwaltungsbeirat',sigEN:'Kind regards\nLuis M., Advisory Board'},
+  rhythm:{day:'Mo',mins:45,budget:7,akut:3},
+  folders:{base:'WEG Manager',punkte:'WEG Manager/Punkte',quellen:'WEG Manager/Quellen',kontakte:'WEG Manager/Kontakte',vorlagen:'WEG Manager/Vorlagen'},
+  arten:[{id:'a1',n:'Wohnungseigentümergemeinschaft',u:'Einheiten'},{id:'a2',n:'Stellplatzgemeinschaft',u:'Stellplätze'},{id:'a3',n:'Sonstige Gemeinschaft',u:'Einheiten'}],
+  gem:{AW:{art:'a1',units:24,addr:'Ahornweg 12, 50000 Musterstadt',verw:'k3',lang:'DE+EN',color:'#0F766E',list:'l1'},TG:{art:'a2',units:38,addr:'Ahornweg 12a, 50000 Musterstadt',verw:'k3',lang:'DE+EN',color:'#6D28D9',list:'l2'}},
+  contacts:[
+   {id:'k1',kind:'person',name:'Sabine Berger',org:'Hausverwaltung Kern',roles:[{c:'AW',r:'Verwaltung · Objektbetreuung'}],mail:'s.berger@kern-hv.example',tel:'0221 480 12-14',lang:'DE',ch:'Mail',note:'Erreichbar Mo–Do vormittags.',active:true},
+   {id:'k2',kind:'person',name:'Deniz Kaya',org:'Hausverwaltung Kern',roles:[{c:'TG',r:'Verwaltung · Objektbetreuung'}],mail:'d.kaya@kern-hv.example',tel:'0221 480 12-21',lang:'DE',ch:'Mail',note:'',active:true},
+   {id:'k3',kind:'org',name:'Hausverwaltung Kern',org:'',roles:[{c:'AW',r:'Verwaltung'},{c:'TG',r:'Verwaltung'}],mail:'info@kern-hv.example',tel:'0221 480 12-0',lang:'DE',ch:'Portal',note:'',active:true},
+   {id:'k4',kind:'person',name:'Peter Wolff',org:'',roles:[{c:'AW',r:'Hausmeister'},{c:'TG',r:'Hausmeister'}],mail:'',tel:'0170 555 0142',lang:'DE',ch:'Telefon',note:'',active:true},
+   {id:'k5',kind:'org',name:'Torservice Rhein',org:'',roles:[{c:'TG',r:'Wartung Rolltor'}],mail:'service@torservice.example',tel:'0221 77 31 00',lang:'DE',ch:'über Verwaltung',note:'',active:true},
+   {id:'k6',kind:'org',name:'Prüfdienst Brandschutz West',org:'',roles:[{c:'TG',r:'Prüffirma Brandschutztor'}],mail:'auftrag@pbw.example',tel:'',lang:'DE',ch:'Mail',note:'',active:true},
+   {id:'k7',kind:'person',name:'Mara Albers',org:'',roles:[{c:'AW',r:'Beirat'}],mail:'mara.albers@mail.example',tel:'0176 555 0199',lang:'DE',ch:'Mail',note:'',active:true},
+   {id:'k8',kind:'person',name:'Jonas Pohl',org:'Hausverwaltung Kern',roles:[{c:'AW',r:'Verwaltung · Vertretung'}],mail:'j.pohl@kern-hv.example',tel:'',lang:'DE',ch:'Mail',note:'Ausgeschieden 30.06.2026',active:false}
+  ],
+  lists:[
+   {id:'l1',kind:'list',c:'AW',name:'Eigentümer AW',count:24,langs:['DE','EN'],split:'19 DE · 5 EN',ch:'Mail (BCC) über Verwaltung',stand:'01.10.2026',src:'Eigentümerliste der Verwaltung'},
+   {id:'l2',kind:'list',c:'TG',name:'Stellplatzeigentümer TG',count:38,langs:['DE','EN'],split:'33 DE · 5 EN',ch:'Aushang + Mail',stand:'15.09.2026',src:'Stellplatzliste der Verwaltung'}
+  ],
+  feed:[
+   {day:'Freitag, 13.11.',k:'bad',c:'AW',pid:'P-041',t:'<b>Kellerabdichtung:</b> zugesagter Termin bis 10.11. fehlt',chip:['überfällig 6 T','bad']},
+   {day:'Freitag, 13.11.',k:'warn',c:'AW',pid:null,t:'Neue Portalnachricht, <b>noch nicht geprüft</b>',chip:['Datenlücke','warn']},
+   {day:'Freitag, 13.11.',k:'n',c:'TG',pid:'P-058',t:'Wartungsfirma nennt Termin Rolltor: <b>27.11.</b>',chip:['Termin neu','info']},
+   {day:'Donnerstag, 12.11.',k:'n',c:'AW',pid:'P-044',t:'Zweites Angebot <b>Sonnensegel</b> eingegangen',chip:['Entscheiden','n']},
+   {day:'Donnerstag, 12.11.',k:'bad',c:'TG',pid:'P-053',t:'Prüfauftrag <b>Brandschutztor</b> bis 18.11. unterschreiben',chip:['bis 18.11.','bad']},
+   {day:'Dienstag, 10.11.',k:'act',c:'AW',pid:'P-029',t:'Du hast Nachfrage <b>Protokollkorrektur TOP 6</b> gesendet',chip:['Prüfung 24.11.','n']}
+  ],
+  sheet:null,toast:null,showTasks:true
+ };
+}
+
+/* ---------- Ableitungen ---------- */
+const P=id=>S.points[id];
+const vis=c=>S.filter==='all'||S.filter===c;
+function counts(){
+ const inboxOpen=S.inbox.filter(i=>!i.done||i.done==='later').length;
+ const urgentOpen=S.decisions.filter(d=>d.urgent&&!d.done).length;
+ const waiting=S.waits.filter(w=>w.ans!=='in').length;
+ const reg=S.decisions.filter(d=>!d.urgent);
+ const msgsOpen=Object.keys(msgList()).filter(k=>!S.msgs[k]||!S.msgs[k].sent).length;
+ return {inboxOpen,urgentOpen,waiting,reg:reg.length,regOpen:reg.filter(d=>!d.done).length,msgsOpen};
+}
+function mins(){ if(!S.week.start) return S.week.mins; return S.week.mins+Math.max(0,Math.round((Date.now()-S.week.start)/60000)); }
+
+/* ---------- Textbausteine (regelbasiert, ohne KI) ---------- */
+function noteOr(d,ph){ return d.note.trim()? esc(d.note.trim()) : '<span class="ph">['+ph+']</span>'; }
+function addPara(rec,pid,src,de,en){
+ S.paras=S.paras.filter(p=>p.src!==src);
+ S.paras.push({rec,pid,src,de,en});
+ if(S.msgs[rec]&&!S.msgs[rec].sent){S.msgs[rec].ok={};S.msgs[rec].edit={};}
+}
+function dropParas(src){ S.paras=S.paras.filter(p=>p.src!==src); }
+function addTask(src,c,t,due,pid){ S.tasks=S.tasks.filter(x=>x.src!==src); S.tasks.push({id:'t'+(S.tasks.length+1),src,c,t,due,st:'offen',from:pid}); }
+function dropTasks(src){ S.tasks=S.tasks.filter(x=>x.src!==src); }
+function applyDecision(d){
+ const src='dec:'+d.id; dropParas(src); dropTasks(src);
+ const k=d.ch;
+ if(d.id==='d1'){
+  if(k==='rueck') addPara('vAW','P-044',src,'Zum Sonnensegel Spielplatz liegen uns zwei Angebote vor (21.10. und 12.11.). Laut Beschluss TOP 9 sind drei Angebote einzuholen. '+noteOr(d,'Frage ergänzen')+' Bitte antworten Sie bis zum 23.11.');
+  if(k==='empf'){ addPara('vAW','P-044',src,'Zum Sonnensegel Spielplatz empfiehlt der Beirat Angebot B vom 12.11. (3.640 €, inkl. zwei Jahren Wartung). '+(d.note.trim()?esc(d.note.trim()):'')); addPara('oAW','P-044',src+':o','Für das Sonnensegel am Spielplatz liegen zwei Angebote vor. Der Beirat hat der Verwaltung Angebot B empfohlen. Die Beauftragung erfolgt durch die Verwaltung.','Two quotes have been received for the playground sun sail. The advisory board has recommended quote B to the property management. The order is placed by the property management.'); }
+  if(k==='vorm') addTask(src,'AW','Sonnensegel in Beiratssitzung besprechen','30.11.','P-044');
+ }
+ if(d.id==='d2'&&k==='info') addPara('oAW','P-063',src,'Am 20.11. sieht der Beirat die Belege zur Hausgeldabrechnung 2025 bei der Verwaltung ein. Hinweise oder Fragen dazu senden Sie gern bis zum 19.11.','On 20 November the advisory board will review the receipts for the 2025 service charge statement at the property management. Please send any questions by 19 November.');
+ if(d.id==='d2'&&k==='spaeter') addTask(src,'AW','Info Belegeinsicht erneut prüfen','19.11.','P-063');
+ if(d.id==='d3'&&k==='info') addPara('oTG','P-058',src,'Am 27.11. wird das Rolltor der Tiefgarage gewartet. Während der Arbeiten ist die Zufahrt zeitweise gesperrt.','On 27 November the garage door will be serviced. Access will be temporarily closed during the work.');
+ if(d.id==='d4'&&k==='schritt') addTask(src,'AW',d.note.trim()||'Hecke Nordseite: nächsten Schritt festlegen','23.11.','P-071');
+ if(d.id==='d4'&&k==='klaeren') addPara('vAW','P-071',src,'Die Hecke an der Nordseite ragt in den Gehweg. Bitte teilen Sie uns mit, wer für den Rückschnitt zuständig ist und bis wann er erfolgt. '+(d.note.trim()?esc(d.note.trim()):''));
+ if(d.id==='u1'&&k==='beheb') addPara('vTG','P-066',src,'Die Beleuchtung der Tiefgaragenrampe ist seit dem 13.11. ausgefallen. Bitte veranlassen Sie die Behebung bis zum 19.11. und geben Sie uns kurz Bescheid. '+(d.note.trim()?esc(d.note.trim()):''));
+ if(d.id==='u1'&&k==='selbst') addTask(src,'TG','Rampenbeleuchtung vor Ort prüfen','17.11.','P-066');
+ if(d.id==='u1'&&k==='warn') addPara('oTG','P-066',src,'Die Beleuchtung der Rampe ist derzeit ausgefallen. Bitte fahren Sie besonders vorsichtig.','The ramp lighting is currently out of order. Please drive with extra care.');
+ if(d.id==='u2'&&k==='selbst') addTask(src,'TG','Prüfauftrag Brandschutztor unterschreiben','17.11.','P-053');
+ if(d.id==='u2'&&k==='verw') addPara('vTG','P-053',src,'Der Prüfauftrag für das Brandschutztor muss bis zum 18.11. unterschrieben bei der Prüffirma vorliegen. Bitte übernehmen Sie die Unterschrift. '+(d.note.trim()?esc(d.note.trim()):''));
+}
+function nachfassPara(w){
+ const p=P(w.pid); const src='wait:'+w.pid;
+ if(w.pid==='P-041'){
+  const newT=S.inbox[0].done==='assign'&&S.inbox[0].useT;
+  if(newT){ addPara('vAW','P-041',src,'Vielen Dank für den Termin 02.12. zur Kellerabdichtung Haus B. Bitte bestätigen Sie uns, dass die ausführende Firma beauftragt ist.'); return; }
+  addPara('vAW','P-041',src,'Sie hatten uns am 30.10. einen Termin für die Kellerabdichtung bis zum 10.11. zugesagt. Bitte nennen Sie uns bis zum 30.11. einen verbindlichen Ausführungstermin.');
+ } else if(w.pid==='P-052'){
+  addPara('vTG','P-052',src,'Wir hatten Sie am 03.11. um das Prüfprotokoll des Brandschutztors gebeten. Bitte senden Sie es uns bis zum 30.11.');
+ } else {
+  addPara(p.c==='AW'?'vAW':'vTG',w.pid,src,'Zu „'+esc(p.title)+'“ bitten wir um eine kurze Rückmeldung bis zum 30.11.');
+ }
+}
+function msgList(){
+ const out={};
+ S.paras.forEach(p=>{(out[p.rec]=out[p.rec]||[]).push(p);});
+ return out;
+}
+function msgText(rec,lang){
+ const m=S.msgs[rec]; if(m&&m.edit&&m.edit[lang]!=null) return m.edit[lang];
+ const r=REC[rec]; const ps=(msgList()[rec]||[]);
+ const body=ps.map(p=>lang==='EN'?(p.en||''):p.de).filter(Boolean).join('\n\n');
+ const tmp=document.createElement('div'); tmp.innerHTML=body;
+ return (lang==='EN'?r.anredeEN:r.anrede)+'\n\n'+tmp.textContent+'\n\n'+(lang==='EN'?S.me.sigEN:S.me.sigDE);
+}
+function placeholders(t){ return (t.match(/\[[^\]]+\]/g)||[]).length; }
+function ensureMsg(rec){ if(!S.msgs[rec]) S.msgs[rec]={ok:{},edit:{},sent:false}; return S.msgs[rec]; }
+
+/* ---------- Bausteine ---------- */
+function sidebar(){
+ const c=counts(), r=S.route;
+ const nb=(id,label,icon,n,bad)=>'<button class="nav" type="button" data-act="go" data-r="'+id+'"'+(r===id||(id==='punkte'&&r==='akte')?' aria-current="page"':'')+'>'+ic(icon)+label+(n!==''?'<span class="n'+(bad?' bad':'')+'">'+n+'</span>':'')+'</button>';
+ return '<nav class="side" aria-label="Hauptnavigation"><div class="brand"><span class="logo">'+ic('home',16)+'</span>WEG Manager</div>'+
+ '<button class="btn pri" type="button" data-act="erfassen" data-tour="capture">'+ic('plus')+'Erfassen</button>'+
+ '<div style="display:flex;flex-direction:column;gap:2px" data-tour="nav">'+nb('lage','Lage','lage',c.urgentOpen||'',true)+nb('woche','Woche','woche',S.week.done?'✓':S.rhythm.day)+nb('punkte','Punkte','punkte',Object.keys(S.points).length)+nb('post','Postausgang','post',c.msgsOpen||'')+'</div>'+
+ '<div class="grp" data-tour="contacts">'+nb('kontakte','Kontakte','users',S.contacts.filter(k=>k.active&&kVis(k)).length+S.lists.filter(kVis).length)+'</div>'+
+ '<div class="grp" data-tour="filter"><div class="lab" style="padding:0 6px 4px">Gemeinschaft</div>'+
+ ['all'].concat(comms()).map(f=>'<button class="nav" type="button" data-act="filter" data-f="'+f+'"'+(S.filter===f?' aria-current="page"':'')+' style="min-height:36px">'+(f==='all'?'Alle':B(f)+COMM[f].short)+'</button>').join('')+'</div>'+
+ '<div class="grp" style="margin-top:auto" data-tour="settings">'+nb('einst','Einstellungen','gear','')+'</div></nav>';
+}
+function mtop(title){
+ const c=counts(); const r=S.route;
+ const sb=(id,l,n)=>'<button type="button" data-act="go" data-r="'+id+'" aria-pressed="'+(r===id||(id==='punkte'&&r==='akte'))+'">'+l+(n?' <span class="mono" style="font-size:11px;color:var(--fg3)">'+n+'</span>':'')+'</button>';
+ return '<div class="mtop"><div style="display:flex;align-items:center;gap:8px"><h1 style="flex:1;min-width:0;font-size:22px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</h1><span style="display:flex;gap:2px"><button data-tour="contacts" class="iconbtn" type="button" data-act="go" data-r="kontakte" aria-label="Kontakte"'+(r==='kontakte'?' aria-current="page" style="background:var(--sunk)"':'')+'>'+ic('users')+'</button><button data-tour="settings" class="iconbtn" type="button" data-act="go" data-r="einst" aria-label="Einstellungen"'+(r==='einst'?' aria-current="page" style="background:var(--sunk)"':'')+'>'+ic('gear')+'</button></span>'+
+ '<select data-tour="filter" class="inp" style="width:auto;max-width:34%;min-height:38px;border-radius:999px" data-act-change="filter" aria-label="Gemeinschaft" data-on="'+(S.filter!=='all')+'">'+['all'].concat(comms()).map(f=>'<option value="'+f+'"'+(S.filter===f?' selected':'')+'>'+(f==='all'?'Alle':COMM[f].short)+'</option>').join('')+'</select></div>'+
+ '<nav class="seg" aria-label="Hauptnavigation" data-tour="nav">'+sb('lage','Lage')+sb('woche','Woche')+sb('punkte','Punkte')+sb('post','Post',c.msgsOpen)+'</nav></div>';
+}
+
+/* ---------- Lage ---------- */
+function vLage(){
+ const c=counts();
+ const feed=S.feed.filter(f=>vis(f.c));
+ let days=[], html='';
+ feed.forEach(f=>{ if(days.indexOf(f.day)<0){days.push(f.day); html+='<div class="day">'+f.day+'</div>';}
+  const icn=f.k==='bad'?'clock':f.k==='warn'?'warn':f.k==='act'?'post':'mail';
+  html+='<button class="row" type="button" '+(f.pid?'data-act="akte" data-id="'+f.pid+'"':'data-act="go" data-r="woche"')+'><span class="ri '+(f.k==='n'?'':f.k)+'">'+ic(icn)+'</span>'+B(f.c)+'<span class="tx">'+f.t+'</span><span class="chip c-'+f.chip[1]+'">'+f.chip[0]+'</span>'+(f.pid?'<span class="pid">'+f.pid+'</span>':'')+'</button>';
+ });
+ const ho=S.handover;
+ const wk=S.week;
+ const cta= wk.done?
+  '<div class="wcta" data-tour="week"><div style="flex:1 1 260px;display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;opacity:.75">Wochenarbeit 16.11. abgeschlossen</span><span class="t">'+mins()+' min aktiv · nächste am 23.11.</span></div><button class="btn" type="button" data-act="go" data-r="post">Postausgang</button></div>' :
+  '<div class="wcta" data-tour="week"><div style="flex:1 1 280px;display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;opacity:.75">Wochenarbeit · Montag, 16. November</span><span class="t">'+(wk.started?'Weiter bei Schritt '+wk.step:'5 Schritte, etwa 45 Minuten')+'</span>'+
+  '<div class="pills"><span>1 Eingang <b>'+c.inboxOpen+'</b></span><span>2 Nachhalten <b>'+S.waits.filter(w=>w.due&&!w.ans).length+'</b></span><span>3 Entscheiden <b>'+c.regOpen+'</b> <b style="color:var(--bad)">+'+c.urgentOpen+'</b></span><span>4 Senden</span><span>5 Übergabe</span></div></div>'+
+  '<button class="btn" type="button" data-act="startWeek">'+(wk.started?'Fortsetzen':'Woche starten')+ic('right')+'</button></div>';
+ return mtop('Lage')+'<main class="main" id="view">'+
+ '<header class="side-only" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px"><div style="display:flex;flex-direction:column;gap:3px"><div class="ttl"><h1 style="font-size:30px">Lage</h1>'+filterTag()+'</div><span class="muted">Montag, 16. November · <b style="color:var(--fg)">'+feed.length+' Ereignisse</b> seit deiner Übergabe am '+ho.date+'</span></div><span class="muted" style="font-size:13px;display:flex;gap:6px;align-items:center">'+ic('warn',15)+'Portal zuletzt geprüft 13.11.</span></header>'+
+ '<section class="kpis" aria-label="Kennzahlen" data-tour="kpis">'+
+ kpi('Dringend',c.urgentOpen,'var(--badfg)',S.decisions.filter(d=>d.urgent&&!d.done).map(d=>P(d.pid).due!=='—'?'Frist '+P(d.pid).due:'akut').join(' · ')||'nichts offen','woche','border-color:var(--badbg)')+
+ kpi('Ungeprüft',c.inboxOpen,'var(--warnfg)','Eingänge ohne Zuordnung','woche','')+
+ kpi('Wartet auf Antwort',c.waiting,'var(--infofg)','älteste seit 19 Tagen','woche','')+
+ kpi('Entscheidungen',c.reg+'<span style="font-size:20px;color:var(--fg3)">/7</span>','var(--fg)','<span class="budget" aria-hidden="true">'+budget()+'</span>','woche','')+
+ '</section>'+
+ '<div class="two"><div class="l">'+cta+'<section class="card feed" aria-labelledby="fh"><div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px 2px"><h2 id="fh" style="font-size:17px">Neu seit '+ho.date+'</h2></div>'+html+'</section></div>'+
+ '<div class="r"><section class="card" style="padding:16px 18px;display:flex;flex-direction:column;gap:12px" aria-labelledby="sh"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 id="sh" style="font-size:17px">Deine Schwerpunkte</h2><span class="pid">Übergabe '+ho.date+'</span></div>'+
+ '<div style="display:flex;flex-direction:column;margin:0 -10px">'+ho.items.map((s,i)=>{const inner='<span class="pid" style="padding-top:2px">'+(i+1)+'</span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><span style="font-weight:500">'+esc(s.t)+'</span><span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+B(s.c)+(s.pid?'<span class="pid">'+s.pid+'</span>':'')+(s.st?'<span class="chip c-'+s.k+'">'+esc(s.st)+'</span>':'')+'</span></span>'; return s.pid?'<button class="q" style="align-items:flex-start;padding:8px 10px;color:var(--fg)" type="button" data-act="akte" data-id="'+s.pid+'">'+inner+ic('chev',16)+'</button>':'<div style="display:flex;gap:9px;padding:8px 10px">'+inner+'</div>';}).join('')+'</div>'+
+ (ho.note?'<p class="muted" style="font-size:13px;padding-top:10px;border-top:1px dashed var(--line)">„'+esc(ho.note)+'“</p>':'')+'</section>'+
+ '<section class="card" style="padding:16px 18px;display:flex;flex-direction:column;gap:12px" aria-labelledby="th"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 id="th" style="font-size:17px">Nächste 14 Tage</h2><span class="pid">16.–29.11.</span></div>'+
+ 
+ '<div style="display:flex;flex-direction:column;margin:0 -10px">'+[['Mo 16','','Wochenarbeit',''],['Mi 18','TG','Unterschrift Brandschutztor','P-053'],['Fr 20','AW','Belegeinsicht HGA 2025','P-063'],['Mo 23','AW','Wiedervorlage Kellerabdichtung','P-041'],['Fr 27','TG','Wartung Rolltor','P-058']].filter(x=>!x[1]||vis(x[1])).map(x=>'<button class="q" style="color:var(--fg);font-size:14px;padding:6px 10px" type="button" '+(x[3]?'data-act="akte" data-id="'+x[3]+'"':'data-act="startWeek"')+'><span class="pid" style="width:46px">'+x[0]+'</span>'+(x[1]?B(x[1]):'<span style="width:28px"></span>')+'<span style="flex:1">'+x[2]+'</span>'+ic('chev',16)+'</button>').join('')+'</div></section></div></div></main>';
+}
+function kpi(k,v,col,sub,go,st){ return '<button class="kpi" type="button" data-act="go" data-r="'+go+'" style="'+st+'"><span class="k" style="color:'+col+'">'+k+'</span><span class="v">'+v+'</span><span class="s">'+sub+'</span></button>'; }
+function budget(){ const reg=S.decisions.filter(d=>!d.urgent).length, u=S.decisions.filter(d=>d.urgent).length; let h=''; for(let i=0;i<7;i++) h+='<span class="'+(i<reg?'on':'')+'"></span>'; h+='<span style="flex:0 0 4px;background:transparent"></span>'; for(let i=0;i<u;i++) h+='<span class="u"></span>'; return '<span class="budget" style="width:100%">'+h+'</span>'; }
+function tasksCard(){
+ return '<section class="tasks" aria-labelledby="tah"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="tah" style="font-size:16px">Testaufgaben</h2><button class="btn sm ghost" type="button" data-act="hideTasks">Ausblenden</button></div>'+
+ '<ol><li>Was drängt diese Woche? Sieh dir die Lage an.</li><li>Starte die Wochenarbeit und ordne die Portalnachricht zur Kellerabdichtung zu.</li><li>Fasse bei der Kellerabdichtung nach und triff die Entscheidungen.</li><li>Prüfe die Eigentümer-Info auf Deutsch und Englisch und markiere sie als gesendet.</li><li>Halte deine Übergabe fest und schließe die Woche ab.</li><li>Erfasse unterwegs eine telefonische Zusage (am besten am Handy).</li><li>Finde heraus, wen du wegen der Rolltor-Wartung erreichst, und lege einen neuen Kontakt an.</li></ol>'+
+ '<p style="font-size:13px" class="muted">Alle Namen und Daten sind erfunden. Kommentare kannst du direkt am Bildschirm hinterlassen.</p></section>';
+}
+
+/* ---------- Woche ---------- */
+const STEPN=['Eingang','Nachhalten','Entscheiden','Senden','Übergabe'];
+const WHINT={1:'Ordne jeden Eingang einem Punkt zu, lege einen neuen Punkt an oder verschiebe ihn auf später.',2:'Wähle für jede fällige Zusage eine Antwort. „Nachfassen“ legt einen Entwurf im Postausgang an.',3:'Höchstens 7 Entscheidungen pro Woche, Dringendes zusätzlich. Bestätigen erzeugt Entwürfe oder Aufgaben; gesendet wird nichts.',4:'Prüfe jede Sprachfassung, versende extern und markiere die Nachricht hier als gesendet.',5:'Lege bis zu 3 Schwerpunkte fest. Sie stehen nächste Woche oben in der Lage.'};
+function hintSeen(n){ if(S.hintsOff) return true; if(S.hintSeen&&S.hintSeen[n]) return true; try{ return !!localStorage.getItem('wm-wh-'+n); }catch(e){ return false; } }
+function weekHint(n){ if(hintSeen(n)) return ''; return '<aside class="whint" role="note" aria-labelledby="whH"><span class="ri" style="background:var(--surface);color:var(--infofg)">'+ic('woche',16)+'</span><div style="flex:1 1 240px;display:flex;flex-direction:column;gap:4px"><b id="whH" style="font-size:13px">Erste Wochenarbeit · '+STEPN[n-1]+'</b><span style="font-size:14px">'+WHINT[n]+'</span></div><div style="display:flex;gap:6px;align-items:center"><button class="btn sm" type="button" data-act="hintOk" data-n="'+n+'">Verstanden</button><button class="btn sm ghost" type="button" data-act="hintsOff">Keine Hinweise</button></div></aside>'; }
+function vWoche(){
+ if(!S.week.started) return vLage();
+ const st=S.week.step;
+ const steps=STEPN.map((n,i)=>{const k=i+1;const cls=k<st?'done':k===st?'cur':'';return (i?'<li class="bar'+(k<=st?' done':'')+'" aria-hidden="true"></li>':'')+'<li class="'+cls+'"'+(k===st?' aria-current="step"':'')+'><button type="button" data-act="step" data-s="'+k+'" style="all:unset;display:flex;align-items:center;gap:7px;cursor:pointer"><span class="sd">'+(k<st?ic('check',12):k)+'</span><span class="sl">'+n+'</span></button></li>';}).join('');
+ const head='<header class="whead"><button class="btn sm" type="button" data-act="pauseWeek" aria-label="Zurück zur Lage, Wochenarbeit wird pausiert">'+ic('back',15)+'Zurück zur Lage</button><div style="display:flex;flex-direction:column"><b style="font-size:15px">Wochenarbeit 16.11.</b><span class="pid">aktiv '+mins()+' min · Ziel ≤ 60</span></div><ol class="steps" aria-label="Fortschritt">'+steps+'</ol></header>';
+ let body=[null,wEingang,wNach,wEnt,wSend,wUeber][st]();
+ const hint=weekHint(st); if(hint){ const m=body.match(/^<div class="wmain"[^>]*>/); if(m) body=m[0]+hint+body.slice(m[0].length); }
+ return head+'<div class="wbody" id="view">'+body+'</div>';
+}
+function wfoot(prev,next,label,dis){ return '<div class="wfoot">'+(prev?'<button class="btn ghost" type="button" data-act="step" data-s="'+prev+'">'+ic('left')+STEPN[prev-1]+'</button>':'<span></span>')+'<button class="btn pri" type="button" data-act="'+(next?'step':'finishWeek')+'"'+(next?' data-s="'+next+'"':'')+(dis?' disabled':'')+'>'+label+ic('right')+'</button></div>'; }
+function curIn(){ return S.inbox.find(i=>i.id===S.inSel&&!i.done)||S.inbox.find(i=>!i.done); }
+function wEingang(){
+ const it=curIn();
+ const list=S.inbox.map(i=>'<button type="button" class="msg" data-act="inSel" data-id="'+i.id+'"'+(it&&i.id===it.id?' aria-current="true"':'')+' style="'+(i.done?'opacity:.75':'')+'"><span style="display:flex;gap:8px;align-items:center">'+B(i.c)+'<span class="muted" style="font-size:12px">'+i.ch+' · '+i.date+'</span>'+(i.done?'<span class="chip '+(i.done==='later'?'c-warn':'c-ok')+'" style="margin-left:auto">'+({assign:'zugeordnet',neu:'neuer Punkt',dup:'Dublette',later:'später',irr:'nicht relevant'}[i.done])+'</span>':'')+'</span><b style="font-size:14px">'+esc(i.title)+'</b>'+((i.done==='assign'||i.done==='neu')&&i.sug?'<span class="muted" style="font-size:12px">Zum Punkt →</span>':i.done?'<span class="muted" style="font-size:12px">erneut bearbeiten</span>':'')+'</button>').join('');
+ if(!it){
+  return '<div class="wmain"><h1 style="font-size:24px">Eingang gesichtet</h1><div style="display:flex;flex-direction:column;gap:8px">'+list+'</div>'+wfoot(0,2,'Weiter: Nachhalten')+'</div>';
+ }
+ if(it.pickC===undefined){ it.pickC=!it.c; it.sug0=it.sug; }
+ const needC=!it.c;
+ const sug=P(it.sug);
+ const body=esc(it.body).replace(esc(it.hl),'<mark style="background:var(--mark);color:inherit">'+esc(it.hl)+'</mark>');
+ return '<div class="wmain"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><h1 style="font-size:24px">Neue Eingänge zuordnen</h1><span class="muted" style="font-size:13px">'+(S.inbox.indexOf(it)+1)+' von '+S.inbox.length+'</span></div>'+
+ '<div style="display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px" class="muted"><span>Kanal <b style="color:var(--fg);font-weight:500">'+it.ch+'</b></span><span>Von <b style="color:var(--fg);font-weight:500">'+esc(it.from)+'</b></span><span>Ereignis <b style="color:var(--fg);font-weight:500">'+it.date+'</b></span></div>'+
+ '<article class="card" style="padding:18px 20px;display:flex;flex-direction:column;gap:10px"><h2 style="font-size:18px">'+esc(it.title)+'</h2><p style="white-space:pre-line;line-height:1.6">'+body+'</p></article>'+
+ (it.pickC?'<div class="field"><span class="fl">Gemeinschaft</span>'+commPicker(it.c,'inC','c',S.cq)+'</div>':'')+
+ (it.termin?'<section class="card" style="padding:14px 16px;display:flex;flex-direction:column;gap:10px" aria-labelledby="tmH"><div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline"><span class="lab" id="tmH">Termin im Text</span><b class="mono" style="font-size:17px">'+it.termin+'</b><span class="muted" style="font-size:13px">genannt von '+esc(it.from)+' · '+it.date+'</span></div>'+
+ '<div class="seg" role="radiogroup" aria-label="Termin übernehmen"><button type="button" role="radio" data-act="inTset" data-v="1" aria-checked="'+!!it.useT+'" aria-pressed="'+!!it.useT+'">Als Fremdtermin übernehmen</button><button type="button" role="radio" data-act="inTset" data-v="0" aria-checked="'+!it.useT+'" aria-pressed="'+!it.useT+'">Nicht übernehmen</button></div>'+
+ (it.sug&&S.points[it.sug]?'<div style="font-size:13px" class="muted">'+(it.useT?'Beim Zuordnen zu <b style="color:var(--fg)">'+it.sug+'</b>: Fremdtermin <span class="mono">'+P(it.sug).due+'</span> → <b class="mono" style="color:var(--fg)">'+it.termin+'</b>, der alte Termin bleibt im Verlauf.':'Beim Zuordnen zu <b style="color:var(--fg)">'+it.sug+'</b> bleibt der Fremdtermin <span class="mono">'+P(it.sug).due+'</span>; die Nachricht wird nur als Quelle abgelegt.')+'</div>':'')+'</section>':'')+
+ '<div class="lab" style="margin-top:4px">Einordnen</div>'+
+ '<button class="opt" type="button" data-act="inDo" data-k="assign"'+(needC?' disabled style="opacity:.5"':'')+'><span style="display:flex;flex-direction:column;gap:4px;flex:1"><span style="display:flex;gap:8px;align-items:center">'+B(sug.c)+'<span class="pid">'+it.sug+'</span><span class="chip c-n">passt vermutlich</span></span><b>'+esc(sug.title)+'</b><span class="muted" style="font-size:12px">gleicher Absender oder Stichwort · offen</span></span></button>'+
+ '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">'+
+ [['neu','Neuer Punkt'],['dup','Dublette'],['later','Später'],['irr','Nicht relevant']].map(a=>'<button class="btn" type="button" data-act="inDo" data-k="'+a[0]+'"'+(needC&&a[0]==='neu'?' disabled':'')+'>'+a[1]+'</button>').join('')+'</div>'+
+ '</div><aside class="wside" aria-label="Alle Eingänge"><span class="lab">Eingänge</span>'+list+'</aside>';
+}
+function wNach(){
+ const ws=S.waits;
+ const cur=ws.find(w=>w.due&&!w.ans);
+ const cards=ws.map(w=>{
+  const p=P(w.pid);
+  if(!w.due) return '<div class="card wait decided" style="border-style:dashed;color:var(--fg2)">'+ic('clock')+B(p.c)+'<span class="pid">'+w.pid+'</span><span style="flex:1 1 200px">'+esc(p.title)+'</span><span style="font-size:13px">noch nicht fällig · '+w.check+'</span></div>';
+  if(w.ans) return '<div class="card wait decided"><span class="tick">'+ic('check',12)+'</span>'+B(p.c)+'<span class="pid">'+w.pid+'</span><span style="flex:1 1 200px;font-weight:500">'+esc(p.title)+'</span><span class="muted" style="font-size:13px">'+ansLabel(w)+'</span><button class="btn sm" type="button" data-act="wUndo" data-id="'+w.pid+'">Ändern</button></div>';
+  const newSrc=(w.pid==='P-041'&&S.inbox[0].done==='assign'&&S.inbox[0].useT)||(w.pid==='P-052'&&S.inbox[1].done==='assign');
+  const pct=Math.min(100,w.days*5.3);
+  const st=w.prom&&w.prom<'16.11.'&&w.prom.length===6&&w.pid==='P-041'&&!newSrc?'<span class="chip c-bad">Zusage überschritten</span>':!w.prom?'<span class="chip c-warn">Termin fehlt</span>':'';
+  return '<article class="card wait'+(cur&&cur.pid===w.pid?' cur':'')+'"><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">'+B(p.c)+'<span class="pid">'+w.pid+'</span><h2 style="font-size:16px;flex:1 1 240px">'+esc(p.title)+'</h2>'+st+(newSrc?'<span class="chip c-info">neue Quelle</span>':'')+'</div>'+
+  '<div class="meta"><span>wartet auf <b style="color:var(--fg);font-weight:500">'+esc(w.who)+'</b></span><span style="display:inline-flex;gap:8px;align-items:center">angefragt '+w.asked+' <span class="age" role="img" aria-label="'+w.days+' Tage"><i style="width:'+pct+'%;background:'+(w.days>14?'var(--bad)':'var(--info)')+'"></i></span><b style="color:var(--fg)">'+w.days+' T</b></span><span>zugesagt <b style="color:var(--fg)">'+(newSrc&&w.pid==='P-041'?'02.12. (neu)':w.prom||'—')+'</b></span></div>'+
+  '<div class="seg" role="group" aria-label="Antwort zu '+w.pid+'">'+[['in','Eingegangen'],['wait','Weiter warten'],['nach','Nachfassen'],['plan','Neu planen']].map(a=>'<button type="button" data-act="wAns" data-id="'+w.pid+'" data-k="'+a[0]+'" aria-pressed="false">'+a[1]+'</button>').join('')+'</div></article>';
+ }).join('');
+ const done=ws.filter(w=>w.ans||!w.due).length;
+ const ctx=cur?nachCtx(cur):'<span class="lab">Erledigt</span><p class="muted">Alle fälligen Zusagen sind beantwortet.</p>';
+ return '<div class="wmain"><div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px"><h1 style="font-size:24px">Offene Zusagen prüfen</h1><span class="muted" style="font-size:13px"><b style="color:var(--fg)">'+done+'</b> von '+ws.length+' beantwortet</span></div>'+cards+wfoot(1,3,'Weiter: Entscheiden')+'</div><aside class="wside" aria-label="Kontext">'+ctx+'</aside>';
+}
+function ansLabel(w){ return {in:'Eingegangen',wait:'Weiter warten · Prüfung 23.11.',nach:'Nachfassen · Entwurf im Postausgang',plan:'Neu geplant · Wiedervorlage 30.11.'}[w.ans]; }
+function nachCtx(w){
+ const p=P(w.pid);
+ return '<div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">'+w.pid+' · Verlauf</span><button class="btn sm ghost" type="button" data-act="akte" data-id="'+w.pid+'">Akte öffnen'+ic('right',15)+'</button></div>'+timeline(p.ev.map((e,i)=>Object.assign({},e,{i})).reverse(),w.pid)+
+ '<div class="field"><span class="fl">Bei „Nachfassen“ entsteht</span><div class="card" style="padding:12px 14px;font-size:14px;line-height:1.55;color:var(--fg2)">'+(w.pid==='P-041'?(S.inbox[0].done==='assign'&&S.inbox[0].useT?'Bitte um Bestätigung der Beauftragung für den 02.12.':'Erinnerung an die Zusage bis 10.11., neue Frist <b style="color:var(--fg)">30.11.</b>'):w.pid==='P-052'?'Bitte um das Prüfprotokoll bis <b style="color:var(--fg)">30.11.</b>':'Kurze Nachfrage mit Frist 30.11.')+'</div></div>'+
+ '<section style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:12px;background:var(--judgebg)" aria-labelledby="jH"><div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><span class="fl" id="jH" style="font-size:13px;font-weight:600;color:var(--judgefg)">◆ Deine Bewertung der Zusage</span><span class="muted" style="font-size:12px">intern</span></div><div class="seg" role="radiogroup" aria-label="Bewertung"><button type="button" role="radio" data-act="judgeSet" data-id="'+w.pid+'" data-v="0" aria-checked="'+!p.judged+'" aria-pressed="'+!p.judged+'">Keine</button><button type="button" role="radio" data-act="judgeSet" data-id="'+w.pid+'" data-v="1" aria-checked="'+!!p.judged+'" aria-pressed="'+!!p.judged+'">Nicht eingehalten</button></div></section>';
+}
+function timeline(ev,pid){
+ return '<ol class="tl">'+ev.map(e=>'<li><button type="button" class="tlb" data-act="evOpen" data-p="'+pid+'" data-i="'+e.i+'"><span class="mk"><span class="m-'+e.k+'"></span></span><span style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0"><span style="font-size:14px">'+e.t+'</span>'+(e.src?'<span><span class="chip c-n" style="font-weight:500">'+esc(e.src)+'</span></span>':'')+'<span class="pid">'+e.d+'</span></span>'+ic('chev',16)+'</button></li>').join('')+'</ol>';
+}
+function wEnt(){
+ const ds=S.decisions;
+ let cur=ds[S.week.decIdx]; if(!cur){S.week.decIdx=0;cur=ds[0];}
+ const p=P(cur.pid);
+ const q=(d,i)=>'<button class="q'+(d.urgent?' urg':'')+(d.done?' done':'')+'" type="button" data-act="dec" data-i="'+i+'"'+(d===cur?' aria-current="true"':'')+'><span class="n">'+(d.done?ic('check',10):(d.urgent?'!':i+1))+'</span>'+B(P(d.pid).c)+'<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(P(d.pid).theme)+'</span></button>';
+ const reg=ds.filter(d=>!d.urgent), urg=ds.filter(d=>d.urgent);
+ const nav='<nav class="wside" style="flex:0 1 250px;border-left:0;border-right:1px solid var(--line);order:-1" aria-label="Entscheidungen"><div style="display:flex;justify-content:space-between"><b style="font-size:13px">Regulär</b><span class="pid">'+reg.length+' / 7</span></div>'+budget()+
+ reg.map(d=>q(d,ds.indexOf(d))).join('')+'<div style="display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line)"><b style="font-size:13px;color:var(--badfg)">Dringend · zusätzlich</b><span class="pid">'+urg.length+'</span></div>'+urg.map(d=>q(d,ds.indexOf(d))).join('')+'</nav>';
+ const facts=cur.facts.map(f=>'<div class="fact"><span class="fl">'+f[0]+'</span><span class="fv mono">'+f[1]+'</span>'+(f[2]?'<span class="muted" style="font-size:12px">'+f[2]+'</span>':'')+'</div>').join('')+(cur.gap?'<div class="fact" style="background:var(--warnbg);border-color:transparent"><span class="fl" style="color:var(--warnfg);font-weight:600">Lücke</span><span style="font-size:14px">'+cur.gap+'</span></div>':'');
+ const opts=cur.opts.map(o=>'<button class="opt" type="button" role="radio" aria-checked="'+(cur.ch===o.k)+'" data-act="choose" data-k="'+o.k+'"><span class="radio"></span><span style="display:flex;flex-direction:column;gap:3px"><span style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><b>'+o.l+'</b>'+(o.sug?'<span class="chip c-info">Vorschlag</span>':'')+'</span><span class="muted" style="font-size:13px">→ '+o.f+'</span></span></button>').join('');
+ const follows=followList(cur);
+ const allDone=ds.every(d=>d.done);
+ const remaining=ds.filter(d=>!d.done).length;
+ return nav+'<div class="wmain"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">'+B(p.c)+'<span class="pid">'+cur.pid+' · '+esc(p.theme)+'</span><span class="chip c-n">'+cur.why+'</span>'+(cur.urgent?'<span class="chip c-bad">dringend</span>':'')+'</div>'+
+ '<h1 style="font-size:24px;line-height:1.3">'+cur.q+'</h1>'+
+ (p.src.length?'<div style="display:flex;flex-wrap:wrap;gap:6px">'+p.src.filter(s=>s.m!=='privat').map(s=>'<span class="chip c-n" style="font-weight:500">'+ic(s.i,13)+esc(s.t)+' · '+esc(s.m)+'</span>').join('')+'</div>':'')+
+ '<div class="facts">'+facts+'</div><div role="radiogroup" aria-label="Deine Wahl" style="display:flex;flex-direction:column;gap:8px"><span class="fl" style="font-size:13px;font-weight:600">Deine Wahl</span>'+opts+'</div>'+
+ '<div class="field"><label for="note">Notiz</label><textarea class="inp" id="note" data-act-input="note" rows="2" placeholder="Fließt in den Entwurf ein">'+esc(cur.note)+'</textarea></div>'+
+ '<div class="wfoot"><button class="btn ghost" type="button" data-act="step" data-s="2">'+ic('left')+'Nachhalten</button><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" data-act="decLater">Zurückstellen</button>'+
+ (allDone?'<button class="btn pri" type="button" data-act="step" data-s="4">Weiter: Senden'+ic('right')+'</button>':'<button class="btn pri" type="button" data-act="confirm"'+(cur.ch?'':' disabled')+'>'+(cur.done?'Aktualisieren':'Bestätigen')+(remaining>1||!cur.done?' · nächste':'')+ic('right')+'</button>')+
+ '</span></div></div><aside class="wside" aria-label="Folgen"><span class="lab">Danach entsteht</span>'+(follows||'<p class="muted" style="font-size:14px">Wähle eine Option.</p>')+'</aside>';
+}
+function followList(d){
+ if(!d.ch) return '';
+ const o=d.opts.find(x=>x.k===d.ch);
+ const f=o.f;
+ const items=[];
+ if(/Mail an Fr\. Berger/.test(f)) items.push(['mail','Entwurf an Fr. Berger','Postausgang · AW']);
+ if(/Mail an Hr\. Kaya/.test(f)) items.push(['mail','Entwurf an Hr. Kaya','Postausgang · TG']);
+ if(/Info DE\/EN an Eigentümer AW|Eigentümer-Info/.test(f)) items.push(['users','Eigentümer-Info','DE + EN · AW']);
+ if(/Eigentümer TG/.test(f)) items.push(['users','Info Stellplatzeigentümer','DE + EN · TG']);
+ if(/Aufgabe/.test(f)) items.push(['task','Aufgabe für dich',(f.split('·')[1]||'').trim()]);
+ if(/Wiedervorlage/.test(f)) items.push(['clock','Wiedervorlage',f.replace('Wiedervorlage','').trim()]);
+ if(!items.length) items.push(['check',f,'']);
+ return items.map(i=>'<div class="follow"><span class="ri">'+ic(i[0])+'</span><span style="display:flex;flex-direction:column;gap:2px"><b style="font-weight:600">'+i[1]+'</b><span class="muted" style="font-size:12px">'+i[2]+'</span></span></div>').join('');
+}
+function wSend(){ return '<div class="wmain" style="flex-basis:100%">'+postView(true)+wfoot(3,5,'Weiter: Übergabe')+'</div>'; }
+function wUeber(){
+ const dec=S.decisions.filter(d=>d.done).length, sent=Object.values(S.msgs).filter(m=>m.sent).length, nach=S.waits.filter(w=>w.ans==='nach').length;
+ const nh=S.nh;
+ return '<div class="wmain" style="max-width:760px"><h1 style="font-size:24px">Schwerpunkte für nächste Woche festlegen</h1>'+
+ '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">'+[[dec,'entschieden'],[sent,'gesendet'],[nach,'nachgefasst']].map(x=>'<div class="card" style="padding:12px 14px"><div style="font-size:26px;font-weight:600">'+x[0]+'</div><div class="muted" style="font-size:13px">'+x[1]+'</div></div>').join('')+'</div>'+
+ '<fieldset style="border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px"><legend class="fl" style="font-size:13px;font-weight:600;margin-bottom:8px">Bis zu 3 Schwerpunkte</legend>'+
+ [0,1,2].map(i=>'<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)"><span class="pid" style="width:14px">'+(i+1)+'</span><input class="inp" style="flex:1 1 260px" aria-label="Schwerpunkt '+(i+1)+'" data-act-input="nhS" data-i="'+i+'" value="'+esc(nh.s[i])+'" placeholder="'+['z. B. Antwort Kellerabdichtung bis 30.11.','z. B. Brandschutztor unterschreiben','optional'][i]+'"><select class="inp" style="flex:1 1 260px;width:auto" aria-label="Vorgang zu Schwerpunkt '+(i+1)+'" data-act-change="nhP" data-i="'+i+'">'+['AW','TG'].map(c=>'<option value="c:'+c+'"'+(!nh.p[i]&&nh.c[i]===c?' selected':'')+'>Ohne Punkt · '+COMM[c].short+'</option>').join('')+['AW','TG'].map(c=>'<optgroup label="'+COMM[c].short+'">'+Object.keys(S.points).filter(id=>P(id).c===c).map(id=>'<option value="'+id+'"'+(nh.p[i]===id?' selected':'')+'>'+id+' · '+esc(P(id).title)+'</option>').join('')+'</optgroup>').join('')+'</select></div>').join('')+'</fieldset>'+
+ '<div class="field"><label for="nhn">Kontextnotiz</label><textarea class="inp" id="nhn" data-act-input="nhN" rows="2">'+esc(nh.note)+'</textarea></div>'+
+ '<div class="card" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 14px">'+ic('clock')+'<span style="flex:1 1 180px"><b>'+mins()+' min aktiv</b><br><span class="muted" style="font-size:13px">plus Doppelpflege außerhalb</span></span><label style="display:flex;gap:6px;align-items:center"><input class="inp mono" type="number" min="0" style="width:80px" aria-label="Zusätzliche Minuten" data-act-input="nhX" value="'+nh.extra+'">min</label></div>'+
+ '<div class="wfoot"><button class="btn ghost" type="button" data-act="step" data-s="4">'+ic('left')+'Senden</button><button class="btn ok" type="button" data-act="finishWeek">'+ic('check')+'Woche abschließen</button></div></div>';
+}
+
+/* ---------- Postausgang ---------- */
+function postView(inWeek){
+ const ml=msgList(); const keys=Object.keys(ml).filter(k=>vis(REC[k].c));
+ if(!S.postSel||!ml[S.postSel]) S.postSel=keys.find(k=>!(S.msgs[k]&&S.msgs[k].sent))||keys[0]||null;
+ const groups={};
+ keys.forEach(k=>{const r=REC[k];const g=r.c+(k[0]==='v'?' · an Verwaltung':' · an Eigentümer');(groups[g]=groups[g]||[]).push(k);});
+ const list=Object.keys(groups).map(g=>'<div class="lab" style="display:flex;gap:8px;align-items:center;padding:10px 2px 4px">'+B(g.slice(0,2))+g.slice(5)+'</div>'+groups[g].map(k=>{
+  const m=S.msgs[k]||{ok:{},sent:false}; const r=REC[k]; const ps=ml[k];
+  const okAll=r.lang.every(l=>m.ok&&m.ok[l]);
+  const st=m.sent?'<span class="chip c-ok">gesendet</span>':okAll?'<span class="chip c-ok">geprüft</span>':(r.lang.length>1&&m.ok&&m.ok.DE&&!m.ok.EN)?'<span class="chip c-warn">EN prüfen</span>':'<span class="chip c-n">Entwurf</span>';
+  return '<button class="msg" type="button" data-act="psel" data-k="'+k+'"'+(S.postSel===k?' aria-current="true"':'')+'><span style="display:flex;justify-content:space-between;gap:8px"><b>'+r.label+'</b><span class="pid">'+ps.length+' Punkt'+(ps.length>1?'e':'')+'</span></span><span class="muted" style="font-size:13px">'+[...new Set(ps.map(p=>P(p.pid).theme))].join(' · ')+'</span><span>'+st+'</span></button>';}).join('')).join('')+
+  '<div class="lab" style="'+(keys.length?'padding:16px 2px 4px;border-top:1px solid var(--line);margin-top:8px':'padding:0 2px 4px')+'">Gesendet · wartet</div>'+S.sent.filter(s=>vis(s.c)).map(x=>sentRow(x,false)).join('');
+ let ed='';
+ if(!S.postSel){ ed='<div class="card" style="padding:24px;display:flex;flex-direction:column;gap:8px"><b>Keine Entwürfe</b><span class="muted">Entwürfe entstehen in der Wochenarbeit beim Nachhalten und Entscheiden.</span>'+(inWeek?'':'<span><button class="btn" type="button" data-act="startWeek">Zur Wochenarbeit</button></span>')+'</div>'; }
+ else {
+  const k=S.postSel, r=REC[k], m=ensureMsg(k);
+  if(r.lang.indexOf(S.lang)<0) S.lang='DE';
+  const txt=msgText(k,S.lang); const ph=placeholders(txt);
+  const okAll=r.lang.every(l=>m.ok[l]);
+  ed='<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">'+B(r.c)+'<span class="muted" style="font-size:13px">An <b style="color:var(--fg)"><button class="lnk" type="button" data-act="kOpenFrom" data-id="'+r.k+'">'+r.label+'</button></b></span>'+(m.sent?'<span class="chip c-ok" style="margin-left:auto">gesendet '+esc(m.sentDate)+' · '+esc(m.ch)+'</span>':'')+'</div>'+
+  '<div style="display:flex;gap:10px;align-items:baseline;font-size:14px"><span class="muted" style="font-size:13px;flex-shrink:0">Betrifft</span><span style="line-height:1.7">'+pTitles((msgList()[k]||[]).map(x=>x.pid))+'</span></div>'+
+  '<div class="card" style="overflow:hidden">'+(r.lang.length>1?'<div class="tabs" role="tablist" aria-label="Sprachfassung">'+r.lang.map(l=>'<button type="button" role="tab" aria-selected="'+(S.lang===l)+'" data-act="lang" data-l="'+l+'">'+(l==='DE'?'Deutsch':'English')+(m.ok[l]?'<span style="color:var(--okfg)">✓ geprüft</span>':'<span style="color:var(--warnfg)">prüfen</span>')+'</button>').join('')+'</div>':'')+
+  '<textarea class="letter" aria-label="Text '+S.lang+'" data-act-input="msgEdit" '+(m.sent?'readonly':'')+' rows="12">'+esc(txt)+'</textarea></div>'+
+  (ph&&!m.sent?'<div class="chip c-warn" style="align-self:flex-start">'+ph+' Platzhalter offen</div>':'')+
+  (m.sent?'':'<div class="sendbar"><button class="btn" type="button" data-act="okLang"'+(ph||m.ok[S.lang]?' disabled':'')+'>'+ic('check')+(m.ok[S.lang]?'Geprüft':'Als geprüft markieren')+'</button><span style="flex:1"></span><button class="btn" type="button" data-act="copy">Kopieren</button><button class="btn pri" type="button" data-act="sentSheet"'+(okAll?'':' disabled')+'>Als gesendet markieren</button></div>');
+ }
+ return (inWeek?'<h1 style="font-size:24px">Nachrichten prüfen und senden</h1>':'<div class="side-h ttl"><h1 style="font-size:28px">Postausgang</h1>'+filterTag()+'</div>')+'<div class="post"><div class="plist">'+list+'</div><div class="peditor">'+ed+'</div></div>';
+}
+function vPost(){ return mtop('Postausgang')+'<main class="main" id="view">'+postView(false)+'</main>'; }
+
+/* ---------- Punkte / Akte ---------- */
+function vPunkte(){
+ const ids=Object.keys(S.points).filter(id=>vis(P(id).c));
+ const rows=S.seg==='punkte'? ids.map(id=>{const p=P(id);return '<button class="row" type="button" data-act="akte" data-id="'+id+'">'+B(p.c)+'<span class="pid">'+id+'</span><span class="tx"><b style="font-weight:500">'+esc(p.title)+'</b><br><span class="muted" style="font-size:13px">'+esc(p.theme)+' · nächster Schritt: '+esc(p.next)+'</span></span>'+(p.dueState==='bad'?'<span class="chip c-bad">'+(p.due==='—'?'akut':p.due)+'</span>':p.dueState==='warn'?'<span class="chip c-warn">Termin fehlt</span>':p.due!=='—'?'<span class="chip c-n">'+p.due+'</span>':'')+'</button>';}).join('')
+ : S.tasks.filter(t=>vis(t.c)).map(t=>'<div class="row">'+B(t.c)+'<span class="tx"><b style="font-weight:500">'+esc(t.t)+'</b><br><span class="muted" style="font-size:13px">aus '+t.from+'</span></span><span class="chip c-n">'+t.due+'</span><span class="chip '+(t.st==='erledigt'?'c-ok':'c-info')+'">'+t.st+'</span></div>').join('')||'<p class="muted" style="padding:16px">Keine Aufgaben.</p>';
+ return mtop('Punkte')+'<main class="main" id="view"><div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between"><div class="side-h ttl"><h1 style="font-size:28px">Punkte</h1>'+filterTag()+'</div><div class="seg" role="group" aria-label="Ansicht" style="min-width:240px"><button type="button" data-act="seg" data-s="punkte" aria-pressed="'+(S.seg==='punkte')+'">Punkte '+ids.length+'</button><button type="button" data-act="seg" data-s="aufgaben" aria-pressed="'+(S.seg==='aufgaben')+'">Aufgaben '+S.tasks.filter(t=>vis(t.c)).length+'</button></div></div><section class="card feed">'+rows.replace('class="row"','class="row" style="border-top:0"')+'</section></main>';
+}
+function vAkte(){
+ const id=S.akte, p=P(id);
+ const chips='<span class="chip c-n">'+p.status+'</span>'+(p.dueState==='bad'&&id==='P-041'&&!(S.inbox[0].done==='assign'&&S.inbox[0].useT)?'<span class="chip c-bad">Zusage überschritten</span>':'')+(p.judged?'<span class="chip c-judge">◆ nicht eingehalten</span>':'');
+ return mtop('Punkt')+'<main class="main" id="view"><div style="display:flex;align-items:center;gap:8px;font-size:13px" class="muted"><button class="btn sm ghost" type="button" data-act="go" data-r="'+S.back+'">'+ic('back',15)+({lage:'Lage',punkte:'Punkte',woche:'Woche',post:'Postausgang',kontakte:'Kontakte'}[S.back]||'Zurück')+'</button>'+B(p.c)+esc(p.theme)+' / <span class="pid">'+id+'</span></div>'+
+ '<header style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-start"><div style="flex:1 1 420px;display:flex;flex-direction:column;gap:10px"><h1 style="font-size:26px;line-height:1.25">'+esc(p.title)+'</h1><div style="display:flex;flex-wrap:wrap;gap:6px">'+chips+'</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" data-act="erfassen" data-id="'+id+'" data-art="Notiz">'+ic('plus',16)+'Notiz</button><button class="btn" type="button" data-act="erfassen" data-id="'+id+'">'+ic('plus',16)+'Reaktion</button><button class="btn" type="button" data-act="judgeToggle" data-id="'+id+'">'+(p.judged?'Bewertung zurücknehmen':'Bewerten')+'</button></div></header>'+
+ '<section class="facts" aria-label="Fakten"><div class="fact" style="grid-column:span 2"><span class="fl">Prüfbares Ergebnis</span><span style="font-weight:500">'+esc(p.title)+'</span></div><div class="fact"><span class="fl">Verantwortlich</span><span class="fv">'+(p.respId?'<button class="lnk" type="button" data-act="kOpenFrom" data-id="'+p.respId+'">'+esc(p.resp)+'</button>':esc(p.resp))+'</span></div><div class="fact" style="'+(p.dueState==='bad'?'border-color:var(--bad)':'')+'"><span class="fl">Fremdtermin</span><span class="fv mono" style="'+(p.dueState==='bad'?'color:var(--badfg)':'')+'">'+p.due+'</span><span class="muted" style="font-size:12px">'+esc(p.dueNote)+'</span></div><div class="fact"><span class="fl">Deine Wiedervorlage</span><span class="fv mono">'+p.wv+'</span><span class="muted" style="font-size:12px">eigene</span></div><div class="fact next"><span class="fl">Nächster Schritt</span><span class="fv">'+esc(p.next)+'</span></div></section>'+
+ '<div class="two"><section class="card l" style="padding:16px 20px;gap:6px" aria-labelledby="vh"><div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px"><h2 id="vh" style="font-size:17px">Verlauf</h2><span class="muted" style="font-size:12px">○ Fakt · <span style="color:var(--judgefg)">◆ Bewertung</span> · ● Handlung · <span style="color:var(--accent)">◌ geplant</span></span></div>'+timeline(p.ev.map((e,i)=>Object.assign({},e,{i})).reverse(),id)+'</section>'+
+ '<section class="card r" style="padding:16px 18px;gap:10px" aria-labelledby="qh"><h2 id="qh" style="font-size:15px">Quellen</h2>'+(p.src.length?p.src.map(s=>'<div style="display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;border:1px solid var(--line)">'+ic(s.i)+'<span style="display:flex;flex-direction:column;font-size:13px"><b style="font-weight:500">'+esc(s.t)+'</b><span style="color:'+(s.m==='privat'?'var(--badfg)':'var(--fg2)')+'">'+esc(s.m)+'</span></span></div>').join(''):'<p class="muted" style="font-size:13px">Noch keine Quelle hinterlegt.</p>')+'</section></div></main>';
+}
+
+/* ---------- Kontakte ---------- */
+const ROLES=['Verwaltung','Hausmeister','Beirat','Dienstleister','Prüffirma','Handwerker','Eigentümer'];
+function kCat(k){ if(k.kind==='list') return 'eig'; const t=k.roles.map(r=>r.r).join(' '); return /Verwaltung/.test(t)?'verw':/Beirat/.test(t)?'beirat':'dienst'; }
+function kSub(k){ if(k.kind==='list') return k.count+' Empfänger · '+k.split; const rs=[...new Set(k.roles.filter(r=>vis(r.c)).map(r=>r.r.replace(/^Verwaltung · /,'')))].join(', '); return [rs,k.kind==='person'?k.org:''].filter(Boolean).join(' · '); }
+function kRow(k){
+ const cur=!!(S.sheet&&S.sheet.type==='kdetail'&&S.sheet.id===k.id);
+ return '<div class="krow'+(k.active===false?' off':'')+'"'+(cur?' aria-current="true"':'')+'><button class="kmain" type="button" data-act="kSel" data-id="'+k.id+'">'+avatar(k)+'<span class="tx" style="flex:1;min-width:0"><b style="font-weight:500">'+esc(k.name)+'</b><br><span class="muted" style="font-size:13px">'+esc(kSub(k))+'</span></span><span style="display:flex;gap:4px">'+kComms(k).map(B).join('')+'</span></button>'+
+ '<span class="kacts">'+(k.mail?'<button class="iconbtn" type="button" data-act="mailShow" data-id="'+k.id+'" aria-label="E-Mail-Adresse von '+esc(k.name)+'">'+ic('mail',17)+'</button>':'')+(k.tel?'<button class="iconbtn" type="button" data-act="telShow" data-id="'+k.id+'" aria-label="Telefonnummer von '+esc(k.name)+'">'+ic('phone',17)+'</button>':'')+'</span></div>';
+}
+function kLine(label,val,copy){ return '<span>'+label+'</span><span>'+(val?esc(val):'<span class="muted">—</span>')+'</span><span>'+(val&&copy?'<button class="iconbtn" style="width:36px;height:36px" type="button" data-act="kCopy" data-v="'+esc(val)+'" aria-label="'+label+' kopieren">'+ic('copy',16)+'</button>':'')+'</span>'; }
+function kDetail(k){
+ const sub='<span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">'+(k.kind==='list'?B(k.c)+'<span class="muted" style="font-size:13px">'+esc(COMM[k.c].name)+'</span><span class="chip c-info">Verteiler · '+k.count+'</span>':(k.org?'<span class="muted" style="font-size:13px">'+esc(k.org)+'</span>':'<span class="chip c-n">'+(k.kind==='org'?'Organisation':'Person')+'</span>'))+(k.active===false?'<span class="chip c-n">nicht mehr verwendet</span>':'')+'</span>';
+ const foot='<button class="btn" type="button" data-act="kEdit" data-id="'+k.id+'">Bearbeiten</button>'+(k.kind==='list'?'':'<button class="btn" type="button" data-act="kToggle" data-id="'+k.id+'">'+(k.active===false?'Wieder verwenden':'Nicht mehr verwenden')+'</button>');
+ let cards=k.kind==='list'||!(k.tel||k.mail)?'':'<div class="kcall">'+(k.mail?'<button class="btn" type="button" data-act="mailShow" data-id="'+k.id+'">'+ic('mail',16)+'E-Mail-Adresse</button>':'')+(k.tel?'<button class="btn" type="button" data-act="telShow" data-id="'+k.id+'">'+ic('phone',16)+'Telefonnummer</button>':'')+'</div>';
+ if(k.kind==='list'){
+  cards+='<section class="card" style="padding:12px 18px" aria-label="Verteiler"><div class="kv">'+kLine('Empfänger',k.count+' Eigentümer')+kLine('Sprachen',k.split)+kLine('Kanal',k.ch)+kLine('Quelle',k.src)+kLine('Stand',k.stand)+'</div></section>';
+ } else {
+  cards+='<section class="card" style="padding:14px 18px;display:flex;flex-direction:column;gap:8px" aria-labelledby="krh"><h3 id="krh" style="font-size:15px">Zuständig für</h3>'+k.roles.map(r=>'<div style="display:flex;gap:10px;align-items:center;min-height:32px">'+B(r.c)+'<span>'+esc(r.r)+'</span></div>').join('')+'</section>';
+  cards+='<section class="card" style="padding:12px 18px" aria-label="Kontaktdaten"><div class="kv">'+kLine('E-Mail',k.mail,true)+kLine('Telefon',k.tel,true)+kLine('Sprache',k.lang==='EN'?'English':'Deutsch')+kLine('Bevorzugter Kanal',k.ch)+(k.note?kLine('Notiz',k.note):'')+'</div></section>';
+  if(k.kind==='org'){ const mem=S.contacts.filter(x=>x.org===k.name); cards+='<section class="card feed" aria-labelledby="kmh"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 10px 6px 16px"><h3 id="kmh" style="font-size:15px">Personen · '+mem.length+'</h3><button class="btn sm ghost" type="button" data-act="kNew" data-org="'+esc(k.name)+'" data-ret="'+k.id+'">'+ic('plus',15)+'Person hinzufügen</button></div>'+mem.map(kRow).join('')+'</section>'; }
+ }
+ const pts=Object.keys(S.points).filter(id=>S.points[id].respId===k.id||(k.kind==='org'&&S.contacts.some(x=>x.org===k.name&&x.id===S.points[id].respId)));
+ if(k.kind!=='list') cards+='<section class="card feed" aria-labelledby="kph"><h3 id="kph" style="font-size:15px;padding:14px 16px 6px">Verantwortlich für · '+pts.length+'</h3>'+(pts.length?pts.map(id=>{const p=P(id);return '<button class="row" type="button" data-act="akte" data-id="'+id+'">'+B(p.c)+'<span class="pid">'+id+'</span><span class="tx">'+esc(p.title)+'</span>'+ic('chev',16)+'</button>';}).join(''):'<p class="muted" style="font-size:13px;padding:4px 16px 14px">Keine offenen Punkte</p>')+'</section>';
+ const recs=Object.keys(REC).filter(x=>REC[x].k===k.id);
+ const sent=S.sent.filter(x=>recs.indexOf(x.rec||x.key)>=0);
+ const drafts=recs.filter(x=>msgList()[x]&&!(S.msgs[x]&&S.msgs[x].sent));
+ cards+='<section class="card" style="padding:14px 18px;display:flex;flex-direction:column;gap:8px" aria-labelledby="knh"><h3 id="knh" style="font-size:15px">Nachrichten</h3>'+
+  drafts.map(x=>'<button class="row" style="border:1px solid var(--line);border-radius:10px;min-height:44px" type="button" data-act="kPost" data-k="'+x+'">'+ic('post',16)+'<span class="tx">Entwurf im Postausgang</span><span class="chip c-n">offen</span></button>').join('')+
+  (sent.length?sent.map(x=>sentRow(x,true)).join(''):(drafts.length?'':'<p class="muted" style="font-size:13px">Noch keine Nachricht</p>'))+'</section>';
+ return {sub:sub,body:cards,foot:foot};
+}
+function kDupKey(f){ const n=f.name.trim().toLowerCase(); const d=n.length>=3?S.contacts.filter(k=>k.id!==f.id&&(k.name.toLowerCase().indexOf(n)>=0||n.indexOf(k.name.toLowerCase())>=0)).map(k=>k.id).join(','):''; return (n?'1':'')+'|'+d; }
+function kErrors(f){ const e={}; if(!f.name.trim()) e.name='Bitte einen Namen eingeben.'; if(f.kind==='list'){ if(!f.c) e.c='Bitte eine Gemeinschaft wählen.'; if(!(+f.count>0)) e.count='Bitte die Anzahl eingeben.'; } else { if(!f.roles.length) e.roles='Bitte mindestens eine Gemeinschaft wählen.'; else if(f.roles.some(r=>!r.r)) e.roles='Bitte für jede gewählte Gemeinschaft eine Rolle wählen.'; } return e; }
+function vKontakte(){
+ const q=S.kq.trim().toLowerCase();
+ const hit=k=>!q||(k.name+' '+(k.org||'')+' '+(k.roles?k.roles.map(r=>r.r).join(' '):'')+' '+(k.mail||'')+' '+(k.tel||'')).toLowerCase().indexOf(q)>=0;
+ const all=S.contacts.filter(k=>kVis(k)&&hit(k)).concat(S.lists.filter(k=>kVis(k)&&hit(k)));
+ const act=all.filter(k=>k.active!==false), off=all.filter(k=>k.active===false);
+ const ord=k=>(k.kind==='org'?0:1)+k.name;
+ const groups=[['verw','Verwaltung'],['beirat','Beirat'],['dienst','Hausmeister und Dienstleister'],['eig','Eigentümer']];
+ let html=groups.map(g=>{ const its=act.filter(k=>kCat(k)===g[0]).sort((a,b)=>ord(a).localeCompare(ord(b)));
+  if(!its.length&&!(g[0]==='eig'&&!q)) return '';
+  return '<div class="kgrp"><span class="lab">'+g[1]+' · '+its.length+'</span>'+(g[0]==='eig'?'<button class="btn sm ghost" type="button" data-act="kNewList">'+ic('plus',15)+'Verteiler</button>':'')+'</div>'+its.map(kRow).join(''); }).join('');
+ if(off.length) html+='<div class="kgrp"><button class="btn sm ghost" type="button" data-act="kOff" aria-expanded="'+!!S.kOffOpen+'" style="margin-left:-8px">'+ic(S.kOffOpen?'chev':'chev',15).replace('<svg','<svg style="transform:rotate('+(S.kOffOpen?90:0)+'deg)"')+'Nicht mehr verwendet · '+off.length+'</button></div>'+(S.kOffOpen?off.map(kRow).join(''):'');
+ return mtop('Kontakte')+'<main class="main" id="view"><div class="klist" style="max-width:880px">'+
+ '<div class="side-h ttl"><h1 style="font-size:28px">Kontakte</h1>'+filterTag()+'</div>'+
+ '<div style="display:flex;gap:8px"><input class="inp" type="search" placeholder="Name, Firma, Rolle, Telefon" aria-label="Kontakte durchsuchen" data-act-input="kq" value="'+esc(S.kq)+'"><button class="btn pri" type="button" data-act="kNew" aria-label="Neuer Kontakt" style="flex-shrink:0">'+ic('plus')+'<span class="side-only" style="white-space:nowrap">Neuer Kontakt</span></button></div>'+
+ '<section class="card" style="overflow:hidden">'+(act.length||off.length?html:'<div style="padding:18px;display:flex;flex-direction:column;gap:10px;align-items:flex-start"><b>Keine Kontakte'+(q?' für „'+esc(S.kq)+'“':'')+'</b><div style="display:flex;gap:8px;flex-wrap:wrap">'+(q?'<button class="btn sm pri" type="button" data-act="kNew" data-name="'+esc(S.kq)+'">„'+esc(S.kq)+'“ anlegen</button><button class="btn sm" type="button" data-act="kClear">Suche zurücksetzen</button>':'')+'</div></div>')+'</section></div>'+
+ '</main>';
+}
+
+/* ---------- Einstellungen ---------- */
+const PALETTE=['#0F766E','#6D28D9','#1D4ED8','#9A3412','#475569','#0E7490','#BE185D','#4D7C0F'];
+function eField(label,id,act,val,ph,extra){ return '<div class="field"><label for="'+id+'">'+label+'</label><input class="inp'+(extra&&extra.mono?' mono':'')+'" id="'+id+'" data-act-input="'+act+'" value="'+esc(val)+'"'+(ph?' placeholder="'+esc(ph)+'"':'')+'></div>'; }
+function eArea(label,id,act,val){ return '<div class="field"><label for="'+id+'">'+label+'</label><textarea class="inp" id="'+id+'" data-act-input="'+act+'" rows="2">'+esc(val)+'</textarea></div>'; }
+const artOf=id=>(S.arten.find(a=>a.id===id)||{n:'—',u:'Einheiten'});
+function eIntro(h,t,extra){ return '<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 style="font-size:20px">'+h+'</h2>'+(extra||'')+'</div><p class="muted" style="font-size:14px;line-height:1.5;max-width:640px">'+t+'</p></div>'; }
+function eRow(lab,desc,ctrl,wide){ return '<div class="setrow"><div class="setl"><span class="fl" style="font-size:14px">'+lab+'</span><span class="muted" style="font-size:13px;line-height:1.45">'+desc+'</span></div><div class="setc"'+(wide?' style="flex:1 1 300px"':'')+'>'+ctrl+'</div></div>'; }
+function vEinst(){
+ const secs=[['gem','Gemeinschaften'],['arten','Arten von Gemeinschaften'],['ich','Eigene Angaben'],['woche','Wochenrhythmus'],['ablage','Ablage'],['sich','Sicherung'],['hilfe','Hilfe']];
+ const sub='<nav class="esub" aria-label="Bereiche">'+secs.map(x=>'<button class="nav" type="button" data-act="eSec" data-s="'+x[0]+'"'+(S.eSec===x[0]?' aria-current="page"':'')+'>'+x[1]+'</button>').join('')+'</nav>';
+ let c='';
+ if(S.eSec==='gem'){
+  c='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 style="font-size:20px">Gemeinschaften</h2><button class="btn" type="button" data-act="gemNew">'+ic('plus',16)+'Gemeinschaft</button></div>'+
+  comms().map(cc=>{ const g=S.gem[cc]||{art:'a1',units:'',addr:'',verw:'',lang:'DE',color:'',list:''}; const v=g.verw?KK(g.verw):null; const l=g.list?KK(g.list):null; const pts=Object.keys(S.points).filter(id=>P(id).c===cc).length;
+   return '<section class="card" style="padding:16px 18px;display:flex;flex-direction:column;gap:12px"><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">'+B(cc)+'<div style="flex:1 1 200px;display:flex;flex-direction:column;gap:2px"><b style="font-size:16px">'+esc(COMM[cc].name)+'</b><span class="muted" style="font-size:13px">'+esc(artOf(g.art).n)+(g.units?' · '+g.units+' '+artOf(g.art).u:'')+' · '+pts+' Punkte</span></div><button class="btn sm" type="button" data-act="gemEdit" data-c="'+cc+'">Bearbeiten</button></div>'+
+   '<div class="kv">'+kLine('Anschrift',g.addr)+'<span>Verwaltung</span><span>'+(v?'<button class="lnk" type="button" data-act="kOpenFrom" data-id="'+v.id+'">'+esc(v.name)+'</button>':'<span class="muted">—</span>')+'</span><span></span><span>Eigentümer</span><span>'+(l?'<button class="lnk" type="button" data-act="kOpenFrom" data-id="'+l.id+'">'+esc(l.name)+' · '+l.count+'</button>':'<span class="muted">—</span>')+'</span><span></span>'+kLine('Infos an Eigentümer',g.lang==='DE+EN'?'Deutsch + English':'Deutsch')+'</div></section>'; }).join('');
+ }
+ if(S.eSec==='arten'){
+  const used=id=>Object.keys(S.gem).filter(k=>S.gem[k].art===id).length;
+  c=eIntro('Arten von Gemeinschaften','Die Art beschreibt, was eine Gemeinschaft ist, und wie ihre Einheiten heißen (Einheiten, Stellplätze …). Sie erscheint in den Stammdaten und bei Mengenangaben. Aus der Art wird weder eine Rechtsform noch eine Befugnis abgeleitet.','<button class="btn" type="button" data-act="artAdd">'+ic('plus',16)+'Art</button>')+'<section class="card" style="overflow:hidden">'+
+  S.arten.map((a,n)=>'<div class="artrow"'+(n?'':' style="border-top:0"')+'><div class="field" style="flex:2 1 220px"><label class="fl" for="an'+a.id+'">Bezeichnung</label><input class="inp" id="an'+a.id+'" data-act-input="artN" data-id="'+a.id+'" value="'+esc(a.n)+'" placeholder="z. B. Wohnungseigentümergemeinschaft"></div><div class="field" style="flex:1 1 140px"><label class="fl" for="au'+a.id+'">Einheiten heißen</label><input class="inp" id="au'+a.id+'" data-act-input="artU" data-id="'+a.id+'" value="'+esc(a.u)+'" placeholder="z. B. Einheiten"></div><div style="display:flex;align-items:center;gap:6px;align-self:flex-end;min-height:42px"><span class="muted" style="font-size:13px;white-space:nowrap">'+used(a.id)+' Gemeinschaft'+(used(a.id)===1?'':'en')+'</span>'+(used(a.id)?'':'<button class="iconbtn" type="button" data-act="artDel" data-id="'+a.id+'" aria-label="'+esc(a.n||'Art')+' entfernen">'+ic('x',16)+'</button>')+'</div></div>').join('')+'</section>';
+ }
+ if(S.eSec==='ich'){
+  c=eIntro('Eigene Angaben','Diese Angaben stehen in den Nachrichten, die das Plugin für dich vorbereitet. Sie werden nirgends veröffentlicht.')+
+  '<section class="card" style="overflow:hidden">'+
+  eRow('Name','Wird im Verlauf als „Du“ geführt und in der Grußformel verwendet.','<input class="inp" id="meN" aria-label="Name" data-act-input="meName" value="'+esc(S.me.name)+'">',true)+
+  eRow('Rolle','Steht unter deinem Namen, z. B. Verwaltungsbeirat. Die Rolle verleiht keine Befugnis.','<input class="inp" id="meR" aria-label="Rolle" data-act-input="meRole" value="'+esc(S.me.role)+'">',true)+
+  eRow('Grußformel Deutsch','Schluss jeder deutschen Nachricht im Postausgang. Änderungen gelten für neue Entwürfe.','<textarea class="inp" id="meSD" aria-label="Grußformel Deutsch" rows="2" data-act-input="meSigDE">'+esc(S.me.sigDE)+'</textarea>',true)+
+  eRow('Grußformel English','Schluss jeder englischen Fassung, z. B. für Eigentümer-Infos auf Deutsch und Englisch.','<textarea class="inp" id="meSE" aria-label="Grußformel English" rows="2" data-act-input="meSigEN">'+esc(S.me.sigEN)+'</textarea>',true)+
+  '</section>';
+ }
+ if(S.eSec==='woche'){
+  const R=S.rhythm;
+  const row=(lab,desc,ctrl)=>'<div class="setrow"><div class="setl"><span class="fl" style="font-size:14px">'+lab+'</span><span class="muted" style="font-size:13px;line-height:1.45">'+desc+'</span></div><div class="setc">'+ctrl+'</div></div>';
+  const num=(id,v,unit)=>'<span style="display:flex;align-items:center;gap:8px"><input class="inp mono" style="width:96px" id="'+id+'" inputmode="numeric" data-act-input="'+id+'" value="'+v+'"><span class="muted" style="font-size:13px">'+unit+'</span></span>';
+  c='<div style="display:flex;flex-direction:column;gap:6px"><h2 style="font-size:20px">Wochenrhythmus</h2><p class="muted" style="font-size:14px;line-height:1.5;max-width:640px">Die Wochenarbeit bündelt alles, was liegen geblieben ist, in einem festen Termin pro Woche: Eingänge zuordnen, Zusagen nachhalten, entscheiden, Nachrichten senden, Übergabe festhalten. Die Einstellungen legen fest, wann sie fällig ist und wie viel sie umfasst. Es läuft nichts im Hintergrund; die Fälligkeit wird beim Öffnen des Plugins geprüft.</p></div>'+
+  '<section class="card" style="overflow:hidden">'+
+  row('Wochentag','An diesem Tag zeigt die Lage „Woche starten“; der Tag steht in der Navigation neben „Woche“. Nachfass-Prüfungen und Wiedervorlagen werden auf diesen Tag gelegt.','<div class="seg" role="radiogroup" aria-label="Wochentag">'+['Mo','Di','Mi','Do','Fr','Sa','So'].map(d=>'<button type="button" role="radio" data-act="rDay" data-v="'+d+'" aria-checked="'+(R.day===d)+'" aria-pressed="'+(R.day===d)+'">'+d+'</button>').join('')+'</div>')+
+  row('Zeitziel','Richtwert für eine Wochenarbeit. Die aktive Zeit wird mitgezählt und im Kopf der Woche angezeigt; es gibt keine Unterbrechung bei Überschreitung.',num('rMins',R.mins,'Minuten'))+
+  row('Entscheidungen pro Woche','So viele reguläre Entscheidungen legt Schritt 3 höchstens vor; der Rest wartet auf die nächste Woche. Dringendes kommt immer zusätzlich dazu.',num('rBudget',R.budget,'Entscheidungen'))+
+  row('Frist bei akuten Problemen','Vorgeschlagene Frist, wenn du bei einem akuten Problem Behebung anforderst (z. B. ausgefallene Beleuchtung). Im Entwurf jederzeit änderbar.',num('rAkut',R.akut,'Tage'))+
+  '</section>';
+
+ }
+ if(S.eSec==='ablage'){
+  const F=S.folders; const inp=(k)=>'<input class="inp mono" aria-label="Ordner" data-act-input="fo_'+k+'" value="'+esc(F[k])+'">';
+  c=eIntro('Ablage','Alle Daten liegen als normale Markdown-Notizen und Dateien in deinem Vault, auch ohne Plugin lesbar. Hier legst du fest, in welchen Ordnern das Plugin sie anlegt. Beim Ändern eines Ordners werden vorhandene Notizen verschoben und Links angepasst.')+
+  '<section class="card" style="overflow:hidden">'+
+  eRow('Punkte','Eine Notiz je Punkt mit Verlauf, Terminen und Bewertungen; hierauf verweisen Lage, Woche und Postausgang.',inp('punkte'),true)+
+  eRow('Quellen','Originale wie Mails, PDFs, Fotos. Beim Erfassen ausgewählte Dateien werden hierhin verschoben oder kopiert, je Gemeinschaft in einem Unterordner.',inp('quellen'),true)+
+  eRow('Kontakte','Eine Notiz je Kontakt und Verteiler; Punkte und Nachrichten verlinken darauf.',inp('kontakte'),true)+
+  eRow('Textbausteine','Vorlagen für Nachfass-Mails und Eigentümer-Infos. Du kannst sie als Notizen direkt bearbeiten.',inp('vorlagen'),true)+
+  '</section>';
+ }
+ if(S.eSec==='sich'){
+  c=eIntro('Sicherung','Eine Sicherung ist eine Kopie aller Notizen und Dateien des Plugins im Vault. Vor jedem Import und jeder Wiederherstellung wird automatisch gesichert. Wiederherstellen zeigt vorher, was sich ändert.')+'<section class="card" style="padding:16px 18px;display:flex;flex-direction:column;gap:12px"><div class="kv">'+kLine('Zuletzt',S.lastBackup||'15.11.2026, 09:02')+kLine('Umfang','1.240 Dateien · 38 MB')+kLine('Ziel','WEG Manager/Sicherungen')+'</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri" type="button" data-act="backupNow">Jetzt sichern</button><button class="btn" type="button" data-act="restoreInfo">Wiederherstellen</button></div></section>';
+ }
+ if(S.eSec==='hilfe'){ c='<h2 style="font-size:20px">Hilfe</h2><section class="card" style="padding:16px 18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center"><div style="flex:1 1 240px;display:flex;flex-direction:column;gap:2px"><b>Einführungstour</b><span class="muted" style="font-size:13px">7 Schritte · etwa 1 Minute</span></div><button class="btn" type="button" data-act="tourStart">Tour starten</button></section><section class="card" style="padding:16px 18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center"><div style="flex:1 1 240px;display:flex;flex-direction:column;gap:2px"><b>Hinweise zur Wochenarbeit</b><span class="muted" style="font-size:13px">je Schritt beim ersten Durchlauf</span></div><button class="btn" type="button" data-act="hintsReset">Wieder anzeigen</button></section>'; }
+ return mtop('Einstellungen')+'<main class="main" id="view"><div class="side-h"><h1 style="font-size:28px">Einstellungen</h1></div><div class="ewrap">'+sub+'<div class="econt">'+c+'</div></div></main>';
+}
+
+/* ---------- Sheets ---------- */
+function sheetHtml(){
+ const sh=S.sheet; if(!sh) return '';
+ let title='',body='',foot='';
+ if(sh.type==='erfassen'){
+  const f=sh.f;
+  title='Erfassen';
+  const pts=Object.keys(S.points).filter(id=>f.c&&P(id).c===f.c);
+  const fs=f.files||[];
+  body='<div class="seg" role="group" aria-label="Art">'+['Notiz','Nachricht','Unterlage','Zusage','Aufgabe'].map(a=>'<button type="button" data-act="fArt" data-v="'+a+'" aria-pressed="'+(f.art===a)+'">'+a+'</button>').join('')+'</div>'+
+  '<div class="field"><span class="fl">Gemeinschaft</span>'+commPicker(f.c,'fC','v',S.cq)+'</div>'+
+  (f.art==='Zusage'?'<div class="field"><label for="fwho">Wer sagt zu?</label><input class="inp" id="fwho" list="kdl" autocomplete="off" data-act-input="fWho" value="'+esc(f.who)+'"><datalist id="kdl">'+S.contacts.filter(k=>k.active&&(!f.c||kComms(k).indexOf(f.c)>=0)).map(k=>'<option value="'+esc(k.name)+'">'+esc(k.roles.filter(x=>!f.c||x.c===f.c).map(x=>x.r).join(', '))+'</option>').join('')+'</datalist>'+(f.who&&f.who.trim()&&!S.contacts.some(k=>k.name.toLowerCase()===f.who.trim().toLowerCase())?'<span><button class="btn sm ghost" type="button" data-act="fNewContact" style="margin-left:-8px">'+ic('plus',15)+'„'+esc(f.who.trim())+'“ als Kontakt anlegen</button></span>':'')+'</div>':'')+
+  (f.art==='Notiz'?'<div class="field"><label for="fwas">Notiz</label><textarea class="inp" id="fwas" rows="4" data-act-input="fWas">'+esc(f.was)+'</textarea></div>':'<div class="field"><label for="fwas">'+(f.art==='Zusage'?'Was genau?':f.art==='Aufgabe'?'Was ist zu tun?':'Worum geht es?')+'</label><input class="inp" id="fwas" data-act-input="fWas" value="'+esc(f.was)+'"></div>')+
+  (f.art==='Zusage'||f.art==='Aufgabe'?'<div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap"><div class="field" style="flex:1 1 140px"><label for="fbis">Bis wann?</label><input class="inp mono" id="fbis" placeholder="TT.MM." data-act-input="fBis" value="'+esc(f.bis)+'"'+(f.noT?' disabled':'')+'></div>'+(f.art==='Zusage'?'<label style="display:flex;gap:8px;align-items:center;min-height:42px"><input type="checkbox" data-act-change="fNoT" '+(f.noT?'checked':'')+' style="width:18px;height:18px;accent-color:var(--fg)">kein Termin genannt</label>':'')+'</div>':'')+
+  '<div class="field"><label for="fpt">Zu Punkt</label><select class="inp" id="fpt" data-act-change="fPt"'+(f.c?'':' disabled')+'><option value="">'+(f.c?'Später zuordnen (Eingang)':'Erst Gemeinschaft wählen')+'</option>'+pts.map(id=>'<option value="'+id+'"'+(f.pt===id?' selected':'')+'>'+id+' · '+esc(P(id).title)+'</option>').join('')+'</select></div>'+
+  '<div class="field"><span class="fl">Quelle</span><div class="seg" role="group" aria-label="Quelle">'+['Telefonat','Mail','Datei','Gespräch'].map(a=>'<button type="button" data-act="fSrc" data-v="'+a+'" aria-pressed="'+(f.src===a)+'">'+a+'</button>').join('')+'</div></div>'+
+  (f.src==='Datei'||f.src==='Mail'?'<div class="filebox">'+(fs.length?'<div class="lab" style="display:flex;justify-content:space-between">'+fs.length+' Datei'+(fs.length>1?'en':'')+'</div><ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px">'+fs.map((x,n)=>'<li style="display:flex;gap:10px;align-items:center">'+ic('file')+'<span style="flex:1;min-width:0;display:flex;flex-direction:column"><b style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.name)+'</b><span class="muted" style="font-size:12px">'+esc(x.size)+'</span></span><button class="iconbtn" style="width:36px;height:36px" type="button" data-act="fFileClear" data-i="'+n+'" aria-label="'+esc(x.name)+' entfernen">'+ic('x',16)+'</button></li>').join('')+'</ul>'+'<label class="btn'+(fs.length?' sm':'')+'" style="cursor:pointer;justify-content:flex-start;align-self:flex-start">'+ic(fs.length?'plus':'file',fs.length?15:18)+(fs.length?'Weitere Dateien':'Dateien auswählen')+'<input type="file" multiple data-act-change="fFile" style="position:absolute;width:1px;height:1px;opacity:0"></label>'+
+   '<div class="seg" role="radiogroup" aria-label="Datei übernehmen"><button type="button" role="radio" data-act="fMove" data-v="move" aria-pressed="'+(f.move!=='copy')+'" aria-checked="'+(f.move!=='copy')+'">In den Vault verschieben</button><button type="button" role="radio" data-act="fMove" data-v="copy" aria-pressed="'+(f.move==='copy')+'" aria-checked="'+(f.move==='copy')+'">Kopieren</button></div>'+
+   '<div style="font-size:12px" class="muted">Ablage <span class="mono" style="color:var(--fg)">'+esc(vaultPath(f))+'</span></div>'
+   :'<label class="btn'+(fs.length?' sm':'')+'" style="cursor:pointer;justify-content:flex-start;align-self:flex-start">'+ic(fs.length?'plus':'file',fs.length?15:18)+(fs.length?'Weitere Dateien':'Dateien auswählen')+'<input type="file" multiple data-act-change="fFile" style="position:absolute;width:1px;height:1px;opacity:0"></label>')+'</div>':'');
+  if(f.art==='Notiz'){ const q=body.indexOf('<div class="field"><span class="fl">Quelle</span>'); if(q>=0) body=body.slice(0,q); }
+  foot='<button class="btn pri" type="button" data-act="fSave" style="flex:1"'+(f.c&&f.was.trim()?'':' disabled')+'>Speichern</button>';
+ }
+ if(sh.type==='sent'){
+  title='Als gesendet markieren';
+  body='<div class="field"><label for="sd">Datum</label><input class="inp mono" id="sd" data-act-input="sDate" value="'+esc(sh.date)+'"></div>'+
+  '<div class="field"><span class="fl">Kanal</span><div class="seg" role="group" aria-label="Kanal">'+['Mail','Portal','Brief','Telefon'].map(a=>'<button type="button" data-act="sCh" data-v="'+a+'" aria-pressed="'+(sh.ch===a)+'">'+a+'</button>').join('')+'</div></div>'+
+  '<div class="field"><span class="fl">Fassung</span><div class="card" style="padding:12px 14px;font-size:14px">'+REC[S.postSel].lang.join(' + ')+' · aktuelle geprüfte Fassung</div></div>';
+  foot='<button class="btn pri" type="button" data-act="sSave" style="flex:1">Speichern</button>';
+ }
+ if(sh.type==='kontakt'){
+  const f=sh.f; const isList=f.kind==='list';
+  title=isList?(f.id?'Verteiler bearbeiten':'Neuer Verteiler'):(f.id?'Kontakt bearbeiten':'Neuer Kontakt');
+  const E=f.tried?kErrors(f):{};
+  if(isList){
+   body='<div class="field"><label for="kfn">Bezeichnung *</label><input class="inp" id="kfn" placeholder="z. B. Eigentümer Ahornweg 12" data-act-input="kfName" value="'+esc(f.name)+'"'+(E.name?' aria-invalid="true"':'')+'>'+(E.name?'<span class="err">'+E.name+'</span>':'')+'</div>'+
+   '<div class="field"><span class="fl">Gemeinschaft *</span>'+commPicker(f.c,'kfC','v',S.cq)+(E.c?'<span class="err">'+E.c+'</span>':'')+'</div><div style="display:flex;gap:10px;flex-wrap:wrap"><div class="field" style="flex:1 1 120px"><label for="kfcnt">Anzahl Empfänger *</label><input class="inp mono" id="kfcnt" inputmode="numeric" data-act-input="kfCount" value="'+esc(f.count)+'"'+(E.count?' aria-invalid="true"':'')+'>'+(E.count?'<span class="err">'+E.count+'</span>':'')+'</div><div class="field" style="flex:1 1 140px"><label for="kfst">Stand der Liste</label><input class="inp mono" id="kfst" placeholder="TT.MM.JJJJ" data-act-input="kfStand" value="'+esc(f.stand)+'"></div></div><div class="field"><span class="fl">Sprachen</span><div class="seg" role="group" aria-label="Sprachen">'+[['DE','Deutsch'],['DE+EN','Deutsch + English']].map(a=>'<button type="button" data-act="kfLangs" data-v="'+a[0]+'" aria-pressed="'+(f.langs.join('+')===a[0])+'">'+a[1]+'</button>').join('')+'</div></div><div class="field"><label for="kfch">Versandweg</label><input class="inp" id="kfch" placeholder="z. B. Mail (BCC) über Verwaltung" data-act-input="kfCh" value="'+esc(f.ch)+'"></div>';
+  } else {
+   const isOrg=f.kind==='org';
+   const dup=f.name.trim().length>=3?S.contacts.filter(k=>k.id!==f.id&&(k.name.toLowerCase().indexOf(f.name.trim().toLowerCase())>=0||f.name.trim().toLowerCase().indexOf(k.name.toLowerCase())>=0)):[];
+   const orgs=S.contacts.filter(k=>k.kind==='org');
+   const newOrg=!isOrg&&f.org.trim()&&!orgs.some(o=>o.name.toLowerCase()===f.org.trim().toLowerCase());
+   body=(f.id?'':'<div class="seg" role="radiogroup" aria-label="Art"><button type="button" role="radio" data-act="kfKind" data-v="person" aria-checked="'+!isOrg+'" aria-pressed="'+!isOrg+'">Person</button><button type="button" role="radio" data-act="kfKind" data-v="org" aria-checked="'+isOrg+'" aria-pressed="'+isOrg+'">Firma oder Organisation</button></div>')+
+   '<div class="field"><label for="kfn">Name *</label><input class="inp" id="kfn" autocomplete="off" placeholder="'+(isOrg?'z. B. Hausverwaltung Kern':'z. B. Sabine Berger')+'" data-act-input="kfName" value="'+esc(f.name)+'"'+(E.name?' aria-invalid="true"':'')+'>'+(E.name?'<span class="err">'+E.name+'</span>':'')+
+   (dup.length?'<div class="dupe">Bereits vorhanden:'+dup.slice(0,3).map(k=>'<button class="lnk" type="button" data-act="kSel" data-id="'+k.id+'">'+esc(k.name)+'</button>').join(' · ')+'</div>':'')+'</div>'+
+   (isOrg?'':'<div class="field"><label for="kfo">Firma</label><input class="inp" id="kfo" list="kol" autocomplete="off" placeholder="optional" data-act-input="kfOrg" value="'+esc(f.org)+'"><datalist id="kol">'+orgs.map(k=>'<option value="'+esc(k.name)+'">').join('')+'</datalist>'+(newOrg?'<span class="muted" style="font-size:13px">„'+esc(f.org.trim())+'“ wird als neue Firma mit angelegt.</span>':'')+'</div>')+
+   '<fieldset class="field" style="border:0;margin:0;padding:0"><legend class="fl" style="margin-bottom:6px">Zuständig für *</legend><div style="display:flex;flex-direction:column;gap:8px">'+
+   comms().map(c=>{ const r=f.roles.find(x=>x.c===c); const opts=ROLES.concat(r&&r.r&&ROLES.indexOf(r.r)<0?[r.r]:[]);
+    return '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="ctog" type="button" role="checkbox" data-act="kfTog" data-c="'+c+'" aria-checked="'+!!r+'"><span class="cb">'+(r?ic('check',13):'')+'</span>'+B(c)+COMM[c].short+'</button>'+(r?'<select class="inp" style="flex:1 1 180px;width:auto" aria-label="Rolle in '+esc(COMM[c].short)+'" data-act-change="kfRole" data-c="'+c+'"'+(E.roles&&!r.r?' aria-invalid="true"':'')+'><option value="">Rolle wählen</option>'+opts.map(o=>'<option'+(r.r===o?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>':'')+'</div>'; }).join('')+
+   '</div>'+(E.roles?'<span class="err">'+E.roles+'</span>':'')+'</fieldset>'+
+   '<div style="display:flex;gap:10px;flex-wrap:wrap"><div class="field" style="flex:1 1 200px"><label for="kfm">E-Mail</label><input class="inp" id="kfm" type="email" data-act-input="kfMail" value="'+esc(f.mail)+'"></div><div class="field" style="flex:1 1 160px"><label for="kft">Telefon</label><input class="inp" id="kft" type="tel" data-act-input="kfTel" value="'+esc(f.tel)+'"></div></div>'+
+   '<div><button class="btn sm ghost" type="button" data-act="kfMore" aria-expanded="'+!!f.more+'" style="margin-left:-8px">'+ic('chev',15).replace('<svg','<svg style="transform:rotate('+(f.more?90:0)+'deg)"')+'Weitere Angaben</button></div>'+
+   (f.more?'<div class="field"><span class="fl">Sprache</span><div class="seg" role="radiogroup" aria-label="Sprache">'+[['DE','Deutsch'],['EN','English']].map(a=>'<button type="button" role="radio" data-act="kfLang" data-v="'+a[0]+'" aria-checked="'+(f.lang===a[0])+'" aria-pressed="'+(f.lang===a[0])+'">'+a[1]+'</button>').join('')+'</div></div>'+
+    '<div class="field"><span class="fl">Bevorzugter Kanal</span><div class="seg" role="radiogroup" aria-label="Bevorzugter Kanal">'+['Mail','Telefon','Portal','Brief'].map(a=>'<button type="button" role="radio" data-act="kfChan" data-v="'+a+'" aria-checked="'+(f.ch===a)+'" aria-pressed="'+(f.ch===a)+'">'+a+'</button>').join('')+'</div></div>'+
+    '<div class="field"><label for="kfno">Notiz</label><textarea class="inp" id="kfno" data-act-input="kfNote">'+esc(f.note||'')+'</textarea></div>':'');
+  }
+  foot='<button class="btn" type="button" data-act="close">Abbrechen</button><button class="btn pri" type="button" data-act="kSave" style="flex:1">'+(isList?'Verteiler speichern':'Kontakt speichern')+'</button>';
+ }
+ if(sh.type==='gem'){
+  const f=sh.f; title=f.isNew?'Neue Gemeinschaft':'Gemeinschaft bearbeiten'; const used=comms().filter(c=>c!==f.key).map(c=>(S.gem[c]||{}).color);
+  body=eField('Name','gN','gName',f.name)+'<div style="display:flex;gap:10px;flex-wrap:wrap"><div class="field" style="flex:0 0 120px"><label for="gK">Kürzel</label><input class="inp mono" id="gK" maxlength="3" data-act-input="gKey" value="'+esc(f.key)+'"'+(f.isNew?'':' readonly')+'></div><div class="field" style="flex:1 1 200px"><label for="gS">Kurzname</label><input class="inp" id="gS" data-act-input="gShort" value="'+esc(f.short)+'"></div></div>'+
+  '<div class="field"><label for="gArt">Art</label><select class="inp" id="gArt" data-act-change="gArtSel">'+S.arten.map(a=>'<option value="'+a.id+'"'+(f.art===a.id?' selected':'')+'>'+esc(a.n)+'</option>').join('')+'</select><span><button class="btn sm ghost" type="button" data-act="eSecArten" style="margin-left:-8px">Arten bearbeiten</button></span></div>'+
+  eField('Anschrift','gA','gAddr',f.addr)+'<div class="field"><label for="gU">Anzahl '+esc(artOf(f.art).u)+'</label><input class="inp mono" id="gU" inputmode="numeric" data-act-input="gUnits" value="'+esc(f.units)+'"></div>'+
+  '<div class="field"><span class="fl">Farbe</span><div role="radiogroup" aria-label="Farbe" style="display:flex;gap:8px;flex-wrap:wrap">'+PALETTE.map(col=>'<button class="swatch" type="button" role="radio" data-act="gColor" data-v="'+col+'" aria-label="Farbe '+col+'" aria-checked="'+(f.color===col)+'" style="background:'+col+'"'+(used.indexOf(col)>=0?' disabled':'')+'></button>').join('')+'</div></div>'+
+  '<div class="field"><label for="gV">Verwaltung</label><select class="inp" id="gV" data-act-change="gVerw"><option value="">—</option>'+S.contacts.filter(k=>k.active&&k.roles.some(r=>/Verwaltung/.test(r.r))).map(k=>'<option value="'+k.id+'"'+(f.verw===k.id?' selected':'')+'>'+esc(k.name)+'</option>').join('')+'</select></div>'+
+  '<div class="field"><span class="fl">Infos an Eigentümer</span><div class="seg" role="radiogroup" aria-label="Sprachen">'+[['DE','Deutsch'],['DE+EN','Deutsch + English']].map(a=>'<button type="button" role="radio" data-act="gLang" data-v="'+a[0]+'" aria-checked="'+(f.lang===a[0])+'" aria-pressed="'+(f.lang===a[0])+'">'+a[1]+'</button>').join('')+'</div></div>';
+  const ok=f.name.trim()&&/^[A-Z0-9]{2,3}$/.test(f.key)&&(!f.isNew||!COMM[f.key])&&f.color;
+  foot='<button class="btn pri" type="button" data-act="gSave" style="flex:1"'+(ok?'':' disabled')+'>Speichern</button>';
+ }
+ if(sh.type==='ev'){
+  const p=P(sh.p), e=p.ev[sh.i]; if(!e){ S.sheet=null; return ''; }
+  const kind={fact:'Fakt',act:'Deine Handlung',judge:'Deine Bewertung',plan:'Geplant',bad:'Prüfmerkmal'}[e.k]||'Eintrag';
+  const body=e.body||(e.k==='bad'?'Abgeleitet aus der Zusage im Verlauf. Keine Reaktion bis zum Stichtag erfasst.':'');
+  const bodyHtml=body?'<section class="card" style="padding:14px 16px;display:flex;flex-direction:column;gap:6px"><span class="lab">'+(e.k==='bad'?'Herkunft':'Inhalt')+'</span><p style="white-space:pre-line;line-height:1.6;font-size:14px">'+esc(body)+'</p></section>':'';
+  return '<div class="scrim center" data-act="scrim"><section class="sheet dlg" role="dialog" aria-modal="true" aria-labelledby="shT"><div class="sh" style="gap:12px"><span class="mk" style="padding-top:0"><span class="m-'+e.k+'"></span></span><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><h2 id="shT" style="font-size:18px;line-height:1.35;font-weight:500">'+e.t+'</h2><span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">'+B(p.c)+'<span class="pid">'+sh.p+'</span><span class="muted" style="font-size:13px">'+esc(p.title)+'</span></span></div><button class="iconbtn" type="button" data-act="close" aria-label="Schließen">'+ic('x')+'</button></div>'+
+  '<div class="sb" style="background:var(--bg)"><section class="card" style="padding:10px 16px"><div class="kv">'+kLine('Art',kind)+kLine('Datum',e.d)+kLine('Quelle',e.src||'')+'</div></section>'+bodyHtml+'</div>'+
+  '<div class="sf">'+(S.route==='akte'&&S.akte===sh.p?'':'<button class="btn pri" type="button" data-act="akte" data-id="'+sh.p+'">Punktakte öffnen</button>')+'<button class="btn" type="button" data-act="close">Schließen</button></div></section></div>';
+ }
+ if(sh.type==='tel'||sh.type==='mail'){ const k=KK(sh.id); const isM=sh.type==='mail'; const val=isM?k.mail:k.tel; const href=isM?'mailto:'+esc(k.mail):'tel:'+esc(k.tel.replace(/[^0-9+]/g,''));
+  return '<div class="scrim center" data-act="scrim"><section class="sheet dlg" style="width:min(400px,100%)" role="dialog" aria-modal="true" aria-labelledby="shT"><div class="sh" style="gap:12px">'+avatar(k)+'<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><h2 id="shT" style="font-size:17px">'+esc(k.name)+'</h2><span class="muted" style="font-size:13px">'+esc(kSub(k))+'</span></div><button class="iconbtn" type="button" data-act="close" aria-label="Schließen">'+ic('x')+'</button></div>'+
+  '<div class="sb" style="align-items:center;text-align:center;gap:8px;padding:28px 20px"><span class="lab">'+(isM?'E-Mail':'Telefon')+'</span><a href="'+href+'" class="'+(isM?'':'mono')+'" style="font-size:'+(isM?'20':'28')+'px;font-weight:600;color:var(--fg);text-decoration:none;letter-spacing:.01em;overflow-wrap:anywhere">'+esc(val)+'</a>'+(k.ch?'<span class="muted" style="font-size:13px">Bevorzugter Kanal: '+esc(k.ch)+'</span>':'')+'</div>'+
+  '<div class="sf"><a class="btn pri" style="flex:1" href="'+href+'">'+ic(isM?'mail':'phone',16)+(isM?'In Mail-App öffnen':'Anrufen')+'</a><button class="btn" type="button" data-act="kCopy" data-v="'+esc(val)+'">'+ic('copy',16)+'Kopieren</button></div></section></div>'; }
+ if(sh.type==='kdetail'){ const k=KK(sh.id); const d=kDetail(k);
+  return '<div class="scrim center" data-act="scrim"><section class="sheet dlg" role="dialog" aria-modal="true" aria-labelledby="shT"><div class="sh" style="gap:14px">'+avatar(k,true)+'<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px"><h2 id="shT" style="font-size:21px">'+esc(k.name)+'</h2>'+d.sub+'</div><button class="iconbtn" type="button" data-act="close" aria-label="Schließen">'+ic('x')+'</button></div><div class="sb" style="background:var(--bg)">'+d.body+'</div><div class="sf">'+d.foot+'</div></section></div>'; }
+ if(sh.type==='tasks'){ title='Testaufgaben'; body=tasksCard().replace('<button class="btn sm ghost" type="button" data-act="hideTasks">Ausblenden</button>',''); foot='<button class="btn pri" type="button" data-act="close" style="flex:1">Los geht’s</button>'; }
+ return '<div class="scrim" data-act="scrim"><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="shT"><div class="sh"><h2 id="shT" style="flex:1;font-size:19px">'+title+'</h2><button class="iconbtn" type="button" data-act="close" aria-label="Schließen">'+ic('x')+'</button></div><div class="sb">'+body+'</div><div class="sf">'+foot+'</div></section></div>';
+}
+function screenName(){ return S.route==='woche'&&S.week.started?'Woche · '+STEPN[S.week.step-1]:({lage:'Lage',punkte:'Punkte',akte:'Punkt '+S.akte,post:'Postausgang',kontakte:'Kontakte',einst:'Einstellungen'}[S.route]||S.route); }
+
+/* ---------- Tour ---------- */
+const TOUR=[
+ {t:'kpis',h:'Lage auf einen Blick',b:'Dringendes, Ungeprüftes, offene Antworten und anstehende Entscheidungen. Jede Kachel führt zur passenden Arbeit.'},
+ {t:'week',h:'Einmal pro Woche',b:'Die Wochenarbeit führt in 5 Schritten durch Eingang, Nachhalten, Entscheiden, Senden und Übergabe.'},
+ {t:'capture',h:'Sofort festhalten',b:'Anruf, Mail oder Datei in Sekunden erfassen. Zuordnen geht auch später im Eingang.'},
+ {t:'nav',h:'Vier Ziele',b:'Lage, Woche, Punkte und Postausgang. Nachrichten versendest du selbst und markierst sie danach als gesendet.'},
+ {t:'filter',h:'Gemeinschaften getrennt',b:'Filtere nach Gemeinschaft. Jeder Punkt und jede Nachricht gehört genau zu einer.'},
+ {t:'contacts',h:'Kontakte',b:'Verwaltung, Dienstleister und Eigentümer-Verteiler mit ihren Rollen je Gemeinschaft.'},
+ {t:'settings',h:'Einstellungen',b:'Stammdaten der Gemeinschaften, Grußformel und Wochenrhythmus. Unter Hilfe startest du die Tour erneut.'}
+];
+function tourTarget(t){ return Array.from(document.querySelectorAll('[data-tour="'+t+'"]')).find(el=>el.offsetParent!==null||getComputedStyle(el).position==='fixed'); }
+function tourHtml(){
+ if(S.tour==null) return '';
+ if(S.tour===-1) return '<div class="twel" role="dialog" aria-modal="true" aria-labelledby="twH"><section><span class="logo" style="width:40px;height:40px;border-radius:11px">'+ic('home',20)+'</span><h2 id="twH" style="font-size:22px">Willkommen im WEG Manager</h2><p class="muted">In 7 kurzen Schritten durch die wichtigsten Bereiche. Dauer etwa eine Minute.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri" type="button" data-act="tourNext">Tour starten'+ic('right')+'</button><button class="btn ghost" type="button" data-act="tourEnd">Überspringen</button></div></section></div>';
+ const st=TOUR[S.tour];
+ return '<div class="tblock" data-act="tourNoop"></div><div class="tspot" id="tSpot"></div><section class="tpop" id="tPop" role="dialog" aria-modal="true" aria-labelledby="tpH"><div style="display:flex;align-items:center;gap:8px"><div class="tdots" aria-hidden="true">'+TOUR.map((x,i)=>'<span class="'+(i===S.tour?'on':'')+'"></span>').join('')+'</div><span class="pid" style="margin-left:auto">'+(S.tour+1)+' / '+TOUR.length+'</span><button class="iconbtn" style="width:36px;height:36px" type="button" data-act="tourEnd" aria-label="Tour beenden">'+ic('x',16)+'</button></div><h2 id="tpH" tabindex="-1">'+st.h+'</h2><p style="font-size:14px;line-height:1.5">'+st.b+'</p><div style="display:flex;gap:8px;justify-content:flex-end">'+(S.tour>0?'<button class="btn sm ghost" type="button" data-act="tourPrev">Zurück</button>':'')+'<button class="btn sm pri" type="button" data-act="tourNext">'+(S.tour===TOUR.length-1?'Fertig':'Weiter')+'</button></div></section>';
+}
+function placeTour(scroll){
+ if(S.tour==null||S.tour<0) return;
+ const el=tourTarget(TOUR[S.tour].t); const sp=document.getElementById('tSpot'), pop=document.getElementById('tPop'); if(!sp||!pop) return;
+ if(!el){ sp.style.display='none'; pop.style.left='50%'; pop.style.top='50%'; pop.style.transform='translate(-50%,-50%)'; return; }
+ if(scroll&&getComputedStyle(el).position!=='fixed') el.scrollIntoView({block:'center',behavior:'instant'});
+ const r=el.getBoundingClientRect(), pad=6, W=innerWidth, H=innerHeight;
+ Object.assign(sp.style,{display:'block',left:(r.left-pad)+'px',top:(r.top-pad)+'px',width:(r.width+2*pad)+'px',height:(r.height+2*pad)+'px'});
+ const pw=pop.offsetWidth, ph=pop.offsetHeight, g=16; let x,y;
+ if(W>=860&&r.right+g+pw<W-8){ x=r.right+g; y=Math.min(Math.max(8,r.top),H-ph-8); }
+ else if(r.bottom+g+ph<H-8){ y=r.bottom+g; x=Math.min(Math.max(16,r.left),W-pw-16); }
+ else { y=Math.max(8,r.top-g-ph); x=Math.min(Math.max(16,r.left),W-pw-16); }
+ Object.assign(pop.style,{left:x+'px',top:y+'px',transform:'none'});
+}
+addEventListener('resize',()=>placeTour(false)); addEventListener('scroll',()=>placeTour(false),{passive:true});
+
+/* ---------- Render ---------- */
+function render(){
+ const app=document.getElementById('app');
+ const focusId=document.activeElement&&document.activeElement.id; const selS=document.activeElement&&document.activeElement.selectionStart;
+ const ae=document.activeElement; const aeKey=ae&&ae.dataset?(ae.dataset.actInput||'')+(ae.dataset.i||''):'';
+ let v;
+ if(S.route==='woche'&&S.week.started) v='<div class="shell" style="flex-direction:column">'+vWoche()+'</div>';
+ else v='<div class="shell">'+sidebar()+'<div style="flex:1;min-width:0;display:flex;flex-direction:column">'+({lage:vLage,woche:vLage,punkte:vPunkte,akte:vAkte,post:vPost,kontakte:vKontakte,einst:vEinst}[S.route]||vLage)()+'</div></div>'+
+   '<button class="btn pri fab" type="button" data-act="erfassen" data-tour="capture">'+ic('plus')+'Erfassen</button>';
+ app.innerHTML=v;
+ const pb=document.querySelector('.pbar'); if(pb) document.documentElement.style.setProperty('--pbh',pb.offsetHeight+'px');
+ document.getElementById('overlay').innerHTML=sheetHtml();
+ document.getElementById('tourRoot').innerHTML=tourHtml(); if(S.tour!=null&&S.tour>=0){ requestAnimationFrame(()=>{placeTour(true); const h=document.getElementById('tpH'); if(h&&S.tourFocus){h.focus();S.tourFocus=false;}}); }
+ const tr=document.getElementById('toastRoot'); tr.innerHTML=S.toast?'<div class="toast" role="status">'+esc(S.toast)+'</div>':'';
+ if(aeKey){ const el=document.querySelector('[data-act-input="'+(ae.dataset.actInput)+'"]'+(ae.dataset.i?'[data-i="'+ae.dataset.i+'"]':'')); if(el){el.focus(); try{el.setSelectionRange(selS,selS);}catch(e){}} }
+ else if(focusId){ const el=document.getElementById(focusId); if(el) el.focus(); }
+ const want=S.route==='akte'?'': (S.route==='woche'&&S.week.started?'woche':S.route);
+ if(want&&location.hash!=='#'+want){ try{history.replaceState(null,'','#'+want);}catch(e){} }
+}
+let toastT;
+function toast(m){ S.toast=m; clearTimeout(toastT); toastT=setTimeout(()=>{S.toast=null;render();},2600); }
+
+/* ---------- Aktionen ---------- */
+const A={
+ go(d){ if(d.r==='woche'&&!S.week.started){ return A.startWeek(); } S.route=d.r; window.scrollTo(0,0); },
+ filter(d){ S.filter=d.f; },
+ akte(d){ S.sheet=null; S.back=S.route==='akte'?S.back:(S.route); S.akte=d.id; S.route='akte'; window.scrollTo(0,0); },
+ startWeek(){ if(!S.week.started){S.week.started=true;S.week.start=Date.now();} else if(!S.week.start){S.week.start=Date.now();} S.route='woche'; S.week.done=false; window.scrollTo(0,0); },
+ pauseWeek(){ S.week.mins=mins(); S.week.start=null; S.route='lage'; toast('Wochenarbeit pausiert bei Schritt '+S.week.step+' · Fortsetzen über „Woche“'); },
+ step(d){ S.week.step=+d.s; window.scrollTo(0,0); },
+ inC(d){ const it=curIn(); it.c=d.c; S.cq=''; const s0=it.sug0||it.sug; it.sug=(S.points[s0]&&P(s0).c===d.c)?s0:(Object.keys(S.points).find(id=>P(id).c===d.c)||s0); },
+ inDo(d){
+  const it=curIn(); if(!it) return;
+  it.done=d.k; S.inSel=null;
+  if(d.k==='assign'){
+   const p=P(it.sug);
+   p.ev.push({d:it.date,k:'fact',t:'<b>'+esc(it.from)+'</b>: '+esc(it.title)+(it.useT&&it.termin?' · Termin <b>'+it.termin+'</b>':''),src:it.ch+' · Original',body:it.body});
+   p.src.push({i:it.ch==='Telefonat'?'phone':'mail',t:it.title,m:it.date+(it.ch==='Telefonat'?' · Notiz':' · Original')});
+   if(it.useT&&it.termin){ p.due=it.termin; p.dueNote='neu, '+it.ch+' '+it.date; p.dueState='n'; p.next='Bestätigen lassen'; }
+   S.feed=S.feed.filter(f=>!(f.k==='warn'&&f.c===it.c&&!f.pid&&it.ch==='Portal'));
+   toast('Zu '+it.sug+' zugeordnet');
+  } else if(d.k==='neu'){ toast('Neuer Punkt angelegt'); }
+  else if(d.k==='later'){ toast('Bleibt im Eingang'); }
+  else toast('Erledigt');
+  if(!curIn()) toast('Eingang gesichtet');
+ },
+ wAns(d){
+  const w=S.waits.find(x=>x.pid===d.id); w.ans=d.k;
+  const p=P(d.id);
+  if(d.k==='nach'){ nachfassPara(w); p.next='Nachfass-Mail senden'; p.ev.push({d:'16.11.',k:'plan',t:'Nachfass-Mail vorbereitet, nicht gesendet'}); toast('Entwurf im Postausgang'); }
+  if(d.k==='in'){ p.next='Erfüllung prüfen'; toast('Als eingegangen erfasst'); }
+  if(d.k==='wait'){ p.wv='23.11.'; }
+  if(d.k==='plan'){ p.wv='30.11.'; }
+ },
+ wUndo(d){ const w=S.waits.find(x=>x.pid===d.id); if(w.ans==='nach'){dropParas('wait:'+w.pid); const p=P(w.pid); p.ev=p.ev.filter(e=>e.k!=='plan');} w.ans=null; },
+ dec(d){ S.week.decIdx=+d.i; },
+ choose(d){ const c=S.decisions[S.week.decIdx]; c.ch=d.k; },
+ confirm(){
+  const c=S.decisions[S.week.decIdx]; if(!c.ch) return;
+  const wasDone=c.done; c.done=true; applyDecision(c);
+  const p=P(c.pid); p.ev=p.ev.filter(e=>e.src!=='dec:'+c.id); p.ev.push({d:'16.11.',k:'act',t:'<b>Du</b> entscheidest: '+esc(c.opts.find(o=>o.k===c.ch).l)+(c.note.trim()?' · „'+esc(c.note.trim())+'“':''),src:'dec:'+c.id});
+  p.ev=p.ev.map(e=>e.src==='dec:'+c.id?Object.assign({},e,{src:''}) :e);
+  toast(wasDone?'Aktualisiert, alte Fassung überholt':'Bestätigt');
+  const nx=S.decisions.findIndex(x=>!x.done); if(nx>=0) S.week.decIdx=nx;
+ },
+ decLater(){ const c=S.decisions[S.week.decIdx]; c.done=true; c.ch=null; dropParas('dec:'+c.id); dropTasks('dec:'+c.id); toast('Zurückgestellt bis nächste Woche'); const nx=S.decisions.findIndex(x=>!x.done); if(nx>=0) S.week.decIdx=nx; },
+ psel(d){ S.postSel=d.k; S.lang='DE'; },
+ lang(d){ S.lang=d.l; },
+ okLang(){ const m=ensureMsg(S.postSel); m.ok[S.lang]=true; const r=REC[S.postSel]; const other=r.lang.find(l=>!m.ok[l]); if(other){ S.lang=other; toast('Jetzt '+(other==='EN'?'English':'Deutsch')+' prüfen'); } },
+ copy(){ const t=msgText(S.postSel,S.lang); try{ navigator.clipboard.writeText(t).then(()=>{toast('Text kopiert');render();},()=>{toast('Kopieren nicht möglich, Text markieren');render();}); }catch(e){ toast('Kopieren nicht möglich'); } },
+ sentSheet(){ S.sheet={type:'sent',date:'16.11.2026',ch:'Mail'}; },
+ sCh(d){ S.sheet.ch=d.v; },
+ sSave(){
+  const k=S.postSel, m=ensureMsg(k), r=REC[k];
+  m.sent=true; m.sentDate=S.sheet.date; m.ch=S.sheet.ch;
+  (msgList()[k]||[]).forEach(p=>{ const pt=P(p.pid); pt.ev=pt.ev.filter(e=>e.k!=='plan'); pt.ev.push({d:S.sheet.date.slice(0,6),k:'act',t:'<b>Du</b> hast gesendet an '+r.label,src:S.sheet.ch+' · '+r.lang.join('+'),body:msgText(k,'DE')}); pt.next='Antwort abwarten'; pt.wv='23.11.'; });
+  S.sent.unshift({key:k,rec:k,c:r.c,label:r.label,date:S.sheet.date.slice(0,6),pids:(msgList()[k]||[]).map(x=>x.pid)});
+  S.sheet=null; toast('Versand dokumentiert, Prüfung 23.11.');
+  const ml=msgList(); S.postSel=Object.keys(ml).find(x=>!(S.msgs[x]&&S.msgs[x].sent))||k;
+ },
+ finishWeek(){
+  S.week.mins=mins(); S.week.start=null; S.week.done=true;
+  const items=S.nh.s.map((t,i)=>({c:S.nh.c[i],pid:S.nh.p[i]||null,t:t.trim(),st:S.nh.p[i]?'nächster Schritt: '+P(S.nh.p[i]).next:'',k:'n'})).filter(x=>x.t);
+  S.handover={date:'16.11.',items:items.length?items:S.handover.items,note:S.nh.note.trim()};
+  S.feed.unshift({day:'Montag, 16.11.',k:'act',c:'AW',pid:null,t:'Wochenarbeit abgeschlossen · '+S.week.mins+(S.nh.extra?' + '+S.nh.extra:'')+' min',chip:['Übergabe','ok']});
+  S.route='lage'; window.scrollTo(0,0); toast('Woche abgeschlossen');
+ },
+ erfassen(d){ S.sheet={type:'erfassen',f:{art:d.art||(d.id?'Nachricht':'Zusage'),c:d.id?P(d.id).c:(S.filter==='all'?null:S.filter),who:'',was:'',bis:'',noT:false,pt:d.id||'',src:'Telefonat'}}; },
+ fArt(d){ S.sheet.f.art=d.v; if(d.v==='Unterlage') S.sheet.f.src='Datei'; }, fC(d){ S.sheet.f.c=d.v; S.sheet.f.pt=''; S.cq=''; }, fSrc(d){ S.sheet.f.src=d.v; },
+ fMove(d){ S.sheet.f.move=d.v; }, fFileClear(d){ S.sheet.f.files.splice(+d.i,1); },
+ many(){ S.many=!S.many; if(!S.many&&['all','AW','TG'].indexOf(S.filter)<0) S.filter='all'; toast(S.many?'6 Gemeinschaften':'2 Gemeinschaften'); },
+ fSave(){
+  const f=S.sheet.f;
+  const fs=f.files||[];
+  if(f.pt) fs.forEach(x=>P(f.pt).src.push({i:'file',t:x.name,m:'16.11. · Original · '+(f.move==='copy'?'kopiert':'in Vault verschoben')}));
+  if(f.art==='Notiz'&&f.pt){ P(f.pt).ev.push({d:'16.11.',k:'act',t:'<b>Du</b> notierst: '+esc(f.was.length>80?f.was.slice(0,80)+'…':f.was),src:'Notiz · intern',body:f.was}); toast('Notiz an '+f.pt+' gespeichert'); S.sheet=null; return; }
+  if(f.pt){ const p=P(f.pt); p.ev.push({d:'16.11.',k:'fact',t:(f.art==='Zusage'?'<b>'+esc(f.who||'Unbekannt')+'</b> sagt zu: ':'')+esc(f.was)+(fs.length?' · '+fs.length+' Datei'+(fs.length>1?'en':''):'')+(f.art==='Zusage'?(f.noT?' · <span class="chip c-warn">Termin fehlt</span>':f.bis?' · bis <b>'+esc(f.bis)+'</b>':''):''),src:f.src}); toast('An '+f.pt+' gespeichert'); }
+  else { S.inbox.push({id:'i'+(S.inbox.length+1),c:f.c,ch:f.art==='Notiz'?'Notiz':f.src,from:f.who||'Du',date:'16.11.',title:f.was,body:f.was+(f.bis?' · bis '+f.bis:''),hl:'',sug:Object.keys(S.points).find(id=>P(id).c===f.c),termin:null,useT:false,done:null}); toast('Im Eingang gespeichert'); }
+  S.sheet=null;
+ },
+kSel(d){ S.sheet={type:'kdetail',id:d.id}; },
+ kSeg(d){ S.kSeg=d.s; },
+ kClear(){ S.kq=''; },
+ kOpenFrom(d){ S.sheet={type:'kdetail',id:d.id}; },
+ kPost(d){ S.sheet=null; S.postSel=d.k; S.route='post'; window.scrollTo(0,0); },
+ kCopy(d){ try{ navigator.clipboard.writeText(d.v).then(()=>{toast('Kopiert');render();},()=>{toast('Kopieren nicht möglich');render();}); }catch(e){ toast('Kopieren nicht möglich'); } },
+ kToggle(d){ const k=KK(d.id); k.active=!k.active; toast(k.active?'Wird wieder verwendet':'Nicht mehr verwendet · bleibt in Quellen verlinkt'); },
+ kNew(d){ d=d||{}; const c=S.filter==='all'?(comms().length===1?comms()[0]:''):S.filter; const orgK=d.org?S.contacts.find(k=>k.name===d.org):null; S.sheet={type:'kontakt',ret:d.ret,f:{kind:'person',name:d.name||'',org:d.org||'',roles:orgK?orgK.roles.map(r=>({c:r.c,r:r.r})):(c?[{c:c,r:''}]:[]),mail:'',tel:'',lang:'DE',ch:'',note:''}}; S.cq=''; },
+ kNewList(){ const c=S.filter==='all'?'':S.filter; S.sheet={type:'kontakt',f:{kind:'list',name:'',c:c||null,count:'',stand:'',langs:['DE'],ch:''}}; S.cq=''; },
+ kEdit(d){ const k=KK(d.id); S.sheet={type:'kontakt',ret:d.id,f:JSON.parse(JSON.stringify(Object.assign({},k,{count:k.count!=null?String(k.count):''})))}; S.cq=''; },
+ kfKind(d){ S.sheet.f.kind=d.v; },
+ kfTog(d){ const f=S.sheet.f; const i=f.roles.findIndex(r=>r.c===d.c); if(i>=0) f.roles.splice(i,1); else f.roles.push({c:d.c,r:f.roles[0]?f.roles[0].r:''}); },
+ kfMore(){ S.sheet.f.more=!S.sheet.f.more; }, kfChan(d){ S.sheet.f.ch=d.v; },
+ mailShow(d){ const cur=S.sheet&&S.sheet.type==='kdetail'?S.sheet.id:null; S.sheet={type:'mail',id:d.id,ret:cur||undefined}; },
+ telShow(d){ const cur=S.sheet&&S.sheet.type==='kdetail'?S.sheet.id:null; S.sheet={type:'tel',id:d.id,ret:cur||undefined}; },
+ kOff(){ S.kOffOpen=!S.kOffOpen; },
+ fNewContact(){ const prev=S.sheet; const f=prev.f; S.sheet={type:'kontakt',back:prev,f:{kind:'person',name:f.who.trim(),org:'',roles:f.c?[{c:f.c,r:''}]:[],mail:'',tel:'',lang:'DE',ch:'',note:''}}; },
+ kfC(d){ S.sheet.f.c=d.v; S.cq=''; }, kfLangs(d){ S.sheet.f.langs=d.v.split('+'); }, kfLang(d){ S.sheet.f.lang=d.v; },
+ kfRAdd(){ S.sheet.f.roles.push({c:'',r:''}); }, kfRDel(d){ S.sheet.f.roles.splice(+d.i,1); },
+ kSave(){
+  const sh=S.sheet, f=sh.f; f.tried=true; if(Object.keys(kErrors(f)).length) return;
+  let id;
+  if(f.kind==='list'){ const o={kind:'list',c:f.c,name:f.name.trim(),count:+f.count,langs:f.langs,split:f.langs.join(' + '),ch:f.ch,stand:f.stand,src:f.src||'eigene Angabe'}; if(f.id){ const old=KK(f.id); Object.assign(old,o,{split:old.langs&&old.langs.join('+')===f.langs.join('+')&&old.split?old.split:o.split}); id=f.id; } else { o.id='l'+(S.lists.length+1+Math.floor(Math.random()*900)); S.lists.push(o); id=o.id; } }
+  else {
+   const org=f.kind==='person'?(f.org||'').trim():'';
+   if(org&&!S.contacts.some(k=>k.kind==='org'&&k.name.toLowerCase()===org.toLowerCase())) S.contacts.push({id:'k'+(S.contacts.length+1+Math.floor(Math.random()*900)),kind:'org',name:org,org:'',roles:f.roles.map(r=>({c:r.c,r:r.r})),mail:'',tel:'',lang:'DE',ch:'',note:'',active:true});
+   const o={kind:f.kind,name:f.name.trim(),org:org,roles:f.roles.map(r=>({c:r.c,r:r.r})),mail:f.mail.trim(),tel:f.tel.trim(),lang:f.lang||'DE',ch:f.ch||(f.mail.trim()?'Mail':f.tel.trim()?'Telefon':''),note:(f.note||'').trim()};
+   if(f.id){ Object.assign(KK(f.id),o); id=f.id; } else { o.id='k'+(S.contacts.length+1+Math.floor(Math.random()*900)); o.active=true; S.contacts.push(o); id=o.id; }
+  }
+  if(sh.back){ const b=sh.back; if(b.f&&'who' in b.f) b.f.who=f.name.trim(); S.sheet=b; toast('Kontakt angelegt'); return; }
+  S.sheet={type:'kdetail',id:id}; toast(f.id?'Gespeichert':'Kontakt angelegt');
+ },
+eSec(d){ S.eSec=d.s; },
+ rDay(d){ S.rhythm.day=d.v; toast('Wochenarbeit ab jetzt '+{Mo:'montags',Di:'dienstags',Mi:'mittwochs',Do:'donnerstags',Fr:'freitags',Sa:'samstags',So:'sonntags'}[d.v]); },
+ backupNow(){ S.lastBackup='16.11.2026, '+new Date().toTimeString().slice(0,5); toast('Sicherung erstellt'); },
+ restoreInfo(){ toast('Im Prototyp nicht verfügbar'); },
+ gemEdit(d){ const g=S.gem[d.c]||{art:'a1',units:'',addr:'',verw:'',lang:'DE',color:''}; S.sheet={type:'gem',f:Object.assign({key:d.c,name:COMM[d.c].name,short:COMM[d.c].short},JSON.parse(JSON.stringify(g)),{units:String(g.units||'')})}; },
+ gemNew(){ S.sheet={type:'gem',f:{isNew:true,key:'',name:'',short:'',art:'a1',units:'',addr:'',verw:'',lang:'DE',color:'',list:''}}; },
+ eSecArten(){ S.sheet=null; S.route='einst'; S.eSec='arten'; }, artAdd(){ S.arten.push({id:'a'+(S.arten.length+1+Math.floor(Math.random()*900)),n:'',u:'Einheiten'}); }, artDel(d){ S.arten=S.arten.filter(a=>a.id!==d.id); toast('Art entfernt'); }, gColor(d){ S.sheet.f.color=d.v; }, gLang(d){ S.sheet.f.lang=d.v; },
+ gSave(){ const f=S.sheet.f; const k=f.key;
+  if(f.isNew){ COMM[k]={name:f.name.trim(),short:f.short.trim()||f.name.trim()}; S.extraComms=(S.extraComms||[]).concat(k); const st=document.createElement('style'); st.textContent='.b-'+k+'{background:'+f.color+'}'; document.head.appendChild(st); }
+  else { COMM[k].name=f.name.trim(); COMM[k].short=f.short.trim()||f.name.trim(); }
+  S.gem[k]={art:f.art,units:+f.units||'',addr:f.addr.trim(),verw:f.verw,lang:f.lang,color:f.color,list:f.list||''};
+  if(!f.isNew){ document.querySelectorAll('style[data-gc="'+k+'"]').forEach(x=>x.remove()); const st=document.createElement('style'); st.dataset.gc=k; st.textContent='.b-'+k+'{background:'+f.color+'}'; document.head.appendChild(st); }
+  S.sheet=null; toast('Gespeichert'); },
+tourStart(){ S.sheet=null; S.route='lage'; if(S.week.started&&!S.week.done){ S.week.mins=mins(); S.week.start=null; } S.showTasks=false; S.tour=-1; window.scrollTo(0,0); },
+ tourNext(){ if(S.tour===-1){ S.route='lage'; } S.tour=S.tour+1; S.tourFocus=true; if(S.tour>=TOUR.length){ S.tour=null; try{localStorage.setItem('wm-tour','1');}catch(e){} S.showTasks=true; toast('Tour beendet · neu starten in Einstellungen › Hilfe'); window.scrollTo(0,0); } },
+ tourPrev(){ S.tour=Math.max(0,S.tour-1); S.tourFocus=true; },
+ tourEnd(){ S.tour=null; try{localStorage.setItem('wm-tour','1');}catch(e){} S.showTasks=true; window.scrollTo(0,0); },
+ tourNoop(){},
+ hintOk(d){ S.hintSeen=S.hintSeen||{}; S.hintSeen[d.n]=1; try{localStorage.setItem('wm-wh-'+d.n,'1');}catch(e){} },
+ hintsOff(){ S.hintsOff=true; try{[1,2,3,4,5].forEach(n=>localStorage.setItem('wm-wh-'+n,'1'));}catch(e){} toast('Hinweise aus · wieder einschalten in Einstellungen › Hilfe'); },
+ hintsReset(){ S.hintsOff=false; S.hintSeen={}; try{[1,2,3,4,5].forEach(n=>localStorage.removeItem('wm-wh-'+n));}catch(e){} toast('Hinweise zur Wochenarbeit wieder an'); },
+ inSel(d){ const i=S.inbox.find(x=>x.id===d.id); if(!i) return; if((i.done==='assign'||i.done==='neu')&&i.sug){ return A.akte({id:i.sug}); } if(i.done){ i.done=null; } S.inSel=i.id; window.scrollTo(0,0); },
+ inTset(d){ const it=curIn(); if(it) it.useT=d.v==='1'; },
+ judgeSet(d){ const p=P(d.id); if(!!p.judged!==(d.v==='1')) A.judgeToggle(d); },
+ evOpen(d){ S.sheet={type:'ev',p:d.p,i:+d.i}; },
+ judgeToggle(d){ const p=P(d.id); p.judged=!p.judged; if(p.judged) p.ev.push({d:'16.11.',k:'judge',t:'<b>Du</b> bewertest: Zusage <b>nicht eingehalten</b>',src:'intern'}); else p.ev=p.ev.filter(e=>e.k!=='judge'); },
+ seg(d){ S.seg=d.s; },
+ tasks(){ S.sheet={type:'tasks'}; }, hideTasks(){ S.showTasks=false; },
+ theme(){ const r=document.documentElement; const dark=r.dataset.theme? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches; r.dataset.theme=dark?'light':'dark'; },
+ reset(){ seed(); S.showTasks=true; toast('Neu gestartet'); },
+ close(){ const sh=S.sheet; S.sheet=sh&&sh.back?sh.back:(sh&&sh.ret?{type:'kdetail',id:sh.ret}:null); }, scrim(d,el,ev){ if(ev.target===el) S.sheet=null; }
+};
+const AC={ /* change */
+ filter(el){ S.filter=el.value; }, inT(el){ curIn().useT=el.checked; },
+ judge(el){ A.judgeToggle({id:el.dataset.id}); },
+ gArtSel(el){ S.sheet.f.art=el.value; },
+ gVerw(el){ S.sheet.f.verw=el.value; },
+ kfRole(el){ const r=S.sheet.f.roles.find(x=>x.c===el.dataset.c); if(r) r.r=el.value; },
+ nhC(el){ S.nh.c[+el.dataset.i]=el.value; }, nhP(el){ const i=+el.dataset.i; if(el.value.indexOf('c:')===0){ S.nh.p[i]=''; S.nh.c[i]=el.value.slice(2); return; } S.nh.p[i]=el.value; if(el.value){ S.nh.c[i]=P(el.value).c; if(!S.nh.s[i].trim()) S.nh.s[i]=P(el.value).title; } }, fNoT(el){ S.sheet.f.noT=el.checked; if(el.checked) S.sheet.f.bis=''; }, fPt(el){ S.sheet.f.pt=el.value; },
+ fFile(el){ const f=S.sheet.f; f.files=f.files||[]; Array.from(el.files||[]).forEach(fl=>{ if(f.files.some(x=>x.name===fl.name)) return; const kb=fl.size/1024; f.files.push({name:fl.name,size:kb>1024?(kb/1024).toFixed(1).replace('.',',')+' MB':Math.max(1,Math.round(kb))+' KB'}); }); el.value=''; f.src='Datei'; }
+};
+const AI={ /* input, ohne Neurendern wo möglich */
+ cq(el){ S.cq=el.value; return true; },
+ note(el){ const c=S.decisions[S.week.decIdx]; c.note=el.value; if(c.done) applyDecision(c); return false; },
+ nhS(el){ S.nh.s[+el.dataset.i]=el.value; return false; }, nhN(el){ S.nh.note=el.value; return false; }, nhX(el){ S.nh.extra=+el.value||0; return false; },
+ msgEdit(el){ const m=ensureMsg(S.postSel); m.edit[S.lang]=el.value; const wasOk=Object.keys(m.ok).length; m.ok={}; return wasOk>0; },
+ fWho(el){ const f=S.sheet.f; const st=x=>x.trim()&&!S.contacts.some(k=>k.name.toLowerCase()===x.trim().toLowerCase()); const a=st(f.who||''); f.who=el.value; return a!==st(el.value); }, fWas(el){ const was=!!S.sheet.f.was.trim(); S.sheet.f.was=el.value; return was!==!!el.value.trim(); }, fBis(el){ S.sheet.f.bis=el.value; return false; },
+ sDate(el){ S.sheet.date=el.value; return false; },
+ kq(el){ S.kq=el.value; return true; },
+ artN(el){ const a=S.arten.find(x=>x.id===el.dataset.id); if(a) a.n=el.value; return false; }, artU(el){ const a=S.arten.find(x=>x.id===el.dataset.id); if(a) a.u=el.value; return false; },
+ meName(el){ S.me.name=el.value; return false; }, meRole(el){ S.me.role=el.value; return false; }, meSigDE(el){ S.me.sigDE=el.value; return false; }, meSigEN(el){ S.me.sigEN=el.value; return false; },
+ rMins(el){ S.rhythm.mins=+el.value||0; return false; }, rBudget(el){ S.rhythm.budget=+el.value||0; return false; }, rAkut(el){ S.rhythm.akut=+el.value||0; return false; },
+ fo_punkte(el){ S.folders.punkte=el.value; return false; }, fo_quellen(el){ S.folders.quellen=el.value; return false; }, fo_kontakte(el){ S.folders.kontakte=el.value; return false; }, fo_vorlagen(el){ S.folders.vorlagen=el.value; return false; },
+ gName(el){ const a=!!S.sheet.f.name.trim(); S.sheet.f.name=el.value; return a!==!!el.value.trim(); }, gShort(el){ S.sheet.f.short=el.value; return false; },
+ gKey(el){ const v=el.value.toUpperCase().replace(/[^A-Z0-9]/g,''); const a=S.sheet.f.key; S.sheet.f.key=v; el.value=v; return /^[A-Z0-9]{2,3}$/.test(a)!==/^[A-Z0-9]{2,3}$/.test(v); },
+ gAddr(el){ S.sheet.f.addr=el.value; return false; }, gUnits(el){ S.sheet.f.units=el.value; return false; },
+ kfName(el){ const f=S.sheet.f; const before=kDupKey(f); f.name=el.value; return before!==kDupKey(f)||(f.tried&&!!el.value.trim()!==!!before.split('|')[0]); },
+ kfOrg(el){ const f=S.sheet.f; const o=S.contacts.some(k=>k.kind==='org'&&k.name.toLowerCase()===f.org.trim().toLowerCase()); const was=!!f.org.trim()&&!o; f.org=el.value; const o2=S.contacts.some(k=>k.kind==='org'&&k.name.toLowerCase()===el.value.trim().toLowerCase()); return was!==(!!el.value.trim()&&!o2); }, kfMail(el){ S.sheet.f.mail=el.value; return false; }, kfTel(el){ S.sheet.f.tel=el.value; return false; }, kfNote(el){ S.sheet.f.note=el.value; return false; },
+ kfCh(el){ S.sheet.f.ch=el.value; return false; }, kfStand(el){ S.sheet.f.stand=el.value; return false; },
+ kfCount(el){ const a=+S.sheet.f.count>0; S.sheet.f.count=el.value; return a!==(+el.value>0); },
+ kfR(el){ const r=S.sheet.f.roles[+el.dataset.i]; const a=!!r.r.trim(); r.r=el.value; return a!==!!el.value.trim(); }
+};
+document.addEventListener('click',ev=>{
+ const el=ev.target.closest('[data-act]'); if(!el||el.disabled) return;
+ const k=el.dataset.act; if(!A[k]) return;
+ if(k==='scrim'&&ev.target!==el) return;
+ const r=A[k](el.dataset,el,ev);
+ if(r&&r.then) return;
+ render();
+});
+document.addEventListener('change',ev=>{ const el=ev.target.closest('[data-act-change]'); if(!el) return; AC[el.dataset.actChange](el); render(); });
+document.addEventListener('input',ev=>{ const el=ev.target.closest('[data-act-input]'); if(!el) return; if(AI[el.dataset.actInput](el)) render(); });
+document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&S.tour!=null){ A.tourEnd(); render(); return; } if(S.tour!=null&&S.tour>=0&&(ev.key==='ArrowRight'||ev.key==='ArrowLeft')){ (ev.key==='ArrowRight'?A.tourNext:A.tourPrev)(); render(); return; } if(ev.key==='Escape'&&S.sheet){ S.sheet=null; render(); } });
+function fromHash(){ const h=location.hash.replace('#',''); if(['lage','punkte','post','kontakte','einst'].indexOf(h)>=0) S.route=h; else if(h==='woche'){ S.route='woche'; if(!S.week.started){S.week.started=true;S.week.start=Date.now();} } }
+window.addEventListener('hashchange',()=>{fromHash();render();});
+seed(); fromHash(); try{ if(!localStorage.getItem('wm-tour')){ S.tour=-1; S.showTasks=false; S.route='lage'; } }catch(e){} render();
+setInterval(()=>{ if(S.route==='woche'&&S.week.start){ const el=document.querySelector('.whead .pid'); if(el) el.textContent='aktiv '+mins()+' min · Ziel ≤ 60'; } },20000);
+})();
+</script>
+
+</body>
+</html>

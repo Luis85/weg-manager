@@ -1,0 +1,45 @@
+/* WEG Manager · Design Tokens v2 (Stand 15.11.2026)
+   Präfix --wm-, gekapselt auf .wm-root, damit Host-Themes nicht kollidieren.
+   Dunkelmodus folgt Obsidian: body.theme-dark. */
+.wm-root{
+  /* Flächen */
+  --wm-bg:#F6F6F3; --wm-surface:#FFFFFF; --wm-surface-2:#FAFAF8; --wm-sunk:#EDEDE8;
+  --wm-line:#E4E4DF; --wm-line-strong:#D4D4D8;
+  /* Text */
+  --wm-fg:#18181B; --wm-fg-2:#52525B; --wm-fg-3:#5F5F67;
+  /* Aktion */
+  --wm-primary:#18181B; --wm-on-primary:#FFFFFF; --wm-focus:#2563EB;
+  /* Gemeinschaften (Zuordnung je Gemeinschaft konfigurierbar, Default) */
+  --wm-c1:#0F766E; --wm-c1-bg:#E3F3EF; --wm-c1-fg:#0B5F55;
+  --wm-c2:#6D28D9; --wm-c2-bg:#F1EBFE; --wm-c2-fg:#5B21B6;
+  /* Semantik */
+  --wm-warn:#B45309; --wm-warn-bg:#FEF3E2; --wm-warn-fg:#92400E;
+  --wm-bad:#B42318;  --wm-bad-bg:#FDECEA;  --wm-bad-fg:#9F1D14;
+  --wm-ok:#15803D;   --wm-ok-bg:#ECFDF3;   --wm-ok-fg:#166534;
+  --wm-info:#4F46E5; --wm-info-bg:#EEF2FF; --wm-info-fg:#3730A3;
+  --wm-judge:#6D28D9;--wm-judge-bg:#F5F3FF;--wm-judge-fg:#5B21B6;
+  --wm-mark:#FEF9C3; --wm-scrim:rgba(24,24,27,.45);
+  /* Typografie */
+  --wm-font:"Geist",var(--font-interface,ui-sans-serif),system-ui,sans-serif;
+  --wm-font-mono:"Geist Mono",var(--font-monospace,ui-monospace),monospace;
+  --wm-text-xs:12px; --wm-text-sm:13px; --wm-text-md:15px; --wm-text-lg:17px;
+  --wm-title-sm:21px; --wm-title-md:24px; --wm-title-lg:30px; --wm-kpi:40px;
+  /* Raster */
+  --wm-space-1:4px; --wm-space-2:8px; --wm-space-3:12px; --wm-space-4:16px; --wm-space-5:20px; --wm-space-6:24px; --wm-space-8:32px;
+  --wm-radius-sm:6px; --wm-radius-md:10px; --wm-radius-lg:14px; --wm-radius-xl:18px; --wm-radius-pill:999px;
+  --wm-touch:44px; --wm-sidebar:236px;
+}
+body.theme-dark .wm-root{
+  --wm-bg:#111113; --wm-surface:#1A1A1D; --wm-surface-2:#1F1F22; --wm-sunk:#232327;
+  --wm-line:#2C2C30; --wm-line-strong:#3A3A3F;
+  --wm-fg:#EDEDEF; --wm-fg-2:#A1A1AA; --wm-fg-3:#9A9AA3;
+  --wm-primary:#EDEDEF; --wm-on-primary:#18181B; --wm-focus:#60A5FA;
+  --wm-c1:#2BB3A3; --wm-c1-bg:#0F2E2A; --wm-c1-fg:#5EEAD4;
+  --wm-c2:#A78BFA; --wm-c2-bg:#2A1F45; --wm-c2-fg:#C4B5FD;
+  --wm-warn:#F59E0B; --wm-warn-bg:#3A2A12; --wm-warn-fg:#FCD34D;
+  --wm-bad:#F87171;  --wm-bad-bg:#3B1A1A;  --wm-bad-fg:#FCA5A5;
+  --wm-ok:#22C55E;   --wm-ok-bg:#11291C;   --wm-ok-fg:#86EFAC;
+  --wm-info:#818CF8; --wm-info-bg:#1E1B4B; --wm-info-fg:#A5B4FC;
+  --wm-judge:#A78BFA;--wm-judge-bg:#2A1F45;--wm-judge-fg:#C4B5FD;
+  --wm-mark:#4A3F0B; --wm-scrim:rgba(0,0,0,.6);
+}

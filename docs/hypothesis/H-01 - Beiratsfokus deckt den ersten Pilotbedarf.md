@@ -1,0 +1,46 @@
+---
+type: Hypothesis
+id: H-01
+status: ungeprueft
+category: scope
+derivation: abgeleitet
+date: 2026-11-15
+---
+
+# H-01 · Beiratsfokus deckt den ersten Pilotbedarf
+
+## Hypothese
+
+Der Beirat kann seine wesentlichen wiederkehrenden Anliegen mit dem vorgesehenen Punkteregister und Wochenablauf bearbeiten, ohne dafür bereits die vollständige eigene Handwerker- und Zahlungsverwaltung zu benötigen.
+
+## Herkunft und aktueller Evidenzstand
+
+**Herkunft:** Produktvision: Zielgruppe und Problem sowie Erstes Produktangebot und Grenzen. Intake-Abgleich: Befund und K-01; offene Bestätigung O-01.
+
+Der Pilot beschreibt Beiratsarbeit gegenüber einer externen Verwaltung. Dies stützt die Richtung, bestätigt aber noch nicht die ausreichende Abdeckung durch das neue Plugin.
+
+## Vorgeschlagene Prüfung
+
+Vor Entwicklungsfreigabe typische Anliegen mit dem Piloten fachlich gegen den Scope prüfen; nach Veröffentlichung tatsächliche Wochenarbeit beobachten und nicht abgedeckte Kernanliegen protokollieren.
+
+## Hinweise auf Unterstützung
+
+Die wesentlichen wiederkehrenden Fälle lassen sich als Punkte mit Quellen, Entscheidungen und Folgearbeit abschließen; verschobene operative Module blockieren den Kernablauf nicht.
+
+## Gegenbelege und Auswertungsgrenze
+
+Wiederkehrende Kernarbeit erfordert eigene Auftrags- oder Zahlungsfunktionen oder muss deshalb dauerhaft außerhalb des Produkts bleiben.
+
+## Konsequenz für die Produktarbeit
+
+Bei Gegenbelegen den ersten Scope neu zuschneiden; nicht alle späteren Module automatisch ins MVP aufnehmen.
+
+## Bezüge
+
+[[K-01 - Beirat als erster Produkteinstieg]], [[F-03 - Einzelne Punkte bearbeiten]], [[F-16 - Operative Handwerkersteuerung]], [[F-17 - Rechnungen und Zahlungen führen]].
+
+[Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`).
+
+## Prüfergebnis
+
+Noch keine Prüfung dokumentiert. Spätere Ergebnisse mit Datum, beobachtetem Kontext, Evidenz und Einschränkungen ergänzen; Status nicht allein aufgrund eines implementierten Features ändern.

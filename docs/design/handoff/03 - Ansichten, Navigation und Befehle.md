@@ -1,0 +1,59 @@
+---
+type: Handoff
+id: HO-03
+status: entwurf
+scope: mvp
+version: "1.0"
+date: 2026-11-15
+---
+
+# Handoff · Ansichten, Navigation und Befehle
+
+## Einbettung in Obsidian
+
+- **Eine** registrierte View (`registerView`, Typ `weg-manager`) mit interner Navigation; keine 7 Obsidian-Views. Der Tab-Titel folgt dem Ziel („WEG Manager · Woche“).
+- Öffnen über Ribbon-Symbol (Desktop), Befehl und mobil über das Obsidian-Menü (kein Ribbon auf Mobil).
+- Geöffnete Leaves werden beim Plugin-Update nicht geschlossen; die View stellt ihren Zustand aus `getState()/setState()` wieder her (Ziel, Punkt-ID, Wochenschritt).
+- Akten bleiben normale Markdown-Notizen (K-14); „In Notiz öffnen“ führt aus der Punktakte zur Datei.
+
+## Routen und Zustand
+
+| Route | Ansicht | Parameter | Rückweg |
+| --- | --- | --- | --- |
+| `lage` | [[VIEW-01 - Lage]] | Filter | — |
+| `woche/<schritt>` | [[VIEW-02 - Wochenarbeit]] | Schritt 1–5, Position | „← Zurück zur Lage“ pausiert → `lage` |
+| `punkte` | [[VIEW-03 - Punkte und Punktakte]] Liste | Segment, Filter, Suche | — |
+| `punkt/<id>` | Punktakte | Punkt-ID | Herkunft (Liste, Lage, Woche) inkl. Scrollposition |
+| `post` | [[VIEW-04 - Postausgang]] | gewählte Nachricht, Sprache | — |
+| `ausgabe/<gemeinschaft>` | [[VIEW-06 - Sachstand ausgeben]] | Empfängerart | Punkte |
+| `kontakte` | [[VIEW-08 - Kontakte]] | Segment, Suche | — |
+| Modal `kontakt/<id>` | Kontakt (über jeder Ansicht) | Kontakt-ID | schließt zurück zur Ansicht |
+| `einstellungen/<bereich>` | [[VIEW-07 - Einstellungen und Einrichtung]] | Bereich | vorheriges Ziel |
+| Sheet `erfassen` | [[VIEW-05 - Erfassen]] | optional Punkt-ID | schließt zurück zur Ansicht |
+
+Desktop: Punktakte aus Lage/Woche öffnet im rechten Panel; aus der Liste als Hauptinhalt. Mobil immer Vollbild.
+
+## Befehle (Command Palette)
+
+Ohne Standard-Hotkeys (Obsidian-Richtlinie); Namen in Satzanfang-Großschreibung.
+
+| ID | Name |
+| --- | --- |
+| `open-lage` | Lage öffnen |
+| `start-week` | Wochenarbeit starten oder fortsetzen |
+| `capture` | Erfassen |
+| `capture-from-note` | Aktuelle Notiz als Quelle erfassen |
+| `open-post` | Postausgang öffnen |
+| `open-contacts` | Kontakte öffnen |
+| `new-contact` | Neuer Kontakt |
+| `open-point` | Punkt öffnen … (Suche) |
+| `backup-now` | Jetzt sichern |
+| `open-settings` | Einstellungen öffnen |
+| `start-tour` | Einführungstour starten |
+
+## Navigationsregeln
+
+- Gemeinschaftsfilter wirkt auf alle Ziele gleich und bleibt beim Wechsel erhalten. Der aktive Filter steht als FilterTag im Kopf jeder Ansicht.
+- Ungespeicherte Eingaben bleiben bei jedem Wechsel erhalten (Entwurfsspeicher je Formular).
+- Wochenarbeit: Wechsel zu einem anderen Ziel pausiert die Sitzung automatisch.
+- Maximal zwei Ebenen; Sheets nie gestapelt.

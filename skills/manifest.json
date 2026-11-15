@@ -1,0 +1,36 @@
+{
+  "schema": "weg-manager.skill-packages/v1",
+  "skills": [
+    {
+      "id": "weg-gmail-to-vault",
+      "version": "0.1.0",
+      "title": "Gmail-Nachrichten in den WEG-Vault übernehmen",
+      "source": "weg-gmail-to-vault/",
+      "entrypoint": "SKILL.md",
+      "archive": "dist/weg-gmail-to-vault-0.1.0.zip",
+      "sha256": "9c6d297195ce717d6a3da55232fb20722b0242c5dcfb731ea6ceb57930199791",
+      "size_bytes": 14816,
+      "license": "MIT",
+      "capabilities_required": [
+        "existing-gmail-search-and-read-connector",
+        "user-granted-vault-write-access",
+        "python-3.10-or-newer"
+      ],
+      "mailbox_access": "read-only-workflow",
+      "installation_modes": [
+        {
+          "mode": "claude-code-project-folder",
+          "destination": ".claude/skills/weg-gmail-to-vault",
+          "behavior": "user-selected project or vault; existing files must be compared before update"
+        },
+        {
+          "mode": "claude-custom-skill-upload",
+          "artifact": "zip-with-single-skill-root",
+          "behavior": "provide archive to user; no universal account-side installation API assumed"
+        }
+      ],
+      "plugin_installer_status": "specified-not-implemented",
+      "live_claude_gmail_validation": "not-performed"
+    }
+  ]
+}

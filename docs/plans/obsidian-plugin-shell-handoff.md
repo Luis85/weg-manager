@@ -247,3 +247,53 @@ Decided by the owner on 2026-11-21, following [the testing research](../design/r
   - Each planted defect was caught by its spec: a console warning, a portal outside the pop-out, a dead theme binding.
   - After filtering Chromium's benign `ResizeObserver loop` notification, 8 of 8 consecutive runs passed, each taking about 15 seconds for both versions. The one failure before that fix was that notification.
 - **Still to do.** After about two weeks without flakes, make the e2e checks required (`docs/engineering/github-setup.md`). Beta versions are not tested; they would need an Insiders account with two-factor authentication off.
+
+## 9. Run 3: review fixes, event system, skills and diagrams (2026-11-21)
+
+A fresh-eyes code review of the shell produced the fixes below. Each has a test that fails on the old code.
+
+| Area | Change | Commits |
+| --- | --- | --- |
+| Unload | Every undo step runs on its own; the runtime is always disposed; the first error is rethrown. Commands and the ribbon entry are removed only when bootstrap fails, because a late dispose removing them by id hit a quick re-enable's commands. | `2d676da` |
+| Ribbon | The `showRibbonIcon` setting is gone. `icon.remove()` left the entry in `leftRibbon.items`, and it reappeared after `leftRibbon.onChange()` (confirmed in real Obsidian). The icon is added once; the user hides it through the ribbon's context menu. The test double's ribbon now copies Obsidian's. | `15913f6` |
+| Settings tab | The log level dropdown shows Fehler / Warnungen / Informationen / Details; the stored values are unchanged. | `15913f6` |
+| Presentation | `useEffectAction` never rejects; the surface mounts after its elements are attached; Nuxt UI uses the German locale; "1 Markdown-Datei"; the count region is `aria-busy` / `aria-live`; the read-only hint gives cause and action. | `491617f` … `a2c909b` |
+| Events (ADR 0004) | Typed `EventBus` (unbounded `PubSub`) with the `AppEvent` vocabulary. `hostEventsLayer` maps vault, metadata-cache and workspace events, holds them until `LayoutReady` and removes every listener on dispose. `useAppEvents` subscribes components. The panel recounts 300 ms after a burst of Markdown changes. | `4d6509c`, `2f2324b`, `a95f363` |
+| e2e | Runs `latest/latest` only (owner's decision). `events.e2e.ts` proves one listener per host event and none after disable, and that the count follows note changes. | `f67d043`, `4d6509c`, `a95f363` |
+| Skills | `obsidianmd/obsidian-skills` (7 skills) and `archify` 3.2.0 are in `.claude/skills/` (without Archify's 13 MB of demo HTML). Both are recorded in `THIRD_PARTY.md`. | `5586f98`, `e6f1545` |
+| Diagrams | Archify writes to `docs/archify/<type>-<slug>-<ts>/` (rule in `AGENTS.md`; receipts git-ignored). There is a plugin architecture diagram and an event-flow sequence diagram, both source-linked. | `10a8dab` … `7dadb7d` |
+| Backlog | PBI-48 (external settings changes), PBI-49 (one edit location per setting), PBI-50 (vault events; the event part is done, indexing is still open). | `f770ff6`, `a95f363` |
+
+### Check results (2026-11-21, after run 3)
+
+| Check | Result |
+| --- | --- |
+| `npm run verify` | passed (coverage: lines 97.96, statements 96.61, functions 95.15, branches 93.91) |
+| `npm run test:e2e` (real Obsidian 1.15.1, 4 specs, 15 tests) | passed, locally and in CI |
+| `npm run test:mutation:full` | pending: re-run after the Stryker sandbox fix (`ignorePatterns`) |
+| GitHub Actions on PR #4 (`verify`, `e2e`, GitGuardian) | passed |
+
+### Rulings from run 3
+
+51. Ribbon visibility is Obsidian's job (its ribbon context menu), not a plugin setting.
+52. On a normal unload, Obsidian removes the plugin's commands and ribbon entry; bootstrap's undo removes them only after a failed bootstrap. When it does, it uses the internal `leftRibbon.removeRibbonAction` behind an optional call. That path is tested against the double only.
+53. Event bus: an unbounded `PubSub`, because Obsidian callbacks are synchronous and dropping file events during a bulk sync is not acceptable. `ActiveFileChanged` comes from `file-open`; folders are not published.
+54. Agent worktrees for parallel subagents live in `.claude/worktrees/` (git-ignored). Symlinking `node_modules` there breaks the Tailwind `@source not` excludes, so use a real directory with per-package links and real copies of `@nuxt/ui` and `.nuxt-ui`.
+55. Archify's demo HTML is not vendored, and its diagrams go to `docs/archify/` rather than `.archify/`.
+
+### Still open
+
+- **Your decisions:**
+  - the merge path of `feature/plugin-shell` into `main`;
+  - GitHub rules (`CI / verify` required now, `CI / e2e` after about two weeks without flakes);
+  - a home for PBI-48–50 (F-21 or a new technical Feature under E-07);
+  - the triage state of PBI-49.
+- **Manual checks:** in your own vault (theme, other plugins, keyboard, screen reader). Also delete `.claude/worktrees/`.
+- **Backlog:** PBI-48, PBI-49, and indexing under PBI-50.
+- **Known and deferred:**
+  - the English default greeting (i18n);
+  - card and dialog spacing, and the card header divider;
+  - the 1.5 MB bundle budget against the actual ~540 KB;
+  - 25 moderate dev-only `npm audit` findings;
+  - mobile (`isDesktopOnly`, K-09);
+  - upgrading to the 1.15.x types once they are published.

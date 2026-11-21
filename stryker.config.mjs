@@ -12,6 +12,17 @@ const config = {
   reporters: ["clear-text", "progress", "html", "json"],
   htmlReporter: { fileName: "reports/mutation/index.html" },
   jsonReporter: { fileName: "reports/mutation/mutation.json" },
+  // Nothing here is needed to run the unit tests: the Obsidian download (~1.3 GB), agent worktrees
+  // (they contain symlinks Stryker cannot copy), skills, docs and build output.
+  ignorePatterns: [
+    "/.obsidian-cache",
+    "/.claude",
+    "/docs",
+    "/dist",
+    "/release",
+    "/coverage",
+    "/harness",
+  ],
   tempDirName: ".stryker-tmp",
   cleanTempDir: "always",
 };

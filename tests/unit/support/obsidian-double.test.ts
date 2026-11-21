@@ -10,6 +10,7 @@ import {
 } from "../../support/notes/fidelity";
 import { probeApi, type ProbeApi } from "../../support/notes/probe-api";
 import { storeScenario, vaultFacts } from "../../support/notes/scenarios";
+import { READINESS_FACTS, readinessScenario } from "../../support/readiness-scenario";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -24,7 +25,7 @@ afterEach(async () => {
 
 /**
  * The Obsidian double against what real Obsidian does: the same scenarios and expectations as
- * `tests/e2e/specs/note-store.e2e.ts`, which runs them in the app.
+ * `tests/e2e/specs/note-store.e2e.ts` and `vault-ready.e2e.ts`, which run them in the app.
  */
 describe("the Obsidian double", () => {
   it("behaves as Obsidian's vault, metadata cache and file manager", async () => {
@@ -43,5 +44,10 @@ describe("the Obsidian double", () => {
     probes.push(api);
     const context = { app, obsidian, plugins: { noteStoreProbe: { api } } };
     expect(await storeScenario(context as never, SETTLE_MS)).toEqual(STORE_REPORT);
+  });
+
+  it("fires changed, resolve and resolved around an edit as Obsidian does", async () => {
+    const app = new App();
+    expect(await readinessScenario({ app } as never, SETTLE_MS)).toEqual(READINESS_FACTS);
   });
 });

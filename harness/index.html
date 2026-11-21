@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WEG Manager Harness</title>
+  </head>
+  <body class="theme-light">
+    <header class="harness-bar">
+      <strong>WEG Manager Harness</strong>
+      <label>
+        Szenario
+        <select id="scenario"></select>
+      </label>
+      <button id="theme" type="button">Theme wechseln</button>
+    </header>
+    <main class="harness-surfaces">
+      <section class="harness-leaf" id="surface-wide" aria-label="Breite Ansicht"></section>
+      <section
+        class="harness-leaf harness-narrow"
+        id="surface-narrow"
+        aria-label="320 px"
+      ></section>
+    </main>
+    <ol id="notices" class="harness-notices" aria-live="polite"></ol>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

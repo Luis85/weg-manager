@@ -89,6 +89,14 @@ export default defineConfig(
     languageOptions: { globals: globals.node },
   },
   {
+    // The harness is a plain browser page standing in for Obsidian: no activeDocument, no createEl.
+    files: ["harness/**"],
+    rules: {
+      "obsidianmd/prefer-active-doc": "off",
+      "obsidianmd/prefer-create-el": "off",
+    },
+  },
+  {
     files: ["**/*.ts", "**/*.vue", "**/*.mjs"],
     ignores: ["tests/**"],
     rules: { "max-lines": ["error", { max: 400, ...LOC }] },

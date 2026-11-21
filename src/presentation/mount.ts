@@ -3,7 +3,7 @@ import { createApp, h, type Component } from "vue";
 import type { AppRuntime } from "../application/app-services";
 import ShellApp from "./components/ShellApp.vue";
 import { provideRuntime, reportVueError } from "./runtime/use-runtime";
-import { SCOPE_CLASS } from "./scope";
+import { PORTAL_CLASS, SCOPE_CLASS } from "./scope";
 import { bindHostTheme } from "./theme";
 
 /**
@@ -50,6 +50,7 @@ export const mountSurface = (
 
   const host = doc.createElement("div");
   const portal = doc.createElement("div");
+  portal.className = PORTAL_CLASS;
   const app = createApp({
     render: () => h(ShellApp, { portal, ...(options.content ? { content: options.content } : {}) }),
   });

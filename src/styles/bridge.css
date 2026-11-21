@@ -32,6 +32,12 @@
   color: var(--wm-text);
 }
 
+/* Each surface's portal (see src/presentation/scope.ts): dialogs stack above later views. */
+.weg-manager-portal {
+  position: relative;
+  z-index: var(--layer-modal, 50);
+}
+
 /* Minimal owned reset (instead of Tailwind preflight). */
 *,
 ::before,

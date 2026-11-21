@@ -20,7 +20,9 @@
     "analyze": "fallow && fallow architecture",
     "build": "vite build",
     "check:dist": "node scripts/check-dist.mjs",
-    "dev": "node scripts/dev-install.mjs"
+    "dev": "node scripts/dev-install.mjs",
+    "dev:ui": "vite --config vite.harness.config.ts",
+    "build:ui": "vite build --config vite.harness.config.ts"
   },
   "dependencies": {
     "@nuxt/ui": "4.13.0",

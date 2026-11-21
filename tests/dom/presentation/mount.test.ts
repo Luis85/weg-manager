@@ -4,7 +4,7 @@ import { defineComponent, h } from "vue";
 import { SCOPE_CLASS as SCRIPT_SCOPE_CLASS } from "../../../scripts/scope-css.mjs";
 import { updateGreeting } from "../../../src/application/use-cases";
 import { mountSurface, releaseAll } from "../../../src/presentation/mount";
-import { SCOPE_CLASS } from "../../../src/presentation/scope";
+import { PORTAL_CLASS, SCOPE_CLASS } from "../../../src/presentation/scope";
 import { testRuntime } from "../../support/runtime";
 
 const roots: HTMLElement[] = [];
@@ -44,6 +44,7 @@ describe("mountSurface", () => {
     const close = mountSurface(root, runtime);
     await settle();
     expect(root.classList.contains(SCOPE_CLASS)).toBe(true);
+    expect(root.querySelector(`:scope > .${PORTAL_CLASS}`)).not.toBeNull();
     expect(root.querySelector("[data-testid=greeting]")?.textContent).toContain("Moin");
     close();
     await runtime.dispose();

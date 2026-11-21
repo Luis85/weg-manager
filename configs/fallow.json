@@ -8,10 +8,7 @@
     "tests/e2e/wdio.conf.mts",
     "configs/*.ts",
     "configs/*.mjs",
-    "*.config.mjs",
-    "skills/src/package-skills.ts",
-    "skills/src/gmail/cli.ts",
-    "skills/tests/**/*.test.ts"
+    "*.config.mjs"
   ],
   "ignorePatterns": [
     "docs/**",
@@ -20,9 +17,7 @@
     "release/**",
     ".stryker-tmp/**",
     ".superpowers/**",
-    ".obsidian-cache/**",
-    "skills/weg-gmail-to-vault/**",
-    "skills/dist/**"
+    ".obsidian-cache/**"
   ],
   "duplicates": {
     "minTokens": 50

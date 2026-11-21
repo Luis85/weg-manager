@@ -22,7 +22,7 @@ Das Plugin übergibt einen bewusst gewählten Arbeitsbereich und Auftrag über e
 
 Ein sichtbarer Gemeinschaftsfilter ersetzt keine tatsächlich durchgesetzte Dateiberechtigung. Das Plugin darf den Umfang der verfügbaren Werkzeuge nicht als enger behaupten, als ihn Laufzeit und Betriebssystem erlauben. Bereits vorhandene CLI-Authentifizierungsoptionen werden nicht verändert oder entfernt. Kontozugriff und Abo-/API-Abrechnung müssen vor Nutzung des angeforderten Modus geklärt sein.
 
-Connectoren und Skills einer anderen Claude-Umgebung stehen nicht allein durch dieselbe Anmeldung automatisch zur Verfügung. Der Gmail-Skill kann nur verwendet werden, wenn die tatsächlichen Gmail-Lesetools und der Vaultzugriff in dieser Laufzeit vorhanden sind.
+Connectoren und Skills einer anderen Claude-Umgebung stehen nicht allein durch dieselbe Anmeldung automatisch zur Verfügung.
 
 ## Bezüge
 

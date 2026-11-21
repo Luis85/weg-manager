@@ -31,8 +31,7 @@
     "version": "node scripts/version-bump.mjs && git add manifest.json versions.json",
     "release:package": "node scripts/package-release.mjs",
     "prepare": "node scripts/install-hooks.mjs",
-    "test:e2e": "npm run build && wdio run tests/e2e/wdio.conf.mts",
-    "skills:package": "node skills/src/package-skills.ts"
+    "test:e2e": "npm run build && wdio run tests/e2e/wdio.conf.mts"
   },
   "dependencies": {
     "@nuxt/ui": "4.13.0",

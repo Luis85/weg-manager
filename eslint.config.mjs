@@ -51,8 +51,6 @@ export default defineConfig(
     ignores: [
       "docs/**",
       ".claude/**",
-      "skills/weg-gmail-to-vault/**",
-      "skills/dist/**",
       "node_modules/**",
       "dist/**",
       "release/**",
@@ -123,13 +121,7 @@ export default defineConfig(
     },
   },
   {
-    files: [
-      "scripts/**/*.mjs",
-      "configs/**/*.ts",
-      "configs/**/*.mjs",
-      "*.config.mjs",
-      "skills/**/*.ts",
-    ],
+    files: ["scripts/**/*.mjs", "configs/**/*.ts", "configs/**/*.mjs", "*.config.mjs"],
     languageOptions: { globals: globals.node },
   },
   {
@@ -142,11 +134,11 @@ export default defineConfig(
   },
   {
     files: ["**/*.ts", "**/*.vue", "**/*.mjs"],
-    ignores: ["tests/**", "skills/tests/**"],
+    ignores: ["tests/**"],
     rules: { "max-lines": ["error", { max: 400, ...LOC }] },
   },
   {
-    files: ["tests/**/*.ts", "tests/**/*.vue", "skills/tests/**/*.ts"],
+    files: ["tests/**/*.ts", "tests/**/*.vue"],
     rules: { "max-lines": ["error", { max: 450, ...LOC }] },
   },
   ...oxlint.buildFromOxlintConfigFile("./.oxlintrc.json"),

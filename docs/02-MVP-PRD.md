@@ -30,7 +30,7 @@ Ein menschlicher Bearbeiter arbeitet für WEG und Tiefgarage. Er kann zusätzlic
 | Im vorgeschlagenen MVP | Später / nicht zugesagt |
 | --- | --- |
 | Mindestens zwei Gemeinschaften, Kontakte und atomare Punkte; maßgebliche Markdown-/Frontmatter-Notizen mit offenem Dateizugriff. | Mehrbenutzerrollen, Verwaltungsportal, Eigentümer-Self-Service. |
-| Geprüfter Registerimport; manuelle Quellenübernahme und begrenzter Gmail-Eingang über Claude Skill in den freigegebenen Vault. | Automatische vollständige Gmail-/Portal-/Postfachintegration. |
+| Geprüfter Registerimport; manuelle Quellenübernahme. | Automatische vollständige Gmail-/Portal-/Postfachintegration. |
 | Quellenbezogene Wochenlage, vorbereitete bearbeitbare Entscheidungstexte, eigene Aufgaben. | Verpflichtende KI, MCP-Anbindung oder unbeaufsichtigter Cloud-Wochenlauf. |
 | Fristen, Wiedervorlage, Nachfassvorschläge und Lagecheck. | Eigener Pushdienst bei geschlossener App; Kalenderexport als Ausbau. |
 | Menschliche Wahl und Notiz, Entwürfe je Gemeinschaft, DE/EN für Eigentümertexte. | Automatischer Versand, automatisch festgestellte Rechtsfolgen. |
@@ -57,7 +57,7 @@ Der lokale Kern benötigt kein Konto, Netzwerk oder KI. Installation, gewählte 
 
 ## Funktionale Anforderungen
 
-Alle B-FR-01 bis B-FR-16 sind MUSS im vorgeschlagenen MVP. B-FR-14 konkretisiert die ausdrücklich festgelegte offene Dateigrundlage. Die verlinkten PBIs enthalten die detaillierten Akzeptanzkriterien; die gemeinsamen [[Product Backlog.base#Business Rules]] gelten zusätzlich. Kein PBI gilt allein durch seine Existenz als abgenommen.
+Alle B-FR-01 bis B-FR-16 sind MUSS im vorgeschlagenen MVP; B-FR-15 (Gmail-Eingang über einen Claude Skill) ist entfallen und wird nicht neu vergeben. B-FR-14 konkretisiert die ausdrücklich festgelegte offene Dateigrundlage. Die verlinkten PBIs enthalten die detaillierten Akzeptanzkriterien; die gemeinsamen [[Product Backlog.base#Business Rules]] gelten zusätzlich. Kein PBI gilt allein durch seine Existenz als abgenommen.
 
 | ID | Fachliche Verpflichtung | Backlog / geplante Abnahme |
 | --- | --- | --- |
@@ -75,7 +75,6 @@ Alle B-FR-01 bis B-FR-16 sind MUSS im vorgeschlagenen MVP. B-FR-14 konkretisiert
 | B-FR-12 | Daten sichern/wiederherstellen, Konflikte behandeln und einen selbstständigen Einstieg ohne KI anbieten. | F-12, PBI-30–32; AT-B12 |
 | B-FR-13 | Vollständige Wochenarbeit einschließlich Schreiben und Prüfen sowie Lagecheck mobil ermöglichen. | F-13, PBI-33; AT-B13 |
 | B-FR-14 | Vorgänge direkt aus Markdown-/Frontmatter-Notizen ohne Plugin, Obsidian und MCP lesen und bearbeiten; einen freigegebenen AI-Agent auf denselben Dateien arbeiten lassen und externe Änderungen sicher berücksichtigen. | F-22, PBI-41–42; AT-B15/16 |
-| B-FR-15 | Versionierten Claude Skill bereitstellen, der den vorhandenen Gmail-Connector lesend nutzt und ausgewählte einzelne E-Mails quellentreu, wiederholbar und ohne Überschreiben bestehender Notes als Markdown-/Frontmatter-Notizen im tatsächlich freigegebenen Nutzervault ablegt. | F-18, PBI-46; AT-B17 |
 | B-FR-16 | Nativen AI-Chat im Plugin mit offizieller Claude-Code-Laufzeit und berechtigter Nutzer-Subscription ermöglichen; Kontext, tatsächliche Aktionen, Abrechnungsmodus und Abbruch transparent halten. Erster zu prüfender Betriebsweg Desktop; mobile Kernreise unabhängig nutzbar. | F-23, PBI-47; AT-B18 |
 
 Die vorbereitete Wochenarbeit darf nicht auf leere Formulare reduziert werden. Vorhandene Daten müssen Kontext, Fristen und bearbeitbare Empfehlungen/Folgetexte tragen. Die konkrete regelbasierte oder manuelle Ergänzung wird im späteren Lösungsentwurf beschrieben; zusätzliche Vorbereitungszeit zählt zur Nutzenmessung. Können Inhalt und Aufwand den Anspruch nicht tragen, ist dies eine Scopeentscheidung vor Entwicklungsfreigabe, keine stille Abschwächung von B-FR-06/07.
@@ -131,10 +130,9 @@ Alle B-NFR bleiben geplante **MVP-Releasekriterien** für die jeweils betroffene
 | AT-B14 | Nach Veröffentlichung öffentlich in frischem Vault installieren. | Dokumentierte Version und Kernablauf ohne Entwicklerwerkzeuge nutzbar; erst danach Produktpilot. |
 | AT-B15 | Synthetischen vollständigen Vorgang speichern; Plugin und Obsidian schließen. Nur Notizordner, Originale und lokalen Dateivertrag mit gewöhnlichem Editor öffnen und ändern; ohne MCP fortführen. | Kontext und Beziehungen verständlich; kein Export erforderlich; gültige externe Änderung wird beim späteren Pluginstart übernommen, ein Cache enthält keine exklusiven Fachinformationen. |
 | AT-B16 | Freigegebener Agent liest und ändert dieselben Notizen einmal bei geschlossenem Plugin und einmal während offener eigener Bearbeitung; anschließend ungültiges YAML beziehungsweise neuere Schemafassung prüfen. | Zulässige Änderungen werden berücksichtigt; Konflikte, fehlerhafte Dateien und Wiederaufnahme bleiben sichtbar und ohne stilles Überschreiben; unbekannte Properties, Originale und eigene Eingaben bleiben erhalten. |
-| AT-B17 | Skillpaket in einer unterstützten Claude-Testumgebung nutzen: verbundenes Gmail-Testpostfach, synthetische Nachrichten und real freigegebener Testvault; zwei Seiten mit Dubletten, zwei Nachrichten eines Threads, unbekannte Angaben, Teiltext und vorhandene umbenannte Note. | Pro Nachricht höchstens eine passende neue Note; bestehender Text erhalten, unvollständig bleibt sichtbar, Gmail unverändert, echte Zieldateien vorhanden. Fehlender Vaultzugriff wird nicht als erfolgreicher Import ausgegeben. Paket-/Fixturetests allein ersetzen diesen technischen End-to-End-Nachweis nicht. |
 | AT-B18 | In unterstützter offizieller Desktop-Runtime Abo-Modus, native Chatrunde, Kontextwahl, Toolbestätigung, Dateischritt, Abbruch/Limit und aufbewahrten Verlauf mit synthetischen Daten prüfen; API-Konfiguration separat als Abweichung testen. | Tatsächlicher berechtigter Abo-Weg nachgewiesen, keine Tokenübernahme oder stille API-Abrechnung; Vorschlag und ausgeführte Änderung getrennt; Teilergebnisse und offene Eingaben bleiben erkennbar. Mobile Chatverfügbarkeit wird nicht ohne eigene Prüfung behauptet. |
 
-AT-B01–13 und AT-B15–18 erfolgen vor Veröffentlichung mit synthetischen oder ausdrücklich freigegebenen anonymisierten Daten. Dabei werden die zugehörigen Qualitätskriterien mitgeprüft. Ein Fehler mit Datenverlust, unbeabsichtigter Offenlegung, falschem Frist-/Versandstatus oder blockierter Kernreise verhindert die interne Freigabe. Noch nicht festgelegte Geräte und offene Scopefragen müssen vorher konkret entschieden werden.
+AT-B01–13, AT-B15, AT-B16 und AT-B18 erfolgen vor Veröffentlichung (AT-B17 ist mit B-FR-15 entfallen) mit synthetischen oder ausdrücklich freigegebenen anonymisierten Daten. Dabei werden die zugehörigen Qualitätskriterien mitgeprüft. Ein Fehler mit Datenverlust, unbeabsichtigter Offenlegung, falschem Frist-/Versandstatus oder blockierter Kernreise verhindert die interne Freigabe. Noch nicht festgelegte Geräte und offene Scopefragen müssen vorher konkret entschieden werden.
 
 ## Veröffentlichung und Pilot
 
@@ -160,7 +158,7 @@ Die berichteten WCS-Zahlen und die Zeiträume bis 145 Tage sind keine gemessene 
 
 O-01–08 im Intake-Abgleich sind der Klärungsbestand: Scopefreigabe, Referenzgerät/Leistungsziele, anonymisierter Export, Vorbereitungsaufwand, Gemeinschaftsangaben, Vertretungsumfang, spätere Berichtsfreigabe und Releaseangaben. Diese Punkte verhindern die Konzeptableitung nicht, aber es gibt noch keine vollständige technische Entwicklungsreife.
 
-Der Beiratskern bleibt in fünf Nutzerziel-Epics mit 13 Features und PBI-01 bis PBI-33 gegliedert. Die offene Dateischnittstelle in F-22 ergänzt PBI-41/42, der Claude-Gmail-Skill in F-18 ergänzt PBI-46 und der native AI-Chat in F-23 ergänzt PBI-47; damit umfasst der geplante funktionale MVP insgesamt 37 User Stories. E-06 bewahrt spätere fachliche Optionen einschließlich Zusammenarbeit und Onlinedienst (F-20). E-07 „Cross Cutting Concerns“ bündelt Integrationen (F-18, einschließlich Google Workspace), MCP Server (F-19), die nichtfunktionalen MVP-Anforderungen (F-21) und die ausdrücklich festgelegte offene Dateigrundlage (F-22). Direkte Versand-/Drive-Integrationen und MCP bleiben später; F-21, F-22, F-23 und der begrenzte Skill-Eingang PBI-46 gehören zum geplanten MVP. Der neue Chat hat noch keinen technischen Integrationsnachweis. Der nächste Schritt ist die fachliche Prüfung dieses Entwurfs und gezieltes Refinement der offenen Punkte; keine Implementierung, Architekturfestlegung oder automatische Veröffentlichung von Issues.
+Der Beiratskern bleibt in fünf Nutzerziel-Epics mit 13 Features und PBI-01 bis PBI-33 gegliedert. Die offene Dateischnittstelle in F-22 ergänzt PBI-41/42 und der native AI-Chat in F-23 ergänzt PBI-47; damit umfasst der geplante funktionale MVP insgesamt 36 User Stories. E-06 bewahrt spätere fachliche Optionen einschließlich Zusammenarbeit und Onlinedienst (F-20). E-07 „Cross Cutting Concerns“ bündelt Integrationen (F-18, einschließlich Google Workspace), MCP Server (F-19), die nichtfunktionalen MVP-Anforderungen (F-21) und die ausdrücklich festgelegte offene Dateigrundlage (F-22). Integrationen (F-18) und MCP bleiben später; F-21, F-22 und F-23 gehören zum geplanten MVP. Der neue Chat hat noch keinen technischen Integrationsnachweis. Der nächste Schritt ist die fachliche Prüfung dieses Entwurfs und gezieltes Refinement der offenen Punkte; keine Implementierung, Architekturfestlegung oder automatische Veröffentlichung von Issues.
 
 ## Hypothesenregister
 
@@ -177,10 +175,6 @@ Die nutzerseitig festgelegte Komponentenbasis ist Nuxt UI ([[K-13 - Nuxt UI als 
 ## Geplante Google-Integration nach dem MVP
 
 [[K-15 - Google-Dienste für Versand und Dokumentfreigabe anbinden]] konkretisiert unter [[F-18 - Integrationen]] drei spätere Anforderungen: [[PBI-43 - Google-Konto für ausgewählte Dienste verbinden]], [[PBI-44 - Geprüfte E-Mails über Gmail versenden]] und [[PBI-45 - Ausgewählte Dokumente über Google Drive freigeben]]. Sie erhalten vorerst keine MVP-Releasezuordnung. Der heutige manuelle Versand bleibt gültig; der spätere Integrationsweg darf nach ausdrücklicher menschlicher Prüfung und Aktion Gmail beziehungsweise Drive beauftragen. Unbeaufsichtigter Agentenversand, vollständige Vault-Synchronisation und Google als verpflichtender Datenspeicher sind nicht umfasst. Eigene Pages und Flows hierfür sind noch zu gestalten.
-
-## Gmail-Eingang über vorhandene Claude-Connectoren
-
-[[K-16 - Gmail-Eingang im MVP über Claude Skill bereitstellen]] ergänzt den MVP um [[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]]. Der optionale Weg benötigt in der gewählten Claude-Sitzung Gmail-Such-/Lesetools, tatsächlichen Schreibzugriff auf den Nutzervault und die Runtime des mitgelieferten Writers. Eine Skillinstallation verleiht diese Zugriffe nicht. Anhangsinhalte werden im ersten Skill nicht heruntergeladen. Das Plugin bleibt offline und ohne KI nutzbar; die bewusst gewählte Connectorabfrage ist ein externer Netzwerkweg. Technische Prüfung vor Release verwendet Testdaten; der Produktpilot beginnt weiterhin erst nach Veröffentlichung.
 
 ## Nativer Chat über das Nutzerabo
 

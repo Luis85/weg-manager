@@ -89,7 +89,6 @@ DashboardSidebar (Desktop-Navigation) · DashboardPanel (Arbeitsfläche + Kontex
 | [[PBI-33 - Wochenarbeit auf dem Handy abschließen]] | alle Ansichten; mobile Prototyp-Bildschirme `v2-P-M-*` |
 | [[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]] | textuell in [[VIEW-03 - Punkte und Punktakte]], [[VIEW-07 - Einstellungen und Einrichtung]], [[FLOW-08 - Zwischen Plugin und direkter Dateibearbeitung wechseln]] |
 | [[PBI-42 - AI-Agent direkt mit den Notizen arbeiten lassen]] | textuell in [[VIEW-02 - Wochenarbeit]], [[VIEW-03 - Punkte und Punktakte]], [[VIEW-07 - Einstellungen und Einrichtung]], [[FLOW-08 - Zwischen Plugin und direkter Dateibearbeitung wechseln]] |
-| [[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] | **offen**, siehe [[09 - Offene Punkte vor Implementierung]] |
 | [[PBI-47 - AI-Chat über die eigene Claude-Subscription nutzen]] | **offen**, siehe [[09 - Offene Punkte vor Implementierung]] |
 
 ## Mockup-Bestand

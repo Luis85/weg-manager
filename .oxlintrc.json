@@ -14,9 +14,7 @@
     "reports/**",
     ".stryker-tmp/**",
     ".superpowers/**",
-    ".obsidian-cache/**",
-    "skills/weg-gmail-to-vault/**",
-    "skills/dist/**"
+    ".obsidian-cache/**"
   ],
   "rules": {
     "no-console": "error",

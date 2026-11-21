@@ -7,12 +7,5 @@
     "checkJs": true,
     "allowImportingTsExtensions": true
   },
-  "include": [
-    "*.ts",
-    "*.mjs",
-    "../*.mjs",
-    "../scripts/**/*.mjs",
-    "../skills/src/**/*.ts",
-    "../skills/tests/**/*.ts"
-  ]
+  "include": ["*.ts", "*.mjs", "../*.mjs", "../scripts/**/*.mjs"]
 }

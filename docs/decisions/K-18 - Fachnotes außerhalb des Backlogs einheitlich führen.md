@@ -61,7 +61,6 @@ Ein Typ pro Notenart, englisch in PascalCase wie die vorhandenen `Actor`, `Entit
 | `ProductRequirementsDocument` | `PRD` |
 | `Research`, `ResearchSynthese`, `Quellenverzeichnis`, `Entscheidungsregister` | `Research` mit `kind: studie`, `synthese`, `quellen`, `register` |
 | `DesignSpec` | `DesignSpec` (bleibt) |
-| Skill-Evaluation (heute `Research`) | `Research` mit `kind: evaluation` |
 | Interviewleitfaden, später Interviewprotokolle | `Research` mit `kind: leitfaden` bzw. `kind: interview` |
 | `Prototyp` | `Prototype` |
 | `JobsToBeDone`, `Actor`, `Entity`, `Page`, `Sitemap`, `UserFlow`, `Handoff`, `Decision`, `BusinessRule`, `Hypothesis` | bleiben |
@@ -125,7 +124,7 @@ Ein Skript unter `scripts/` prüft bei jedem Commit:
 
 - Pflicht-Properties und erlaubte Werte je Typ,
 - eindeutige Kennungen und das Dateinamenmuster,
-- auflösbare Wikilinks und relative Links; auf Build-Ausgaben wie `skills/dist/` wird nicht verlinkt, sondern mit Pfad und Build-Befehl verwiesen,
+- auflösbare Wikilinks und relative Links; auf Build-Ausgaben wird nicht verlinkt, sondern mit Pfad und Build-Befehl verwiesen,
 - keine Links in `docs/_intake/`,
 - `superseded-by` bei `status: historisch`.
 

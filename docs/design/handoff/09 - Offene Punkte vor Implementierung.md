@@ -42,7 +42,6 @@ date: 2026-11-15
 
 MVP-Stories ohne Gestaltung:
 
-- [[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]]: Anzeige importierter E-Mail-Quellnotizen im Eingang (Kanal, „unvollständig“, Prüfbedarf bei abweichend erneut geliefertem Inhalt), Bereitstellung des Skillpakets in Einstellungen (Version, ZIP, ohne Verbindungsbehauptung).
 - [[PBI-47 - AI-Chat über die eigene Claude-Subscription nutzen]]: Chatansicht (Desktop) mit Kontextwahl, Abrechnungsmodus, Toolbestätigung, Abbruch, Zuständen (keine Laufzeit, nicht angemeldet, Limit) und Gesprächsnotiz.
 - [[PBI-32 - Ohne KI selbstständig beginnen]]: Inhalte der lokalen Hilfe (Kernreise, externer Versand, Datenlücken, Sicherung) und Diagnosebericht.
 - [[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]] / [[PBI-42 - AI-Agent direkt mit den Notizen arbeiten lassen]]: nur textuell in VIEW-03/07 und FLOW-08; Vergleichsansicht für externe Änderungen ist Mockup, nicht Prototyp.

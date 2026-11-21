@@ -9,7 +9,7 @@ date: 2026-11-15
 
 # Handoff · Abnahme und Testszenarien
 
-Abbildung der geplanten internen Abnahmen AT-B01–18 aus dem [[02-MVP-PRD]] auf Ansichten und Komponenten. „Prototyp“ nennt, ob das Verhalten im klickbaren Prototyp nachvollziehbar ist (✓), angedeutet (~) oder fehlt (–).
+Abbildung der geplanten internen Abnahmen AT-B01–18 (ohne das entfallene AT-B17) aus dem [[02-MVP-PRD]] auf Ansichten und Komponenten. „Prototyp“ nennt, ob das Verhalten im klickbaren Prototyp nachvollziehbar ist (✓), angedeutet (~) oder fehlt (–).
 
 | AT | Szenario (Kurz) | Ansichten | Prüfpunkte im UI | Prototyp |
 | --- | --- | --- | --- | --- |
@@ -29,7 +29,6 @@ Abbildung der geplanten internen Abnahmen AT-B01–18 aus dem [[02-MVP-PRD]] auf
 | AT-B14 | Öffentliche Installation in frischem Vault | Erststart | Einrichtung in 3 Schritten ohne Entwicklerwerkzeuge; danach Einführungstour, überspringbar und neu startbar | ~ (Tour) |
 | AT-B15 | Vorgang ohne Plugin und Obsidian lesen und ändern | alle (Dateivertrag), Datenprobleme | Akten als lesbare Markdown-Notizen; externe gültige Änderung beim nächsten Start übernommen; kein Export nötig | – |
 | AT-B16 | Agent ändert Notizen bei geschlossenem und offenem Plugin | Datenprobleme, Lage, Punktakte | Alert „Geändert außerhalb des Plugins“ mit Vergleichen; ungültiges YAML/neueres Schema sichtbar, nichts still überschrieben | – (Mockup Konflikt) |
-| AT-B17 | Gmail-Skill legt E-Mail-Quellnotizen im Vault an | Woche › Eingang, Punktakte | importierte Mails erscheinen als ungeprüfte Eingänge; „unvollständig“ und Prüfbedarf sichtbar; keine Aufgaben oder Fristen automatisch | – (nicht gestaltet) |
 | AT-B18 | Nativer AI-Chat über das Nutzerabo (Desktop) | Chatansicht | Abo-Modus sichtbar, Kontextwahl, Toolbestätigung, Abbruch/Limit, Vorschlag getrennt von ausgeführter Änderung | – (nicht gestaltet) |
 
 ## Prototyp-Szenarien für den Pilottest

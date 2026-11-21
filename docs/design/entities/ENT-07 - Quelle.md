@@ -36,7 +36,3 @@ PRD 1.1: B-FR-05/06/11; DF-08/10/15.
 [[PBI-11 - Nachricht und Original zuordnen]], [[PBI-12 - Ereignisse nachvollziehen]], [[PBI-13 - Aktuelle Wochenlage öffnen]], [[PBI-15 - Eine Entscheidungsvorlage prüfen]], [[PBI-26 - Unterlagen einstufen und korrigieren]].
 
 [MVP-PRD](../../02-MVP-PRD.md) · [[Product Backlog.base#Business Rules]] · [[Product Backlog.base#Design Foundations|Entitätsnotes]].
-
-## E-Mail als konkrete Quellart
-
-[[ENT-21 - E-Mail-Quellnotiz]] präzisiert die über den Claude-Gmail-Skill übernommenen Nachrichten. Ihre Identität ist konto- und nachrichtenbezogen; Teiltexte und nicht verfügbare Anhänge bleiben ausdrücklich gekennzeichnet. Ein Import ist noch keine fachliche Prüfung oder automatische Vorgangszuordnung.

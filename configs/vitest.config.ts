@@ -52,9 +52,6 @@ export default defineConfig({
         test: { name: "unit", include: ["tests/unit/**/*.test.ts"], environment: "node" },
       },
       {
-        test: { name: "skills", include: ["skills/tests/**/*.test.ts"], environment: "node" },
-      },
-      {
         plugins: [...(sharedConfig({ mode: "test" }).plugins ?? [])],
         define: sharedConfig({ mode: "test" }).define ?? {},
         test: {

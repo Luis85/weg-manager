@@ -36,7 +36,7 @@ Als Beirat möchte ich, dass das Plugin in klar getrennte Module gegliedert ist,
 
 ## Ausgangslage
 
-Jede Schicht liegt in wenigen Sammeldateien: `ports.ts`, `errors.ts`, `events.ts`, `use-cases.ts`, `user-messages.ts`, `i18n/catalog.ts` mit `de.ts` und `en.ts`, `app-services.ts`, `obsidian/layers.ts`. Jedes Fachfeature würde dieselben Dateien ändern. Das Plugin soll 18 MVP-Entitäten und 37 Stories tragen, mit Dateigrenze von 400 Zeilen und parallelen Agenten-Worktrees.
+Jede Schicht liegt in wenigen Sammeldateien: `ports.ts`, `errors.ts`, `events.ts`, `use-cases.ts`, `user-messages.ts`, `i18n/catalog.ts` mit `de.ts` und `en.ts`, `app-services.ts`, `obsidian/layers.ts`. Jedes Fachfeature würde dieselben Dateien ändern. Das Plugin soll 17 MVP-Entitäten und 36 Stories tragen, mit Dateigrenze von 400 Zeilen und parallelen Agenten-Worktrees.
 
 ## Akzeptanzkriterien
 

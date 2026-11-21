@@ -71,10 +71,6 @@ Aus dem Abschnitt „Qualitätsanforderungen“ des MVP-PRD 1.1 übernommen. Nut
 
 [[K-14 - Markdown und Frontmatter als offene Datengrundlage]], [[F-22 - Offene Notizen und direkter Agentenzugriff]], [[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]] und [[PBI-42 - AI-Agent direkt mit den Notizen arbeiten lassen]] konkretisieren B-NFR-10/13/14. Der externe Agent ist optional; sein Modelldienst gehört nicht zur Offline-Systemgrenze des Plugins. Der Dateizugriff selbst benötigt weder Backend noch MCP. UI-interne Kennzeichnungen sind keine Rechteverwaltung für andere Prozesse mit Ordnerzugriff.
 
-## Optionaler Claude-Gmail-Eingang
-
-[[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] ist ein bewusst gewählter externer Connectorweg. Gmail-Abfrage und Claude-Ausführung benötigen die dortigen Fähigkeiten und gegebenenfalls Netzwerk; die lokale Plugin-Kernreise und die gespeicherten Notizen bleiben davon unabhängig. AT-B17 prüft diesen Integrationsweg zusätzlich technisch vor Veröffentlichung. Die bestehenden Offline-/Datenerhaltungsanforderungen werden nicht still aufgehoben.
-
 ## Optionaler nativer AI-Chat
 
 [[F-23 - Nativer AI-Chat]] ergänzt einen ausdrücklich gewählten Online-Assistenzweg über die offizielle Claude-Code-Laufzeit. Die Offline-/KI-Unabhängigkeit der bisherigen lokalen Kernreise bleibt bestehen. Der erste Chat-Betriebsweg wird auf Desktop untersucht; eine lokale mobile Chat-Runtime ist noch nicht spezifiziert. [[DF-27 - Abo-Nutzung ohne stillen Abrechnungswechsel]] verlangt nachvollziehbare Abrechnungstransparenz, [[DF-28 - Chatantwort und ausgeführte Fachaktion unterscheiden]] nachvollziehbare Änderungen und Abbruchzustände. Der offene technische Nachweis gehört vor Freigabe dazu; Bilder oder vorhandene CLI-Dokumentation allein sind kein Nachweis.

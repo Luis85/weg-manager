@@ -40,7 +40,7 @@ Als Beirat möchte ich, dass das Plugin meine Notizen versioniert, verlustfrei u
 
 ## Ausgangslage
 
-Der Notizspeicher aus [[PBI-52 - Notizspeicher für Vault-Notizen bereitstellen]] liefert rohes Frontmatter. Es fehlt die Übersetzung in Fachobjekte und zurück sowie die Schemaversionierung. Das Gmail-Skill nutzt bereits englische Schlüssel in `snake_case` (z. B. `community_id`).
+Der Notizspeicher aus [[PBI-52 - Notizspeicher für Vault-Notizen bereitstellen]] liefert rohes Frontmatter. Es fehlt die Übersetzung in Fachobjekte und zurück sowie die Schemaversionierung.
 
 ## Akzeptanzkriterien
 

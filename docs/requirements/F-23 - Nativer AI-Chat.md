@@ -21,7 +21,7 @@ Nutzer führen einen Chat direkt im Plugin, lassen freigegebenen Vaultkontext ei
 
 Die lokale Beirats-Kernreise bleibt ohne Chat, Anmeldung und KI nutzbar. Mobile Kernarbeit wird nicht von einer dort ungeklärten Chat-Runtime abhängig gemacht. Mobile Chatbereitstellung, unterstützte Desktop-/Runtimeversion, Auth-/Abrechnungsfeststellung und Einbettung der Berechtigungsabfragen sind vor Umsetzung zu klären.
 
-[[F-22 - Offene Notizen und direkter Agentenzugriff]] liefert den offenen Dateikontext; [[F-19 - MCP Server]] ist dafür keine Voraussetzung. Der Gmail-Skill aus [[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] funktioniert im Chat nur dann, wenn die konkreten Tools und Dateirechte in derselben Laufzeit vorhanden sind. Keine automatische Übernahme von Connectorzugängen aus einer anderen Claude-Oberfläche.
+[[F-22 - Offene Notizen und direkter Agentenzugriff]] liefert den offenen Dateikontext; [[F-19 - MCP Server]] ist dafür keine Voraussetzung. Keine automatische Übernahme von Connectorzugängen aus einer anderen Claude-Oberfläche.
 
 Es wird keine eigene Abo-Anmeldung, Credential-Weiterleitung oder garantierte unbegrenzte Nutzung entworfen. API-basierte Eigenentwicklung wäre ein anderer Abrechnungsweg und ersetzt die ausdrücklich gewünschte Abo-Nutzung nicht stillschweigend. Der dokumentierte offizielle Integrationsweg und dessen konkrete Zulässigkeit/Funktion müssen vor Freigabe geprüft sein.
 

@@ -51,12 +51,6 @@ Der erste technische Untersuchungsweg ist Desktop. Eine lokale Claude-Code-Proze
 - Antwort versus Dateischritt: Modellvorschlag und tatsächlich ausgeführter Schritt getrennt, mit nachvollziehbarem Notizbezug.
 - Wiederaufnahme: dieselbe bestätigte Sitzung/Arbeitsbasis oder klar erkennbarer neuer Gesprächskontext; keine unbemerkte Vermischung von Gemeinschaften.
 
-## Verhältnis zum Gmail-Skill
-
-[[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] und das bereits erstellte Skillpaket bleiben eigenständiger MVP-Umfang. Ein nativer Chat kann diesen Skill nur nutzen, wenn die konkrete Claude-Code-Sitzung den Skill, Gmail-Lesetools und den freigegebenen Vaultzugriff tatsächlich besitzt. Claude.ai-/Desktop-Connectorverfügbarkeit wird nicht automatisch durch eine gemeinsame Subscription vererbt. Falls diese Voraussetzungen fehlen, bleibt der dokumentierte separate Claude-Workflow verfügbar; der native Chat behauptet keinen erfolgreichen Import.
-
-Der Skill selbst bleibt read-only gegenüber Gmail. Die Chatintegration erweitert nicht seinen Auftrag auf Versand oder andere Kontoänderungen.
-
 ## Geplanter technischer Nachweis vor Freigabe
 
 1. Offizielle unterstützte Runtime und erlaubten Betriebsweg für die geplante Distribution prüfen; keine Credential-Übernahme.
@@ -65,7 +59,6 @@ Der Skill selbst bleibt read-only gegenüber Gmail. Die Chatintegration erweiter
 4. Kontextwahl, Read-only-Auftrag, ausdrücklich erlaubte Dateiaktion und eine verweigerte Berechtigung prüfen.
 5. Limit, Netzabbruch, Stop und Fortsetzung einschließlich bereits erfolgter Teiländerung prüfen.
 6. Aufbewahrten Gesprächsstand ohne Plugin/Obsidian lesen und Dateireferenzen nachvollziehen.
-7. Gmail-Skill nur bei real vorhandenen Connectorfähigkeiten ausprobieren; Abwesenheit korrekt anzeigen.
 
 Diese Schritte sind noch **nicht ausgeführt**. Anbieterbedingungen, Pläne und Runtimeverhalten werden vor der Umsetzung erneut geprüft. Keine technische oder wirtschaftliche Garantie wird aus der Dokumentensichtung abgeleitet.
 

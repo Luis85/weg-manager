@@ -28,10 +28,6 @@ Ein Schreibvorgang erzeugt keine tatsächlich erfolgte menschliche Bestätigung,
 
 [[K-14 - Markdown und Frontmatter als offene Datengrundlage]], [[Datenkonzept - Offene Notizen und Agentenzugriff]], [[DF-22 - Notizen als maßgeblicher Datenbestand]], [[DF-23 - Externe Bearbeitung ohne stilles Überschreiben]]. Der eigene spätere [[F-19 - MCP Server]] ist hierfür nicht erforderlich. Die externe Verwalterrolle oder ein Mehrbenutzerportal entsteht dadurch ebenfalls nicht.
 
-## Konkreter MVP-Workflow mit Claude
-
-[[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] nutzt Claude mit vorhandenem Gmail-Connector und tatsächlich freigegebenem Nutzervault. Der gebündelte Skill liest ausgewählte Nachrichten und legt neue E-Mail-Quellnotizen an; er überschreibt keine bestehenden Notes und ändert das Postfach nicht. Allgemeiner direkter Dateizugriff ist breiter als dieser bewusst begrenzte Importworkflow.
-
 ## Konkrete Laufzeit für den nativen Chat
 
 [[ACT-11 - Offizielle Claude-Code-Laufzeit]] konkretisiert einen möglichen direkten Ausführungspartner von [[F-23 - Nativer AI-Chat]]. Der allgemeine Agentenzugriff oben bleibt von dieser optionalen Chatoberfläche unabhängig. Es entsteht kein eigener gehosteter Agentendienst und keine automatische Übernahme von Konto-/Connectorrechten.

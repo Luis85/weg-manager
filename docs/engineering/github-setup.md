@@ -6,7 +6,7 @@ The repository's CI runs on GitHub Actions (decided 2026-11-21, replacing the bl
 
 | File | Trigger | What it does |
 | --- | --- | --- |
-| `.github/workflows/ci.yml` | push to `main`, every pull request | job `verify`: `npm ci`, `npm run verify`; uploads `reports` (JUnit, Cobertura) even on failure and `plugin` (`dist/`) on success. Job `e2e`: `npm run test:e2e` in the latest real Obsidian under Xvfb, with Obsidian kept in the Actions cache. Job `skills`: `npm run skills:package`, then fails if the committed writer or `skills/manifest.json` changed; uploads `claude-skills` (the skill ZIP). The skill's tests run in `verify` |
+| `.github/workflows/ci.yml` | push to `main`, every pull request | job `verify`: `npm ci`, `npm run verify`; uploads `reports` (JUnit, Cobertura) even on failure and `plugin` (`dist/`) on success. Job `e2e`: `npm run test:e2e` in the latest real Obsidian under Xvfb, with Obsidian kept in the Actions cache. |
 | `.github/workflows/nightly-mutation.yml` | nightly 02:17 UTC on the default branch, or by hand | `npm run test:mutation:full`; uploads `reports/mutation/` |
 | `.github/workflows/release.yml` | a pushed tag `x.y.z` (no `v`) | `npm run verify`, `npm run release:package -- --tag x.y.z`, a build-provenance attestation of the three assets (`actions/attest`), then a GitHub release with `main.js`, `manifest.json` and `styles.css` |
 

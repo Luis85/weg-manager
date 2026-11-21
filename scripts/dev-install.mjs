@@ -21,7 +21,7 @@ const install = (dir) => {
 };
 
 if (target === undefined || target.trim() === "") {
-  await build({ mode: "development" });
+  await build({ configFile: "configs/vite.config.ts", mode: "development" });
   console.log(
     [
       "dev: built dist/ once. To install into a test vault on every change, create .env.local with",
@@ -32,7 +32,7 @@ if (target === undefined || target.trim() === "") {
 } else {
   const dir = resolve(target);
   const watcher = /** @type {import("vite").Rolldown.RolldownWatcher} */ (
-    await build({ mode: "development", build: { watch: {} } })
+    await build({ configFile: "configs/vite.config.ts", mode: "development", build: { watch: {} } })
   );
   watcher.on("event", (/** @type {import("vite").Rolldown.RolldownWatcherEvent} */ event) => {
     if (event.code === "BUNDLE_END") install(dir);

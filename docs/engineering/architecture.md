@@ -1,6 +1,6 @@
 # Architecture
 
-The plugin is layered as ports and adapters, and dependencies point inward only. Tools enforce the boundaries, not convention: oxlint `no-restricted-imports` (`.oxlintrc.json`) and fallow `boundaries` (`.fallowrc.json`). Decision record: [ADR 0002](../adr/0002-architecture.md).
+The plugin is layered as ports and adapters, and dependencies point inward only. Tools enforce the boundaries, not convention: oxlint `no-restricted-imports` (`.oxlintrc.json`) and fallow `boundaries` (`configs/fallow.json`). Decision record: [ADR 0002](../adr/0002-architecture.md).
 
 ```mermaid
 flowchart LR
@@ -90,4 +90,23 @@ sequenceDiagram
 - `dist/styles.css` is scoped under `.weg-manager-root` by `scripts/scope-css.mjs`. It has no Tailwind preflight, no surviving `@layer`, and prefixed `@keyframes` and `@property` names. `check:dist` verifies all of this.
 - Mounting adds nothing to `document.head`. Nuxt UI's runtime `colors` and `head` plugins are replaced by sha256-pinned no-ops (`scripts/no-head-plugins.mjs`); the colour roles live in `src/styles/bridge.css`.
 - Tailwind scans only `src/presentation` and an explicit list of Nuxt UI component themes in `src/styles/app.css`. A newly used Nuxt UI component has to be added there.
-- Icons are bundled offline. Add new `lucide:*` names to `SHELL_ICONS` in `vite.shared.ts`.
+- Icons are bundled offline. Add new `lucide:*` names to `SHELL_ICONS` in `configs/vite.shared.ts`.
+
+## Repository layout
+
+| Where | What |
+| --- | --- |
+| `src/`, `harness/`, `tests/` | plugin code, the browser harness, tests (`unit`, `dom`, `e2e`, `support`) |
+| `scripts/` | build, check and release scripts run by npm scripts |
+| `configs/` | tool configs that take an explicit path: Vite (plugin, harness, shared), Vitest (+ Stryker variant), Stryker, fallow, `tsconfig.{app,node,base}.json`. Each resolves paths from the repository root. |
+| root | files a tool or Obsidian only finds there |
+
+These files stay at the root on purpose:
+- `manifest.json` and `versions.json`: Obsidian reads them there.
+- `package.json` and `.npmrc`: npm reads them there.
+- `.nvmrc`, `.editorconfig`, `.gitattributes`, `.gitignore`: tools and git read them there.
+- `tsconfig.json`: editors look for it there. It references the configs in `configs/`.
+- `eslint.config.mjs`: flat-config file patterns resolve from its own folder, and editors look for it at the root.
+- `.prettierrc.json` and `.prettierignore`: editors search upward from each file.
+- `.oxlintrc.json`: oxlint resolves `ignorePatterns` and per-path `overrides` relative to its config file. Moved into `configs/`, the layer import bans silently stopped applying; a planted violation passed.
+

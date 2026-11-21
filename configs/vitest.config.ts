@@ -24,12 +24,16 @@ export function obsidianGuard(): Plugin {
 }
 
 export const testAlias = {
-  "@test/obsidian": fileURLToPath(new URL("./tests/support/obsidian/index.ts", import.meta.url)),
+  "@test/obsidian": fileURLToPath(new URL("../tests/support/obsidian/index.ts", import.meta.url)),
 };
 
 const ci = Boolean(process.env["CI"]);
 
+/** The repository root; every path below resolves from it. */
+export const ROOT = fileURLToPath(new URL("..", import.meta.url));
+
 export default defineConfig({
+  root: ROOT,
   plugins: [obsidianGuard()],
   resolve: { alias: testAlias },
   test: {

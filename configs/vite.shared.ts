@@ -1,8 +1,8 @@
 import ui from "@nuxt/ui/vite";
 import vue from "@vitejs/plugin-vue";
 import type { UserConfig } from "vite";
-import { noHeadPlugins } from "./scripts/no-head-plugins.mjs";
-import { scopeCss } from "./scripts/scope-css.mjs";
+import { noHeadPlugins } from "../scripts/no-head-plugins.mjs";
+import { scopeCss } from "../scripts/scope-css.mjs";
 
 export const PLUGIN_ID = "weg-manager";
 export const CSS_PREFIX = "wm";

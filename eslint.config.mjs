@@ -7,7 +7,11 @@ import tseslint from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
 
 const LOC = { skipBlankLines: true, skipComments: true };
-const TS_PROJECTS = ["./tsconfig.app.json", "./tsconfig.node.json", "./tests/e2e/tsconfig.json"];
+const TS_PROJECTS = [
+  "./configs/tsconfig.app.json",
+  "./configs/tsconfig.node.json",
+  "./tests/e2e/tsconfig.json",
+];
 
 /** Vue's presets carry no `files`; scope them so `.ts` files keep the TypeScript parser. */
 const vueOnly = vue.configs["flat/recommended"].map((config) =>
@@ -86,7 +90,7 @@ export default defineConfig(
     },
   },
   {
-    files: ["scripts/**/*.mjs", "*.config.ts", "*.config.mjs", "vite.*.ts", "vitest.*.ts"],
+    files: ["scripts/**/*.mjs", "configs/**/*.ts", "configs/**/*.mjs", "*.config.mjs"],
     languageOptions: { globals: globals.node },
   },
   {

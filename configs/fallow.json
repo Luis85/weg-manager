@@ -1,15 +1,14 @@
 {
-  "$schema": "./node_modules/fallow/schema.json",
+  "$schema": "../node_modules/fallow/schema.json",
   "entry": ["harness/main.ts"],
   "supportEntry": [
     "scripts/*.mjs",
-    "*.config.ts",
-    "*.config.mjs",
-    "vite.*.ts",
-    "vitest.*.ts",
     "tests/**/*.test.ts",
     "tests/e2e/**/*.ts",
-    "tests/e2e/wdio.conf.mts"
+    "tests/e2e/wdio.conf.mts",
+    "configs/*.ts",
+    "configs/*.mjs",
+    "*.config.mjs"
   ],
   "ignorePatterns": [
     "docs/**",

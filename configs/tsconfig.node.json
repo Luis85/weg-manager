@@ -7,5 +7,5 @@
     "checkJs": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["*.ts", "*.mjs", "scripts/**/*.mjs"]
+  "include": ["*.ts", "*.mjs", "../*.mjs", "../scripts/**/*.mjs"]
 }

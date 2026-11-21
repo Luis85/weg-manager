@@ -1,7 +1,11 @@
 import { readFileSync } from "node:fs";
 import { builtinModules } from "node:module";
+import { fileURLToPath } from "node:url";
 import { defineConfig, mergeConfig, type Plugin } from "vite";
 import { sharedConfig } from "./vite.shared.ts";
+
+/** Paths below resolve from the repository root, not from this folder. */
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 
 const HOST_EXTERNALS = [/^obsidian$/, /^electron$/, /^@codemirror\//, /^@lezer\//, /^node:/];
 const BUILTINS = new Set(builtinModules);
@@ -16,13 +20,14 @@ const copyManifest = (): Plugin => ({
     this.emitFile({
       type: "asset",
       fileName: "manifest.json",
-      source: readFileSync("manifest.json", "utf8"),
+      source: readFileSync(`${ROOT}manifest.json`, "utf8"),
     });
   },
 });
 
 export default defineConfig(({ mode }) =>
   mergeConfig(sharedConfig({ mode }), {
+    root: ROOT,
     plugins: [copyManifest()],
     build: {
       outDir: "dist",

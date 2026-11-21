@@ -2,9 +2,9 @@
 /** Mutation testing of domain and application (blueprint Task 10). Thresholds are never lowered. */
 const config = {
   testRunner: "vitest",
-  vitest: { configFile: "vitest.stryker.config.ts" },
+  vitest: { configFile: "configs/vitest.stryker.config.ts" },
   checkers: ["typescript"],
-  tsconfigFile: "tsconfig.app.json",
+  tsconfigFile: "configs/tsconfig.app.json",
   mutate: ["src/domain/**/*.ts", "src/application/**/*.ts"],
   thresholds: { high: 90, low: 80, break: 75 },
   incremental: true,

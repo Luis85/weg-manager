@@ -1,5 +1,5 @@
 import { Layer } from "effect";
-import { LogSink, type LogEntry } from "../../application/ports";
+import { LogSink, type LogEntry } from "../../application/shell/ports";
 
 const PREFIX = "[weg-manager]";
 

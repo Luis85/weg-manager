@@ -104,7 +104,7 @@
       }
     },
     {
-      "files": ["src/presentation/runtime/**"],
+      "files": ["src/presentation/shell/runtime/**"],
       "rules": {
         "no-restricted-imports": [
           "error",

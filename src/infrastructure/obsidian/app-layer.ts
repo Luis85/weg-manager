@@ -1,14 +1,14 @@
 import { Layer } from "effect";
 import type { Plugin } from "obsidian";
 import type { AppServices } from "../../application/app-services";
-import { EventBusLive } from "../../application/event-bus";
-import type { Language } from "../../application/i18n";
-import { LoggerLive, type LoggerOptions } from "../../application/logger";
-import { SettingsServiceLive } from "../../application/settings-service";
+import { EventBusLive } from "../../application/shell/event-bus";
+import type { Language } from "../../application/shell/i18n";
+import { LoggerLive, type LoggerOptions } from "../../application/shell/logger";
+import { SettingsServiceLive } from "../../application/shell/settings-service";
 import { consoleSinkLayer } from "../logging/console-sink";
 import { incidentsLayer } from "../logging/incidents";
-import { hostEventsLayer } from "./events";
-import { obsidianLayer } from "./layers";
+import { hostEventsLayer } from "./shell/events";
+import { obsidianLayer } from "./shell/layers";
 
 export type AppLayerOptions = LoggerOptions & {
   /** The UI language of this plugin load, resolved once with `hostLanguage()`. */

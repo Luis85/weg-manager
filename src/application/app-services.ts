@@ -1,5 +1,5 @@
 import type { ManagedRuntime } from "effect";
-import type { EventBus } from "./event-bus";
+import type { EventBus } from "./shell/event-bus";
 import type {
   Clipboard,
   HostInfo,
@@ -8,8 +8,8 @@ import type {
   Messages,
   Notifier,
   VaultReader,
-} from "./ports";
-import type { SettingsService } from "./settings-service";
+} from "./shell/ports";
+import type { SettingsService } from "./shell/settings-service";
 
 /** Everything a use case may require; the runtime of one plugin load provides all of it. */
 export type AppServices =

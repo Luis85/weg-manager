@@ -1,26 +1,26 @@
 import { Effect } from "effect";
 import type { Plugin } from "obsidian";
 import type { AppRuntime } from "./application/app-services";
-import { reportDefect } from "./application/defects";
-import { catalogFor } from "./application/i18n";
-import { toLoggedError } from "./application/logged-error";
-import { Logger, Messages } from "./application/ports";
-import { SettingsService } from "./application/settings-service";
-import { describeDefect } from "./application/user-messages";
+import { reportDefect } from "./application/shell/defects";
+import { catalogFor } from "./application/shell/i18n";
+import { toLoggedError } from "./application/shell/logged-error";
+import { Logger, Messages } from "./application/shell/ports";
+import { SettingsService } from "./application/shell/settings-service";
+import { describeDefect } from "./application/shell/user-messages";
 import { consoleSink } from "./infrastructure/logging/console-sink";
 import { appLayer } from "./infrastructure/obsidian/app-layer";
-import { registerCommands } from "./infrastructure/obsidian/commands";
-import { showMessage } from "./infrastructure/obsidian/notices";
-import { hostLanguage } from "./infrastructure/obsidian/language";
-import { addRibbonIcon } from "./infrastructure/obsidian/ribbon";
-import { runSafely } from "./infrastructure/obsidian/run";
-import { mirrorSettings } from "./infrastructure/obsidian/settings-mirror";
-import { ShellSettingTab } from "./infrastructure/obsidian/settings-tab";
-import { SHELL_VIEW_TYPE, ShellView } from "./infrastructure/obsidian/shell-view";
+import { registerCommands } from "./infrastructure/obsidian/shell/commands";
+import { showMessage } from "./infrastructure/obsidian/shell/notices";
+import { hostLanguage } from "./infrastructure/obsidian/shell/language";
+import { addRibbonIcon } from "./infrastructure/obsidian/shell/ribbon";
+import { runSafely } from "./infrastructure/obsidian/shell/run";
+import { mirrorSettings } from "./infrastructure/obsidian/shell/settings-mirror";
+import { ShellSettingTab } from "./infrastructure/obsidian/shell/settings-tab";
+import { SHELL_VIEW_TYPE, ShellView } from "./infrastructure/obsidian/shell/shell-view";
 import { makeRuntime } from "./infrastructure/runtime";
-import { releaseAll } from "./presentation/release";
+import { releaseAll } from "./presentation/shell/release";
 
-export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell-view";
+export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell/shell-view";
 
 export type BootstrapHandle = {
   readonly runtime: AppRuntime;

@@ -1,8 +1,28 @@
 # The Obsidian WEG Manager Plugin
 
+> **In English.** WEG Manager is an Obsidian plugin for the voluntary advisory boards (Verwaltungsbeiräte) of German condominium owners' associations (WEG). It keeps open items visible with their source, owner and next step, guides a bounded weekly review, and leaves every message under human control. All data stays local as Markdown notes with frontmatter in your own vault; it works without an account, network access or AI. The project is in its concept phase: the plugin is a working technical shell without domain features yet, desktop only, and not listed in the community plugin directory. The rest of this README and the product documentation are in German; the developer documentation under `docs/engineering/` is in English.
+
 Ein Obsidian-Plugin für Verwaltungsbeiräte, die eine oder mehrere Wohnungseigentümergemeinschaften (WEG) begleiten. Offene Anliegen bleiben mit Quelle, Zuständigkeit und nächstem Schritt sichtbar, die Wochenarbeit ist geführt und begrenzt, Nachrichten bleiben unter menschlicher Kontrolle. Alle Daten liegen lokal als Markdown-Notizen mit Frontmatter im eigenen Vault, nutzbar ohne Konto, Netz und KI.
 
 > **Stand:** Konzeptphase. Anforderungen, Design und ein klickbarer Prototyp liegen vor. Das Plugin hat ein lauffähiges technisches Grundgerüst (Begrüßung, Dateizähler, Einstellungen), aber noch keine Fachfunktionen.
+
+## Installation
+
+Das Plugin ist noch nicht im Community-Plugin-Verzeichnis von Obsidian gelistet. Bis dahin wird es von Hand aus einem GitHub-Release installiert:
+
+1. Im neuesten [Release](https://github.com/Luis85/weg-manager/releases) die Dateien `main.js`, `manifest.json` und `styles.css` herunterladen.
+2. Im Vault den Ordner `<vault>/.obsidian/plugins/weg-manager/` anlegen und die drei Dateien hineinkopieren.
+3. Obsidian neu laden, unter *Einstellungen → Community-Plugins* den eingeschränkten Modus ausschalten und **WEG Manager** aktivieren.
+
+Für ein Update die drei Dateien ersetzen und das Plugin neu laden. Später ist die Installation für Testende auch über das Plugin [BRAT](https://tfthacker.com/BRAT) vorgesehen (siehe [Releasing](docs/engineering/releasing.md#beta-testing-with-brat)). Das Plugin läuft derzeit nur in Obsidian für Desktop (`isDesktopOnly`).
+
+## Benutzung
+
+- **Ansicht öffnen:** über das Symbol *WEG Manager öffnen* in der linken Seitenleiste oder den Befehl **WEG Manager: Ansicht öffnen** in der Befehlspalette.
+- **Einstellungen:** unter *Einstellungen → WEG Manager* (Abschnitt Community-Plugins) lassen sich der Begrüßungstext (für den Befehl **WEG Manager: Begrüßung anzeigen**) und die Protokollstufe für die Entwicklerkonsole einstellen.
+- **Diagnose:** der Befehl **WEG Manager: Diagnose kopieren** legt einen Bericht mit Plugin-Version, Obsidian-API, Einstellungen und den letzten Protokolleinträgen in die Zwischenablage, zum Einfügen in eine Support-Anfrage. Notizinhalte und Dateinamen werden darin unkenntlich gemacht.
+
+Die Befehle haben keine voreingestellten Tastenkürzel; eigene lassen sich unter *Einstellungen → Tastenkürzel* vergeben.
 
 ## Kernreise
 
@@ -51,9 +71,9 @@ Personen, Firmen und Eigentümer-Verteiler, gruppiert nach Rolle und zuständig 
 
 ![Kontakte](docs/design/sitemap/assets/v2-P-D-14-Kontakte.png)
 
-### Mobil
+### Mobil (geplant)
 
-Die vollständige Wochenarbeit funktioniert auch auf dem Handy.
+Geplant ist, dass die vollständige Wochenarbeit auch auf dem Handy funktioniert ([K-09](docs/decisions/K-09%20-%20Vollst%C3%A4ndige%20mobile%20Wochenarbeit%20unterst%C3%BCtzen.md)). Die Bildschirme unten sind Entwürfe des Prototyps; das Plugin selbst läuft derzeit nur auf dem Desktop und wird erst nach einer Prüfung in Obsidian Mobile dafür freigegeben.
 
 | Lage | Entscheiden | Punktakte | Zusage erfassen |
 | --- | --- | --- | --- |

@@ -27,8 +27,8 @@ flowchart LR
 
 | Layer | Imports | Owns |
 | --- | --- | --- |
-| `src/domain` | `effect` | Pure rules: `decodeSettings`, `validatePatch`, `encodeSettings`, defaults (`shell/settings.ts`, built by `shell/settings-codec.ts`); what makes a note a record and a usable note name (`notes/`) |
-| `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`, `Messages`, `NoteStore`, `DeviceStore`), `SettingsService`, `EventBus` and the `AppEvent` vocabulary, routes (`routesOf`, composed in `routes.ts`), use cases, tagged errors, the German and English message catalogs (`<module>/i18n/`, composed in `messages.ts`) |
+| `src/domain` | `effect` | Pure rules: `decodeSettings`, `validatePatch`, `encodeSettings`, defaults (`shell/settings.ts`, built by `shell/settings-codec.ts`); the note codec, what makes a note a record and a usable note name (`notes/`) |
+| `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`, `Messages`, `NoteStore`, `IdGenerator`, `DeviceStore`), `SettingsService`, `EventBus` and the `AppEvent` vocabulary, routes (`routesOf`, composed in `routes.ts`), use cases, tagged errors, the German and English message catalogs (`<module>/i18n/`, composed in `messages.ts`) |
 | `src/infrastructure/obsidian` | `obsidian`, application, presentation | Adapter Layers (including `hostEventsLayer` and the `NoteStore` adapter), commands, ribbon, `openRoute`, settings tab, `ShellView` (`shell/`), `appLayer` |
 | `src/infrastructure/memory` | application, domain | In-memory adapters for tests and the harness (`notes/`). Nothing in `src/` imports them, so they never reach `main.js` |
 | `src/presentation` | `vue`, `@nuxt/ui`, `@tanstack/vue-form`, application, domain | Vue surfaces: the app frame, the route outlet and the screens (`appSurface` in `app-surface.ts` composes them). Components never see an Effect value. They run reads through `useQuery`, state changes through `useCommand` and follow streams through `useStream` |
@@ -49,7 +49,7 @@ Decision record: [ADR 0006](../adr/0006-module-structure.md). Each layer is slic
 
 - **Public face.** Each module folder has an `index.ts`. Code outside the folder imports only that, also the same module from another layer (`../../../application/shell`, never `…/shell/ports`). The one exception is `presentation/shell`, which also has `host.ts` (see *Presentation entries* below). Tests may import a module's files directly.
 - **Direction.** feature → `notes` → `shell`. `shell` imports no other module; `notes` imports only `shell`; feature modules may import each other's index, acyclically.
-- **Composition.** A root file composes module parts and holds no rule of its own: `AppError = ShellError | NotesError`, `AppEvent = Data.TaggedEnum<ShellEvents>`, `AppServices = ShellServices | NotesServices`, `Catalog = { shell: ShellCatalog; notes: NotesCatalog }`, `appLayer` = `shellLayer` merged with `notesLayer`, `Route = Schema.Union([ShellRoute])`, and `appSurface` maps each route name to a module's screen. A new module adds its part to each. `notes` has no events yet and no routes.
+- **Composition.** A root file composes module parts and holds no rule of its own: `AppError = ShellError | NotesError`, `AppEvent = Data.TaggedEnum<ShellEvents>`, `AppServices = ShellServices | NotesServices` (`NoteStore | IdGenerator`), `Catalog = { shell: ShellCatalog; notes: NotesCatalog }`, `appLayer` = `shellLayer` merged with `notesLayer`, `Route = Schema.Union([ShellRoute])`, and `appSurface` maps each route name to a module's screen. A new module adds its part to each. `notes` has no events yet and no routes.
 - **`describeError`** hands an error to its module's describer with that module's part of the catalog: `isNotesError(error) ? describeNotesError(error, messages.notes) : describeShellError(error, messages.shell)`. An error union added to `AppError` without its describer does not compile.
 - **`Messages`** stays one service holding the whole `Catalog`; module code reads its own part (`(yield* Messages).shell`). The shell's catalog part carries `language`.
 - **Type-only edges to the root.** `EventBus` and `Messages` live in the shell but carry the composed types, so `src/application/shell/` imports `AppEvent` and `Catalog` from the root as types only. Runtime imports go the other way only, so there is no runtime cycle.
@@ -91,9 +91,66 @@ Decision record: [ADR 0007](../adr/0007-vault-data-access.md). Module `notes` gi
 - **The metadata cache lags.** Obsidian indexes a write a moment after it (a few milliseconds), then fires `changed`. Right after `create`, `getFileCache` is `null`; right after an update it still holds the old frontmatter. So every write returns the note as written, and `list`/`read` show what the cache holds. The index of a later step follows `MetadataChanged`.
 - **Name clashes** follow Windows and macOS, the product's platforms, whatever the disk does: two names clash when their `clashKey` (`src/domain/notes`) is equal, `name.normalize("NFC").toLowerCase()`. NFC first, because macOS writes umlauts decomposed (NFD) and the others composed; `toLowerCase`, not `toLocaleLowerCase` or `localeCompare`, because it is Unicode's default case mapping and gives the same key in every locale and engine, while collation also equates characters that file systems keep apart. The store compares a candidate with every file and folder in the target folder (`TFolder.children`), because Obsidian's lookups by path are case-sensitive and a Linux disk would take both names. Windows itself keeps NFC and NFD names apart; the store refuses them anyway, so Sync between devices never has to merge two such files.
 - **Writes are commands.** `writeCommand` (`src/application/notes/command.ts`) runs the vault calls in `Effect.uninterruptible`: once started they complete, also when the caller is interrupted, as `SettingsService` does for `saveData`. Checks that write nothing (name, free path, note exists) run before it.
-- **Errors** (`src/application/notes/errors.ts`): `NoteNotFoundError`, `NotePathTakenError`, `InvalidNoteNameError` (issue `empty`, `forbidden-character`, `leading-dot`), `NoteUnreadableError` (broken YAML on update), `NoteWriteError`; reads fail with the shell's `VaultReadError`. None carries a path; texts are in `notes/i18n/`.
+- **Errors** (`src/application/notes/errors.ts`): `NoteNotFoundError`, `NotePathTakenError`, `InvalidNoteNameError` (issue `empty`, `forbidden-character`, `leading-dot`), `NoteUnreadableError` (broken YAML on update), `NoteWriteError`, and the codec's `NoteEditConflictError` and `NoteWriteRefusedError` (see [The note codec](#the-note-codec)); reads fail with the shell's `VaultReadError`. None carries a path; only the conflict carries note content, for the form, and neither its text nor its message uses it. Texts are in `notes/i18n/`.
 - **Adapters.** `src/infrastructure/obsidian/notes/note-store.ts` is the only code that changes vault files: `vault.create`, `vault.createFolder`, `fileManager.processFrontMatter`, `fileManager.trashFile`, `fileManager.renameFile`, every path through `normalizePath`. `src/infrastructure/memory/notes/` keeps notes in memory for tests and the harness; both pass the same contract suite (see [Testing](testing.md)).
 - **Body changes** (`vault.process`) are not offered yet: ADR 0007 lets the plugin change a body only where a type's contract defines a section, and no type does so far.
+
+### The note codec
+
+One declaration per note type drives reading and writing, as `FIELDS` drives the settings (`src/domain/notes/`, ADR 0007). `defineNoteType` turns it into `decode`, `newFrontmatter` and `merge`. Everything is pure; nothing touches the vault.
+
+- **The marker.** `schema: weg-manager.<type>/v<n>`: `<type>` is kebab-case letters, `<n>` a positive integer without a leading zero. `parseSchemaMarker` says `none` (no string with the prefix), `malformed` (the prefix, but not this form) or `record` with type and version. `isRecordFrontmatter` is "not `none`", so `list` also returns a note with a broken marker, to be shown with `schema.malformed`.
+- **The id.** `<type>-<uuid>`, the UUID in lower case, any UUID version. `recordIdIssue(type, value)` gives `id.missing` (no value or `null`), `id.malformed` or `id.other-type`. A new id comes from the `IdGenerator` port: `crypto.randomUUID()` in the plugin (`src/infrastructure/obsidian/notes/id-generator.ts`, provided by `notesLayer`), `sequentialIdGenerator()` in tests and the harness (`src/infrastructure/memory/notes/`).
+- **A declaration** names the type, the current version, the fields in the order a new note writes them, and the migration table:
+
+  ```ts
+  const testItem = defineNoteType({
+    type: "test-item",
+    version: 3,
+    fields: {
+      title: required(text()),
+      short_code: text({
+        schema: Schema.String.check(Schema.isMaxLength(5)),
+        issue: "short-code.length",
+      }),
+      count: number(),
+      done: checkbox(),
+      due: date(),
+      tags: list(),
+    },
+    migrations: {
+      1: ({ name, ...rest }) => ({ ...rest, title: name }),
+      2: (frontmatter) => ({ ...frontmatter, count: Number(frontmatter["count"]) }),
+    },
+  });
+  ```
+
+  This is the test-only type (`tests/support/notes/test-note-type.ts`, whose real step 2 also keeps a number). Field kinds are what Obsidian's properties panel edits: `text`, `number` (finite), `checkbox`, `date` (a real day as `YYYY-MM-DD` text) and `list` (of text). Each reports `field.<kind>` for a value of the wrong kind; a narrower schema may bring its own code, which the feature words. `required` makes a missing value `field.missing`. An empty property (`null`, as Obsidian writes it) counts as unset.
+- **Keys.** The record uses the file's keys, English snake_case (`short_code`). There is no mapping to camelCase: one name in the file, the contract page and the code, and nothing to keep in step.
+- **Migrations** run in memory only, through `runMigrations` (shared with the settings codec): `migrations[n]` lifts version `n` to `n + 1`, an entry at or beyond the current version never runs, and a step that throws or returns no object fails with its version. The note on disk keeps its version until the user saves it.
+
+`decode({ path, frontmatter })` never throws. Its outcomes:
+
+| `kind` | When | Holds |
+| --- | --- | --- |
+| `not-this-type` | no `schema`, another type, or a malformed marker | the parsed `marker`; the index reports `malformed` as `schema.malformed` |
+| `read-only` | a newer version (`schema.newer` with the version), a step that failed (`migration.failed` with its version), no valid id of this type (`id.*`), or a duplicate id (`id.duplicate`, added by `markDuplicateIds`) | `id` when valid; `values` of the valid fields, empty for a newer or unmigratable note, whose fields are not interpreted |
+| `editable` | everything else, also with broken fields | `id`, the valid `values`, one `issues` entry per broken or missing field with its `code` and `key` |
+
+Every outcome also holds `path` and the `frontmatter` as read; a record holds the file's `version` too. A note without identity is read-only, because a write could not be matched to the record it belongs to, and another device or a copy may carry the real one. A note with broken fields stays editable: the form marks each field named in `issues`, can show the raw value from `frontmatter`, and saving repairs it.
+
+`markDuplicateIds(notes)` takes decoded notes of any types and turns every note that shares its id with another into a read-only one with `id.duplicate`. Issue texts come from `describeNoteIssue(issue, messages.notes, label)` (`src/application/notes/i18n/describe.ts`): `label(key)` is the field's label from the feature's catalog.
+
+**Writing.**
+
+- `newRecordFrontmatter(type, values)` (application) draws an id from `IdGenerator` and builds the frontmatter for `NoteStore.create`: `schema`, `id`, then each set field in declaration order.
+- `NoteStore.update(path, editChange(type, base, edited))` saves a form: `base` is the frontmatter the form loaded, `edited` every field as saved (`undefined` for a cleared one). Inside the atomic write, `type.merge(base, edited, current)` decides per field (ADR 0007):
+  - a field the user did not change keeps the note's current value;
+  - a field the user changed is written while the note still has the loaded value (`undefined` removes the key);
+  - a field both sides changed to different values is a `NoteEditConflictError` listing each such field with `key`, `base`, `edited` and `current`, and nothing is written; both sides changing it to the same value is no conflict.
+- Values compare structurally (lists, dates as text), and `null` equals unset. A broken value the user did not touch stays as it is. Unknown keys are never written.
+- **Guards.** The write is refused with `NoteWriteRefusedError` when `current` is no longer a record of this type (`other-type`), is of a newer version (`newer-version`), has no valid id or another id than `base` (`identity`), or cannot be migrated (`migration-failed`).
+- **An older version** is written in the current one by the same patch: `schema` and whatever the migration changed in `current`, then the user's fields on top. Both sides are compared after migration, so a conflict shows values in the current form.
 
 ## Runtime
 
@@ -172,7 +229,7 @@ Decode, patch validation and encode are driven by one declaration per setting (`
   A new setting also needs its key in `Settings`, its issue code in `SettingsIssue` with a text in both catalogs, and unit tests with the exact issues. The type `SettingsFields<EditableSettings, …>` fails typecheck for a missing or misspelled declaration.
 - **Decode never throws.** A missing or `null` file gives defaults without an issue, a non-object gives `file.invalid`. A field the schema rejects falls back to its default alone and reports its issue; the other fields keep their values. Unknown keys are dropped. A newer `schemaVersion` gives defaults, `schema.newer` and a read-only status; a version that is not a positive integer gives `schema.invalid` and decoding goes on; a missing version counts as current.
 - **Encode** writes the version and every declared field except a default that is marked `omitWhenDefault`. The greeting and the root folder stay out of the file while they are the default, so an older plugin version on another device reads the file without an issue.
-- **Migrations.** `MIGRATIONS` is a table `{ [fromVersion]: (raw) => raw }`; entry `n` lifts a file from version `n` to `n + 1`. Decode applies the steps in order from the file's version up to `SETTINGS_VERSION`, before the field decode, and only in memory: the file is rewritten by the next save and not by loading it, because an older plugin on another device would otherwise see a file it takes for newer ([ADR 0005](../adr/0005-ui-language.md)). A version without an entry needs no change. A step that throws or returns something other than an object gives defaults and the issue `migration.failed` with the step's version, and the file becomes read-only (`readOnlyReason: "unreadable"`): its old values stay on disk until a fixed version reads them, and no save replaces them with defaults. Today `SETTINGS_VERSION` is 1 and the table is empty. To bump the version, raise `SETTINGS_VERSION`, add the step for the old version, and test it with real-shaped old files; a bump that older versions cannot read makes them treat the file as newer and go read-only, so prefer a change that needs no bump.
+- **Migrations.** `MIGRATIONS` is a table `{ [fromVersion]: (raw) => raw }`; entry `n` lifts a file from version `n` to `n + 1`. Decode applies the steps in order from the file's version up to `SETTINGS_VERSION` (`runMigrations`, which the note codec shares), before the field decode, and only in memory: the file is rewritten by the next save and not by loading it, because an older plugin on another device would otherwise see a file it takes for newer ([ADR 0005](../adr/0005-ui-language.md)). A version without an entry needs no change. A step that throws or returns something other than an object gives defaults and the issue `migration.failed` with the step's version, and the file becomes read-only (`readOnlyReason: "unreadable"`): its old values stay on disk until a fixed version reads them, and no save replaces them with defaults. Today `SETTINGS_VERSION` is 1 and the table is empty. To bump the version, raise `SETTINGS_VERSION`, add the step for the old version, and test it with real-shaped old files; a bump that older versions cannot read makes them treat the file as newer and go read-only, so prefer a change that needs no bump.
 - **Root folder.** `rootFolder` is the vault-relative folder of the plugin's notes (default `WEG Manager`, [ADR 0007](../adr/0007-vault-data-access.md)). It has no interface: it is decoded, validated and encoded, and read through `SettingsService.current` and `changes`. Stored normalised: trimmed, no leading or trailing slash, `/` between names, at most 100 characters; no empty, `.` or `..` name, none of `* " \ < > : | ?` and no control character in a name. A broken value reports `rootFolder.invalid`.
 - `SettingsService` holds the settings and their status (writable, issues, read-only reason) in two `SubscriptionRef`s: `changes` and `statusChanges` emit the current value, then every change.
 - `reload` reads `data.json` again and decodes it as on load: a newer or unreadable file switches to read-only and is never written, a valid one switches back. Unchanged values publish nothing, and a notice appears only when the status changes. Reloads and updates are serialised.

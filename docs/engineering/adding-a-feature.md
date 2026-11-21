@@ -55,14 +55,33 @@ The walking skeleton (greeting and markdown file count) in module `shell` is the
 
 Every feature reads and writes notes through the `NoteStore` port of module `notes` (`src/application/notes/`, ADR 0007); see [Architecture → Vault notes](architecture.md#vault-notes). Import it from the module's index. The Obsidian adapter (`src/infrastructure/obsidian/notes/`) is the only code that changes vault files; a feature adds no vault adapter of its own.
 
-- **Create a record** with `create({ folder, name, frontmatter, body })`. Folders come from settings and are created when missing; a taken name gets ` (2)`. A name is taken also in another case or Unicode form (`ahornweg` beside `Ahornweg`), as on Windows and macOS.
+- **Declare the note type** in the feature's domain (`src/domain/<module>/`) with `defineNoteType` from `src/domain/notes`; see [The note codec](architecture.md#the-note-codec). Give the type name (English singular, kebab-case), the version, the fields in file order and the migration table. Keys are English snake_case; the record uses the same keys. Build fields from the kinds `text`, `number`, `checkbox`, `date` and `list`, mark the ones a record needs with `required`, and give a narrower schema its own issue code where a value has a rule (a length, a list of codes). For example (not the real community contract):
+
+  ```ts
+  export const communityType = defineNoteType({
+    type: "community",
+    version: 1,
+    fields: {
+      name: required(text()),
+      short_code: required(text({ schema: ShortCode, issue: "short-code.invalid" })),
+    },
+    migrations: {},
+  });
+  ```
+
+  Write the type's file contract page with it (ADR 0007). Test the declaration with the exact issues of broken notes, as `tests/unit/domain/notes/decode.test.ts` does for the test type.
+- **Word its issues.** The notes catalog words the shared codes; `describeNoteIssue(issue, messages.notes, label)` takes the field label from your catalog. A code your declaration adds gets its text in your module's catalog part, in both languages.
+- **Read a record** with `type.decode(note)`. Show a `read-only` record without a save button and its issues; an `editable` one may still have field issues, which the form marks by `key`. Keep the decoded `frontmatter` in the form as the loaded state.
+- **Bump the version** only for a change older notes cannot be read as. Add the step for the old version to the table and test it with real-shaped old notes. A note is lifted in memory and written in the new form only when the user saves it.
+- **Create a record** with `create({ folder, name, frontmatter, body })`, the frontmatter from `newRecordFrontmatter(type, values)`, which draws the id from the `IdGenerator` port. Folders come from settings and are created when missing; a taken name gets ` (2)`. A name is taken also in another case or Unicode form (`ahornweg` beside `Ahornweg`), as on Windows and macOS.
+- **Save a form** with `update(path, editChange(type, loaded, edited))`: the per-field merge runs inside the atomic write. It fails with `NoteEditConflictError` (show each field's `base`, `edited` and `current` and let the user choose) or `NoteWriteRefusedError` (the note is no longer the loaded record), and then writes nothing.
 - **Change frontmatter** with `update(path, change)`. `change` runs inside Obsidian's atomic `processFrontMatter` on the frontmatter just read from the file and returns `Result.succeed({ set, remove })` or `Result.fail(yourError)` to write nothing. Write only the keys your type knows; the store keeps every other key, the key order and the body.
 - **Delete** with `trash(path)`, **rename** with `rename(path, newName)`.
 - **Read** with `list` (every record, by `schema`) and `read(path)`. Both come from the metadata cache, which catches up with a write a moment later: use the note a write returns, not a read right after it.
 - **Never** call `vault.modify`, `vault.adapter`, or `read` followed by a write. A body change needs a contract section first (ADR 0007) and then a `NoteStore` call for it.
 - **Find files without scanning.** Do not call `getFiles()` or `getMarkdownFiles()` in a hot path (an event handler, a render, a loop). `list` scans once; keep it behind `LayoutReady` and a debounce, as the file count does.
-- **Errors.** The store's failures are tagged `AppError`s with texts in both catalogs. A failure your `change` decides on (a conflict) is your module's error and needs its own text.
-- **Tests.** Use the in-memory adapter (`memoryNoteStore()` from `src/infrastructure/memory/notes`, also in `testRuntime().notes`) to seed notes, switch failures on and look behind the port.
+- **Errors.** The store's failures and the merge's conflict and refusal are tagged `AppError`s of module `notes` with texts in both catalogs. A failure your own `change` decides on is your module's error and needs its own text.
+- **Tests.** Use the in-memory adapter (`memoryNoteStore()` from `src/infrastructure/memory/notes`, also in `testRuntime().notes`) to seed notes, switch failures on and look behind the port. `sequentialIdGenerator()` from the same folder gives known ids (`…-000000000001`, `…-000000000002`); `testRuntime` and the harness provide one. `tests/unit/application/notes/edit-through-store.test.ts` shows create, outside edit and save end to end.
 
 ## Checklist for a new view
 

@@ -59,12 +59,13 @@ Jeder Job hat dieselben Bestandteile:
   - *beobachtet*: im Pilot aufgetreten. Datierte Vorfälle werden bei der Auswertung nachgetragen.
   - *Vorschlag*: im Betrieb noch nicht bestätigt, in der Fassung v0.2 mit „(V)“ markiert.
   - *Kandidat*: in der Research als mögliche Lücke erkannt, nicht aus dem Pilot.
+  - Nach den Interviews kommen *bestätigt*, *priorisiert* und *verworfen* hinzu. Das vollständige Statusmodell mit Mindestbelegen steht in [[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]], Abschnitt 3.4.
 
 **Begriffe:** Ein *offener Punkt* ist eine einzelne Sache, die erledigt werden muss, im Sinne von [[K-03 - Einzeln erledigbarer Punkt als Kerneinheit]]. Ein *Beschluss* ist eine Entscheidung der Gemeinschaft, eine *Entscheidung des Beirats* seine eigene Abwägung ([[DF-15 - Arbeitsentscheidung und Beschluss]]). *Stand* meint den Bearbeitungsstand; die geprüfte Ausgabe an Dritte heißt im Produkt Sachstand.
 
 ## Job-Ausführender
 
-Ein ehrenamtlicher Verwaltungsbeirat, oft allein oder zu wenigen, teils für mehrere formal getrennte Gemeinschaften (Wohnhaus, Tiefgarage). Er ist Laie mit begrenzter Zeit und hat keine Ausführungsbefugnis: Er beauftragt nichts und zahlt nichts. Gesetzlich muss er aber die Verwaltung unterstützen und überwachen und Wirtschaftsplan und Jahresabrechnung prüfen (§ 29 Abs. 2 WEG). Sein Gegenüber ist eine professionelle Verwaltung mit Informationsvorsprung. Eine kleinere Gemeinschaft wie die Tiefgarage hat dieselben Jobs in kleinerem Umfang.
+Ein ehrenamtlicher Verwaltungsbeirat, oft allein oder zu wenigen, teils für mehrere formal getrennte Gemeinschaften (Wohnhaus, Tiefgarage). Er ist Laie mit begrenzter Zeit und hat keine Ausführungsbefugnis: Er beauftragt nichts und zahlt nichts. Gesetzlich muss er aber den Verwalter unterstützen und überwachen; Wirtschaftsplan und Jahresabrechnung soll er prüfen (§ 29 Abs. 2 WEG). Sein Gegenüber ist eine professionelle Verwaltung mit Informationsvorsprung. Eine kleinere Gemeinschaft wie die Tiefgarage hat dieselben Jobs in kleinerem Umfang.
 
 Gemeint ist im Folgenden immer diese Rolle, wenn der Satz mit „Als Verwaltungsbeirat“ beginnt.
 
@@ -105,7 +106,7 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 
 > Als Verwaltungsbeirat muss ich zwischen meinen festen Arbeitszeiten erkennen, was wirklich nicht warten kann, um schnell zu reagieren, ohne täglich hinzusehen.
 
-- **Ergebnis:** Minimiere die Zahl der Unterbrechungen, die nicht von einer rechtlichen Frist, einer Unterschrift, einem akuten Gebäudeproblem oder drohenden Kosten ausgehen.
+- **Ergebnis:** Minimiere die Zahl der Unterbrechungen, die nicht von einer rechtlichen Frist, einer Unterschrift, einem akuten Gebäudeproblem oder drohenden Kosten ausgehen. Minimiere zugleich die Zahl dringender Punkte, die erst in der nächsten festen Arbeitszeit auffallen.
 - **Verbindlichkeit:** Sorgfalt · **Status:** beobachtet
 
 ### J-A3 · Wieder einsteigen
@@ -127,13 +128,13 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 > Als Verwaltungsbeirat muss ich beim Erledigen eines offenen Punkts festhalten, womit und wann er erledigt ist, um später belegen zu können, dass nichts offen geblieben ist.
 
 - **Ergebnis:** Minimiere die Zahl der Punkte, deren Erledigung sich später nicht belegen lässt.
-- **Verbindlichkeit:** Sorgfalt · **Status:** Kandidat. Die Job-Map-Prüfung zeigt beim Schritt „abschließen“ eine Lücke ([[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]], Abschnitt 1.5). In den Interviews als Forschungsfrage FF-9 zu prüfen.
+- **Verbindlichkeit:** Sorgfalt · **Status:** Kandidat. Die Job-Map-Prüfung zeigt beim Schritt „abschließen“ eine Lücke ([[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]], Abschnitt 1.5). In den Interviews als Forschungsfrage FF-9 aus dem [[Interviewleitfaden - Beirats-Interviews]] zu prüfen.
 
 ## B · Verwaltung überwachen und führen
 
 ### J-B1 · Zusagen verbindlich machen
 
-> Als Verwaltungsbeirat muss ich jede Zusage der Verwaltung mit Termin und erwartetem Ergebnis festhalten, um Verzögerungen früh zu sehen und keinen Rückstand entstehen zu lassen.
+> Als Verwaltungsbeirat muss ich bei jeder Zusage der Verwaltung Termin und erwartetes Ergebnis klären, um Verzögerungen früh zu sehen und keinen Rückstand entstehen zu lassen.
 
 - **Ergebnis:** Minimiere die Zahl der offenen Zusagen ohne Termin und die Zeit, bis eine Verzögerung bemerkt wird.
 - **Verbindlichkeit:** Sorgfalt · **Status:** beobachtet
@@ -170,7 +171,7 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 
 ### J-C1 · Wirtschaftsplan und Abrechnung prüfen
 
-> Als Verwaltungsbeirat muss ich vor dem Beschluss der Eigentümerversammlung Wirtschaftsplan und Jahresabrechnung prüfen und schriftlich dazu Stellung nehmen, um den Eigentümern eine belegte Entscheidungsgrundlage zu geben.
+> Als Verwaltungsbeirat muss ich vor dem Beschluss der Eigentümerversammlung Wirtschaftsplan und Jahresabrechnung prüfen und dazu Stellung nehmen, um den Eigentümern eine belegte Entscheidungsgrundlage zu geben.
 
 - **Ergebnis:** Minimiere die Zeit für eine belegte Stellungnahme vor der Versammlung und die Wahrscheinlichkeit, eine prüfungsrelevante Abweichung zu übersehen. Heute fehlen als Laie Zeit und Prüfschema.
 - **Verbindlichkeit:** Pflicht (§ 29 Abs. 2 S. 2 WEG, Soll-Vorschrift) · **Status:** beobachtet
@@ -235,7 +236,7 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 
 ### J-D5 · Ansprüche aus der Bauzeit sichern
 
-> Als Verwaltungsbeirat muss ich bei Schäden am Gemeinschaftseigentum erkennen, welche Baumängel und welche Wartungsversäumnisse sind, um Mängelansprüche vor Ablauf der Fristen geltend machen zu lassen.
+> Als Verwaltungsbeirat muss ich bei Schäden am Gemeinschaftseigentum erkennen, was davon Baumangel und was Wartungsversäumnis ist, um Mängelansprüche vor Ablauf der Fristen geltend machen zu lassen.
 
 - **Ergebnis:** Minimiere die Zahl bekannter Mängel, die nicht zugeordnet oder nicht rechtzeitig angezeigt sind.
 - **Verbindlichkeit:** Sorgfalt · **Status:** Vorschlag
@@ -254,11 +255,11 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 > Als Verwaltungsbeirat muss ich vor meiner Mitunterschrift prüfen, ob die Niederschrift der Versammlung die Beschlüsse richtig wiedergibt, um keine fehlerhafte Niederschrift mitzuverantworten.
 
 - **Ergebnis:** Minimiere die Zahl der Fehler, die in der unterschriebenen Niederschrift verbleiben.
-- **Verbindlichkeit:** Pflicht (Mitunterschrift nach § 24 Abs. 6 WEG) · **Status:** beobachtet
+- **Verbindlichkeit:** Pflicht für den Beiratsvorsitzenden oder seinen Vertreter (Mitunterschrift nach § 24 Abs. 6 WEG), für weitere Mitglieder Sorgfalt · **Status:** beobachtet
 
 ### J-E2b · Umsetzung der Beschlüsse verfolgen
 
-> Als Verwaltungsbeirat muss ich nach jeder Versammlung verfolgen, ob die Verwaltung die Beschlüsse umsetzt, um für jeden Beschluss den Umsetzungsstand zu kennen.
+> Als Verwaltungsbeirat muss ich nach jeder Versammlung verfolgen, ob die Verwaltung die Beschlüsse umsetzt, um eine ausbleibende Umsetzung früh anzusprechen.
 
 - **Ergebnis:** Minimiere die Zahl der Beschlüsse mit unbekanntem Umsetzungsstand, auch bei älteren Beschlüssen.
 - **Verbindlichkeit:** Sorgfalt · **Status:** beobachtet
@@ -281,7 +282,7 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 
 ### J-F1 · Anliegen aufnehmen und verfolgen
 
-> Als Verwaltungsbeirat muss ich, sobald ein Eigentümer ein Anliegen an mich heranträgt, davon wissen und seinen Stand kennen, um zu verhindern, dass Anliegen bei der Verwaltung versanden.
+> Als Verwaltungsbeirat muss ich bei jedem Anliegen, das ein Eigentümer an mich heranträgt, den Stand kennen, um zu verhindern, dass Anliegen bei der Verwaltung versanden.
 
 - **Ergebnis:** Minimiere die Zahl der Anliegen ohne bekannten Stand. Zu Beginn gab es einen großen Altbestand, danach wenige neue Anliegen.
 - **Verbindlichkeit:** Anliegen · **Status:** beobachtet
@@ -298,7 +299,7 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 > Als Verwaltungsbeirat muss ich bei jeder Prüfung mit Unterlagen umgehen, die Daten anderer Eigentümer enthalten, ohne fremde personenbezogene Daten weiterzugeben, um die Privatsphäre der Miteigentümer zu wahren.
 
 - **Ergebnis:** Minimiere die Zahl fremder personenbezogener Angaben, die in Berichte, Schreiben oder zu Dritten gelangen. Zielwert null.
-- **Verbindlichkeit:** Pflicht (DSGVO, Datenminimierung) · **Status:** beobachtet
+- **Verbindlichkeit:** Pflicht (DSGVO, Datenminimierung); die datenschutzrechtliche Rolle des Beirats selbst ist ungeklärt · **Status:** beobachtet
 
 ### J-F4 · Rolle bei Nachbarschaftsstreit kennen
 
@@ -318,7 +319,7 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 
 ### J-G2 · Bezahlte Leistung wird erbracht
 
-> Als Verwaltungsbeirat muss ich bemerken, ob die Verwaltung die Leistung der Dienstleister der Gemeinschaft kontrolliert, um Folgen unterlassener Pflege nicht erst spät zu entdecken.
+> Als Verwaltungsbeirat muss ich bemerken, ob die Verwaltung die Leistung der Dienstleister der Gemeinschaft kontrolliert, um sicher zu sein, dass die Gemeinschaft nur erbrachte Leistung bezahlt.
 
 - **Ergebnis:** Minimiere die Zahl der Rechnungen für Leistungen, die nicht oder nicht vollständig erbracht wurden.
 - **Verbindlichkeit:** Sorgfalt · **Status:** Vorschlag
@@ -422,7 +423,7 @@ Die Tabelle zeigt, wo das Konzept einen Job bereits aufgreift. Ein Bezug heißt 
 | J-RB1 | [[H-03 - Wochenarbeit bleibt innerhalb einer Stunde]] | Zeitbudget |
 | J-RB3 | [[F-08 - Kommunikation vorbereiten und Versand erfassen]] | Freigabe vor Versand |
 
-**Jobs ohne Bezug im Konzept:** J-B2, J-B5, J-C1, J-C4, J-C5, J-D1 bis J-D5, J-E2a, J-E2b, J-E3, J-E4, J-F4, J-H3 und J-EM5. Besonders auffällig ist J-C1: eine gesetzliche Pflicht ohne Feature. Ob diese Jobs in den Produktumfang gehören, entscheiden die Interviews und eine spätere Produktentscheidung, nicht dieser Katalog.
+**Jobs ohne Bezug im Konzept:** J-B2, J-B5, J-C1, J-C4, J-C5, J-D1 bis J-D5, J-E2a, J-E2b, J-E3, J-E4, J-F4, J-H3 und J-EM1 bis J-EM6. Besonders auffällig ist J-C1: eine gesetzliche Pflicht ohne Feature. Ob diese Jobs in den Produktumfang gehören, entscheiden die Interviews und eine spätere Produktentscheidung, nicht dieser Katalog.
 
 **Konzeptteile ohne Job:** [[H-05 - Manuelle Eingangsübernahme bleibt alltagstauglich]], [[H-06 - Vorbereitete Wochenarbeit ist ohne verpflichtende KI nützlich]], [[H-07 - Obsidian trägt die tatsächliche mobile Arbeit]], [[H-08 - Der Pilot kann den Kernablauf selbstständig fortführen]], [[H-11 - Der Nutzen führt zu erneuter Verwendung]], [[H-12 - Ein optionaler Onlinedienst kann wirtschaftlich tragfähig sein]] sowie die Entscheidungen K-10 bis K-17 betreffen die Lösung, ihren Betrieb oder das Geschäftsmodell. Das ist erwartbar, weil der Katalog lösungsneutral ist. Das Erfassen und Zuordnen von Eingängen ([[F-05 - Quellen und Verlauf zuordnen]]) ist am ehesten ein Teilschritt von J-A1 und J-B2.
 
@@ -437,5 +438,12 @@ Die Tabelle zeigt, wo das Konzept einen Job bereits aufgreift. Ein Bezug heißt 
 - J-E2 in J-E2a (Niederschrift prüfen, Pflicht) und J-E2b (Umsetzung verfolgen, Sorgfalt) geteilt, weil der Satz zwei Objekte hatte.
 - J-A5 als Kandidat aus der Job-Map-Prüfung aufgenommen.
 - Eigener Typ `JobsToBeDone` mit Verknüpfungen zu Akteuren, Hypothesen, Entscheidungen und Regeln; neuer Abschnitt „Bezüge zum Produkt“.
+
+**Nachprüfung v0.3 (21.11.2026):**
+
+- Job-Sätze geschärft: J-B1 (Termin klären statt festhalten), J-C1 (ohne Formvorgabe „schriftlich“, die das Gesetz nicht nennt), J-D5 (Satzbau), J-E2b und J-G2 (eigenes „um …“ statt Wiederholung bzw. passend zum Ergebnis), J-F1 (ohne Selbstverständliches).
+- J-A2 um das Gegenstück im Ergebnis ergänzt: übersehenes Dringendes.
+- Verbindlichkeit präzisiert: J-E2a trifft nach § 24 Abs. 6 WEG den Vorsitzenden oder seinen Vertreter; J-F3 mit Hinweis auf die ungeklärte Rolle des Beirats; § 29 Abs. 2 S. 2 WEG als Soll-Vorschrift benannt.
+- Statusmodell auf die Research verwiesen; „Jobs ohne Bezug“ um J-EM1 bis J-EM6 vervollständigt.
 
 **Erste Fassung dieser Note (21.11.2026):** Überführung der Ausgangsfassung v0.2 in die Schablone, mit Ergebnis, Verbindlichkeit und Status je Job.

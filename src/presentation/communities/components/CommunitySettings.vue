@@ -37,6 +37,8 @@ const rebuild = useCommand(() => rebuildNoteIndex);
 /** The sheet: closed, a new community, or one being edited. */
 const editing = shallowRef<{ readonly community: Community | undefined } | undefined>();
 const deleting = shallowRef<Community | undefined>();
+/** One dialog per community: a delete still running after a cancel lands in no other's. */
+const deletingKey = computed(() => deleting.value?.path ?? "");
 
 const folder = computed(() => `${settings.value.rootFolder}/${COMMUNITIES_FOLDER}`);
 const loading = computed(() => !list.value.ready && list.value.failure === undefined);
@@ -148,6 +150,6 @@ const close = () => {
         />
       </template>
     </USlideover>
-    <DeleteCommunityDialog :community="deleting" @close="deleting = undefined" />
+    <DeleteCommunityDialog :key="deletingKey" :community="deleting" @close="deleting = undefined" />
   </div>
 </template>

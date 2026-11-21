@@ -53,7 +53,8 @@ const obsidianmdForVue = [
  *   (`../shell`, never `../shell/ports`), also between layers of the same module.
  * - `presentation/shell` has a second entry, the Vue-free `host.ts`, for the code that runs at
  *   plugin load (`bootstrap`, the Obsidian adapters, the composition files in `src/presentation/`).
- *   That code may not import the Vue-loading `index.ts` except as types.
+ *   That code may not import a module's presentation `index.ts` (it loads Vue) except as types:
+ *   the shell's or a feature's. `app-surface.ts` reaches a feature's screens through `import()`.
  * - A core module imports no module listed after it: `shell` none, `notes` only `shell`. Feature
  *   modules may import each other's index.
  * - Nothing in `src/` imports the in-memory adapters (`src/infrastructure/memory/`): they serve the
@@ -74,6 +75,8 @@ const pastIndex = [
 ];
 /** In `src/presentation/` the shell's folder is `./shell`, so `./shell/host` is its host entry. */
 const pastIndexInPresentation = pastIndex.slice(0, -1);
+/** A module's presentation `index.ts`, which loads Vue; deeper paths fail `pastIndex` already. */
+const PRESENTATION_INDEX = `(${MODULES.join("|")})(/index)?$`;
 /** Code that runs at plugin load: it loads Vue only through `loadSurface` (Lazy presentation). */
 const PLUGIN_LOAD_FILES = ["src/main.ts", "src/bootstrap.ts", "src/infrastructure/**/*.ts"];
 /** @returns {import("eslint").Linter.Config} */
@@ -88,7 +91,7 @@ const vueFreeAtLoad = (/** @type {string[]} */ files, /** @type {string} */ rege
             regex,
             allowTypeImports: true,
             message:
-              "Plugin-load code imports presentation/shell/host; index.ts loads Vue (ADR 0006).",
+              "Plugin-load code imports presentation/shell/host; a presentation index.ts loads Vue (ADR 0006).",
           },
         ],
       },
@@ -114,8 +117,8 @@ const restrict = (/** @type {{ regex: string; message: string }[]} */ patterns) 
 const moduleBoundaries = [
   { files: ["src/**/*.ts", "src/**/*.vue"], rules: restrict([...pastIndex, testOnly]) },
   { files: ["src/presentation/*.ts"], rules: restrict([...pastIndexInPresentation, testOnly]) },
-  vueFreeAtLoad(PLUGIN_LOAD_FILES, "(^|/)presentation/shell(/index)?$"),
-  vueFreeAtLoad(["src/presentation/*.ts"], "^\\./shell(/index)?$"),
+  vueFreeAtLoad(PLUGIN_LOAD_FILES, `(^|/)presentation/${PRESENTATION_INDEX}`),
+  vueFreeAtLoad(["src/presentation/*.ts"], `^\\./${PRESENTATION_INDEX}`),
   ...CORE_MODULES.map((module, index) => ({
     files: moduleFolders(module),
     rules: restrict([

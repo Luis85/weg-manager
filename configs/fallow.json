@@ -39,6 +39,10 @@
         "publicFiles": ["index.ts"]
       },
       {
+        "name": "application-describe-error",
+        "patterns": ["src/application/user-messages.ts"]
+      },
+      {
         "name": "application-composition",
         "patterns": ["src/application/**"]
       },
@@ -78,11 +82,21 @@
     "rules": [
       {
         "from": "domain",
-        "allow": ["domain/shell", "domain/notes"]
+        "allow": ["domain/shell", "domain/notes", "domain/communities"]
       },
       {
         "from": "application",
-        "allow": ["domain", "application/shell", "application/notes", "application-composition"]
+        "allow": [
+          "domain",
+          "application/shell",
+          "application/notes",
+          "application/communities",
+          "application-composition"
+        ]
+      },
+      {
+        "from": "application-describe-error",
+        "allow": ["application", "application-composition"]
       },
       {
         "from": "application-composition",
@@ -93,11 +107,12 @@
         "allow": [
           "adapters/shell",
           "adapters/notes",
+          "adapters/communities",
           "infrastructure",
           "application",
           "application-composition",
           "domain",
-          "presentation"
+          "presentation/shell"
         ]
       },
       {
@@ -110,7 +125,14 @@
       },
       {
         "from": "presentation",
-        "allow": ["presentation/shell", "application", "application-composition", "domain"]
+        "allow": [
+          "presentation/shell",
+          "presentation/communities",
+          "application",
+          "application-composition",
+          "application-describe-error",
+          "domain"
+        ]
       },
       {
         "from": "presentation-composition",
@@ -133,8 +155,17 @@
         "allow": []
       },
       {
+        "from": "domain/notes",
+        "allow": ["domain/shell"]
+      },
+      {
         "from": "application/shell",
         "allow": ["domain/shell"],
+        "allowTypeOnly": ["application-composition"]
+      },
+      {
+        "from": "application/notes",
+        "allow": ["domain/shell", "domain/notes", "application/shell"],
         "allowTypeOnly": ["application-composition"]
       },
       {
@@ -148,8 +179,22 @@
         ]
       },
       {
+        "from": "adapters/notes",
+        "allow": [
+          "adapters/shell",
+          "infrastructure",
+          "application/shell",
+          "application/notes",
+          "domain/shell",
+          "domain/notes",
+          "presentation/shell"
+        ],
+        "allowTypeOnly": ["application-composition"]
+      },
+      {
         "from": "presentation/shell",
-        "allow": ["application/shell", "application-composition", "domain/shell"]
+        "allow": ["application/shell", "application-describe-error", "domain/shell"],
+        "allowTypeOnly": ["application-composition"]
       }
     ],
     "coverage": {

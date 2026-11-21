@@ -76,13 +76,16 @@ export type NotesError =
   | NoteWriteRefusedError
   | NoteIndexReadError;
 
-export const NOTES_ERROR_TAGS: ReadonlySet<string> = new Set<NotesError["_tag"]>([
-  "NoteNotFoundError",
-  "NotePathTakenError",
-  "InvalidNoteNameError",
-  "NoteUnreadableError",
-  "NoteWriteError",
-  "NoteEditConflictError",
-  "NoteWriteRefusedError",
-  "NoteIndexReadError",
-]);
+/** One key per member of `NotesError`; typecheck fails while one is missing or extra. */
+const NOTES_ERROR_TAG_KEYS = {
+  NoteNotFoundError: true,
+  NotePathTakenError: true,
+  InvalidNoteNameError: true,
+  NoteUnreadableError: true,
+  NoteWriteError: true,
+  NoteEditConflictError: true,
+  NoteWriteRefusedError: true,
+  NoteIndexReadError: true,
+} satisfies Record<NotesError["_tag"], true>;
+
+export const NOTES_ERROR_TAGS: ReadonlySet<string> = new Set(Object.keys(NOTES_ERROR_TAG_KEYS));

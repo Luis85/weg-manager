@@ -279,6 +279,23 @@ describe("updateCommunity", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
+  it.effect("refuses to write when a copy with the same id appeared meanwhile", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      const community = yield* loaded(fixture);
+      // Sorted by name, the copy comes first: neither of the two may be written (ADR 0007).
+      const copy = `${FOLDER}/Gemeinschaft 1 (Kopie).md`;
+      fixture.memory.seed(copy, communityNote(1), BODY);
+      yield* indexed;
+      const error = yield* Effect.flip(
+        updateCommunity(community, inputOf(community, { kind: "Haus" })),
+      );
+      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "identity" }));
+      assert.deepStrictEqual((yield* stored(PATH)).frontmatter, communityNote(1));
+      assert.deepStrictEqual((yield* stored(copy)).frontmatter, communityNote(1));
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
   it.effect("fails with NoteNotFoundError when the note is gone", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {

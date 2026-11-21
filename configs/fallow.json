@@ -57,6 +57,11 @@
         "patterns": ["src/infrastructure/**"]
       },
       {
+        "name": "presentation/shell",
+        "patterns": ["src/presentation/shell/**"],
+        "publicFiles": ["src/presentation/shell/index.ts", "src/presentation/shell/host.ts"]
+      },
+      {
         "name": "presentation",
         "autoDiscover": ["src/presentation"],
         "publicFiles": ["index.ts"]

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { defineComponent, h, onMounted, ref } from "vue";
 import { SCOPE_CLASS as SCRIPT_SCOPE_CLASS } from "../../../../scripts/scope-css.mjs";
 import { updateGreeting } from "../../../../src/application/shell/use-cases";
-import { mountSurface } from "../../../../src/presentation/shell/mount";
+import { mountSurface } from "../../../../src/presentation/shell";
 import { PORTAL_CLASS, SCOPE_CLASS } from "../../../../src/presentation/shell/scope";
 import { testRuntime } from "../../../support/runtime";
 

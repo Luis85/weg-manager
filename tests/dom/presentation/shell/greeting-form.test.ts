@@ -4,7 +4,7 @@ import { defineComponent, h, type ComponentInternalInstance } from "vue";
 import { SettingsService } from "../../../../src/application/shell/settings-service";
 import { encodeSettings } from "../../../../src/domain/shell";
 import GreetingForm from "../../../../src/presentation/shell/components/GreetingForm.vue";
-import { mountSurface } from "../../../../src/presentation/shell/mount";
+import { mountSurface } from "../../../../src/presentation/shell";
 import { testRuntime, type TestRuntimeOptions } from "../../../support/runtime";
 
 const settle = async () => {

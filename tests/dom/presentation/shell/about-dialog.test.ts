@@ -1,6 +1,6 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
-import { mountSurface } from "../../../../src/presentation/shell/mount";
+import { mountSurface } from "../../../../src/presentation/shell";
 import { testRuntime } from "../../../support/runtime";
 
 const settle = async () => {

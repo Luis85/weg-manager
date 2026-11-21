@@ -5,7 +5,7 @@ import { VaultReadError } from "../../../../src/application/shell/errors";
 import { SettingsService } from "../../../../src/application/shell/settings-service";
 import { countMarkdownFiles, updateGreeting } from "../../../../src/application/shell/use-cases";
 import { encodeSettings } from "../../../../src/domain/shell";
-import { useCommand } from "../../../../src/presentation/shell/runtime/use-runtime";
+import { useCommand } from "../../../../src/presentation/shell";
 import { host, runtimes } from "../../../support/composable";
 
 const { make, disposeAll } = runtimes();

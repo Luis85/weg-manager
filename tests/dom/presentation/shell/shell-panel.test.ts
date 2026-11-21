@@ -6,7 +6,7 @@ import { ReadOnlySettingsError } from "../../../../src/application/shell/errors"
 import { de } from "../../../../src/application/messages";
 import { describeIssue } from "../../../../src/application/shell/i18n/describe";
 import { describeError } from "../../../../src/application/user-messages";
-import { mountSurface } from "../../../../src/presentation/shell/mount";
+import { mountSurface } from "../../../../src/presentation/shell";
 import { testRuntime, type TestRuntimeOptions } from "../../../support/runtime";
 
 const settle = async () => {

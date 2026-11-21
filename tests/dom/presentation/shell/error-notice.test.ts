@@ -2,8 +2,7 @@ import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import type { UserMessage } from "../../../../src/application/shell/user-messages";
-import ErrorNotice from "../../../../src/presentation/shell/components/ErrorNotice.vue";
-import { mountSurface } from "../../../../src/presentation/shell/mount";
+import { ErrorNotice, mountSurface } from "../../../../src/presentation/shell";
 import { testRuntime } from "../../../support/runtime";
 
 const cleanups: (() => Promise<void>)[] = [];

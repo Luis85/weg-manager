@@ -1,6 +1,6 @@
 import { ItemView, type WorkspaceLeaf } from "obsidian";
 import type { AppRuntime } from "../../../application/app-services";
-import { loadSurface as importSurface, type SurfaceLoader } from "../../../presentation/shell";
+import { loadSurface as importSurface, type SurfaceLoader } from "../../../presentation/shell/host";
 
 export const SHELL_VIEW_TYPE = "weg-manager-view";
 

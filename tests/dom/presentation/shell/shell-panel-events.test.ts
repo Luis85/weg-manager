@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { EventBus } from "../../../../src/application/shell/event-bus";
 import { AppEvent } from "../../../../src/application/events";
 import { RECOUNT_DELAY_MS } from "../../../../src/presentation/shell/recount";
-import { mountSurface } from "../../../../src/presentation/shell/mount";
+import { mountSurface } from "../../../../src/presentation/shell";
 import { testRuntime } from "../../../support/runtime";
 
 const settle = async (ms = 0) => {

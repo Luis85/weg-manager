@@ -1,4 +1,5 @@
-// The public face of the shell's presentation (ADR 0006). It stays free of Vue: bootstrap imports
-// it at plugin load, and the Vue surface comes only through `loadSurface`.
-export { releaseAll } from "./release";
-export { loadSurface, type SurfaceLoader } from "./surface";
+// The entry of the shell's presentation for feature components (ADR 0006). It loads Vue, so code
+// that runs at plugin load imports `host.ts` instead.
+export { default as ErrorNotice } from "./components/ErrorNotice.vue";
+export { mountSurface } from "./mount";
+export { useCommand, useQuery, useSettings } from "./runtime/use-runtime";

@@ -24,7 +24,7 @@ import {
   showMessage,
 } from "./infrastructure/obsidian/shell";
 import { makeRuntime } from "./infrastructure/runtime";
-import { releaseAll } from "./presentation/shell";
+import { releaseAll } from "./presentation/shell/host";
 
 export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell";
 

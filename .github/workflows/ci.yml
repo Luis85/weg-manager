@@ -46,7 +46,6 @@ jobs:
   scanner-lint:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -54,7 +53,13 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run lint:scanner
+      # Step-level continue-on-error keeps the job (and the PR check) green; the annotation
+      # below and the step log show the findings.
+      - id: scan
+        run: npm run lint:scanner
+        continue-on-error: true
+      - if: steps.scan.outcome == 'failure'
+        run: echo "::warning title=Scanner lint::Findings in the community-scan approximation (known - .claude/skills/archify/explainer/reader.js). See the 'npm run lint:scanner' step log and docs/engineering/testing.md."
 
   # End-to-end tests in a real Obsidian app (wdio-obsidian-service). Runs beside verify and is
   # not part of the fast gate. The downloaded Obsidian stays in the Actions cache only: it is

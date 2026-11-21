@@ -14,3 +14,7 @@ reports/
 .env.local
 .obsidian-cache/
 .claude/worktrees/
+# Archify delivery scratch files (locks, staging, recovery) next to its output
+docs/archify/**/.archify-*
+docs/archify/**/*.delivery.json
+docs/archify/**/*.receipt.json

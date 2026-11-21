@@ -74,7 +74,7 @@ SOFTWARE.
 One deliberate change: the 15 pre-rendered demo pages `examples/*.html` (about 13 MB) are left out. The skill's instructions use only the `examples/*.json` sources, which are kept, and a demo can be rebuilt from its JSON. Everything else is unchanged.
 
 - Needs Node 18+, no npm install.
-- Diagrams are written to `.archify/<type>-<slug>-<timestamp>/` in the working directory. The formatter and linters skip that folder; whether a diagram is committed is decided per diagram.
+- In this project, diagrams go to `docs/archify/<type>-<slug>-<timestamp>/` instead of Archify's default `.archify/`. `AGENTS.md` sets this; the skill itself is unchanged. Archify's temporary `.archify-*` files and its delivery and finalize receipts there (absolute local paths and hashes) are git-ignored; the candidate and the HTML are what gets committed.
 - During delivery, Archify can check online for a newer stable release and show a reminder. It never updates itself.
 - To update: replace the folder with a newer upstream `archify/` (again without `examples/*.html`), run `doctor`, and adjust the version and commit above.
 

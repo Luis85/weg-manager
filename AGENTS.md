@@ -8,6 +8,10 @@ Issues live as Obsidian backlog notes under `docs/` (PBIs in `docs/requirements/
 
 The five default triage roles, stored in the `triage` frontmatter property (never in `tags`). See `docs/agents/triage-labels.md`.
 
+### Diagrams (Archify)
+
+Archify writes every diagram or explainer to `docs/archify/<type>-<slug>-<YYYYMMDD-HHMMSS>/`, never to `.archify/`; pass this folder as the output location to the `archify` skill, with `meta.output` relative to the repo root. The candidate (`candidate.json` / `candidate.archify.md`) and the `<slug>.html` stay together in that folder.
+
 ### Domain docs
 
 Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root; product decisions in `docs/decisions/` are read as context. See `docs/agents/domain.md`.

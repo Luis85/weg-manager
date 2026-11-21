@@ -26,6 +26,7 @@ Die Produktkonzeption wird in Obsidian als verknüpfte Markdown-Notes bearbeitet
 | `docs/adr/`             | Technische Architekturentscheidungen des Plugins (ADR, englisch), z. B. Abhängigkeitsstand. Getrennt von den Produktentscheidungen in `docs/decisions/`. |
 | `docs/engineering/`     | Entwicklerdokumentation des Plugins (englisch): Architektur, Features hinzufügen, Tests, Fehlerbehandlung, Release, GitHub-Einrichtung. |
 | `docs/plans/`           | Umsetzungspläne und Übergaben für Agentenläufe (Blueprint, Handoff). Arbeitsstand, keine Produktvorgabe. |
+| `docs/archify/`         | Mit Archify erzeugte Diagramme und Erklärseiten, je Auftrag ein Ordner `<typ>-<slug>-<zeitstempel>/` mit Quelle (`candidate.json` bzw. `candidate.archify.md`) und eigenständiger HTML-Datei. Anschauungsmaterial, keine Produktvorgabe. |
 
 Die vorhandene [[Product Backlog.base]] enthält die aktuellen View-Konfigurationen. Navigation zu einer Sammlung erfolgt über eine tatsächlich vorhandene View, beispielsweise [[Product Backlog.base#Business Rules]]. `docs/release-notes/` ist dort als künftiger Ablageort für Release Notes konfiguriert, derzeit aber kein vorhandener Dokumentordner. Weitere konfigurierte Ablageorte stehen unten; sie werden erst bei tatsächlichem Bedarf angelegt.
 

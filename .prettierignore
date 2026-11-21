@@ -1,0 +1,18 @@
+# not plugin code
+docs/
+.claude/
+skills/
+tests/skills/
+scripts/*.py
+*.md
+*.base
+.obsidian/
+.superpowers/
+# generated
+package-lock.json
+node_modules/
+dist/
+release/
+coverage/
+reports/
+.stryker-tmp/

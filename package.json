@@ -8,6 +8,17 @@
   "engines": {
     "node": ">=24"
   },
+  "scripts": {
+    "typecheck": "vue-tsc -p tsconfig.app.json && vue-tsc -p tsconfig.node.json",
+    "lint": "npm run lint:ox && npm run lint:es",
+    "lint:ox": "oxlint --deny-warnings",
+    "lint:es": "eslint --max-warnings 0 .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "analyze": "fallow && fallow architecture"
+  },
   "dependencies": {
     "@nuxt/ui": "4.13.0",
     "@tanstack/vue-form": "1.33.5",

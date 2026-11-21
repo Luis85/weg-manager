@@ -4,7 +4,7 @@
 
 Ein Obsidian-Plugin für Verwaltungsbeiräte, die eine oder mehrere Wohnungseigentümergemeinschaften (WEG) begleiten. Offene Anliegen bleiben mit Quelle, Zuständigkeit und nächstem Schritt sichtbar, die Wochenarbeit ist geführt und begrenzt, Nachrichten bleiben unter menschlicher Kontrolle. Alle Daten liegen lokal als Markdown-Notizen mit Frontmatter im eigenen Vault, nutzbar ohne Konto, Netz und KI.
 
-> **Stand:** Konzeptphase. Anforderungen, Design und ein klickbarer Prototyp liegen vor. Das Plugin hat ein lauffähiges technisches Grundgerüst (Begrüßung, Dateizähler, Einstellungen), aber noch keine Fachfunktionen.
+> **Stand:** Konzeptphase. Anforderungen, Design und ein klickbarer Prototyp liegen vor. Das Plugin hat ein lauffähiges technisches Grundgerüst und als erste Fachfunktion die Gemeinschaften (anlegen, bearbeiten, löschen, wechseln).
 
 ## Installation
 
@@ -19,7 +19,7 @@ Für ein Update die drei Dateien ersetzen und das Plugin neu laden. Später ist 
 ## Benutzung
 
 - **Ansicht öffnen:** über das Symbol *WEG Manager* in der linken Seitenleiste oder den Befehl **WEG Manager: Ansicht öffnen** in der Befehlspalette.
-- **Begrüßung:** den Begrüßungstext (für den Befehl **WEG Manager: Begrüßung anzeigen**) änderst du im Formular der Ansicht und speicherst ihn dort.
+- **Gemeinschaften:** die Ansicht öffnet mit deinen Gemeinschaften. Jede ist eine Notiz unter `WEG Manager/Gemeinschaften/` mit Name, Kürzel, Farbe, Art und Einheitenbezeichnung; der Dateivertrag steht in [`docs/contracts/DV-01 - Gemeinschaft v1.md`](docs/contracts/DV-01%20-%20Gemeinschaft%20v1.md). Links in der Ansicht wählst du die Gemeinschaft, in der du arbeitest; die Wahl gilt für alle offenen Ansichten und bleibt auf diesem Gerät gespeichert.
 - **Einstellungen:** unter *Einstellungen → WEG Manager* (Abschnitt Community-Plugins) lässt sich die Protokollstufe für die Entwicklerkonsole einstellen.
 - **Diagnose:** der Befehl **WEG Manager: Diagnose kopieren** legt einen Bericht mit Plugin-Version, Obsidian-API, Einstellungen und den letzten Protokolleinträgen in die Zwischenablage, zum Einfügen in eine Support-Anfrage. Notizinhalte und Dateinamen werden darin unkenntlich gemacht.
 

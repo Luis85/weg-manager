@@ -27,7 +27,7 @@ export const testAlias = {
   "@test/obsidian": fileURLToPath(new URL("./tests/support/obsidian/index.ts", import.meta.url)),
 };
 
-const ci = Boolean(process.env["TF_BUILD"]);
+const ci = Boolean(process.env["CI"]);
 
 export default defineConfig({
   plugins: [obsidianGuard()],

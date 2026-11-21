@@ -1,0 +1,42 @@
+# Quality gate on every push to main and every pull request. The logic lives in npm scripts;
+# this file only orchestrates (blueprint Task 11, GitHub Actions per the Task 11 decision).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run verify
+      - name: Upload test and coverage reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            reports/junit.xml
+            coverage/cobertura-coverage.xml
+          if-no-files-found: ignore
+      - name: Upload plugin build
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin
+          path: dist/

@@ -23,6 +23,9 @@ Die Produktkonzeption wird in Obsidian als verknüpfte Markdown-Notes bearbeitet
 | `docs/hypothesis/`      | Prüffähige Annahmen mit Herkunft, vorgeschlagener Untersuchung und Evidenzgrenzen. `type: Hypothesis`; ein ungeprüfter Nutzen wird nicht als bewiesen dargestellt.              |
 | `docs/releases/`        | Geplante Releases als `type: Release`. Anforderungen werden explizit über `release` zugeordnet; die Zugehörigkeit ist keine Fertigmeldung.                                      |
 | `docs/agents/`          | Konfiguration für die Engineering-Skills unter `.claude/skills/` (Issue Tracker, Triage-Labels, Domain Docs), eingebunden über `AGENTS.md`. Agentenkonfiguration, keine Konzeptnotes; ohne `type`, Backlog-Eltern oder Ränge. |
+| `docs/adr/`             | Technische Architekturentscheidungen des Plugins (ADR, englisch), z. B. Abhängigkeitsstand. Getrennt von den Produktentscheidungen in `docs/decisions/`. |
+| `docs/engineering/`     | Entwicklerdokumentation des Plugins (englisch): Architektur, Features hinzufügen, Tests, Fehlerbehandlung, Release, GitHub-Einrichtung. |
+| `docs/plans/`           | Umsetzungspläne und Übergaben für Agentenläufe (Blueprint, Handoff). Arbeitsstand, keine Produktvorgabe. |
 
 Die vorhandene [[Product Backlog.base]] enthält die aktuellen View-Konfigurationen. Navigation zu einer Sammlung erfolgt über eine tatsächlich vorhandene View, beispielsweise [[Product Backlog.base#Business Rules]]. `docs/release-notes/` ist dort als künftiger Ablageort für Release Notes konfiguriert, derzeit aber kein vorhandener Dokumentordner. Weitere konfigurierte Ablageorte stehen unten; sie werden erst bei tatsächlichem Bedarf angelegt.
 

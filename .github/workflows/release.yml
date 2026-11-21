@@ -1,0 +1,35 @@
+# Release on a bare semver tag (no "v"): gate, stage, then a GitHub release carrying exactly
+# main.js, manifest.json and styles.css, which is what Obsidian installs.
+name: Release
+
+on:
+  push:
+    tags: ["[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run verify
+      - run: npm run release:package -- --tag "${{ github.ref_name }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: weg-manager-${{ github.ref_name }}
+          path: release/weg-manager/
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: >-
+          gh release create "$TAG" --title "$TAG" --generate-notes
+          release/weg-manager/main.js release/weg-manager/manifest.json release/weg-manager/styles.css

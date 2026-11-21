@@ -24,7 +24,12 @@
     "dev:ui": "vite --config vite.harness.config.ts",
     "build:ui": "vite build --config vite.harness.config.ts",
     "test:mutation": "stryker run",
-    "test:mutation:full": "stryker run --force"
+    "test:mutation:full": "stryker run --force",
+    "verify": "node scripts/verify.mjs",
+    "verify:full": "node scripts/verify.mjs --full",
+    "version": "node scripts/version-bump.mjs && git add manifest.json versions.json",
+    "release:package": "node scripts/package-release.mjs",
+    "prepare": "node scripts/install-hooks.mjs"
   },
   "dependencies": {
     "@nuxt/ui": "4.13.0",

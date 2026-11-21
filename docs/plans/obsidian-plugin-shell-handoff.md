@@ -4,7 +4,8 @@
 - Branch: `feature/plugin-shell` (pushed to `origin`; not merged into `main`)
 - Plan: [obsidian-plugin-shell-blueprint.md](obsidian-plugin-shell-blueprint.md), edited during the run: TanStack Form, error handling, Twelve-Factor, ESLint and the line limits were added.
 - Executor: inline execution (superpowers `executing-plans`), TDD for every behaviour step.
-- Stopped by request **before Task 8**. Tasks 0–7 are done and committed, one commit per task.
+- Run 1 stopped by request **before Task 8**. Tasks 0–7 are done and committed, one commit per task.
+- **Run 2 (2026-11-21, branch `claude/upbeat-lovelace-v4rir1`, draft PR #4 into `feature/plugin-shell`) finished Tasks 8–12.** See section 7. Sections 1–6 describe the state after run 1.
 
 ## 1. Where things stand
 
@@ -192,3 +193,44 @@ Follow the blueprint, applying rulings 3–5, and write ADR 0002 and ADR 0003 to
 - Create `.env.local` from `.env.local.example` (`OBSIDIAN_PLUGIN_DIR=<vault>/.obsidian/plugins/weg-manager`) to use `npm run dev`.
 - Decide on ruling 5 (Azure Pipelines vs GitHub Actions) before Task 11.
 - Decide whether `feature/plugin-shell` should go through a PR into `main` once Task 12 is done.
+
+## 7. Run 2: Tasks 8–12
+
+| Task | Commit | Notes |
+| --- | --- | --- |
+| 8 Vue + Nuxt UI surface | `04f9632` | `mountSurface`, `bindHostTheme`, `useEffectAction`/`useSettings`, `ShellPanel` + `GreetingForm` (TanStack) + `ErrorNotice` + `AboutDialog`, real `ShellView` |
+| 9 Browser harness | `fb5e675` | `npm run dev:ui`; scenarios default, empty, error, slow, readonly |
+| 10 Mutation testing | `fdf16e6` | score 70.9 % → 96.8 % after new tests; fallow dead-code cleaned |
+| 11 Gate, hooks, CI | `9115e3f` | `verify`/`verify:full`, pre-push hook, **GitHub Actions** (CI, nightly mutation, release) |
+| 12 Docs | `9471bfa` | `docs/engineering/*`, ADR 0002/0003, `AGENTS.md`, `CLAUDE.md`, README |
+
+### Check results (2026-11-21)
+
+| Check | Result |
+| --- | --- |
+| `npm run verify` | passed: format, lint, typecheck, coverage (lines 98.2, statements 97.1, functions 95.1, branches 94.3), analyze, build (`main.js` 534 KB, `styles.css` 62 KB), check:dist |
+| `npm run test:mutation:full` | passed: 96.8 % (domain 95.0, application 97.9); 5 equivalent survivors |
+| Discriminating checks | passed: the head test fails without the no-op plugin; the dispose-order test fails without the undo step; a surviving `decodeSettings` mutant appears without the `schemaVersion: 2` tests; the gate stops at `typecheck` on a planted type error |
+| Fresh clone `npm ci && npm run verify:full` | see below |
+| Obsidian app, GitHub branch protection | not run (manual, see `docs/engineering/testing.md` and `github-setup.md`) |
+
+### Rulings from run 2
+
+40. **GitHub Actions instead of Azure Pipelines** (owner's decision). It replaces ruling 5; the setup lives in `docs/engineering/github-setup.md`.
+41. Nuxt UI's runtime `colors` plugin wrote `<style id="nuxt-ui-colors">` into `document.head`. `scripts/no-head-plugins.mjs` replaces it and the `head` plugin with no-ops, one module each, so Vue does not warn about a plugin installed twice. Both files are sha256-pinned. `bridge.css` adds `--ui-secondary` and `--ui-info`. Recorded in ADR 0001.
+42. Each surface's portal (`.weg-manager-portal`) sits at `z-index: var(--layer-modal, 50)`. Without it, a later view painted over an earlier view's modal backdrop (seen in the harness).
+43. `mountSurface(root, runtime, { content })` accepts other content, for tests and the harness. The Vue `idPrefix` is random per mount, which avoids a module-level counter (Twelve-Factor VI).
+44. `ErrorNotice` shows an action button only when a handler exists. `copy-diagnostics` is built in; `retry` and `open-settings` come from the parent.
+45. eslint-plugin-vue layout rules are off for `.vue` files, because Prettier owns template layout. The obsidianmd rules `prefer-active-doc` and `prefer-create-el` are off in `harness/**`, which is a plain browser page.
+46. Fallow: `ignoreDependencies` covers `obsidian`, `@iconify-json/lucide` and `@eslint/js`; the `unused-class-members` rule is off for `tests/support/obsidian/**`, which mirrors the Obsidian API.
+47. Stryker: the service-key strings are disabled with a reason (they only have to be unique). `test:mutation` is incremental; `test:mutation:full` adds `--force`.
+48. Vitest writes JUnit when `CI` is set; it used to check `TF_BUILD`.
+49. `.npmrc` sets `tag-version-prefix=""`, so `npm version` creates bare `x.y.z` tags.
+50. The draft PR targets `feature/plugin-shell`, not `main`. Merging into `main` stays your decision (section 6).
+
+### Still open
+
+- The manual checks in Obsidian (`docs/engineering/testing.md`, "Manual checks"), especially pop-out windows and real theme switches.
+- The GitHub repository settings and the branch-protection proof (`docs/engineering/github-setup.md`).
+- Visual polish: the Nuxt UI card and modal spacing look generous in the harness, and the card header divider is not visible. Neither was investigated.
+- The sample greeting is still English (ruling 25).

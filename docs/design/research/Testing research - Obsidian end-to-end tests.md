@@ -1,6 +1,6 @@
 ---
 type: Research
-status: entwurf
+status: umgesetzt
 scope: mvp
 date: 2026-11-21
 ---
@@ -10,6 +10,8 @@ date: 2026-11-21
 Researched on **21 Nov 2026**. Sources are primary only: tool repositories and source at a pinned commit, npm registry metadata, Obsidian's own help, developer docs and terms, Playwright and WebdriverIO docs, and GitHub's runner docs. Probes ran in a scratch directory outside the repo. No package was installed into the repo.
 
 ## Result
+
+> **Implemented on 2026-11-21.** Option A now runs as `npm run test:e2e` with the three specs from the first slice ([testing.md](../../engineering/testing.md)), on app 1.15.1 with installers 1.5.8 and 1.15.1. Several open points below are settled by that run. `executeObsidian`, `obsidianPage.enablePlugin`/`disablePlugin`, `app.changeTheme`, `app.setting.open`/`openTabById` and `moveLeafToPopout` all work. In 1.15.1 the settings tab does not render as a `.modal` in the main document, so the spec edits the field through `app.setting.activeTab.containerEl`.
 
 **Recommendation: adopt `wdio-obsidian-service` (WebdriverIO + Mocha) as a separate `test:e2e` suite in its own CI job. Keep it out of `npm run verify`.**
 

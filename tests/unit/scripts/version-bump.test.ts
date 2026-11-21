@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { bumpVersion } from "../../../scripts/version-bump.mjs";
 
-const manifest = { id: "weg-manager", version: "0.1.0", minAppVersion: "1.14.4" };
+const manifest = { id: "weg-manager", version: "0.1.0", minAppVersion: "1.15.1" };
 
 describe("bumpVersion", () => {
   it("sets the manifest version and records the minimum app version", () => {
-    const next = bumpVersion("0.2.0", manifest, { "0.1.0": "1.14.4" });
+    const next = bumpVersion("0.2.0", manifest, { "0.1.0": "1.15.1" });
     expect(next.manifest).toEqual({ ...manifest, version: "0.2.0" });
-    expect(next.versions).toEqual({ "0.1.0": "1.14.4", "0.2.0": "1.14.4" });
+    expect(next.versions).toEqual({ "0.1.0": "1.15.1", "0.2.0": "1.15.1" });
   });
 
   it("compares numerically, not as text", () => {

@@ -102,7 +102,7 @@ describe("obsidianLayer", () => {
       const host = yield* HostInfo;
       assert.deepStrictEqual(
         { pluginVersion: host.pluginVersion, apiVersion: host.apiVersion, platform: host.platform },
-        { pluginVersion: "0.1.0", apiVersion: "1.14.4", platform: "desktop-linux" },
+        { pluginVersion: "0.1.0", apiVersion: "1.15.1", platform: "desktop-linux" },
       );
     }).pipe(Effect.provide(layer));
   });

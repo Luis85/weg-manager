@@ -51,7 +51,7 @@ export const TEST_MANIFEST: PluginManifest = {
   id: "weg-manager",
   name: "WEG Manager",
   version: "0.1.0",
-  minAppVersion: "1.14.4",
+  minAppVersion: "1.15.1",
   author: "Test",
   description: "Test manifest",
   isDesktopOnly: true,

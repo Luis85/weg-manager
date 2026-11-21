@@ -95,7 +95,7 @@ describe("buildDiagnostics", () => {
       yield* logger.log({ level: "warn", event: "vault.read.failed", context: { attempt: 2 } });
       const report = yield* buildDiagnostics;
       assert.include(report, "0.1.0");
-      assert.include(report, "1.14.4");
+      assert.include(report, "1.15.1");
       assert.include(report, "test");
       assert.match(report, /Einstellungen beschreibbar: ja/);
       assert.include(report, "Begrüßung");
@@ -153,7 +153,7 @@ describe("copyDiagnostics", () => {
     return Effect.gen(function* () {
       yield* copyDiagnostics;
       assert.strictEqual(clipboard.writes().length, 1);
-      assert.include(clipboard.writes()[0] ?? "", "1.14.4");
+      assert.include(clipboard.writes()[0] ?? "", "1.15.1");
       assert.deepStrictEqual(notifier.messages().at(-1), {
         severity: "info",
         title: "Diagnose kopiert",

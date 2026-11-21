@@ -18,7 +18,7 @@ The plugin shell pins every dependency exactly. "Latest" means the newest stable
 | `tailwindcss` | 4.3.5 | runtime |
 | `effect` | 4.1.5 | runtime |
 | `@tanstack/vue-form` | 1.33.5 | runtime |
-| `obsidian` | 1.14.4 | dev (API types; also `minAppVersion`) |
+| `obsidian` | 1.14.4 | dev (API types; newest published, no 1.15.x types exist on 2026-11-21) |
 | `typescript` | **6.0.3** (latest: 7.0.2) | dev |
 | `vue-tsc` | 3.3.14 | dev |
 | `vite` | 8.3.8 | dev |
@@ -29,6 +29,10 @@ The plugin shell pins every dependency exactly. "Latest" means the newest stable
 | `@vue/test-utils` | 2.6.0 | dev |
 | `happy-dom` | 21.0.4 | dev |
 | `fast-check` | 4.10.3 | dev |
+| `wdio-obsidian-service`, `wdio-obsidian-reporter` | 3.5.0 | dev (e2e in a real Obsidian; added 2026-11-21) |
+| `@wdio/cli`, `@wdio/local-runner`, `@wdio/mocha-framework`, `@wdio/globals` | 10.2.0 | dev (e2e) |
+| `mocha` | 12.0.3 | dev (e2e; same version @wdio/mocha-framework installs) |
+| `@types/mocha` | 10.0.10 | dev (e2e) |
 | `@stryker-mutator/core` | 10.1.1 | dev |
 | `@stryker-mutator/vitest-runner` | 10.1.1 | dev |
 | `@stryker-mutator/typescript-checker` | 10.1.1 | dev |
@@ -72,7 +76,7 @@ The `vue-demi` postinstall script is not run (npm 11 `allowScripts`); `vue-demi`
 
 - `isDesktopOnly: true` until the plugin is verified on Obsidian mobile.
 - Prettier rather than `oxfmt` while `oxfmt` is 0.x.
-- `minAppVersion` = the installed `obsidian` API package version (1.14.4).
+- `minAppVersion` is **1.15.1**, the current stable Obsidian app (owner's decision, 2026-11-21). The `obsidian` types package has no 1.15.x release yet, so the types stay at 1.14.4. Code may only use APIs that the 1.14.4 types declare. When 1.15.x types appear, upgrade them and re-check this rule. The end-to-end suite runs the real 1.15.1 app on the oldest installer it accepts (1.5.8) and on the latest installer (1.15.1).
 
 ## Re-check cadence
 

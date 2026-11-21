@@ -86,6 +86,7 @@ npm run verify    # Qualitätstor: Format, Lint, Typen, Tests mit Coverage, Anal
 | --- | --- |
 | `test`, `test:coverage` | Vitest (Projekte `unit` und `dom`) |
 | `test:mutation`, `test:mutation:full` | Stryker auf Domain und Application |
+| `test:e2e` | End-to-End-Tests im echten Obsidian (WebdriverIO, lädt Obsidian beim ersten Lauf herunter; unter Linux ohne Display: `xvfb-run -a npm run test:e2e`) |
 | `build`, `check:dist` | `dist/main.js`, `styles.css`, `manifest.json` und ihre Invarianten |
 | `version`, `release:package` | Versionssprung und Release-Paket, siehe Releasing |
 

@@ -165,6 +165,6 @@ export const recordingClipboard = (options: { readonly fail?: boolean } = {}) =>
 
 export const testHostInfo = Layer.succeed(HostInfo)({
   pluginVersion: "0.1.0",
-  apiVersion: "1.14.4",
+  apiVersion: "1.15.1",
   platform: "test",
 });

@@ -45,14 +45,32 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 | `slow` | the skeleton for 1.5 s |
 | `readonly` | settings from a newer version: read-only hint, saving disabled |
 
+## End-to-end tests in Obsidian
+
+`npm run test:e2e` builds the plugin and runs `tests/e2e/specs/*.e2e.ts` with WebdriverIO and [`wdio-obsidian-service`](https://github.com/jesse-r-s-hines/wdio-obsidian-service) in a **real Obsidian app**. Background and alternatives: [Testing research](../design/research/Testing%20research%20-%20Obsidian%20end-to-end%20tests.md).
+
+- **Versions.** `OBSIDIAN_VERSIONS` picks app/installer pairs; the default is `earliest/earliest latest/latest`:
+  - `earliest` is `minAppVersion` (1.15.1) on the oldest installer it accepts (1.5.8, Electron 28);
+  - `latest` is the newest of both.
+  - For a quicker local run: `OBSIDIAN_VERSIONS=latest/latest npm run test:e2e` (in PowerShell, `$env:OBSIDIAN_VERSIONS="latest/latest"` first).
+- **First run.** The first run downloads Obsidian into `.obsidian-cache/` (git-ignored, about 1.3 GB unpacked). Never commit or share it: Obsidian's terms forbid redistribution.
+- **Display.** On Linux without a display, run `xvfb-run -a npm run test:e2e`. Windows and macOS need nothing extra.
+- **Isolation.** Each spec file gets a fresh Obsidian with a copy of `tests/e2e/vaults/basic`, and `dist/` is installed as the plugin.
+- **Writing specs.** `browser.executeObsidian(({ app, obsidian }, ...args) => …)` runs code inside Obsidian. The function is serialised, so pass values as arguments; closures do not work. Shared helpers live in `tests/e2e/support.ts`: console spy, open view, `data.json`, plugin reload, light/dark switch.
+- **Gate.** `test:e2e` is not part of `verify`, because it needs a display and a download. CI runs it as a separate `e2e` job.
+
+| Spec | Covers |
+| --- | --- |
+| `lifecycle.e2e.ts` | opening the view, reveal instead of duplicate, two tabs with one closed, three disable/enable cycles leaving no view, ribbon icon or command behind, clean console |
+| `settings-and-theme.e2e.ts` | the native settings tab saving to `data.json`, empty greeting never written, light/dark switch with Obsidian's colours reaching the surface, newer `data.json` shown read-only and never overwritten |
+| `popout.e2e.ts` | the view moved to a pop-out: surface, portal and About dialog in the pop-out's document, theme switch there, clean close |
+
+The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaught error. It ignores only Chromium's `ResizeObserver loop` notification. It is installed after the first load, so the three disable/enable cycles provide the load coverage.
+
 ## Manual checks in Obsidian
 
-No test can cover these. Report each as `not-run` until a person has done it.
+The e2e suite automates the old checks 2–7. What still needs a person:
 
-1. Run `npm run dev` with `OBSIDIAN_PLUGIN_DIR` set in `.env.local`, and enable the plugin in a test vault.
-2. Run "Ansicht öffnen", then switch between light and dark with the view open.
-3. Move the view to a pop-out window and open the About dialog there.
-4. Open two tabs of the view and close one.
-5. Change the settings, including an empty greeting.
-6. Disable and re-enable the plugin three times.
-7. Check that the developer console shows no errors or warnings from the plugin.
+1. Run `npm run dev` with `OBSIDIAN_PLUGIN_DIR` set in `.env.local` and look at the view in your own vault, with your theme and community plugins.
+2. Use the view with keyboard only and with a screen reader.
+3. Mobile, once `isDesktopOnly` is lifted. `wdio-obsidian-service` can then also emulate mobile.

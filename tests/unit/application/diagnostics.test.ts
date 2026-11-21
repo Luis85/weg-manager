@@ -34,7 +34,7 @@ describe("buildDiagnostics", () => {
         [
           "WEG Manager – Diagnose",
           "Plugin-Version: 0.1.0",
-          "Obsidian-API: 1.14.4",
+          "Obsidian-API: 1.15.1",
           "Plattform: test",
           "Einstellungen beschreibbar: ja",
           "Hinweise zu Einstellungen: keine",

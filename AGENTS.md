@@ -17,7 +17,7 @@ Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root; product decision
 The Obsidian plugin lives in `src/`; read `docs/engineering/architecture.md` before changing its structure.
 
 - **Gate:** `npm run verify` must exit 0 before you call work done; read the exit code, never mask it. It stops at the first failing step. `npm run verify:full` adds mutation testing.
-- **Tests first:** write the failing test, see it fail, then implement. Projects, the Obsidian double and support Layers: `docs/engineering/testing.md`.
+- **Tests first:** write the failing test, see it fail, then implement. Projects, the Obsidian double, support Layers and the real-Obsidian e2e suite (`npm run test:e2e`, under `xvfb-run -a` on headless Linux): `docs/engineering/testing.md`. A change to lifecycle, settings tab, theme or pop-out behaviour needs a passing e2e run.
 - **Layers:** `domain` ← `application` ← `infrastructure/obsidian` and `presentation`; lint and fallow enforce them. `obsidian` only in `src/infrastructure/obsidian/**`, `main.ts`, `bootstrap.ts`. In presentation, `effect` only in `src/presentation/runtime/`; components call use cases through `useEffectAction`.
 - **New feature:** follow `docs/engineering/adding-a-feature.md`, including its five-item view checklist.
 - **Errors:** every expected failure is a tagged `AppError` with a `describeError` text (German, du-form, cause then action); bugs go through `reportDefect`. No note content in logs. Details: `docs/engineering/error-handling.md`.

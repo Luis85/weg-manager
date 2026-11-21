@@ -7,7 +7,7 @@ import tseslint from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
 
 const LOC = { skipBlankLines: true, skipComments: true };
-const TS_PROJECTS = ["./tsconfig.app.json", "./tsconfig.node.json"];
+const TS_PROJECTS = ["./tsconfig.app.json", "./tsconfig.node.json", "./tests/e2e/tsconfig.json"];
 
 /** Vue's presets carry no `files`; scope them so `.ts` files keep the TypeScript parser. */
 const vueOnly = vue.configs["flat/recommended"].map((config) =>
@@ -29,12 +29,13 @@ export default defineConfig(
       ".stryker-tmp/**",
       ".superpowers/**",
       ".obsidian/**",
+      ".obsidian-cache/**",
     ],
   },
   // Obsidian's review rules (guidelines, manifest, LICENSE); includes eslint and typescript-eslint presets.
   ...obsidianmd.configs.recommended,
   {
-    files: ["**/*.ts", "**/*.mjs"],
+    files: ["**/*.ts", "**/*.mts", "**/*.mjs"],
     languageOptions: {
       parserOptions: { project: TS_PROJECTS, tsconfigRootDir: import.meta.dirname },
     },

@@ -7,7 +7,9 @@
     "*.config.mjs",
     "vite.*.ts",
     "vitest.*.ts",
-    "tests/**/*.test.ts"
+    "tests/**/*.test.ts",
+    "tests/e2e/**/*.ts",
+    "tests/e2e/wdio.conf.mts"
   ],
   "ignorePatterns": [
     "docs/**",
@@ -16,7 +18,8 @@
     "reports/**",
     "release/**",
     ".stryker-tmp/**",
-    ".superpowers/**"
+    ".superpowers/**",
+    ".obsidian-cache/**"
   ],
   "duplicates": {
     "minTokens": 50
@@ -70,7 +73,14 @@
       }
     ]
   },
-  "ignoreDependencies": ["obsidian", "@iconify-json/lucide", "@eslint/js"],
+  "ignoreDependencies": [
+    "obsidian",
+    "@iconify-json/lucide",
+    "@eslint/js",
+    "wdio-obsidian-reporter",
+    "@wdio/local-runner",
+    "@wdio/mocha-framework"
+  ],
   "overrides": [
     {
       "files": ["tests/support/obsidian/**"],

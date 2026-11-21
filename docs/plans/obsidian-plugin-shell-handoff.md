@@ -235,3 +235,15 @@ Follow the blueprint, applying rulings 3–5, and write ADR 0002 and ADR 0003 to
 - The GitHub repository settings and the branch-protection proof (`docs/engineering/github-setup.md`).
 - Visual polish: the Nuxt UI card and modal spacing look generous in the harness, and the card header divider is not visible. Neither was investigated.
 - The sample greeting is still English (ruling 25).
+
+## 8. After run 2: Obsidian 1.15.1 and e2e tests
+
+Decided by the owner on 2026-11-21, following [the testing research](../design/research/Testing%20research%20-%20Obsidian%20end-to-end%20tests.md):
+
+- **`minAppVersion` is 1.15.1** (`manifest.json`, `versions.json`, the test double). The `obsidian` types stay at 1.14.4, because no 1.15.x types have been published. ADR 0001 records the exception.
+- **E2e suite.** `npm run test:e2e` runs three specs in the real Obsidian 1.15.1 app, on installers 1.5.8 and 1.15.1, using `wdio-obsidian-service` 3.5.0 and WebdriverIO 10.2.0. Details are in `docs/engineering/testing.md`.
+- **CI.** The new `e2e (earliest/earliest)` and `e2e (latest/latest)` jobs run beside `verify` and are not required yet.
+- **Results in this container.**
+  - Each planted defect was caught by its spec: a console warning, a portal outside the pop-out, a dead theme binding.
+  - After filtering Chromium's benign `ResizeObserver loop` notification, 8 of 8 consecutive runs passed, each taking about 15 seconds for both versions. The one failure before that fix was that notification.
+- **Still to do.** After about two weeks without flakes, make the e2e checks required (`docs/engineering/github-setup.md`). Beta versions are not tested; they would need an Insiders account with two-factor authentication off.

@@ -37,6 +37,12 @@ describe("creating a community", () => {
     await openForm(screen);
     const dialog = screen.root.querySelector("[role=dialog]");
     expect(dialog?.textContent).toContain("Neue Gemeinschaft");
+    // Nuxt UI's own labels follow the UI language too.
+    expect(
+      [...(dialog?.querySelectorAll("button") ?? [])].map((button) =>
+        button.getAttribute("aria-label"),
+      ),
+    ).toContain("Schließen");
     const labels = [...(screen.q("community-form")?.querySelectorAll("label, legend") ?? [])]
       .map((element) => element.textContent.trim())
       .filter((text) =>

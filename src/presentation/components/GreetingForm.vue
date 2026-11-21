@@ -3,7 +3,7 @@ import UButton from "@nuxt/ui/components/Button.vue";
 import UFormField from "@nuxt/ui/components/FormField.vue";
 import UInput from "@nuxt/ui/components/Input.vue";
 import { useForm } from "@tanstack/vue-form";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { ReadOnlySettingsError } from "../../application/errors";
 import { updateGreeting } from "../../application/use-cases";
 import { describeIssues, greetingOf } from "../../application/i18n";
@@ -30,6 +30,8 @@ const readOnlyMessage = computed(() => {
     : describeError(new ReadOnlySettingsError({ reason }), messages);
 });
 const save = useEffectAction(updateGreeting);
+/** The greeting as the view shows it: the stored one or the default of the UI language. */
+const shown = computed(() => greetingOf(settings.value, messages));
 
 const greetingIssue = (greeting: string): string | undefined => {
   const result = validatePatch(settings.value, { greeting });
@@ -37,7 +39,7 @@ const greetingIssue = (greeting: string): string | undefined => {
 };
 
 const form = useForm({
-  defaultValues: { greeting: greetingOf(settings.value, messages) },
+  defaultValues: { greeting: shown.value },
   onSubmit: async ({ value }) => {
     await save.run(value.greeting);
     const error = save.error.value;
@@ -47,6 +49,14 @@ const form = useForm({
       errorMap: { ...meta.errorMap, onSubmit: describeIssues(error.issues, messages) },
     }));
   },
+});
+
+/**
+ * One setting, one place (PBI-49): while the field still shows the previous value, it follows the
+ * setting, e.g. after Sync changed `data.json`. What the user is typing is never replaced.
+ */
+watch(shown, (next, previous) => {
+  if (form.getFieldValue("greeting") === previous) form.reset({ greeting: next });
 });
 
 const canSubmit = form.useSelector((state) => state.canSubmit);

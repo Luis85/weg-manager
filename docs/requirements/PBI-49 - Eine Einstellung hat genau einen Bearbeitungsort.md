@@ -48,3 +48,10 @@ Die Begrüßung ist sowohl im nativen Einstellungs-Tab als auch im Formular der 
 ## Herkunft und Bezüge
 
 Code-Review der Plugin-Shell vom 21.11.2026. Ergänzt [[PBI-48 - Externe Änderungen an den Einstellungen übernehmen]], das dieselben `changes` für Sync-Änderungen nutzt.
+
+## Kommentare
+
+- 21.11.2026: Kriterium 2 ist umgesetzt, Kriterien 1, 3, 4 und 5 (bis auf den Komponententest zu 2) sind offen.
+  - **Unberührtes Feld folgt (2):** `GreetingForm.vue` beobachtet die angezeigte Begrüßung (gespeicherter Wert oder Standard der UI-Sprache). Zeigt das Feld noch den vorherigen Wert, setzt es sich auf den neuen (`form.reset`), etwa nach einer Änderung im Einstellungs-Tab oder per Sync (`SettingsService.reload`). Was der Nutzer gerade tippt, bleibt stehen; nach dem Speichern folgt das Feld wieder. „Speichern“ überschreibt damit keine neuere Begrüßung mehr mit einem veralteten Wert.
+  - **Tests:** `tests/dom/presentation/greeting-form.test.ts` (Nachführen, Zurücksetzen auf den Standard, Schutz der Eingabe, Speichern nach Sync).
+  - Entstanden mit der UI-Sprache nach Obsidian ([ADR 0005](../adr/0005-ui-language.md)): Auch der Standardgruß der Sprache wird so nachgeführt.

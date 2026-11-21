@@ -2,7 +2,7 @@
 
 Ein Obsidian-Plugin für Verwaltungsbeiräte, die eine oder mehrere Wohnungseigentümergemeinschaften (WEG) begleiten. Offene Anliegen bleiben mit Quelle, Zuständigkeit und nächstem Schritt sichtbar, die Wochenarbeit ist geführt und begrenzt, Nachrichten bleiben unter menschlicher Kontrolle. Alle Daten liegen lokal als Markdown-Notizen mit Frontmatter im eigenen Vault, nutzbar ohne Konto, Netz und KI.
 
-> **Stand:** Konzeptphase. Anforderungen, Design und ein klickbarer Prototyp liegen vor; das Plugin selbst ist noch nicht implementiert.
+> **Stand:** Konzeptphase. Anforderungen, Design und ein klickbarer Prototyp liegen vor. Das Plugin hat ein lauffähiges technisches Grundgerüst (Begrüßung, Dateizähler, Einstellungen), aber noch keine Fachfunktionen.
 
 ## Kernreise
 
@@ -71,14 +71,38 @@ Die vollständige Wochenarbeit funktioniert auch auf dem Handy.
 
 Die Dokumentation ist als Obsidian-Vault mit verknüpften Notizen angelegt. Anforderungen (Epics, Features, PBIs) liegen unter `docs/requirements`, Fachregeln unter `docs/business-rules`, Entscheidungen unter `docs/decisions`; die Übersichten liefert `Product Backlog.base`.
 
+## Entwicklung
+
+Voraussetzung: Node 24 (`.nvmrc`) und npm 11.
+
+```sh
+npm ci            # installiert und setzt den pre-push-Hook (npm run verify)
+npm run dev:ui    # Browser-Harness, ?scenario=default|empty|error|slow|readonly
+npm run dev       # Watch-Build; mit OBSIDIAN_PLUGIN_DIR in .env.local direkt in einen Test-Vault
+npm run verify    # Qualitätstor: Format, Lint, Typen, Tests mit Coverage, Analyse, Build, dist-Prüfung
+```
+
+| Skript | Zweck |
+| --- | --- |
+| `test`, `test:coverage` | Vitest (Projekte `unit` und `dom`) |
+| `test:mutation`, `test:mutation:full` | Stryker auf Domain und Application |
+| `build`, `check:dist` | `dist/main.js`, `styles.css`, `manifest.json` und ihre Invarianten |
+| `version`, `release:package` | Versionssprung und Release-Paket, siehe Releasing |
+
+Für die eigene Vault-Konfiguration: `node_modules/`, `dist/`, `coverage/`, `reports/` und `.stryker-tmp/` unter *Einstellungen → Dateien und Links → Ausgeschlossene Dateien* eintragen, da der Vault die Repo-Wurzel ist.
+
+Entwicklerdokumentation (englisch): [Architektur](docs/engineering/architecture.md) · [Feature hinzufügen](docs/engineering/adding-a-feature.md) · [Tests](docs/engineering/testing.md) · [Fehlerbehandlung](docs/engineering/error-handling.md) · [Releasing](docs/engineering/releasing.md) · [GitHub-Einrichtung](docs/engineering/github-setup.md) · [ADRs](docs/adr/)
+
 ## Repository
 
 | Ort | Inhalt |
 | --- | --- |
-| `docs/` | Produktkonzept, Anforderungen, Design, Prototyp |
+| `src/` | Plugin-Quellcode: `domain`, `application`, `infrastructure`, `presentation` |
+| `harness/` | Browser-Harness für UI-Arbeit ohne Obsidian |
+| `docs/` | Produktkonzept, Anforderungen, Design, Prototyp, Entwicklerdokumentation |
 | `skills/` | Claude Skill `weg-gmail-to-vault` (0.1.0): übernimmt ausgewählte Gmail-Nachrichten lesend als Notizen in den Vault |
-| `scripts/` | `package_claude_skills.py` baut das Skillpaket (`--output-dir`) |
-| `tests/` | Tests für Skillpaket und Gmail-Import |
+| `scripts/` | Build-, Prüf- und Release-Skripte des Plugins; `package_claude_skills.py` baut das Skillpaket (`--output-dir`) |
+| `tests/` | Plugin-Tests (`unit`, `dom`, Obsidian-Testdouble) sowie Tests für Skillpaket und Gmail-Import |
 
 ## Lizenz
 

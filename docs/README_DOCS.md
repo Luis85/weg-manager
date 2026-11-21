@@ -22,6 +22,7 @@ Die Produktkonzeption wird in Obsidian als verknüpfte Markdown-Notes bearbeitet
 | `docs/decisions/`       | Einzelne Produkt- und Konzeptentscheidungen mit Begründung, Auswirkungen und offenen Punkten. `type: Decision`; Status trennt Vorschlag und Festlegung.                         |
 | `docs/hypothesis/`      | Prüffähige Annahmen mit Herkunft, vorgeschlagener Untersuchung und Evidenzgrenzen. `type: Hypothesis`; ein ungeprüfter Nutzen wird nicht als bewiesen dargestellt.              |
 | `docs/releases/`        | Geplante Releases als `type: Release`. Anforderungen werden explizit über `release` zugeordnet; die Zugehörigkeit ist keine Fertigmeldung.                                      |
+| `docs/agents/`          | Konfiguration für die Engineering-Skills unter `.claude/skills/` (Issue Tracker, Triage-Labels, Domain Docs), eingebunden über `AGENTS.md`. Agentenkonfiguration, keine Konzeptnotes; ohne `type`, Backlog-Eltern oder Ränge. |
 
 Die vorhandene [[Product Backlog.base]] enthält die aktuellen View-Konfigurationen. Navigation zu einer Sammlung erfolgt über eine tatsächlich vorhandene View, beispielsweise [[Product Backlog.base#Business Rules]]. `docs/release-notes/` ist dort als künftiger Ablageort für Release Notes konfiguriert, derzeit aber kein vorhandener Dokumentordner. Weitere konfigurierte Ablageorte stehen unten; sie werden erst bei tatsächlichem Bedarf angelegt.
 
@@ -133,6 +134,10 @@ Aktuell ist Designstand v2: vier Navigationsziele plus Kontakte und Einstellunge
 ## Google-Dienste als optionaler Integrationsausbau
 
 [[F-18 - Integrationen]] enthält die angeforderten Verbindungen für Kontoautorisierung, Gmail-Versand und Drive-Dokumentfreigabe (PBI-43 bis PBI-45). Diese Stories sind späterer Ausbau ohne Releasezuordnung und noch ohne eigene Pages/User-Flows. Menschlich ausgelöste Aktionen und Ergebnisse bleiben nachvollziehbar; die lokale offene Dateigrundlage bleibt unabhängig. Die technische Kontoverbindung in PBI-43 hat vorerst `entities: []`, weil keine fachfremde WEG-Entität als Zugangskonfiguration eingesetzt wird.
+
+## Projekt-Skills für die Arbeit am Repository
+
+`.claude/skills/` enthält die Skills, mit denen am Repository gearbeitet wird; Claude Code lädt sie nach dem Auschecken ohne weitere Installation. Dazu gehören die Engineering- und Productivity-Skills aus mattpocock/skills (MIT, Version und Lizenz in `.claude/skills/THIRD_PARTY.md`), konfiguriert über `docs/agents/`. Sie sind Arbeitswerkzeuge für Konzeption und Umsetzung, keine verteilbaren Produkt-Skills wie unter `skills/`.
 
 ## Verteilbare Claude Skills
 

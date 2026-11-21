@@ -1,4 +1,4 @@
-import { Cause, Effect, Exit, Option, Stream } from "effect";
+import { Cause, Effect, Exit, Option } from "effect";
 import {
   inject,
   onScopeDispose,
@@ -11,24 +11,14 @@ import {
 } from "vue";
 import type { AppRuntime, AppServices } from "../../../application/app-services";
 import type { AppError } from "../../../application/errors";
-import type { AppEvent } from "../../../application/events";
 import type { Catalog } from "../../../application/messages";
-import {
-  EventBus,
-  Messages,
-  Notifier,
-  SettingsService,
-  reportDefect,
-  type SettingsStatus,
-  type UserMessage,
-} from "../../../application/shell";
+import { Messages, Notifier, reportDefect, type UserMessage } from "../../../application/shell";
 import { describeError } from "../../../application/user-messages";
-import type { Settings } from "../../../domain/shell";
 
 /**
- * The only presentation module that imports `effect`. Components run reads through `useQuery` and
- * state changes through `useCommand`, follow state through `useSettings` and take texts from
- * `useMessages`; they never see an Effect value.
+ * The runtime folder is the only place in presentation that imports `effect`. Components run reads
+ * through `useQuery` and state changes through `useCommand`, follow streams through `useStream`
+ * (`use-stream.ts`) and take texts from `useMessages`; they never see an Effect value.
  */
 
 const RUNTIME_KEY: InjectionKey<AppRuntime> = Symbol("weg-manager/runtime");
@@ -218,71 +208,3 @@ export const useCommand = <Args extends unknown[], A, E extends AppError>(
 
   return refs.view(run);
 };
-
-/** A ref that starts at what `read` returns and follows `changes` until the component's scope ends. */
-const useFollowing = <A>(
-  read: (service: SettingsService["Service"]) => Effect.Effect<A>,
-  changes: (service: SettingsService["Service"]) => Stream.Stream<A>,
-): Readonly<ShallowRef<A>> => {
-  const runtime = useRuntime();
-  const value = shallowRef(runtime.runSync(SettingsService.use(read)));
-  const controller = new AbortController();
-  void runtime
-    .runPromiseExit(
-      SettingsService.use((service) =>
-        Stream.runForEach(changes(service), (next) =>
-          Effect.sync(() => {
-            value.value = next;
-          }),
-        ),
-      ),
-      { signal: controller.signal },
-    )
-    .catch(() => undefined);
-  onScopeDispose(() => controller.abort());
-  return value;
-};
-
-/** The current settings, following every change until the component's scope ends. */
-export const useSettings = (): Readonly<ShallowRef<Settings>> =>
-  useFollowing(
-    (service) => service.current,
-    (service) => service.changes,
-  );
-
-/**
- * Calls `handler` for every `AppEvent` from now until the component's scope ends. A throwing
- * handler is reported as a defect and the subscription keeps running.
- */
-export const useAppEvents = (handler: (event: AppEvent) => void): void => {
-  const runtime = useRuntime();
-  const controller = new AbortController();
-  void runtime
-    .runPromiseExit(
-      Effect.scoped(
-        EventBus.use((bus) =>
-          Effect.flatMap(bus.subscribe, (events) =>
-            Stream.runForEach(events, (event) =>
-              Effect.sync(() => {
-                try {
-                  handler(event);
-                } catch (error) {
-                  void reportVueError(runtime, error);
-                }
-              }),
-            ),
-          ),
-        ),
-      ),
-      { signal: controller.signal },
-    )
-    .catch(() => undefined);
-  onScopeDispose(() => controller.abort());
-};
-
-/** Whether settings can be written and why not, following every reload of the settings. */
-export const useSettingsStatus = (): Readonly<ShallowRef<SettingsStatus>> =>
-  useFollowing(
-    (service) => service.status,
-    (service) => service.statusChanges,
-  );

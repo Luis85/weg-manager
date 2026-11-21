@@ -2,4 +2,5 @@
 // that runs at plugin load imports `host.ts` instead.
 export { default as ErrorNotice } from "./components/ErrorNotice.vue";
 export { mountSurface } from "./mount";
-export { useCommand, useQuery, useSettings } from "./runtime/use-runtime";
+export { useCommand, useQuery } from "./runtime/use-runtime";
+export { useSettings, useSettingsStatus, useStream } from "./runtime/use-stream";

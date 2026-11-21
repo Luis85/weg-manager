@@ -2,8 +2,6 @@
 docs/
 .claude/
 skills/
-tests/skills/
-scripts/*.py
 *.md
 *.base
 .obsidian/
@@ -13,6 +11,6 @@ package-lock.json
 node_modules/
 dist/
 release/
-coverage/
 reports/
 .stryker-tmp/
+.obsidian-cache/

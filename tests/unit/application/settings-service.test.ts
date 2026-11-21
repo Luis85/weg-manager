@@ -27,13 +27,13 @@ describe("SettingsService", () => {
 
   it.effect("falls back for one invalid field, notifies once and saves nothing", () => {
     const { store, notifier, layer } = setup({
-      initial: { schemaVersion: 1, greeting: 7, showRibbonIcon: false, logLevel: "warn" },
+      initial: { schemaVersion: 1, greeting: 7, logLevel: "debug" },
     });
     return Effect.gen(function* () {
       const service = yield* SettingsService;
       const current = yield* service.current;
       assert.strictEqual(current.greeting, DEFAULT_SETTINGS.greeting);
-      assert.strictEqual(current.showRibbonIcon, false);
+      assert.strictEqual(current.logLevel, "debug");
       assert.strictEqual(notifier.messages().length, 1);
       assert.strictEqual(notifier.messages()[0]?.severity, "warning");
       assert.deepStrictEqual(store.saved(), []);
@@ -89,7 +89,11 @@ describe("SettingsService", () => {
     return Effect.gen(function* () {
       const service = yield* SettingsService;
       assert.deepStrictEqual(yield* service.current, DEFAULT_SETTINGS);
-      assert.strictEqual((yield* service.status).writable, false);
+      assert.deepStrictEqual(yield* service.status, {
+        writable: false,
+        issues: [],
+        readOnlyReason: "unreadable",
+      });
       assert.strictEqual(notifier.messages().length, 1);
       const error = yield* Effect.flip(service.update({ greeting: "Yo" }));
       assert.deepStrictEqual(
@@ -115,14 +119,14 @@ describe("SettingsService", () => {
     return Effect.gen(function* () {
       const service = yield* SettingsService;
       yield* Effect.all(
-        [service.update({ greeting: "Eins" }), service.update({ showRibbonIcon: false })],
+        [service.update({ greeting: "Eins" }), service.update({ logLevel: "debug" })],
         {
           concurrency: "unbounded",
         },
       );
       const current = yield* service.current;
       assert.strictEqual(current.greeting, "Eins");
-      assert.strictEqual(current.showRibbonIcon, false);
+      assert.strictEqual(current.logLevel, "debug");
       assert.strictEqual(store.saved().length, 2);
       assert.deepStrictEqual(store.saved()[1], current);
     }).pipe(Effect.provide(layer));

@@ -2,8 +2,8 @@
   "id": "weg-manager",
   "name": "WEG Manager",
   "version": "0.1.0",
-  "minAppVersion": "1.14.4",
-  "description": "Arbeitsbestand, Wochenarbeit und Nachfassen für Verwaltungsbeiräte von Wohnungseigentümergemeinschaften.",
+  "minAppVersion": "1.15.1",
+  "description": "Track open items, weekly work and follow-ups for German condominium (WEG) advisory boards.",
   "author": "Luis Mendez",
   "isDesktopOnly": true
 }

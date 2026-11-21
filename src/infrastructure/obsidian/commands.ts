@@ -3,7 +3,7 @@ import type { AppRuntime } from "../../application/app-services";
 import { copyDiagnostics, showGreeting } from "../../application/use-cases";
 import { runSafely } from "./run";
 
-export const COMMAND_IDS = ["open-view", "show-greeting", "copy-diagnostics"] as const;
+const COMMAND_IDS = ["open-view", "show-greeting", "copy-diagnostics"] as const;
 
 /**
  * Adds the plugin's commands (no default hotkeys). Returns an undo for a failed bootstrap;

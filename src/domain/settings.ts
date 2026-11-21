@@ -9,7 +9,6 @@ export type LogLevel = (typeof LOG_LEVELS)[number];
 export type Settings = {
   readonly schemaVersion: 1;
   readonly greeting: string;
-  readonly showRibbonIcon: boolean;
   readonly logLevel: LogLevel;
 };
 
@@ -18,7 +17,6 @@ export type EditableSettings = Omit<Settings, "schemaVersion">;
 export const DEFAULT_SETTINGS: Settings = {
   schemaVersion: SETTINGS_VERSION,
   greeting: "Hello from WEG Manager",
-  showRibbonIcon: true,
   logLevel: "warn",
 };
 
@@ -37,7 +35,6 @@ type FieldResult<A> =
 
 const Greeting = Schema.Trim.check(Schema.isNonEmpty(), Schema.isMaxLength(GREETING_MAX_LENGTH));
 const decodeGreeting = Schema.decodeUnknownOption(Greeting);
-const isBoolean = Schema.is(Schema.Boolean);
 const isLogLevel = Schema.is(Schema.Literals(LOG_LEVELS));
 const isVersion = Schema.is(Schema.Int.check(Schema.isGreaterThan(0)));
 
@@ -47,11 +44,6 @@ const greetingField = (raw: unknown): FieldResult<string> => {
     ? { ok: true, value: decoded.value }
     : { ok: false, issue: `Die Begrüßung muss 1 bis ${GREETING_MAX_LENGTH} Zeichen lang sein.` };
 };
-
-const ribbonField = (raw: unknown): FieldResult<boolean> =>
-  isBoolean(raw)
-    ? { ok: true, value: raw }
-    : { ok: false, issue: "Das Menüband-Symbol muss ein- oder ausgeschaltet sein." };
 
 const logLevelField = (raw: unknown): FieldResult<LogLevel> =>
   isLogLevel(raw)
@@ -67,16 +59,13 @@ const orDefault = <A>(result: FieldResult<A>, fallback: A, issues: string[]): A 
 const isRecord = (raw: unknown): raw is Record<string, unknown> =>
   typeof raw === "object" && raw !== null && !Array.isArray(raw);
 
+/** Reads the known fields only; unknown keys (such as the retired `showRibbonIcon`) are dropped. */
 const decodeFields = (raw: Record<string, unknown>, issues: string[]): Settings => ({
   schemaVersion: SETTINGS_VERSION,
   greeting:
     "greeting" in raw
       ? orDefault(greetingField(raw["greeting"]), DEFAULT_SETTINGS.greeting, issues)
       : DEFAULT_SETTINGS.greeting,
-  showRibbonIcon:
-    "showRibbonIcon" in raw
-      ? orDefault(ribbonField(raw["showRibbonIcon"]), DEFAULT_SETTINGS.showRibbonIcon, issues)
-      : DEFAULT_SETTINGS.showRibbonIcon,
   logLevel:
     "logLevel" in raw
       ? orDefault(logLevelField(raw["logLevel"]), DEFAULT_SETTINGS.logLevel, issues)

@@ -10,9 +10,6 @@ import { describeError } from "./user-messages";
 export const updateGreeting = (greeting: string) =>
   SettingsService.use((settings) => settings.update({ greeting }));
 
-export const setRibbonIconVisible = (visible: boolean) =>
-  SettingsService.use((settings) => settings.update({ showRibbonIcon: visible }));
-
 export const setLogLevel = (logLevel: LogLevel) =>
   SettingsService.use((settings) => settings.update({ logLevel }));
 

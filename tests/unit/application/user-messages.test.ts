@@ -10,6 +10,7 @@ import {
 } from "../../../src/application/errors";
 import {
   describeDefect,
+  describeSettingsIssues,
   describeError,
   type UserMessage,
 } from "../../../src/application/user-messages";
@@ -92,5 +93,37 @@ describe("describeDefect", () => {
     expect(message.title).toContain("WEG Manager");
     expect(message.detail).toContain("K7Q2");
     expect(message).toMatchObject({ severity: "error", action: "copy-diagnostics" });
+  });
+});
+
+/** The catalog is product copy: a change here is a deliberate wording change. */
+describe("message catalog texts", () => {
+  it("has exact texts for every expected failure", () => {
+    expect(describeError(new InvalidSettingsError({ issues: ["Eins.", "Zwei."] }))).toEqual({
+      severity: "warning",
+      title: "Eingabe ungültig",
+      detail: "Eins. Zwei.",
+    });
+    expect(describeError(new VaultReadError({ cause: null }))).toEqual({
+      severity: "error",
+      title: "Notizen nicht lesbar",
+      detail: "Die Dateien im Vault konnten nicht gelesen werden. Versuche es erneut.",
+      action: "retry",
+    });
+    expect(describeError(new ClipboardError({ cause: null }))).toEqual({
+      severity: "error",
+      title: "Diagnose nicht kopiert",
+      detail: "Die Zwischenablage ist nicht verfügbar. Versuche es erneut.",
+      action: "retry",
+    });
+  });
+
+  it("explains partially reset settings with every issue", () => {
+    expect(describeSettingsIssues(["Eins.", "Zwei."])).toEqual({
+      severity: "warning",
+      title: "Einstellungen teilweise zurückgesetzt",
+      detail: "Eins. Zwei. Für diese Werte gelten Standardwerte. Prüfe die Einstellungen.",
+      action: "open-settings",
+    });
   });
 });

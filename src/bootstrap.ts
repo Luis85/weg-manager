@@ -3,22 +3,29 @@ import type { Plugin } from "obsidian";
 import type { AppRuntime } from "./application/app-services";
 import { reportDefect } from "./application/defects";
 import { Logger } from "./application/ports";
+import { SettingsService } from "./application/settings-service";
 import { describeDefect } from "./application/user-messages";
 import { consoleSink } from "./infrastructure/logging/console-sink";
 import { appLayer } from "./infrastructure/obsidian/app-layer";
 import { registerCommands } from "./infrastructure/obsidian/commands";
 import { showMessage } from "./infrastructure/obsidian/notices";
-import { bindRibbonIcon } from "./infrastructure/obsidian/ribbon";
+import { RIBBON_ICON, RIBBON_TITLE, releaseRibbonIcon } from "./infrastructure/obsidian/ribbon";
 import { runSafely } from "./infrastructure/obsidian/run";
 import { mirrorSettings } from "./infrastructure/obsidian/settings-mirror";
 import { ShellSettingTab } from "./infrastructure/obsidian/settings-tab";
 import { SHELL_VIEW_TYPE, ShellView } from "./infrastructure/obsidian/shell-view";
 import { makeRuntime } from "./infrastructure/runtime";
+import { releaseAll } from "./presentation/release";
 
 export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell-view";
 
 export type BootstrapHandle = {
   readonly runtime: AppRuntime;
+  /**
+   * Re-reads `data.json` after it changed outside Obsidian, then refreshes the settings tab.
+   * Open views follow through `SettingsService.changes` and `statusChanges`. Never rejects.
+   */
+  reloadSettings(): Promise<void>;
   dispose(): Promise<void>;
 };
 
@@ -53,18 +60,34 @@ export const bootstrap = async (
   // A function, not a value: the signal can flip while bootstrap awaits.
   const aborted = () => options.signal?.aborted === true;
   const undo: (() => unknown)[] = [];
+  let started = false;
+  let disposed = false;
   const dispose = async () => {
-    // Undo in reverse order, one step after the other.
+    disposed = true;
+    // Undo in reverse order, one step after the other. A failing step does not stop the others
+    // or the runtime; the first error is rethrown once everything is released.
+    const errors: unknown[] = [];
     await undo
       .splice(0)
       .toReversed()
-      .reduce<Promise<unknown>>((previous, step) => previous.then(step), Promise.resolve());
+      .reduce<Promise<unknown>>(
+        (previous, step) =>
+          previous.then(async () => {
+            try {
+              await step();
+            } catch (error) {
+              errors.push(error);
+            }
+          }),
+        Promise.resolve(),
+      );
     await runtime.dispose();
+    if (errors.length > 0) throw errors[0];
   };
   try {
     const inert = async (): Promise<BootstrapHandle> => {
       await dispose();
-      return { runtime, dispose: async () => undefined };
+      return { runtime, reloadSettings: async () => undefined, dispose: async () => undefined };
     };
     const mirror = await mirrorSettings(runtime);
     undo.push(() => mirror.stop());
@@ -74,12 +97,39 @@ export const bootstrap = async (
         runtime,
         Effect.promise(() => openView(plugin)),
       );
-    undo.push(bindRibbonIcon(plugin, mirror, open));
-    undo.push(registerCommands(plugin, runtime, () => open().then(() => undefined)));
-    plugin.addSettingTab(new ShellSettingTab(plugin.app, plugin, runtime, mirror));
-    plugin.registerView(SHELL_VIEW_TYPE, (leaf) => new ShellView(leaf));
+    // Added once; the user can hide it from the ribbon's context menu. Only a failed bootstrap
+    // removes its ribbon icon and commands. On a normal unload Obsidian removes them itself, and
+    // removing by id here could hit those of a quick re-enable.
+    const ribbon = plugin.addRibbonIcon(RIBBON_ICON, RIBBON_TITLE, () => open());
+    undo.push(() => {
+      if (!started) releaseRibbonIcon(plugin, ribbon);
+    });
+    const removeCommands = registerCommands(plugin, runtime, () => open().then(() => undefined));
+    undo.push(() => {
+      if (!started) removeCommands();
+    });
+    const tab = new ShellSettingTab(plugin.app, plugin, runtime, mirror);
+    plugin.addSettingTab(tab);
+    const surfaces = new Set<() => void>();
+    plugin.registerView(SHELL_VIEW_TYPE, (leaf) => new ShellView(leaf, runtime, surfaces));
+    // Runs first on dispose: every open view releases its Vue app before the runtime goes.
+    undo.push(() => {
+      const closes = [...surfaces];
+      surfaces.clear();
+      releaseAll(closes);
+    });
     await log(runtime, "plugin.loaded");
-    return { runtime, dispose };
+    started = true;
+    const reloadSettings = async () => {
+      if (disposed) return;
+      await runSafely(
+        runtime,
+        SettingsService.use((service) => service.reload),
+      );
+      await mirror.refresh().catch(() => undefined);
+      tab.update();
+    };
+    return { runtime, reloadSettings, dispose };
   } catch (error) {
     await runtime.runPromise(reportDefect(error)).catch(() => reportUnloadFailure(error));
     await dispose().catch(() => undefined);

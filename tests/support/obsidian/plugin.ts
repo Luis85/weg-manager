@@ -33,13 +33,20 @@ export type PluginRegistry = {
   readonly commands: Map<string, Command>;
   readonly views: Map<string, ViewCreator>;
   readonly settingTabs: PluginSettingTab[];
-  /** Ribbon icons still attached to the DOM (a plugin may remove its own icon element). */
+  /**
+   * This plugin's live entries in `app.workspace.leftRibbon.items` (those that still have a
+   * button), whether or not the element is attached right now.
+   */
   readonly ribbonIcons: RibbonIcon[];
   readonly notices: typeof recordedNotices;
   readonly saved: unknown[];
   runCommand(id: string): unknown;
   /** Makes the next `addCommand` throw once. */
   failNextAddCommand(): void;
+  /** Replaces `data.json` as Sync or another program would; Obsidian then calls `onExternalSettingsChange`. */
+  writeExternally(data: unknown): void;
+  /** Makes every later `loadData` fail (`true`) or succeed again (`false`). */
+  setFailLoadData(fail: boolean): void;
   /** Holds `loadData` until `releaseLoadData()` is called. */
   holdLoadData(): void;
   releaseLoadData(): void;
@@ -51,7 +58,7 @@ export const TEST_MANIFEST: PluginManifest = {
   id: "weg-manager",
   name: "WEG Manager",
   version: "0.1.0",
-  minAppVersion: "1.14.4",
+  minAppVersion: "1.15.1",
   author: "Test",
   description: "Test manifest",
   isDesktopOnly: true,
@@ -118,16 +125,14 @@ export abstract class Plugin extends Component {
     title: string,
     callback: (event: MouseEvent) => unknown,
   ): HTMLElement {
-    const value = state(this);
-    const el = document.createElement("div");
-    el.setAttribute("aria-label", title);
-    el.addEventListener("click", (event) => callback(event));
-    document.body.append(el);
-    const entry = { icon, title, el };
-    (value.registry as PluginRegistry & { allRibbonIcons: RibbonIcon[] }).allRibbonIcons.push(
-      entry,
-    );
-    this.register(() => el.remove());
+    // As in Obsidian 1.15.1: the entry id is `<plugin id>:<title>`, and unload releases the entry.
+    const { leftRibbon } = this.app.workspace;
+    const id = `${this.manifest.id}:${title}`;
+    const el = leftRibbon.addRibbonItemButton(id, icon, title, callback);
+    this.register(() => {
+      leftRibbon.removeRibbonAction(id);
+      el.remove();
+    });
     return el;
   }
 
@@ -166,14 +171,16 @@ export const createTestPlugin = <P extends object>(
   const Constructor = PluginClass as unknown as new (app: App, manifest: PluginManifest) => P;
   const plugin = new Constructor(app, TEST_MANIFEST);
   const double = plugin as unknown as Plugin;
-  const allRibbonIcons: RibbonIcon[] = [];
-  const registry: PluginRegistry & { allRibbonIcons: RibbonIcon[] } = {
-    allRibbonIcons,
+  const registry: PluginRegistry = {
     commands: new Map(),
     views: new Map(),
     settingTabs: [],
     get ribbonIcons() {
-      return allRibbonIcons.filter((entry) => entry.el.isConnected);
+      return app.workspace.leftRibbon.items.flatMap((item) =>
+        item.id.startsWith(`${TEST_MANIFEST.id}:`) && item.buttonEl !== undefined
+          ? [{ icon: item.icon, title: item.title, el: item.buttonEl }]
+          : [],
+      );
     },
     notices: recordedNotices,
     saved: [],
@@ -184,6 +191,12 @@ export const createTestPlugin = <P extends object>(
     },
     failNextAddCommand: () => {
       state(double).failAddCommand = true;
+    },
+    writeExternally: (data) => {
+      state(double).data = structuredClone(data);
+    },
+    setFailLoadData: (fail) => {
+      state(double).failLoadData = fail;
     },
     holdLoadData: () => {
       let release: () => void = noop;

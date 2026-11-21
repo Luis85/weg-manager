@@ -8,7 +8,18 @@ __pycache__/
 node_modules/
 dist/
 release/
-coverage/
 reports/
 .stryker-tmp/
 .env.local
+.obsidian-cache/
+.claude/worktrees/
+# Archify delivery scratch files (locks, staging, recovery) next to its output
+docs/archify/**/.archify-*
+# Archify receipts and check reports (local absolute paths, hashes); candidate + HTML are kept
+docs/archify/**/*.delivery.json
+docs/archify/**/*.receipt.json
+docs/archify/**/*.finalize.json
+docs/archify/**/*.finalize-summary.json
+docs/archify/**/*.browser-check.json
+docs/archify/**/*.visual-check.json
+.fallow/

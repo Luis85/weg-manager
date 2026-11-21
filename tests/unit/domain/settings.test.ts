@@ -13,7 +13,6 @@ import {
 const valid: Settings = {
   schemaVersion: 1,
   greeting: "Moin",
-  showRibbonIcon: false,
   logLevel: "debug",
 };
 
@@ -34,9 +33,9 @@ describe("decodeSettings", () => {
   });
 
   it("falls back per field and names the invalid field", () => {
-    const result = decodeSettings({ schemaVersion: 1, greeting: 7, showRibbonIcon: false });
+    const result = decodeSettings({ schemaVersion: 1, greeting: 7, logLevel: "debug" });
     expect(result.settings.greeting).toBe(DEFAULT_SETTINGS.greeting);
-    expect(result.settings.showRibbonIcon).toBe(false);
+    expect(result.settings.logLevel).toBe("debug");
     expect(result.issues).toHaveLength(1);
     expect(result.issues[0]).toContain("Begrüßung");
     expect(result.writable).toBe(true);
@@ -75,12 +74,16 @@ describe("decodeSettings", () => {
     expect(result.issues[0]).toContain("Protokollstufe");
   });
 
-  it("falls back for a non-boolean ribbon flag", () => {
-    const result = decodeSettings({ ...valid, showRibbonIcon: "yes" });
-    expect(result.settings.showRibbonIcon).toBe(DEFAULT_SETTINGS.showRibbonIcon);
-    expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain("Menüband-Symbol");
-  });
+  it.each([true, false, "yes"])(
+    "drops the retired showRibbonIcon %j of an older file without an issue",
+    (showRibbonIcon) => {
+      expect(decodeSettings({ ...valid, showRibbonIcon })).toEqual({
+        settings: valid,
+        issues: [],
+        writable: true,
+      });
+    },
+  );
 
   it("treats a missing schemaVersion as the current version", () => {
     const { schemaVersion: _omitted, ...rest } = valid;
@@ -128,9 +131,9 @@ describe("validatePatch", () => {
   });
 
   it("applies a valid patch and trims the greeting", () => {
-    expect(validatePatch(valid, { greeting: "  Hallo ", showRibbonIcon: true })).toEqual({
+    expect(validatePatch(valid, { greeting: "  Hallo ", logLevel: "info" })).toEqual({
       ok: true,
-      settings: { ...valid, greeting: "Hallo", showRibbonIcon: true },
+      settings: { ...valid, greeting: "Hallo", logLevel: "info" },
     });
   });
 
@@ -152,5 +155,25 @@ describe("validatePatch", () => {
     >[1];
     const result = validatePatch(valid, patch);
     expect(result).toEqual({ ok: true, settings: { ...valid, greeting: "Hi" } });
+  });
+});
+
+/** Defaults and issue texts are product decisions; pin them exactly. */
+describe("settings copy and defaults", () => {
+  it("has the documented defaults", () => {
+    expect(DEFAULT_SETTINGS).toEqual({
+      schemaVersion: 1,
+      greeting: "Hello from WEG Manager",
+      logLevel: "warn",
+    });
+  });
+
+  it("names the issue for a non-object file and an unknown log level exactly", () => {
+    expect(decodeSettings("x").issues).toEqual([
+      "Die Einstellungsdatei enthält keine gültigen Einstellungen.",
+    ]);
+    expect(decodeSettings({ logLevel: "laut" }).issues).toEqual([
+      "Die Protokollstufe muss eine von error, warn, info, debug sein.",
+    ]);
   });
 });

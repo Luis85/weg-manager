@@ -7,7 +7,6 @@ import {
   copyDiagnostics,
   countMarkdownFiles,
   setLogLevel,
-  setRibbonIconVisible,
   showGreeting,
   updateGreeting,
 } from "../../../src/application/use-cases";
@@ -30,10 +29,9 @@ const settingsWith = (options: StoreOptions = {}) => {
 };
 
 describe("settings use cases", () => {
-  it.effect("updates the greeting, the ribbon flag and the log level", () =>
+  it.effect("updates the greeting and the log level", () =>
     Effect.gen(function* () {
       assert.strictEqual((yield* updateGreeting("Servus")).greeting, "Servus");
-      assert.strictEqual((yield* setRibbonIconVisible(false)).showRibbonIcon, false);
       assert.strictEqual((yield* setLogLevel("debug")).logLevel, "debug");
     }).pipe(Effect.provide(settingsWith().layer)),
   );
@@ -53,7 +51,11 @@ describe("settings use cases", () => {
         notifier.messages().map((message) => message.detail),
         ["Moin"],
       );
-      assert.strictEqual(notifier.messages()[0]?.severity, "info");
+      assert.deepStrictEqual(notifier.messages()[0], {
+        severity: "info",
+        title: "WEG Manager",
+        detail: "Moin",
+      });
     }).pipe(Effect.provide(layer));
   });
 });
@@ -91,7 +93,7 @@ describe("buildDiagnostics", () => {
       yield* logger.log({ level: "warn", event: "vault.read.failed", context: { attempt: 2 } });
       const report = yield* buildDiagnostics;
       assert.include(report, "0.1.0");
-      assert.include(report, "1.14.4");
+      assert.include(report, "1.15.1");
       assert.include(report, "test");
       assert.match(report, /Einstellungen beschreibbar: ja/);
       assert.include(report, "Begrüßung");
@@ -149,8 +151,12 @@ describe("copyDiagnostics", () => {
     return Effect.gen(function* () {
       yield* copyDiagnostics;
       assert.strictEqual(clipboard.writes().length, 1);
-      assert.include(clipboard.writes()[0] ?? "", "1.14.4");
-      assert.strictEqual(notifier.messages().at(-1)?.severity, "info");
+      assert.include(clipboard.writes()[0] ?? "", "1.15.1");
+      assert.deepStrictEqual(notifier.messages().at(-1), {
+        severity: "info",
+        title: "Diagnose kopiert",
+        detail: "Füge den Bericht in deine Support-Anfrage ein.",
+      });
     }).pipe(Effect.provide(layer));
   });
 

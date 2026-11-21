@@ -4,7 +4,8 @@
 - Branch: `feature/plugin-shell` (pushed to `origin`; not merged into `main`)
 - Plan: [obsidian-plugin-shell-blueprint.md](obsidian-plugin-shell-blueprint.md), edited during the run: TanStack Form, error handling, Twelve-Factor, ESLint and the line limits were added.
 - Executor: inline execution (superpowers `executing-plans`), TDD for every behaviour step.
-- Stopped by request **before Task 8**. Tasks 0–7 are done and committed, one commit per task.
+- Run 1 stopped by request **before Task 8**. Tasks 0–7 are done and committed, one commit per task.
+- **Run 2 (2026-11-21, branch `claude/upbeat-lovelace-v4rir1`, draft PR #4 into `feature/plugin-shell`) finished Tasks 8–12.** See section 7. Sections 1–6 describe the state after run 1.
 
 ## 1. Where things stand
 
@@ -192,3 +193,110 @@ Follow the blueprint, applying rulings 3–5, and write ADR 0002 and ADR 0003 to
 - Create `.env.local` from `.env.local.example` (`OBSIDIAN_PLUGIN_DIR=<vault>/.obsidian/plugins/weg-manager`) to use `npm run dev`.
 - Decide on ruling 5 (Azure Pipelines vs GitHub Actions) before Task 11.
 - Decide whether `feature/plugin-shell` should go through a PR into `main` once Task 12 is done.
+
+## 7. Run 2: Tasks 8–12
+
+| Task | Commit | Notes |
+| --- | --- | --- |
+| 8 Vue + Nuxt UI surface | `04f9632` | `mountSurface`, `bindHostTheme`, `useEffectAction`/`useSettings`, `ShellPanel` + `GreetingForm` (TanStack) + `ErrorNotice` + `AboutDialog`, real `ShellView` |
+| 9 Browser harness | `fb5e675` | `npm run dev:ui`; scenarios default, empty, error, slow, readonly |
+| 10 Mutation testing | `fdf16e6` | score 70.9 % → 96.8 % after new tests; fallow dead-code cleaned |
+| 11 Gate, hooks, CI | `9115e3f` | `verify`/`verify:full`, pre-push hook, **GitHub Actions** (CI, nightly mutation, release) |
+| 12 Docs | `9471bfa` | `docs/engineering/*`, ADR 0002/0003, `AGENTS.md`, `CLAUDE.md`, README |
+
+### Check results (2026-11-21)
+
+| Check | Result |
+| --- | --- |
+| `npm run verify` | passed: format, lint, typecheck, coverage (lines 98.2, statements 97.1, functions 95.1, branches 94.3), analyze, build (`main.js` 534 KB, `styles.css` 62 KB), check:dist |
+| `npm run test:mutation:full` | passed: 96.8 % (domain 95.0, application 97.9); 5 equivalent survivors |
+| Discriminating checks | passed: the head test fails without the no-op plugin; the dispose-order test fails without the undo step; a surviving `decodeSettings` mutant appears without the `schemaVersion: 2` tests; the gate stops at `typecheck` on a planted type error |
+| Fresh clone `npm ci && npm run verify:full` | passed: all 8 steps, mutation 96.8 % (337 s) |
+| GitHub Actions `CI / verify` on PR #4 | passed |
+| Obsidian app, GitHub branch protection | not run (manual, see `docs/engineering/testing.md` and `github-setup.md`) |
+
+### Rulings from run 2
+
+40. **GitHub Actions instead of Azure Pipelines** (owner's decision). It replaces ruling 5; the setup lives in `docs/engineering/github-setup.md`.
+41. Nuxt UI's runtime `colors` plugin wrote `<style id="nuxt-ui-colors">` into `document.head`. `scripts/no-head-plugins.mjs` replaces it and the `head` plugin with no-ops, one module each, so Vue does not warn about a plugin installed twice. Both files are sha256-pinned. `bridge.css` adds `--ui-secondary` and `--ui-info`. Recorded in ADR 0001.
+42. Each surface's portal (`.weg-manager-portal`) sits at `z-index: var(--layer-modal, 50)`. Without it, a later view painted over an earlier view's modal backdrop (seen in the harness).
+43. `mountSurface(root, runtime, { content })` accepts other content, for tests and the harness. The Vue `idPrefix` is random per mount, which avoids a module-level counter (Twelve-Factor VI).
+44. `ErrorNotice` shows an action button only when a handler exists. `copy-diagnostics` is built in; `retry` and `open-settings` come from the parent.
+45. eslint-plugin-vue layout rules are off for `.vue` files, because Prettier owns template layout. The obsidianmd rules `prefer-active-doc` and `prefer-create-el` are off in `harness/**`, which is a plain browser page.
+46. Fallow: `ignoreDependencies` covers `obsidian`, `@iconify-json/lucide` and `@eslint/js`; the `unused-class-members` rule is off for `tests/support/obsidian/**`, which mirrors the Obsidian API.
+47. Stryker: the service-key strings are disabled with a reason (they only have to be unique). `test:mutation` is incremental; `test:mutation:full` adds `--force`.
+48. Vitest writes JUnit when `CI` is set; it used to check `TF_BUILD`.
+49. `.npmrc` sets `tag-version-prefix=""`, so `npm version` creates bare `x.y.z` tags.
+50. The draft PR targets `feature/plugin-shell`, not `main`. Merging into `main` stays your decision (section 6).
+
+### Still open
+
+- The manual checks in Obsidian (`docs/engineering/testing.md`, "Manual checks"), especially pop-out windows and real theme switches.
+- The GitHub repository settings and the branch-protection proof (`docs/engineering/github-setup.md`).
+- Visual polish: the Nuxt UI card and modal spacing look generous in the harness, and the card header divider is not visible. Neither was investigated.
+- The sample greeting is still English (ruling 25).
+
+## 8. After run 2: Obsidian 1.15.1 and e2e tests
+
+Decided by the owner on 2026-11-21, following [the testing research](../design/research/Testing%20research%20-%20Obsidian%20end-to-end%20tests.md):
+
+- **`minAppVersion` is 1.15.1** (`manifest.json`, `versions.json`, the test double). The `obsidian` types stay at 1.14.4, because no 1.15.x types have been published. ADR 0001 records the exception.
+- **E2e suite.** `npm run test:e2e` runs three specs in the real Obsidian 1.15.1 app, on installers 1.5.8 and 1.15.1, using `wdio-obsidian-service` 3.5.0 and WebdriverIO 10.2.0. Details are in `docs/engineering/testing.md`.
+- **CI.** A new `e2e` job runs beside `verify` and is not required yet. It started as an `earliest/earliest` + `latest/latest` matrix; since 2026-11-21 it runs **`latest/latest` only** (owner's decision).
+- **Results in this container.**
+  - Each planted defect was caught by its spec: a console warning, a portal outside the pop-out, a dead theme binding.
+  - After filtering Chromium's benign `ResizeObserver loop` notification, 8 of 8 consecutive runs passed, each taking about 15 seconds for both versions. The one failure before that fix was that notification.
+- **Still to do.** After about two weeks without flakes, make the e2e checks required (`docs/engineering/github-setup.md`). Beta versions are not tested; they would need an Insiders account with two-factor authentication off.
+
+## 9. Run 3: review fixes, event system, skills and diagrams (2026-11-21)
+
+A fresh-eyes code review of the shell produced the fixes below. Each has a test that fails on the old code.
+
+| Area | Change | Commits |
+| --- | --- | --- |
+| Unload | Every undo step runs on its own; the runtime is always disposed; the first error is rethrown. Commands and the ribbon entry are removed only when bootstrap fails, because a late dispose removing them by id hit a quick re-enable's commands. | `2d676da` |
+| Ribbon | The `showRibbonIcon` setting is gone. `icon.remove()` left the entry in `leftRibbon.items`, and it reappeared after `leftRibbon.onChange()` (confirmed in real Obsidian). The icon is added once; the user hides it through the ribbon's context menu. The test double's ribbon now copies Obsidian's. | `15913f6` |
+| Settings tab | The log level dropdown shows Fehler / Warnungen / Informationen / Details; the stored values are unchanged. | `15913f6` |
+| Presentation | `useEffectAction` never rejects; the surface mounts after its elements are attached; Nuxt UI uses the German locale; "1 Markdown-Datei"; the count region is `aria-busy` / `aria-live`; the read-only hint gives cause and action. | `491617f` … `a2c909b` |
+| Events (ADR 0004) | Typed `EventBus` (unbounded `PubSub`) with the `AppEvent` vocabulary. `hostEventsLayer` maps vault, metadata-cache and workspace events, holds them until `LayoutReady` and removes every listener on dispose. `useAppEvents` subscribes components. The panel recounts 300 ms after a burst of Markdown changes. | `4d6509c`, `2f2324b`, `a95f363` |
+| e2e | Runs `latest/latest` only (owner's decision). `events.e2e.ts` proves one listener per host event and none after disable, and that the count follows note changes. | `f67d043`, `4d6509c`, `a95f363` |
+| Skills | `obsidianmd/obsidian-skills` (7 skills) and `archify` 3.2.0 are in `.claude/skills/` (without Archify's 13 MB of demo HTML). Both are recorded in `THIRD_PARTY.md`. | `5586f98`, `e6f1545` |
+| Diagrams | Archify writes to `docs/archify/<type>-<slug>-<ts>/` (rule in `AGENTS.md`; receipts git-ignored). There is a plugin architecture diagram and an event-flow sequence diagram, both source-linked. | `10a8dab` … `7dadb7d` |
+| Dependencies | `npm audit`: 25 moderate findings → 0 via `overrides` for `qs`, `minimatch`, `glob` (dev tooling only; see ADR 0001). | `93fd9a6` |
+| Layout | Tool configs moved to `configs/`; `.oxlintrc.json`, `eslint.config.mjs`, `tsconfig.json`, the Prettier files and the dotfiles stay at the root (reasons in `architecture.md`). Stryker's sandbox excludes `.obsidian-cache` and `.claude`. | `8c2f340`, `1f88d79` |
+| Backlog | PBI-48 (external settings changes), PBI-49 (one edit location per setting), PBI-50 (vault events; the event part is done, indexing is still open). | `f770ff6`, `a95f363` |
+
+### Check results (2026-11-21, after run 3)
+
+| Check | Result |
+| --- | --- |
+| `npm run verify` | passed (coverage: lines 97.96, statements 96.61, functions 95.15, branches 93.91) |
+| `npm run test:e2e` (real Obsidian 1.15.1, 4 specs, 15 tests) | passed, locally and in CI |
+| `npm run test:mutation:full` | passed: 97.7 % (application 99.2, domain 94.6); 4 equivalent survivors. Run after the Stryker sandbox fix and the dependency overrides. |
+| GitHub Actions on PR #4 (`verify`, `e2e`, GitGuardian) | passed |
+
+### Rulings from run 3
+
+51. Ribbon visibility is Obsidian's job (its ribbon context menu), not a plugin setting.
+52. On a normal unload, Obsidian removes the plugin's commands and ribbon entry; bootstrap's undo removes them only after a failed bootstrap. When it does, it uses the internal `leftRibbon.removeRibbonAction` behind an optional call. That path is tested against the double only.
+53. Event bus: an unbounded `PubSub`, because Obsidian callbacks are synchronous and dropping file events during a bulk sync is not acceptable. `ActiveFileChanged` comes from `file-open`; folders are not published.
+54. Agent worktrees for parallel subagents live in `.claude/worktrees/` (git-ignored). Symlinking `node_modules` there breaks the Tailwind `@source not` excludes, so use a real directory with per-package links and real copies of `@nuxt/ui` and `.nuxt-ui`.
+55. Archify's demo HTML is not vendored, and its diagrams go to `docs/archify/` rather than `.archify/`.
+56. Vulnerable transitive dev dependencies are fixed with `overrides`, not npm's suggested major downgrades. Each override is removed once upstream requires a patched version.
+57. Tool configs live in `configs/` only where the tool takes an explicit path and keeps resolving from the repository root. oxlint's config stays at the root, because from `configs/` its overrides silently stopped applying.
+
+### Still open
+
+- **Your decisions:**
+  - the merge path of `feature/plugin-shell` into `main`;
+  - GitHub rules (`CI / verify` required now, `CI / e2e` after about two weeks without flakes);
+  - a home for PBI-48–50 (F-21 or a new technical Feature under E-07);
+  - the triage state of PBI-49.
+- **Manual checks:** in your own vault (theme, other plugins, keyboard, screen reader). Also delete `.claude/worktrees/`.
+- **Backlog:** PBI-48, PBI-49, and indexing under PBI-50.
+- **Known and deferred:**
+  - the English default greeting (i18n);
+  - card and dialog spacing, and the card header divider;
+  - the 1.5 MB bundle budget against the actual ~540 KB;
+  - mobile (`isDesktopOnly`, K-09);
+  - upgrading to the 1.15.x types once they are published.

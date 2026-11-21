@@ -13,6 +13,16 @@ export default class WegManagerPlugin extends Plugin {
     await this.handle;
   }
 
+  /**
+   * Obsidian calls this when `data.json` changed on disk outside Obsidian (Sync, another program),
+   * then refreshes the settings tab. Waits for a load still in progress; after an unload or a
+   * failed load there is nothing to reload.
+   */
+  override async onExternalSettingsChange(): Promise<void> {
+    const handle = await this.handle?.catch(() => undefined);
+    await handle?.reloadSettings();
+  }
+
   override onunload(): void {
     this.abort?.abort();
     const handle = this.handle;

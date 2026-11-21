@@ -6,42 +6,46 @@ import type { Settings } from "../../domain/settings";
 export type SettingsMirror = {
   /** The latest settings, readable synchronously (Obsidian's settings API reads values sync). */
   readonly settings: () => Settings;
-  readonly status: SettingsStatus;
-  /** Calls `listener` on every change after the current value; returns an unsubscribe. */
-  subscribe(listener: (settings: Settings) => void): () => void;
+  /** The latest status: whether settings can be written, and why not. */
+  readonly status: () => SettingsStatus;
+  /** Reads settings and status from the service now, e.g. right after a reload. */
+  refresh(): Promise<void>;
   stop(): Promise<void>;
 };
 
-/** Follows `SettingsService.changes` for the lifetime of one plugin load. */
+const snapshotOf = SettingsService.use((service) =>
+  Effect.all({ settings: service.current, status: service.status }),
+);
+
+/** Follows `SettingsService.changes` and `statusChanges` for the lifetime of one plugin load. */
 export const mirrorSettings = async (runtime: AppRuntime): Promise<SettingsMirror> => {
-  const snapshot = await runtime.runPromise(
-    SettingsService.use((service) =>
-      Effect.all({ settings: service.current, status: service.status }),
-    ),
-  );
-  let current = snapshot.settings;
-  const listeners = new Set<(settings: Settings) => void>();
+  let snapshot = await runtime.runPromise(snapshotOf);
   const fiber = runtime.runFork(
     SettingsService.use((service) =>
-      // The stream starts with the value at subscription time; skip it only if nothing changed in between.
-      Stream.runForEach(service.changes, (next) =>
-        Effect.sync(() => {
-          if (next === current) return;
-          current = next;
-          for (const listener of Array.from(listeners)) listener(next);
-        }),
+      Effect.all(
+        [
+          Stream.runForEach(service.changes, (settings) =>
+            Effect.sync(() => {
+              snapshot = { ...snapshot, settings };
+            }),
+          ),
+          Stream.runForEach(service.statusChanges, (status) =>
+            Effect.sync(() => {
+              snapshot = { ...snapshot, status };
+            }),
+          ),
+        ],
+        { concurrency: "unbounded", discard: true },
       ),
     ),
   );
   return {
-    settings: () => current,
-    status: snapshot.status,
-    subscribe: (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
+    settings: () => snapshot.settings,
+    status: () => snapshot.status,
+    refresh: async () => {
+      snapshot = await runtime.runPromise(snapshotOf);
     },
     stop: async () => {
-      listeners.clear();
       await runtime.runPromise(Fiber.interrupt(fiber)).catch(() => undefined);
     },
   };

@@ -3,8 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
-const { createTestPlugin, failNextNotice, recordedNotices, settingsIn } =
-  await import("@test/obsidian");
+const { createTestPlugin, failNextNotice, recordedNotices } = await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../src/main");
 const { bootstrap, SHELL_VIEW_TYPE } = await import("../../src/bootstrap");
 
@@ -84,20 +83,18 @@ describe("plugin lifecycle", () => {
     plugin.unload();
   });
 
-  it("hides and shows the ribbon icon from the settings tab without reload", async () => {
-    const { registry, plugin } = await loaded();
-    const tab = registry.settingTabs[0];
-    tab?.display();
-    await vi.waitFor(() => expect(settingsIn(tab!.containerEl)).toHaveLength(3));
-    const toggle = settingsIn(tab!.containerEl)[1]?.components[0] as {
-      simulateToggle(): unknown;
-    };
-    toggle.simulateToggle();
-    await vi.waitFor(() => expect(registry.ribbonIcons).toHaveLength(0));
-    toggle.simulateToggle();
-    await vi.waitFor(() => expect(registry.ribbonIcons).toHaveLength(1));
+  it("adds the ribbon icon once, also for an old data.json that still has showRibbonIcon", async () => {
+    const { registry, plugin, app } = await loaded({ data: { showRibbonIcon: false } });
+    expect(registry.ribbonIcons.map(({ icon, title }) => ({ icon, title }))).toEqual([
+      { icon: "layout-dashboard", title: "WEG Manager öffnen" },
+    ]);
+    app.workspace.leftRibbon.onChange();
+    expect(document.querySelectorAll('[aria-label="WEG Manager öffnen"]')).toHaveLength(1);
+    expect(noticeTexts()).toEqual([]);
     plugin.unload();
-    expect(registry.ribbonIcons).toHaveLength(0);
+    app.workspace.leftRibbon.onChange();
+    expect(registry.ribbonIcons).toEqual([]);
+    expect(document.querySelectorAll('[aria-label="WEG Manager öffnen"]')).toHaveLength(0);
   });
 
   it("releases everything on unload", async () => {
@@ -139,10 +136,13 @@ describe("plugin lifecycle", () => {
 
   it("disposes what it created and shows a plain defect message when a registration throws", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
-    const { registry } = createTestPlugin(WegManagerPlugin);
+    const { registry, app } = createTestPlugin(WegManagerPlugin);
     registry.failNextAddCommand();
     await expect(registry.load()).rejects.toThrow("addCommand failed");
+    // A re-render of the ribbon must not bring the icon of the failed load back.
+    app.workspace.leftRibbon.onChange();
     expect(counts(registry)).toEqual(EMPTY);
+    expect(document.body.children).toHaveLength(0);
     expect(noticeTexts()).toEqual([
       expect.stringMatching(/Unerwarteter Fehler in WEG Manager.*[0-9A-Z]{6}/s),
     ]);
@@ -157,5 +157,28 @@ describe("bootstrap handle", () => {
     await handle.runtime.runPromise(Effect.void);
     await handle.dispose();
     await expect(handle.runtime.runPromise(Effect.void)).rejects.toThrow(/dispos/i);
+  });
+
+  it("disposes the runtime and rethrows when one release throws", async () => {
+    const { plugin, app } = createTestPlugin(WegManagerPlugin);
+    const handle = await bootstrap(plugin);
+    const leaf = app.workspace.getLeaf(true);
+    await leaf.setViewState({ type: SHELL_VIEW_TYPE });
+    const { contentEl } = leaf.view as unknown as { contentEl: HTMLElement };
+    vi.spyOn(contentEl.classList, "remove").mockImplementation(() => {
+      throw new Error("surface release failed");
+    });
+    await expect(handle.dispose()).rejects.toThrow("surface release failed");
+    await expect(handle.runtime.runPromise(Effect.void)).rejects.toThrow(/dispos/i);
+  });
+
+  it("keeps the commands and ribbon icon of a quick re-enable when the old load is disposed late", async () => {
+    const { plugin, registry } = createTestPlugin(WegManagerPlugin);
+    const first = await bootstrap(plugin);
+    const second = await bootstrap(plugin);
+    await first.dispose();
+    expect(registry.commands.size).toBe(3);
+    expect(registry.ribbonIcons).toHaveLength(1);
+    await second.dispose();
   });
 });

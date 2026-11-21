@@ -1,25 +1,18 @@
 import type { Plugin } from "obsidian";
-import type { SettingsMirror } from "./settings-mirror";
 
-/** Keeps the ribbon icon in step with the `showRibbonIcon` setting. Returns a stop function. */
-export const bindRibbonIcon = (
-  plugin: Plugin,
-  mirror: SettingsMirror,
-  onClick: () => unknown,
-): (() => void) => {
-  let icon: HTMLElement | undefined;
-  const apply = (visible: boolean) => {
-    if (visible && icon === undefined) {
-      icon = plugin.addRibbonIcon("layout-dashboard", "WEG Manager öffnen", () => onClick());
-    } else if (!visible && icon !== undefined) {
-      icon.remove();
-      icon = undefined;
-    }
-  };
-  apply(mirror.settings().showRibbonIcon);
-  const unsubscribe = mirror.subscribe((settings) => apply(settings.showRibbonIcon));
-  return () => {
-    unsubscribe();
-    apply(false);
-  };
+export const RIBBON_ICON = "layout-dashboard";
+export const RIBBON_TITLE = "WEG Manager öffnen";
+
+/** The part of Obsidian's left ribbon the public typings leave out (`WorkspaceRibbon` is empty). */
+type RibbonInternals = { removeRibbonAction?: (id: string) => void };
+
+/**
+ * Releases the ribbon icon the way Obsidian's own unload does. Only for a failed bootstrap: on a
+ * normal unload Obsidian does this itself. `el.remove()` alone is not enough, because the entry
+ * stays in `workspace.leftRibbon.items` and the next re-render of the ribbon brings it back.
+ */
+export const releaseRibbonIcon = (plugin: Plugin, el: HTMLElement): void => {
+  const ribbon = plugin.app.workspace.leftRibbon as unknown as RibbonInternals;
+  ribbon.removeRibbonAction?.(`${plugin.manifest.id}:${RIBBON_TITLE}`);
+  el.remove();
 };

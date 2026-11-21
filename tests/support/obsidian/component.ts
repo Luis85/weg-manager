@@ -52,7 +52,7 @@ export class Component {
   }
 
   registerEvent(ref: EventRef): void {
-    this.register(() => ref.off());
+    this.register(() => ref.e.offref(ref));
   }
 
   registerDomEvent(

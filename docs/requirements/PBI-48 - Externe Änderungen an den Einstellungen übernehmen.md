@@ -24,7 +24,7 @@ decisions:
 hypotheses: []
 pages: []
 user-flows: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-48 · Externe Änderungen an den Einstellungen übernehmen

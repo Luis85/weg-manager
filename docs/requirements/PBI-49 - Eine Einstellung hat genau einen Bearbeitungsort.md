@@ -22,7 +22,7 @@ decisions: []
 hypotheses: []
 pages: []
 user-flows: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-49 · Eine Einstellung hat genau einen Bearbeitungsort

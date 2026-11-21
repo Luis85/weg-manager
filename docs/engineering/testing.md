@@ -17,14 +17,14 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 
 ## Support code
 
-- `tests/support/obsidian/` is an in-memory double of the `obsidian` API. `vault`, `metadataCache` and `workspace` are `Events`: `trigger(name, ...args)` fires an event and `listenerCount(name?)` counts live listeners. `workspace.layoutReady = false` with `markLayoutReady()` simulates startup. `TFile` and `TFolder` are classes, so `instanceof` works. A suite opts in with `vi.mock("obsidian", () => import("@test/obsidian"))`. Without that, importing `obsidian` throws `OBSIDIAN_REQUIRES_TEST_DOUBLE`.
+- `tests/support/obsidian/` is an in-memory double of the `obsidian` API. `getLanguage()` returns German (`DEFAULT_TEST_LANGUAGE`), the product's primary language, so the exact German texts of the dom tests stay meaningful; a suite that calls `setLanguage("en")` sets it back to `DEFAULT_TEST_LANGUAGE` in `afterEach` (see `tests/dom/language.test.ts`). `vault`, `metadataCache` and `workspace` are `Events`: `trigger(name, ...args)` fires an event and `listenerCount(name?)` counts live listeners. `workspace.layoutReady = false` with `markLayoutReady()` simulates startup. `TFile` and `TFolder` are classes, so `instanceof` works. A suite opts in with `vi.mock("obsidian", () => import("@test/obsidian"))`. Without that, importing `obsidian` throws `OBSIDIAN_REQUIRES_TEST_DOUBLE`.
 - `tests/support/layers.ts` holds in-memory Layers:
   - the store, with `holdSaves`/`releaseSaves` and `setFailSave`;
   - a controllable vault, with `hold`/`release`/`set`;
   - recording notifier, logger and clipboard;
   - sequential incident ids `T-1`, `T-2`, …
   - `recordingEventBus()`: the real `EventBusLive` that records every published event, with `failNextPublish`.
-- `tests/support/runtime.ts` provides `testRuntime(options)`: a full `AppRuntime` plus handles to every Layer. Use `rejectUpdates` to simulate a service that rejects a value the form accepted.
+- `tests/support/runtime.ts` provides `testRuntime(options)`: a full `AppRuntime` plus handles to every Layer. Use `rejectUpdates` to simulate a service that rejects a value the form accepted, and `language: "en"` for the English catalog (German by default). Hand-built Layers in unit tests add `testMessages` (German) from `tests/support/layers.ts`.
 
 ## Mutation testing
 
@@ -56,6 +56,7 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 - **First run.** The first run downloads Obsidian into `.obsidian-cache/` (git-ignored, about 1.3 GB unpacked). Never commit or share it: Obsidian's terms forbid redistribution.
 - **Display.** On Linux without a display, run `xvfb-run -a npm run test:e2e`. Windows and macOS need nothing extra.
 - **Isolation.** Each spec file gets a fresh Obsidian with a copy of `tests/e2e/vaults/basic`, and `dist/` is installed as the plugin.
+- **Language.** Without a stored choice Obsidian takes its language from Chromium's locale, which is `en-US` in CI and containers. `wdio.conf.mts` passes `--lang=de`, so Obsidian and the plugin start German and the specs assert German texts. `language.e2e.ts` switches to English the way Obsidian's own setting does: `localStorage` key `language`, then a plugin reload.
 - **Writing specs.** `browser.executeObsidian(({ app, obsidian }, ...args) => …)` runs code inside Obsidian. The function is serialised, so pass values as arguments; closures do not work. Shared helpers live in `tests/e2e/support.ts`: console spy, open view, `data.json`, plugin reload, light/dark switch.
 - **Gate.** `test:e2e` is not part of `verify`, because it needs a display and a download. CI runs it as a separate `e2e` job.
 
@@ -66,6 +67,7 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 | `events.e2e.ts` | one listener per host event on Obsidian's internal `Events._` map, all removed on each disable; creating, changing, opening, renaming and deleting a note with a clean console |
 | `popout.e2e.ts` | the view moved to a pop-out: surface, portal and About dialog in the pop-out's document, theme switch there, clean close |
 | `external-settings.e2e.ts` | `data.json` changed outside Obsidian (as by Sync): the open view follows, a newer-version file switches to read-only and is never rewritten |
+| `language.e2e.ts` | German from the start; an old `data.json` with the stored English default shows the German default and is not rewritten; after switching Obsidian to English: view, ribbon, command and settings names, notices in English; clean console |
 | `ribbon-failure.e2e.ts` | a bootstrap made to fail (patched `addCommand`) leaves no ribbon entry, also after a ribbon re-render; the next enable shows the icon once |
 
 The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaught error. It ignores only Chromium's `ResizeObserver loop` notification. It is installed after the first load, so the three disable/enable cycles provide the load coverage.

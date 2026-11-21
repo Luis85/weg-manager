@@ -1,6 +1,6 @@
 # ADR 0003 · Error handling and Twelve-Factor rules
 
-- Status: accepted
+- Status: accepted; texts amended by [ADR 0005](0005-ui-language.md) (German and English)
 - Date: 2026-11-21
 
 ## Context

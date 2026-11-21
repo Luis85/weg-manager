@@ -28,7 +28,7 @@ flowchart LR
 | Layer | Imports | Owns |
 | --- | --- | --- |
 | `src/domain` | `effect` | Pure rules: `decodeSettings`, `validatePatch`, defaults |
-| `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`), `SettingsService`, `EventBus` and the `AppEvent` vocabulary, use cases, tagged errors, the German message catalog |
+| `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`, `Messages`), `SettingsService`, `EventBus` and the `AppEvent` vocabulary, use cases, tagged errors, the German and English message catalogs (`i18n/`) |
 | `src/infrastructure/obsidian` | `obsidian`, application, presentation | Adapter Layers (including `hostEventsLayer`), commands, ribbon, settings tab, `ShellView` |
 | `src/presentation` | `vue`, `@nuxt/ui`, `@tanstack/vue-form`, application, domain | Vue surfaces. Components never see an Effect value; they call use cases through `useEffectAction` |
 | `harness/` | everything except `obsidian` | Browser stand-in for Obsidian with scenario Layers |
@@ -38,6 +38,14 @@ flowchart LR
 ## Runtime
 
 One `ManagedRuntime` exists per plugin load (`makeRuntime(appLayer(plugin))`). Every surface, command and settings control runs effects through it. Module-level mutable state is not allowed in `src/**`; state belongs to the runtime or is persisted in `data.json`.
+
+## UI language
+
+Decision record: [ADR 0005](../adr/0005-ui-language.md).
+
+- `hostLanguage()` (`src/infrastructure/obsidian/language.ts`) reads Obsidian's `getLanguage()` once per load: `de` and `de-*` give German, everything else English.
+- `obsidianLayer(plugin, language)` provides the `Messages` service, the catalog of that language. Use cases take it with `yield* Messages`, bootstrap for ribbon, commands and settings tab, components with `useMessages()`. Nuxt UI's locale follows it.
+- The domain returns issue codes; `describeIssue` words them. The greeting is `null` while not customised and then shows the language's default.
 
 ## Events
 

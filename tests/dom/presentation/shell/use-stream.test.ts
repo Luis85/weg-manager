@@ -113,6 +113,7 @@ describe("useSettings and useSettingsStatus", () => {
       schemaVersion: 1,
       greeting: "Moin",
       logLevel: "debug",
+      rootFolder: "WEG Manager",
     });
     const status = await runtime.runPromise(SettingsService.use((service) => service.status));
     expect(exposed.status.value).toEqual(status);

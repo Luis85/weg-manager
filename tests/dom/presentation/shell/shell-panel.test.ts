@@ -3,8 +3,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { GREETING_MAX_LENGTH } from "../../../../src/domain/shell/settings";
 import { validatePatch, DEFAULT_SETTINGS } from "../../../../src/domain/shell/settings";
 import { ReadOnlySettingsError } from "../../../../src/application/shell/errors";
-import { de, describeIssue } from "../../../../src/application/shell/i18n";
-import { describeError } from "../../../../src/application/shell/user-messages";
+import { de } from "../../../../src/application/messages";
+import { describeIssue } from "../../../../src/application/shell/i18n/describe";
+import { describeError } from "../../../../src/application/user-messages";
 import { mountSurface } from "../../../../src/presentation/shell/mount";
 import { testRuntime, type TestRuntimeOptions } from "../../../support/runtime";
 
@@ -50,7 +51,7 @@ const issueFor = (greeting: string) => {
   const result = validatePatch(DEFAULT_SETTINGS, { greeting });
   const issue = result.ok ? undefined : result.issues[0];
   if (issue === undefined) throw new Error("expected an issue");
-  return describeIssue(issue, de);
+  return describeIssue(issue, de.shell);
 };
 
 describe("ShellPanel", () => {

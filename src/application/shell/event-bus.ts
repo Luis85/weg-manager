@@ -1,5 +1,5 @@
 import { Context, Effect, Layer, PubSub, Stream, type Scope } from "effect";
-import type { AppEvent, AppEventTag } from "./events";
+import type { AppEvent, AppEventTag } from "../events";
 
 type EventOf<Tag extends AppEventTag> = Extract<AppEvent, { readonly _tag: Tag }>;
 

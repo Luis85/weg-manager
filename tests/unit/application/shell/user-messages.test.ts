@@ -6,15 +6,16 @@ import {
   ReadOnlySettingsError,
   StorageError,
   VaultReadError,
-  type AppError,
 } from "../../../../src/application/shell/errors";
-import { de, describeIssue, en } from "../../../../src/application/shell/i18n";
+import type { AppError } from "../../../../src/application/errors";
+import { de, en } from "../../../../src/application/messages";
+import { describeIssue } from "../../../../src/application/shell/i18n/describe";
 import {
   describeDefect,
   describeSettingsIssues,
-  describeError,
   type UserMessage,
 } from "../../../../src/application/shell/user-messages";
+import { describeError } from "../../../../src/application/user-messages";
 import type { SettingsIssue } from "../../../../src/domain/shell/settings";
 
 const FORBIDDEN = ["Error", "stack", "/", "\\"];
@@ -66,7 +67,7 @@ describe.each(CATALOGS)("describeError ($language)", (messages) => {
     const message = describeError(error, messages);
     expectPlain(message);
     expect(message.detail).toBe(
-      `${describeIssue(GREETING, messages)} ${describeIssue(LOG_LEVEL, messages)}`,
+      `${describeIssue(GREETING, messages.shell)} ${describeIssue(LOG_LEVEL, messages.shell)}`,
     );
     expect(message.action).toBeUndefined();
     expect(message.severity).toBe("warning");
@@ -93,7 +94,7 @@ describe.each(CATALOGS)("describeError ($language)", (messages) => {
   });
 
   it("names the plugin and the incident id of a defect and offers diagnostics", () => {
-    const message = describeDefect("K7Q2", messages);
+    const message = describeDefect("K7Q2", messages.shell);
     expectPlain(message);
     expect(message.title).toContain("WEG Manager");
     expect(message.detail).toContain("K7Q2");
@@ -160,14 +161,14 @@ describe("message catalog texts", () => {
   });
 
   it("explains partially reset settings with every issue", () => {
-    expect(describeSettingsIssues([GREETING, { code: "file.invalid" }], de)).toEqual({
+    expect(describeSettingsIssues([GREETING, { code: "file.invalid" }], de.shell)).toEqual({
       severity: "warning",
       title: "Einstellungen teilweise zurückgesetzt",
       detail:
         "Die Begrüßung muss 1 bis 200 Zeichen lang sein. Die Einstellungsdatei enthält keine gültigen Einstellungen. Für diese Werte gelten Standardwerte. Prüfe die Einstellungen.",
       action: "open-settings",
     });
-    expect(describeSettingsIssues([{ code: "schema.invalid" }], en)).toEqual({
+    expect(describeSettingsIssues([{ code: "schema.invalid" }], en.shell)).toEqual({
       severity: "warning",
       title: "Settings partly reset",
       detail:
@@ -177,14 +178,14 @@ describe("message catalog texts", () => {
   });
 
   it("words a defect exactly", () => {
-    expect(describeDefect("K7Q2", de)).toEqual({
+    expect(describeDefect("K7Q2", de.shell)).toEqual({
       severity: "error",
       title: "Unerwarteter Fehler in WEG Manager",
       detail:
         "Die Aktion wurde abgebrochen (Fehlercode K7Q2). Kopiere die Diagnose und schicke sie mit dem Fehlercode an den Support.",
       action: "copy-diagnostics",
     });
-    expect(describeDefect("K7Q2", en)).toEqual({
+    expect(describeDefect("K7Q2", en.shell)).toEqual({
       severity: "error",
       title: "Unexpected error in WEG Manager",
       detail:

@@ -11,7 +11,7 @@ import ShellPanel from "./ShellPanel.vue";
  */
 defineProps<{ portal: HTMLElement; content?: Component }>();
 
-const locale = useMessages().language === "de" ? de : en;
+const locale = useMessages().shell.language === "de" ? de : en;
 </script>
 
 <template>

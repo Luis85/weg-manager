@@ -29,7 +29,7 @@ export const DEFAULT_SETTINGS: Settings = {
 
 /**
  * A broken rule, as data: the domain knows no language. The message catalog turns each `code`
- * into a sentence (`src/application/i18n/`).
+ * into a sentence (`src/application/shell/i18n/`).
  */
 export const SettingsIssue = Schema.Union([
   Schema.Struct({ code: Schema.Literal("file.invalid") }),

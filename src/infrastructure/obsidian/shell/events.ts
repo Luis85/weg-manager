@@ -1,9 +1,14 @@
 import { Cause, Effect, Layer } from "effect";
 import { TFile, type EventRef, type Events, type Plugin, type TAbstractFile } from "obsidian";
-import { reportDefect } from "../../../application/shell/defects";
-import { EventBus } from "../../../application/shell/event-bus";
-import { AppEvent } from "../../../application/shell/events";
-import type { Incidents, Logger, Messages, Notifier } from "../../../application/shell/ports";
+import { AppEvent } from "../../../application/events";
+import {
+  EventBus,
+  reportDefect,
+  type Incidents,
+  type Logger,
+  type Messages,
+  type Notifier,
+} from "../../../application/shell";
 
 type ColorScheme = "light" | "dark";
 

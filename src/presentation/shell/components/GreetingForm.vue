@@ -4,25 +4,29 @@ import UFormField from "@nuxt/ui/components/FormField.vue";
 import UInput from "@nuxt/ui/components/Input.vue";
 import { useForm } from "@tanstack/vue-form";
 import { computed, watch } from "vue";
-import { ReadOnlySettingsError } from "../../../application/shell/errors";
-import { updateGreeting } from "../../../application/shell/use-cases";
-import { describeIssues, greetingOf } from "../../../application/shell/i18n";
-import { describeError } from "../../../application/shell/user-messages";
-import { validatePatch } from "../../../domain/shell/settings";
+import {
+  ReadOnlySettingsError,
+  describeIssues,
+  greetingOf,
+  updateGreeting,
+} from "../../../application/shell";
+import { describeError } from "../../../application/user-messages";
+import { validatePatch } from "../../../domain/shell";
 import ErrorNotice from "./ErrorNotice.vue";
 import { useCommand, useMessages, useSettings, useSettingsStatus } from "../runtime/use-runtime";
 
 /** The greeting form: domain rules validate on change, the service has the final word. */
 const settings = useSettings();
 const status = useSettingsStatus();
-const messages = useMessages();
+const catalog = useMessages();
+const messages = catalog.shell;
 const readOnly = computed(() => !status.value.writable);
 /** Why the settings are read-only and what to do, from the shared message catalog. */
 const readOnlyMessage = computed(() => {
   const reason = status.value.readOnlyReason;
   return reason === undefined
     ? undefined
-    : describeError(new ReadOnlySettingsError({ reason }), messages);
+    : describeError(new ReadOnlySettingsError({ reason }), catalog);
 });
 /** A save runs to its end even when the view closes meanwhile; a failure then becomes a notice. */
 const save = useCommand(updateGreeting);

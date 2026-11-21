@@ -2,9 +2,7 @@
 import UCard from "@nuxt/ui/components/Card.vue";
 import USkeleton from "@nuxt/ui/components/Skeleton.vue";
 import { computed, onMounted, onScopeDispose } from "vue";
-import { changesMarkdownFiles } from "../../../application/shell/events";
-import { greetingOf } from "../../../application/shell/i18n";
-import { countMarkdownFiles } from "../../../application/shell/use-cases";
+import { changesMarkdownFiles, countMarkdownFiles, greetingOf } from "../../../application/shell";
 import { RECOUNT_DELAY_MS, debounce } from "../recount";
 import { useAppEvents, useMessages, useQuery, useSettings } from "../runtime/use-runtime";
 import AboutDialog from "./AboutDialog.vue";
@@ -13,7 +11,7 @@ import GreetingForm from "./GreetingForm.vue";
 
 /** The walking-skeleton view: greeting from settings, a vault read, a form, a dialog. */
 const settings = useSettings();
-const messages = useMessages();
+const messages = useMessages().shell;
 const greeting = computed(() => greetingOf(settings.value, messages));
 const count = useQuery(() => countMarkdownFiles);
 const { pending, value: fileCount, message: countMessage } = count;

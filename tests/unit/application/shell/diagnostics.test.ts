@@ -1,7 +1,8 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { buildDiagnostics } from "../../../../src/application/shell/diagnostics";
-import { messagesLayer, type Language } from "../../../../src/application/shell/i18n";
+import { messagesLayer } from "../../../../src/application/messages";
+import type { Language } from "../../../../src/application/shell/i18n/catalog";
 import { Logger, type RecordedLogEntry } from "../../../../src/application/shell/ports";
 import { SettingsServiceLive } from "../../../../src/application/shell/settings-service";
 import {

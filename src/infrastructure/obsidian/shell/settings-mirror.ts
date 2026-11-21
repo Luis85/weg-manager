@@ -1,7 +1,7 @@
 import { Effect, Fiber, Stream } from "effect";
 import type { AppRuntime } from "../../../application/app-services";
-import { SettingsService, type SettingsStatus } from "../../../application/shell/settings-service";
-import type { Settings } from "../../../domain/shell/settings";
+import { SettingsService, type SettingsStatus } from "../../../application/shell";
+import type { Settings } from "../../../domain/shell";
 
 export type SettingsMirror = {
   /** The latest settings, readable synchronously (Obsidian's settings API reads values sync). */

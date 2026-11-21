@@ -1,5 +1,5 @@
 import { Clock, Effect, Layer } from "effect";
-import { LOG_LEVELS, type LogLevel } from "../../domain/shell/settings";
+import { LOG_LEVELS, type LogLevel } from "../../domain/shell";
 import { LogSink, Logger, type LogEntry, type RecordedLogEntry } from "./ports";
 import { SettingsService } from "./settings-service";
 

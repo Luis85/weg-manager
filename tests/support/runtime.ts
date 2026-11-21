@@ -1,7 +1,8 @@
 import { Effect, Layer, ManagedRuntime } from "effect";
 import type { AppRuntime } from "../../src/application/app-services";
 import { InvalidSettingsError } from "../../src/application/shell/errors";
-import { messagesLayer, type Language } from "../../src/application/shell/i18n";
+import { messagesLayer } from "../../src/application/messages";
+import type { Language } from "../../src/application/shell/i18n/catalog";
 import { SettingsService, SettingsServiceLive } from "../../src/application/shell/settings-service";
 import type { SettingsIssue } from "../../src/domain/shell/settings";
 import {

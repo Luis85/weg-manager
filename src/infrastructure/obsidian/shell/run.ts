@@ -1,6 +1,6 @@
 import { Cause, Effect } from "effect";
 import type { AppRuntime, AppServices } from "../../../application/app-services";
-import { reportDefect } from "../../../application/shell/defects";
+import { reportDefect } from "../../../application/shell";
 
 /**
  * Runs an effect that has no expected failures left. A defect is reported once through

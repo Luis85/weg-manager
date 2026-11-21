@@ -1,8 +1,8 @@
 import { Effect, Layer } from "effect";
 import { ClipboardError, StorageError, VaultReadError } from "../../src/application/shell/errors";
 import { EventBus, EventBusLive } from "../../src/application/shell/event-bus";
-import type { AppEvent } from "../../src/application/shell/events";
-import { messagesLayer } from "../../src/application/shell/i18n";
+import type { AppEvent } from "../../src/application/events";
+import { messagesLayer } from "../../src/application/messages";
 import {
   Clipboard,
   HostInfo,

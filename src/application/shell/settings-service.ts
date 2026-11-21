@@ -8,11 +8,11 @@ import {
   type EditableSettings,
   type Settings,
   type SettingsIssue,
-} from "../../domain/shell/settings";
+} from "../../domain/shell";
 import { InvalidSettingsError, ReadOnlySettingsError, type UpdateSettingsError } from "./errors";
-import type { Catalog } from "./i18n";
+import type { ShellCatalog } from "./i18n/catalog";
 import { Messages, Notifier, SettingsStore } from "./ports";
-import { describeError, describeSettingsIssues, type UserMessage } from "./user-messages";
+import { describeSettingsIssues, describeShellError, type UserMessage } from "./user-messages";
 
 export type ReadOnlyReason = ReadOnlySettingsError["reason"];
 
@@ -57,9 +57,12 @@ const unreadable: Loaded = {
 const toLoaded = (decoded: DecodedSettings): Loaded =>
   decoded.writable ? decoded : { ...decoded, readOnlyReason: "newer-version" };
 
-const loadMessage = (loaded: Loaded, messages: Catalog): UserMessage | undefined => {
+const loadMessage = (loaded: Loaded, messages: ShellCatalog): UserMessage | undefined => {
   if (loaded.readOnlyReason !== undefined) {
-    return describeError(new ReadOnlySettingsError({ reason: loaded.readOnlyReason }), messages);
+    return describeShellError(
+      new ReadOnlySettingsError({ reason: loaded.readOnlyReason }),
+      messages,
+    );
   }
   return loaded.issues.length > 0 ? describeSettingsIssues(loaded.issues, messages) : undefined;
 };
@@ -79,7 +82,7 @@ export const SettingsServiceLive = Layer.effect(
   Effect.gen(function* () {
     const store = yield* SettingsStore;
     const notifier = yield* Notifier;
-    const messages = yield* Messages;
+    const { shell: messages } = yield* Messages;
     const read = store.load.pipe(
       Effect.map((raw) => toLoaded(decodeSettings(raw))),
       Effect.catchTag("StorageError", () => Effect.succeed(unreadable)),

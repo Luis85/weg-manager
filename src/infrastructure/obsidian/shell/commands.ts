@@ -1,7 +1,6 @@
 import type { Plugin } from "obsidian";
 import type { AppRuntime } from "../../../application/app-services";
-import type { Catalog } from "../../../application/shell/i18n";
-import { copyDiagnostics, showGreeting } from "../../../application/shell/use-cases";
+import { copyDiagnostics, showGreeting, type ShellCatalog } from "../../../application/shell";
 import { runSafely } from "./run";
 
 const COMMAND_IDS = ["open-view", "show-greeting", "copy-diagnostics"] as const;
@@ -13,7 +12,7 @@ const COMMAND_IDS = ["open-view", "show-greeting", "copy-diagnostics"] as const;
 export const registerCommands = (
   plugin: Plugin,
   runtime: AppRuntime,
-  messages: Catalog,
+  messages: ShellCatalog,
   openView: () => Promise<void>,
 ): (() => void) => {
   const names = messages.commands;

@@ -1,10 +1,10 @@
 import { Effect } from "effect";
-import type { LogLevel } from "../../domain/shell/settings";
+import type { LogLevel } from "../../domain/shell";
 import { buildDiagnostics } from "./diagnostics";
-import { greetingOf } from "./i18n";
+import { greetingOf } from "./i18n/describe";
 import { Clipboard, Messages, Notifier, VaultReader } from "./ports";
 import { SettingsService } from "./settings-service";
-import { describeError } from "./user-messages";
+import { describeShellError } from "./user-messages";
 
 /** The only application API that presentation calls. */
 
@@ -14,7 +14,7 @@ import { describeError } from "./user-messages";
  */
 export const updateGreeting = (greeting: string) =>
   Effect.gen(function* () {
-    const { defaultGreeting } = yield* Messages;
+    const { defaultGreeting } = (yield* Messages).shell;
     const settings = yield* SettingsService;
     return yield* settings.update({
       greeting: greeting.trim() === defaultGreeting ? null : greeting,
@@ -25,7 +25,7 @@ export const setLogLevel = (logLevel: LogLevel) =>
   SettingsService.use((settings) => settings.update({ logLevel }));
 
 export const showGreeting = Effect.gen(function* () {
-  const messages = yield* Messages;
+  const { shell: messages } = yield* Messages;
   const settings = yield* (yield* SettingsService).current;
   yield* (yield* Notifier).notify({
     severity: "info",
@@ -38,10 +38,12 @@ export const countMarkdownFiles = VaultReader.use((vault) => vault.markdownFileC
 
 export const copyDiagnostics = Effect.gen(function* () {
   const notifier = yield* Notifier;
-  const messages = yield* Messages;
+  const { shell: messages } = yield* Messages;
   const report = yield* buildDiagnostics;
   yield* (yield* Clipboard).write(report).pipe(
     Effect.andThen(notifier.notify({ severity: "info", ...messages.diagnosticsCopied })),
-    Effect.catchTag("ClipboardError", (error) => notifier.notify(describeError(error, messages))),
+    Effect.catchTag("ClipboardError", (error) =>
+      notifier.notify(describeShellError(error, messages)),
+    ),
   );
 });

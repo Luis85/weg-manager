@@ -1,12 +1,15 @@
 import { Effect } from "effect";
 import { PluginSettingTab, type App, type Plugin, type SettingDefinitionItem } from "obsidian";
 import type { AppRuntime } from "../../../application/app-services";
-import { ReadOnlySettingsError, type UpdateSettingsError } from "../../../application/shell/errors";
-import { Notifier } from "../../../application/shell/ports";
-import { setLogLevel } from "../../../application/shell/use-cases";
-import type { Catalog } from "../../../application/shell/i18n";
-import { describeError } from "../../../application/shell/user-messages";
-import type { LogLevel } from "../../../domain/shell/settings";
+import {
+  Notifier,
+  ReadOnlySettingsError,
+  describeShellError,
+  setLogLevel,
+  type ShellCatalog,
+  type UpdateSettingsError,
+} from "../../../application/shell";
+import type { LogLevel } from "../../../domain/shell";
 import { runSafely } from "./run";
 import type { SettingsMirror } from "./settings-mirror";
 
@@ -22,7 +25,7 @@ export class ShellSettingTab extends PluginSettingTab {
     plugin: Plugin,
     private readonly runtime: AppRuntime,
     private readonly mirror: SettingsMirror,
-    private readonly messages: Catalog,
+    private readonly messages: ShellCatalog,
   ) {
     super(app, plugin);
   }
@@ -43,7 +46,10 @@ export class ShellSettingTab extends PluginSettingTab {
       },
     ];
     if (readOnly !== undefined) {
-      const message = describeError(new ReadOnlySettingsError({ reason: readOnly }), this.messages);
+      const message = describeShellError(
+        new ReadOnlySettingsError({ reason: readOnly }),
+        this.messages,
+      );
       items.push({ name: message.title, desc: message.detail, searchable: false });
     }
     return items;
@@ -60,7 +66,7 @@ export class ShellSettingTab extends PluginSettingTab {
       setLogLevel(value as LogLevel).pipe(
         Effect.asVoid,
         Effect.catch((error: UpdateSettingsError) =>
-          Notifier.use((notifier) => notifier.notify(describeError(error, this.messages))),
+          Notifier.use((notifier) => notifier.notify(describeShellError(error, this.messages))),
         ),
       ),
     ).then(() => undefined);

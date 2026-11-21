@@ -1,4 +1,4 @@
-import type { LogLevel, SettingsIssue } from "../../../domain/shell/settings";
+import type { LogLevel, SettingsIssue } from "../../../domain/shell";
 import type { ReadOnlySettingsError } from "../errors";
 import type { UserMessageAction } from "../user-messages";
 
@@ -19,10 +19,12 @@ type IssueTexts = {
 };
 
 /**
- * Every text the user sees, for one language. Both catalogs are typed against it, so a key missing
- * in one language fails typecheck. Texts with parameters are functions.
+ * Every text of the shell the user sees, for one language: the shell's part of the app's `Catalog`
+ * (`src/application/messages.ts`). Both languages are typed against it, so a key missing in one
+ * language fails typecheck. Texts with parameters are functions.
  */
-export type Catalog = {
+export type ShellCatalog = {
+  /** The UI language of this catalog; the shell owns the UI-language mechanism (ADR 0005). */
   readonly language: Language;
   /** Shown while the greeting is not customised. */
   readonly defaultGreeting: string;

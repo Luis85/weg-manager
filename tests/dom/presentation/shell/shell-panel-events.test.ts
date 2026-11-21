@@ -2,7 +2,7 @@ import { flushPromises } from "@vue/test-utils";
 import { Effect } from "effect";
 import { afterEach, describe, expect, it } from "vitest";
 import { EventBus } from "../../../../src/application/shell/event-bus";
-import { AppEvent } from "../../../../src/application/shell/events";
+import { AppEvent } from "../../../../src/application/events";
 import { RECOUNT_DELAY_MS } from "../../../../src/presentation/shell/recount";
 import { mountSurface } from "../../../../src/presentation/shell/mount";
 import { testRuntime } from "../../../support/runtime";

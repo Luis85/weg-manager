@@ -1,26 +1,32 @@
 import { Effect } from "effect";
 import type { Plugin } from "obsidian";
 import type { AppRuntime } from "./application/app-services";
-import { reportDefect } from "./application/shell/defects";
-import { catalogFor } from "./application/shell/i18n";
-import { toLoggedError } from "./application/shell/logged-error";
-import { Logger, Messages } from "./application/shell/ports";
-import { SettingsService } from "./application/shell/settings-service";
-import { describeDefect } from "./application/shell/user-messages";
+import { catalogFor } from "./application/messages";
+import {
+  Logger,
+  Messages,
+  SettingsService,
+  describeDefect,
+  reportDefect,
+  toLoggedError,
+} from "./application/shell";
 import { consoleSink } from "./infrastructure/logging/console-sink";
 import { appLayer } from "./infrastructure/obsidian/app-layer";
-import { registerCommands } from "./infrastructure/obsidian/shell/commands";
-import { showMessage } from "./infrastructure/obsidian/shell/notices";
-import { hostLanguage } from "./infrastructure/obsidian/shell/language";
-import { addRibbonIcon } from "./infrastructure/obsidian/shell/ribbon";
-import { runSafely } from "./infrastructure/obsidian/shell/run";
-import { mirrorSettings } from "./infrastructure/obsidian/shell/settings-mirror";
-import { ShellSettingTab } from "./infrastructure/obsidian/shell/settings-tab";
-import { SHELL_VIEW_TYPE, ShellView } from "./infrastructure/obsidian/shell/shell-view";
+import {
+  SHELL_VIEW_TYPE,
+  ShellSettingTab,
+  ShellView,
+  addRibbonIcon,
+  hostLanguage,
+  mirrorSettings,
+  registerCommands,
+  runSafely,
+  showMessage,
+} from "./infrastructure/obsidian/shell";
 import { makeRuntime } from "./infrastructure/runtime";
-import { releaseAll } from "./presentation/shell/release";
+import { releaseAll } from "./presentation/shell";
 
-export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell/shell-view";
+export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell";
 
 export type BootstrapHandle = {
   readonly runtime: AppRuntime;
@@ -98,7 +104,7 @@ export const bootstrap = async (
     const mirror = await mirrorSettings(runtime);
     undo.push(() => mirror.stop());
     if (aborted()) return await inert();
-    const messages = await runtime.runPromise(Messages.useSync((catalog) => catalog));
+    const messages = await runtime.runPromise(Messages.useSync((catalog) => catalog.shell));
     const open = () =>
       runSafely(
         runtime,
@@ -155,5 +161,5 @@ export const reportUnloadFailure = (cause: unknown): void => {
     error: toLoggedError(cause),
     incidentId,
   });
-  showMessage(describeDefect(incidentId, catalogFor(hostLanguage())));
+  showMessage(describeDefect(incidentId, catalogFor(hostLanguage()).shell));
 };

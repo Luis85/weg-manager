@@ -1,7 +1,7 @@
-import { PRODUCT_NAME, type Catalog } from "./catalog";
+import { PRODUCT_NAME, type ShellCatalog } from "./catalog";
 
 /** English, sentence case as in Obsidian: first the cause, then the action. */
-export const en: Catalog = {
+export const shellEn: ShellCatalog = {
   language: "en",
   defaultGreeting: `Hello from ${PRODUCT_NAME}`,
   issues: {

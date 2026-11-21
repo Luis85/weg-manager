@@ -1,7 +1,7 @@
-import { PRODUCT_NAME, type Catalog } from "./catalog";
+import { PRODUCT_NAME, type ShellCatalog } from "./catalog";
 
 /** German, du-form: first the cause, then the action (handoff HO-06). */
-export const de: Catalog = {
+export const shellDe: ShellCatalog = {
   language: "de",
   defaultGreeting: `Hallo von ${PRODUCT_NAME}`,
   issues: {

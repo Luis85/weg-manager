@@ -3,7 +3,7 @@ import UButton from "@nuxt/ui/components/Button.vue";
 import UModal from "@nuxt/ui/components/Modal.vue";
 import { useMessages } from "../runtime/use-runtime";
 
-const { about } = useMessages();
+const { about } = useMessages().shell;
 </script>
 
 <template>

@@ -1,7 +1,8 @@
 import { Context, Effect, Exit, Fiber, Layer, Scope, Stream } from "effect";
 import { describe, expect, it } from "vitest";
 import { EventBus, EventBusLive } from "../../../../src/application/shell/event-bus";
-import { AppEvent, isMarkdown } from "../../../../src/application/shell/events";
+import { AppEvent } from "../../../../src/application/events";
+import { isMarkdown } from "../../../../src/application/shell/events";
 
 const created = (path: string) => AppEvent.FileCreated({ path, extension: "md" });
 const ready = AppEvent.LayoutReady();

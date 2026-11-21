@@ -1,5 +1,5 @@
 import type { Plugin } from "obsidian";
-import { PRODUCT_NAME } from "../../../application/shell/i18n";
+import { PRODUCT_NAME } from "../../../application/shell";
 
 const RIBBON_ICON = "layout-dashboard";
 

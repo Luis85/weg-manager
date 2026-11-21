@@ -2,8 +2,11 @@
 import UAlert from "@nuxt/ui/components/Alert.vue";
 import type { ButtonProps } from "@nuxt/ui";
 import { computed } from "vue";
-import { copyDiagnostics } from "../../../application/shell/use-cases";
-import type { UserMessage, UserMessageAction } from "../../../application/shell/user-messages";
+import {
+  copyDiagnostics,
+  type UserMessage,
+  type UserMessageAction,
+} from "../../../application/shell";
 import { useCommand, useMessages } from "../runtime/use-runtime";
 
 /**
@@ -15,7 +18,7 @@ const props = defineProps<{
   handlers?: Partial<Record<UserMessageAction, () => unknown>>;
 }>();
 
-const { actions: ACTION_LABELS } = useMessages();
+const { actions: ACTION_LABELS } = useMessages().shell;
 
 const COLORS = { info: "info", warning: "warning", error: "error" } as const;
 

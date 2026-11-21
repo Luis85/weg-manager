@@ -10,15 +10,20 @@ import {
   type ShallowRef,
 } from "vue";
 import type { AppRuntime, AppServices } from "../../../application/app-services";
-import { reportDefect } from "../../../application/shell/defects";
-import type { AppError } from "../../../application/shell/errors";
-import { EventBus } from "../../../application/shell/event-bus";
-import type { AppEvent } from "../../../application/shell/events";
-import type { Catalog } from "../../../application/shell/i18n";
-import { Messages, Notifier } from "../../../application/shell/ports";
-import { SettingsService, type SettingsStatus } from "../../../application/shell/settings-service";
-import { describeError, type UserMessage } from "../../../application/shell/user-messages";
-import type { Settings } from "../../../domain/shell/settings";
+import type { AppError } from "../../../application/errors";
+import type { AppEvent } from "../../../application/events";
+import type { Catalog } from "../../../application/messages";
+import {
+  EventBus,
+  Messages,
+  Notifier,
+  SettingsService,
+  reportDefect,
+  type SettingsStatus,
+  type UserMessage,
+} from "../../../application/shell";
+import { describeError } from "../../../application/user-messages";
+import type { Settings } from "../../../domain/shell";
 
 /**
  * The only presentation module that imports `effect`. Components run reads through `useQuery` and

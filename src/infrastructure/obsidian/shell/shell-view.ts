@@ -1,17 +1,8 @@
 import { ItemView, type WorkspaceLeaf } from "obsidian";
 import type { AppRuntime } from "../../../application/app-services";
-import type { mountSurface } from "../../../presentation/shell/mount";
+import { loadSurface as importSurface, type SurfaceLoader } from "../../../presentation/shell";
 
 export const SHELL_VIEW_TYPE = "weg-manager-view";
-
-/** Loads the Vue surface module; `ShellView` takes another one in tests. */
-export type SurfaceLoader = () => Promise<{ readonly mountSurface: typeof mountSurface }>;
-
-/**
- * Vue, Nuxt UI and TanStack Form are evaluated on the first `import()`, when a view opens, not
- * while the plugin loads. The bundle stays one file: rolldown turns the import into a lazy init.
- */
-const importSurface: SurfaceLoader = () => import("../../../presentation/shell/mount");
 
 /**
  * One Vue surface per open view. `surfaces` holds the close of every open view, so bootstrap

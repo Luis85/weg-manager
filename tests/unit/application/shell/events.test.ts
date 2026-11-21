@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { AppEvent, changesMarkdownFiles } from "../../../../src/application/shell/events";
+import { AppEvent } from "../../../../src/application/events";
+import { changesMarkdownFiles } from "../../../../src/application/shell/events";
 
 const md = { extension: "md" };
 const png = { extension: "png" };

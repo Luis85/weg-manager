@@ -16,7 +16,7 @@ export const reportDefect = (cause: unknown) =>
       error: toLoggedError(cause),
       incidentId,
     });
-    const message = describeDefect(incidentId, yield* Messages);
+    const message = describeDefect(incidentId, (yield* Messages).shell);
     yield* (yield* Notifier).notify(message);
     return message;
   });

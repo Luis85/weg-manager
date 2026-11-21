@@ -1,6 +1,6 @@
 import { Effect, Layer, ManagedRuntime } from "effect";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AppEvent } from "../../../../src/application/shell/events";
+import { AppEvent } from "../../../../src/application/events";
 import {
   recordingEventBus,
   recordingLogger,

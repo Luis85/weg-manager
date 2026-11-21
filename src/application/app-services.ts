@@ -1,27 +1,11 @@
 import type { ManagedRuntime } from "effect";
-import type { EventBus } from "./shell/event-bus";
-import type {
-  Clipboard,
-  HostInfo,
-  Incidents,
-  Logger,
-  Messages,
-  Notifier,
-  VaultReader,
-} from "./shell/ports";
-import type { SettingsService } from "./shell/settings-service";
+import type { ShellServices } from "./shell";
 
-/** Everything a use case may require; the runtime of one plugin load provides all of it. */
-export type AppServices =
-  | SettingsService
-  | Notifier
-  | VaultReader
-  | Logger
-  | Incidents
-  | Clipboard
-  | HostInfo
-  | Messages
-  | EventBus;
+/**
+ * Everything a use case may require: the union of the modules' services (ADR 0006). The runtime of
+ * one plugin load provides all of it.
+ */
+export type AppServices = ShellServices;
 
 /** The runtime of one plugin load; presentation runs use cases through it. */
 export type AppRuntime = ManagedRuntime.ManagedRuntime<AppServices, never>;

@@ -1,15 +1,18 @@
 import { Effect, Layer } from "effect";
 import { Platform, apiVersion, type Plugin } from "obsidian";
-import { ClipboardError, StorageError, VaultReadError } from "../../../application/shell/errors";
-import { messagesLayer, type Language } from "../../../application/shell/i18n";
+import { messagesLayer } from "../../../application/messages";
 import {
+  ClipboardError,
+  StorageError,
+  VaultReadError,
+  type Language,
+  type UserMessage,
   Clipboard,
   HostInfo,
   Notifier,
   SettingsStore,
   VaultReader,
-} from "../../../application/shell/ports";
-import type { UserMessage } from "../../../application/shell/user-messages";
+} from "../../../application/shell";
 import { showMessage } from "./notices";
 
 export { NOTICE_DURATION } from "./notices";

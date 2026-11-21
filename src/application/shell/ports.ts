@@ -1,8 +1,8 @@
 // Stryker disable StringLiteral: the only strings here are service keys; they only have to be unique and tests cannot observe their text.
 import { Context, type Effect } from "effect";
-import type { LogLevel } from "../../domain/shell/settings";
+import type { LogLevel } from "../../domain/shell";
 import type { ClipboardError, StorageError, VaultReadError } from "./errors";
-import type { Catalog } from "./i18n";
+import type { Catalog } from "../messages";
 import type { UserMessage } from "./user-messages";
 
 /** Raw persistence of `data.json`. */
@@ -77,8 +77,9 @@ export class HostInfo extends Context.Service<
 >()("weg-manager/application/HostInfo") {}
 
 /**
- * The message catalog of the UI language. The host picks it once per plugin load (Obsidian
- * restarts when its language changes), so it is a value, not a stream.
+ * The message catalog of the UI language with every module's part (`src/application/messages.ts`).
+ * The host picks it once per plugin load (Obsidian restarts when its language changes), so it is a
+ * value, not a stream.
  */
 export class Messages extends Context.Service<Messages, Catalog>()(
   "weg-manager/application/Messages",

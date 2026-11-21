@@ -1,5 +1,6 @@
 import { Effect } from "effect";
-import { de, describeIssues } from "./i18n";
+import { shellDe } from "./i18n/de";
+import { describeIssues } from "./i18n/describe";
 import { HostInfo, Logger, Messages, type RecordedLogEntry } from "./ports";
 import { RECENT_LOG_LIMIT } from "./logger";
 import { SettingsService } from "./settings-service";
@@ -24,7 +25,7 @@ const formatEntry = (entry: RecordedLogEntry): string => {
  */
 export const buildDiagnostics = Effect.gen(function* () {
   const host = yield* HostInfo;
-  const { language } = yield* Messages;
+  const { language } = (yield* Messages).shell;
   const settings = yield* SettingsService;
   const status = yield* settings.status;
   const current = yield* settings.current;
@@ -36,7 +37,7 @@ export const buildDiagnostics = Effect.gen(function* () {
     `Plattform: ${host.platform}`,
     `Sprache: ${language}`,
     `Einstellungen beschreibbar: ${status.writable ? "ja" : "nein"}${status.readOnlyReason ? ` (${status.readOnlyReason})` : ""}`,
-    `Hinweise zu Einstellungen: ${status.issues.length > 0 ? describeIssues(status.issues, de) : "keine"}`,
+    `Hinweise zu Einstellungen: ${status.issues.length > 0 ? describeIssues(status.issues, shellDe) : "keine"}`,
     `Protokollstufe: ${current.logLevel}`,
     `Letzte Protokolleinträge (${entries.length}):`,
     ...entries.map(formatEntry),

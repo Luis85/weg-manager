@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { SettingsIssue } from "../../domain/shell/settings";
+import { SettingsIssue } from "../../domain/shell";
 
 /** Reading or writing `data.json` failed. */
 export class StorageError extends Schema.TaggedError<StorageError>()("StorageError", {
@@ -30,6 +30,6 @@ export class ClipboardError extends Schema.TaggedError<ClipboardError>()("Clipbo
 
 export type UpdateSettingsError = StorageError | ReadOnlySettingsError | InvalidSettingsError;
 
-/** Every expected failure. Each member needs a text in `describeError`. */
-export type AppError =
+/** Every expected failure of the shell. Each member needs a text in `describeShellError`. */
+export type ShellError =
   StorageError | ReadOnlySettingsError | InvalidSettingsError | VaultReadError | ClipboardError;

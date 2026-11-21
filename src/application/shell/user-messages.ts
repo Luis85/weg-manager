@@ -1,6 +1,7 @@
-import type { SettingsIssue } from "../../domain/shell/settings";
-import type { AppError } from "./errors";
-import { describeIssues, type Catalog } from "./i18n";
+import type { SettingsIssue } from "../../domain/shell";
+import type { ShellError } from "./errors";
+import type { ShellCatalog } from "./i18n/catalog";
+import { describeIssues } from "./i18n/describe";
 
 export type UserMessageAction = "retry" | "open-settings" | "copy-diagnostics";
 
@@ -15,7 +16,8 @@ export type UserMessage = {
   readonly action?: UserMessageAction;
 };
 
-export const describeError = (error: AppError, messages: Catalog): UserMessage => {
+/** The text of a shell error. `describeError` (`src/application/user-messages.ts`) hands it here. */
+export const describeShellError = (error: ShellError, messages: ShellCatalog): UserMessage => {
   const { errors } = messages;
   switch (error._tag) {
     case "StorageError":
@@ -40,7 +42,7 @@ export const describeError = (error: AppError, messages: Catalog): UserMessage =
   }
 };
 
-export const describeDefect = (incidentId: string, messages: Catalog): UserMessage => ({
+export const describeDefect = (incidentId: string, messages: ShellCatalog): UserMessage => ({
   severity: "error",
   title: messages.defect.title,
   detail: messages.defect.detail(incidentId),
@@ -49,7 +51,7 @@ export const describeDefect = (incidentId: string, messages: Catalog): UserMessa
 
 export const describeSettingsIssues = (
   issues: readonly SettingsIssue[],
-  messages: Catalog,
+  messages: ShellCatalog,
 ): UserMessage => ({
   severity: "warning",
   title: messages.settingsReset.title,

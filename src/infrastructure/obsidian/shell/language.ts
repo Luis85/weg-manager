@@ -1,5 +1,6 @@
 import { getLanguage } from "obsidian";
-import { languageFromCode, type Language } from "../../../application/shell/i18n";
+import { languageFromCode } from "../../../application/messages";
+import type { Language } from "../../../application/shell";
 
 /**
  * The plugin's UI language from Obsidian's (`getLanguage()`, since 1.8.7): German stays German,

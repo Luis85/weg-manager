@@ -1,15 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
-  LANGUAGES,
   catalogFor,
   de,
-  describeIssue,
-  describeIssues,
   en,
-  greetingOf,
   languageFromCode,
   type Catalog,
-} from "../../../../src/application/shell/i18n";
+} from "../../../../src/application/messages";
+import { LANGUAGES } from "../../../../src/application/shell/i18n/catalog";
+import {
+  describeIssue,
+  describeIssues,
+  greetingOf,
+} from "../../../../src/application/shell/i18n/describe";
 import { DEFAULT_SETTINGS, type SettingsIssue } from "../../../../src/domain/shell/settings";
 
 /** Each leaf as `path: kind`, where a function is called with a sample to check it returns text. */
@@ -55,8 +57,8 @@ describe("catalogs", () => {
     expect(LANGUAGES).toEqual(["de", "en"]);
     expect(catalogFor("de")).toBe(de);
     expect(catalogFor("en")).toBe(en);
-    expect(de.language).toBe("de");
-    expect(en.language).toBe("en");
+    expect(de.shell.language).toBe("de");
+    expect(en.shell.language).toBe("en");
   });
 
   it("has the same keys in both languages and no empty text", () => {
@@ -67,41 +69,41 @@ describe("catalogs", () => {
   });
 
   it("words every domain issue in both languages", () => {
-    expect(ISSUES.map((issue) => describeIssue(issue, de))).toEqual([
+    expect(ISSUES.map((issue) => describeIssue(issue, de.shell))).toEqual([
       "Die Einstellungsdatei enthält keine gültigen Einstellungen.",
       "Die Einstellungen stammen aus einer neueren Plugin-Version (Schemaversion 3).",
       "Die Schemaversion muss eine positive ganze Zahl sein.",
       "Die Begrüßung muss 1 bis 200 Zeichen lang sein.",
       "Die Protokollstufe muss eine von error, warn, info, debug sein.",
     ]);
-    expect(ISSUES.map((issue) => describeIssue(issue, en))).toEqual([
+    expect(ISSUES.map((issue) => describeIssue(issue, en.shell))).toEqual([
       "The settings file contains no valid settings.",
       "The settings come from a newer plugin version (schema version 3).",
       "The schema version must be a positive whole number.",
       "The greeting must be 1 to 200 characters long.",
       "The log level must be one of error, warn, info, debug.",
     ]);
-    expect(describeIssues([], en)).toBe("");
+    expect(describeIssues([], en.shell)).toBe("");
   });
 });
 
 describe("greetingOf", () => {
   it("shows the default greeting of the UI language while it is not customised", () => {
-    expect(greetingOf(DEFAULT_SETTINGS, de)).toBe("Hallo von WEG Manager");
-    expect(greetingOf(DEFAULT_SETTINGS, en)).toBe("Hello from WEG Manager");
+    expect(greetingOf(DEFAULT_SETTINGS, de.shell)).toBe("Hallo von WEG Manager");
+    expect(greetingOf(DEFAULT_SETTINGS, en.shell)).toBe("Hello from WEG Manager");
   });
 
   it("keeps a typed greeting in every language", () => {
     const settings = { ...DEFAULT_SETTINGS, greeting: "Moin" };
-    expect(greetingOf(settings, de)).toBe("Moin");
-    expect(greetingOf(settings, en)).toBe("Moin");
+    expect(greetingOf(settings, de.shell)).toBe("Moin");
+    expect(greetingOf(settings, en.shell)).toBe("Moin");
   });
 });
 
 /** Product copy outside of messages, pinned for both languages. */
 describe("surface texts", () => {
   it("names commands, actions and the settings tab", () => {
-    expect([de.commands, de.actions]).toEqual([
+    expect([de.shell.commands, de.shell.actions]).toEqual([
       {
         openView: "Ansicht öffnen",
         showGreeting: "Begrüßung anzeigen",
@@ -113,7 +115,7 @@ describe("surface texts", () => {
         "copy-diagnostics": "Diagnose kopieren",
       },
     ]);
-    expect([en.commands, en.actions]).toEqual([
+    expect([en.shell.commands, en.shell.actions]).toEqual([
       { openView: "Open view", showGreeting: "Show greeting", copyDiagnostics: "Copy diagnostics" },
       {
         retry: "Try again",
@@ -121,7 +123,7 @@ describe("surface texts", () => {
         "copy-diagnostics": "Copy diagnostics",
       },
     ]);
-    expect(en.settingsTab).toEqual({
+    expect(en.shell.settingsTab).toEqual({
       logLevel: {
         name: "Log level",
         desc: "How much the plugin writes to the developer console.",
@@ -131,12 +133,12 @@ describe("surface texts", () => {
   });
 
   it("counts Markdown files in singular and plural", () => {
-    expect([0, 1, 2].map((count) => de.panel.markdownFiles(count))).toEqual([
+    expect([0, 1, 2].map((count) => de.shell.panel.markdownFiles(count))).toEqual([
       "0 Markdown-Dateien im Vault",
       "1 Markdown-Datei im Vault",
       "2 Markdown-Dateien im Vault",
     ]);
-    expect([0, 1, 2].map((count) => en.panel.markdownFiles(count))).toEqual([
+    expect([0, 1, 2].map((count) => en.shell.panel.markdownFiles(count))).toEqual([
       "0 Markdown files in the vault",
       "1 Markdown file in the vault",
       "2 Markdown files in the vault",
@@ -144,12 +146,17 @@ describe("surface texts", () => {
   });
 
   it("words the panel, the form, the About dialog and the copy confirmation", () => {
-    expect([de.panel.counting, de.greetingForm, de.diagnosticsCopied]).toEqual([
+    expect([de.shell.panel.counting, de.shell.greetingForm, de.shell.diagnosticsCopied]).toEqual([
       "Zähle Notizen …",
       { label: "Begrüßung", save: "Speichern" },
       { title: "Diagnose kopiert", detail: "Füge den Bericht in deine Support-Anfrage ein." },
     ]);
-    expect([en.panel.counting, en.greetingForm, en.diagnosticsCopied, en.about]).toEqual([
+    expect([
+      en.shell.panel.counting,
+      en.shell.greetingForm,
+      en.shell.diagnosticsCopied,
+      en.shell.about,
+    ]).toEqual([
       "Counting notes…",
       { label: "Greeting", save: "Save" },
       { title: "Diagnostics copied", detail: "Paste the report into your support request." },

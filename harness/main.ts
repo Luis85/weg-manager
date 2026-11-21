@@ -1,6 +1,6 @@
 import { ManagedRuntime } from "effect";
-import { languageFromCode } from "../src/application/shell/i18n";
-import type { UserMessage } from "../src/application/shell/user-messages";
+import { languageFromCode } from "../src/application/messages";
+import type { UserMessage } from "../src/application/shell";
 import { mountSurface } from "../src/presentation/shell/mount";
 import "../src/styles/app.css";
 import "./fake-host.css";

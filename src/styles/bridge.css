@@ -28,6 +28,13 @@
   --ui-success: var(--wm-success);
   --ui-warning: var(--wm-warning);
   --ui-radius: var(--wm-radius);
+  /* Chart roles: Obsidian's accent colours instead of Nuxt UI's literal fallbacks. */
+  --ui-chart-1: var(--wm-accent);
+  --ui-chart-2: var(--color-blue);
+  --ui-chart-3: var(--color-purple);
+  --ui-chart-4: var(--color-orange);
+  --ui-chart-5: var(--color-red);
+  --ui-chart-6: var(--color-cyan);
   font-family: var(--wm-font);
   color: var(--wm-text);
 }
@@ -38,12 +45,16 @@
   z-index: var(--layer-modal, 50);
 }
 
-/* Minimal owned reset (instead of Tailwind preflight). */
+/*
+ * Minimal owned reset (instead of Tailwind preflight). Tailwind's ring offset defaults to literal
+ * white; it follows the host background instead.
+ */
 *,
 ::before,
 ::after {
   box-sizing: border-box;
   border: 0 solid;
+  --wm-tw-ring-offset-color: var(--wm-bg);
 }
 
 button,

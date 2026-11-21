@@ -32,7 +32,8 @@
     "release:package": "node scripts/package-release.mjs",
     "prepare": "node scripts/install-hooks.mjs",
     "build:probe": "vite build --config configs/vite.probe.config.ts",
-    "test:e2e": "npm run build && npm run build:probe && wdio run tests/e2e/wdio.conf.mts"
+    "vault:reference": "node scripts/reference-vault.mjs tests/e2e/vaults/reference",
+    "test:e2e": "npm run build && npm run build:probe && npm run vault:reference && wdio run tests/e2e/wdio.conf.mts"
   },
   "dependencies": {
     "@nuxt/ui": "4.13.0",

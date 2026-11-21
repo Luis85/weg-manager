@@ -13,8 +13,8 @@ import { parseYaml, stringifyYaml } from "./yaml";
  * - `renameFile` refuses a taken path (`Destination file already exists!`) and a missing folder
  *   (ENOENT), keeps the `TFile` object and fires `rename` with the old path. Link updates in other
  *   notes are not modelled, and folders cannot be renamed here.
- * - `trashFile` fires, for each file, the metadata cache's `deleted` and then the vault's `delete`,
- *   the folder's own `delete` last. Which trash the user chose makes no difference to that. It
+ * - `trashFile` fires, for each file, the metadata cache's `deleted`, the vault's `delete` and then
+ *   the metadata cache's `resolved` (measured for one file), the folder's own `delete` last. Which trash the user chose makes no difference to that. It
  *   resolves with `true`, although the d.ts says `Promise<void>`.
  */
 export class FileManager {
@@ -51,6 +51,7 @@ export class FileManager {
     for (const entry of entries) {
       if (entry instanceof TFile) this.metadataCache.forget(entry);
       this.vault.remove(entry);
+      if (entry instanceof TFile) this.metadataCache.trigger("resolved");
     }
     return true;
   }

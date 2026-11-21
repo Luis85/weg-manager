@@ -171,6 +171,21 @@ Decision record: [ADR 0004](../adr/0004-event-system.md).
 - `AppEvent` (`src/application/events.ts`) is one tagged union of plain data for host and domain events, built from the modules' event records (the shell's are in `src/application/shell/events.ts`). Switch on `_tag`.
 - `EventBus` publishes them through an unbounded PubSub: `on(tag)` gives a narrowed stream, `subscribe` subscribes at once for forked consumers.
 - `hostEventsLayer` maps Obsidian's `vault`, `metadataCache` and `workspace` events at the edge. It publishes nothing until the layout is ready, then `LayoutReady`, then file events. Folders are not published.
+- `VaultReady` means: the metadata cache holds the frontmatter of every Markdown file the vault has at this moment, so records read now are complete. It is published once per plugin load, always after `LayoutReady`:
+
+  | Situation | Obsidian (measured on the F-21 reference vault) | `VaultReady` |
+  | --- | --- | --- |
+  | Cold start (a vault Obsidian has never indexed) | The layout is ready after about 0.25 s, with 1 of 2,200 notes cached. Obsidian then indexes one note after the other (about 2 s more in this container) and fires `changed`, `resolve` and `resolved` for each. `resolved` fires about 2,150 times, the first one before the layout is ready. | on the `resolved` after the last note is indexed |
+  | Warm restart (same vault, cache built) | Every note is cached when the layout is ready. No `changed`; `resolve` for every note and one `resolved` about 25 ms later. | right after `LayoutReady` |
+  | Plugin enabled in a running app | Layout ready and cache complete; Obsidian fires nothing. | right after `LayoutReady` |
+
+- **The signal.** `resolved` alone is not one: on a cold start it fires while most notes still wait, and in a running app it never comes. Obsidian has no public "resolved" state either. So the adapter asks the cache itself through the public API (`cacheCompleteness`, `src/infrastructure/obsidian/shell/cache-completeness.ts`): every Markdown file of `vault.getMarkdownFiles()` has a `metadataCache.getFileCache(file)` entry. It checks when the layout is ready and on every `resolved`, which Obsidian fires after every file it indexes and after a delete. A check costs a few lookups, not a scan: it remembers the files still waiting and goes on from the first one. A file deleted meanwhile no longer counts; a file created meanwhile is found by one last scan.
+- **Using it.** A consumer that builds state from the vault (the index of ADR 0007) subscribes while the runtime is built, so it sees both edges, and follows one rule:
+  1. It builds its state from a read at `VaultReady`, not at `LayoutReady`.
+  2. It drops every event it received before `VaultReady`. The adapter publishes in Obsidian's order and `VaultReady` last, so the read already holds their effect. On a cold start that is one `MetadataChanged` per Markdown file.
+  3. It applies every event after `VaultReady` as an idempotent update keyed by path that reads the note's current state: `FileCreated` and `MetadataChanged` read the note and replace its entry, `FileDeleted` removes the entry, `FileRenamed` removes the old path and reads the new one. Never a delta such as a counter, because an event published between `VaultReady` and the read is both in the read and in the stream.
+- Files are counted, not read, after `LayoutReady` (the file list is complete then); frontmatter is read after `VaultReady`.
+- **Limits.** A Markdown file that Obsidian never indexes would hold `VaultReady` back; none was seen. Not measured: a note edited while Obsidian was closed may hold its old metadata at a warm `VaultReady`; when Obsidian re-indexes it, `MetadataChanged` brings the new state (rule 3).
 - Its listeners and the PubSub belong to the runtime: `runtime.dispose()` removes every listener with `offref` and ends every stream, also after a failed or aborted bootstrap.
 - Each listener is also passed to `plugin.registerEvent`, so Obsidian detaches it synchronously in `unload()`, before the asynchronous dispose has finished. Obsidian's `offref` removes a ref by identity and ignores one that is gone, so the second release does nothing.
 

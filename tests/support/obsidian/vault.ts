@@ -101,6 +101,8 @@ export class Vault extends Events {
   readonly root = new TFolder("/");
   /** Double-internal: the metadata cache indexes each file whose text changed. */
   indexer: (file: TFile) => void = () => undefined;
+  /** Double-internal: the metadata cache holds a file's metadata at once, as after a warm start. */
+  indexedAtStartup: (file: TFile) => void = () => undefined;
   private readonly entries = new Map<string, TAbstractFile>();
   private readonly texts = new Map<TFile, string>();
   private readonly writes = gate();
@@ -182,7 +184,10 @@ export class Vault extends Events {
     return next;
   }
 
-  /** Test helper: `count` empty notes at the vault root, as if they were there at startup. */
+  /**
+   * Test helper: `count` empty notes at the vault root, as if they were there at startup: indexed,
+   * without events.
+   */
   setMarkdownFileCount(count: number): void {
     for (const file of this.getFiles()) {
       this.unlink(file);
@@ -192,6 +197,7 @@ export class Vault extends Events {
       const file = new TFile(`note-${index}.md`);
       this.link(file);
       this.texts.set(file, "");
+      this.indexedAtStartup(file);
     }
   }
 

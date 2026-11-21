@@ -24,6 +24,14 @@ export type ShellEvents = {
   MetadataChanged: { readonly path: string; readonly extension: string };
   /** The workspace layout is ready. Published once per plugin load, before any other host event. */
   LayoutReady: Record<never, never>;
+  /**
+   * The metadata cache holds the frontmatter of every Markdown file the vault has at this moment,
+   * so records read now are complete. Published once per plugin load, after `LayoutReady`: with it
+   * after a warm restart or when the plugin is enabled in a running app, later on a cold start,
+   * once Obsidian has indexed every file. Events published before it are already part of what a
+   * read now returns; see docs/engineering/architecture.md (Events) for how a consumer uses it.
+   */
+  VaultReady: Record<never, never>;
   /** The file shown in the active editor changed; `null` when no file is open there. */
   ActiveFileChanged: { readonly path: string | null };
   ColorSchemeChanged: { readonly scheme: "light" | "dark" };

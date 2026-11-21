@@ -9,6 +9,7 @@ import {
   type Messages,
   type Notifier,
 } from "../../../application/shell";
+import { cacheCompleteness } from "./cache-completeness";
 
 type ColorScheme = "light" | "dark";
 
@@ -27,6 +28,10 @@ const pathAndExtension = (file: TFile) => ({ path: file.path, extension: file.ex
  *
  * - Host events are held back until the layout is ready (Obsidian fires `create` for every
  *   existing file while it starts); then `LayoutReady` is published first.
+ * - `VaultReady` follows once the metadata cache holds every Markdown file (`cacheCompleteness`),
+ *   checked when the layout is ready and on every `resolved` (which also follows a delete), and is
+ *   published once. After a warm restart and in a running app it comes right after `LayoutReady`;
+ *   on a cold start with the `resolved` after the last file Obsidian indexes.
  * - Every listener is also handed to `plugin.registerEvent`, so Obsidian detaches it synchronously
  *   in `unload()`, before the runtime's asynchronous dispose has finished.
  * - Every listener is removed with `offref` when the runtime's scope closes, so a bootstrap that
@@ -43,8 +48,10 @@ export const hostEventsLayer = (plugin: Plugin) =>
       const context = yield* Effect.context<Logger | Incidents | Notifier | Messages>();
       const { vault, metadataCache, workspace } = plugin.app;
       let ready = false;
+      let vaultReady = false;
       let active = true;
       let scheme = currentScheme();
+      const complete = cacheCompleteness(vault, metadataCache);
 
       const publish = (build: () => AppEvent | undefined): void => {
         const program = Effect.suspend(() => {
@@ -65,6 +72,14 @@ export const hostEventsLayer = (plugin: Plugin) =>
         (...args: Args): void => {
           if (ready) publish(() => build(...args));
         };
+      const readiness = (): AppEvent | undefined => {
+        if (vaultReady || !complete()) return undefined;
+        vaultReady = true;
+        return AppEvent.VaultReady();
+      };
+      const checkReadiness = (): void => {
+        if (ready && !vaultReady) publish(readiness);
+      };
       const schemeChange = (): AppEvent | undefined => {
         const next = currentScheme();
         if (next === scheme) return undefined;
@@ -113,6 +128,7 @@ export const hostEventsLayer = (plugin: Plugin) =>
               whenReady((file: TFile) => AppEvent.MetadataChanged(pathAndExtension(file))),
             ),
           ],
+          [metadataCache, metadataCache.on("resolved", checkReadiness)],
           [
             workspace,
             workspace.on(
@@ -149,6 +165,7 @@ export const hostEventsLayer = (plugin: Plugin) =>
         if (!active) return;
         ready = true;
         publish(() => AppEvent.LayoutReady());
+        checkReadiness();
       });
     }),
   );

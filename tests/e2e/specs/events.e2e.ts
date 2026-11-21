@@ -18,7 +18,7 @@ const handlerCounts = (): Promise<Counts> =>
     };
     return {
       vault: count(app.vault, ["create", "modify", "delete", "rename"]),
-      metadataCache: count(app.metadataCache, ["changed"]),
+      metadataCache: count(app.metadataCache, ["changed", "resolved"]),
       workspace: count(app.workspace, ["file-open", "css-change"]),
     };
   });
@@ -35,7 +35,7 @@ const difference = (more: Counts, less: Counts): Counts => {
 
 const ONE_EACH: Counts = {
   vault: { create: 1, modify: 1, delete: 1, rename: 1 },
-  metadataCache: { changed: 1 },
+  metadataCache: { changed: 1, resolved: 1 },
   workspace: { "file-open": 1, "css-change": 1 },
 };
 

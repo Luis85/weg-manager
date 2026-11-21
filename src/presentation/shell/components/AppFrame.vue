@@ -7,15 +7,17 @@ import { useMessages } from "../runtime/use-runtime";
  * The app frame of one surface (ADR 0008): the view's back and forward controls, the context area
  * (the `context` slot) and the navigation, and the route outlet (the default slot). It follows the width of its container,
  * not the window, because an Obsidian pane can be narrow on a wide screen (handoff 07): from
- * 860 px the navigation is a sidebar, below it a row above the content.
+ * 860 px the navigation is a sidebar, below it a row above the content. The current page has a bar
+ * on its start edge besides its colour. The frame states the UI language (`lang`), so the browser
+ * hyphenates and reads its texts in it.
  */
 defineProps<{ entries: readonly FrameEntry[]; history: ViewHistory }>();
 
-const { frame } = useMessages().shell;
+const { frame, language } = useMessages().shell;
 </script>
 
 <template>
-  <div class="wm:@container wm:h-full" data-testid="app-frame">
+  <div class="wm:@container wm:h-full" :lang="language" data-testid="app-frame">
     <div class="wm:flex wm:h-full wm:flex-col wm:@min-[860px]:flex-row">
       <nav
         :aria-label="frame.navigation"
@@ -43,7 +45,7 @@ const { frame } = useMessages().shell;
             @click="history.forward()"
           />
         </div>
-        <div v-if="$slots.context" data-testid="frame-context">
+        <div v-if="$slots.context" class="wm:min-w-0" data-testid="frame-context">
           <slot name="context" />
         </div>
         <ul class="wm:flex wm:flex-row wm:flex-wrap wm:gap-1 wm:@min-[860px]:flex-col">
@@ -58,7 +60,7 @@ const { frame } = useMessages().shell;
               active-variant="soft"
               :active="entry.current"
               :aria-current="entry.current ? 'page' : undefined"
-              class="wm:w-full"
+              :class="['wm:w-full', entry.current && 'wm:shadow-[inset_3px_0_0_currentColor]']"
               @click="entry.select()"
             />
           </li>

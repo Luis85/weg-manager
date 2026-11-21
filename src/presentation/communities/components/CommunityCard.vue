@@ -12,7 +12,8 @@ import CommunityBadge from "./CommunityBadge.vue";
 
 /**
  * One community in the list (VIEW-07): badge, name, kind and unit label, and its issues as text. An
- * editable note offers edit and delete; a read-only one says so and offers nothing.
+ * editable note offers edit and delete; a read-only one says so and offers nothing. A long name
+ * wraps, hyphenated in the frame's language, and breaks inside a word only when nothing else fits.
  */
 const props = defineProps<{ community: Community }>();
 const emit = defineEmits<{ edit: []; remove: [] }>();
@@ -38,8 +39,17 @@ const issues = computed(() =>
   >
     <CommunityBadge :short-code="community.values.short_code" :color="community.values.color" />
     <div class="wm:flex wm:min-w-40 wm:flex-1 wm:flex-col wm:gap-1">
-      <h3 class="wm:text-base wm:font-semibold" data-testid="community-name">{{ name }}</h3>
-      <p v-if="summary" class="wm:text-sm wm:text-muted" data-testid="community-summary">
+      <h3
+        class="wm:text-base wm:font-semibold wm:wrap-break-word wm:hyphens-auto"
+        data-testid="community-name"
+      >
+        {{ name }}
+      </h3>
+      <p
+        v-if="summary"
+        class="wm:text-sm wm:text-muted wm:wrap-break-word wm:hyphens-auto"
+        data-testid="community-summary"
+      >
         {{ summary }}
       </p>
       <p

@@ -1,6 +1,5 @@
 import { Context, Effect, Equal, Layer, Semaphore, Stream, SubscriptionRef } from "effect";
 import { communityType, selectedCommunity, type CommunityFields } from "../../domain/communities";
-import { parseRecordId } from "../../domain/notes";
 import { NoteIndex, type NoteSnapshot } from "../notes";
 import { DeviceStore } from "../shell";
 
@@ -31,24 +30,17 @@ export class CommunitySelectionService extends Context.Service<
   }
 >()("weg-manager/application/CommunitySelectionService") {}
 
-/** A stored value is used only if it is a community id: an older version may have written it. */
-const storedId = (value: unknown): string | undefined =>
-  parseRecordId(value)?.type === communityType.type ? (value as string) : undefined;
-
 /** The ids that can be selected: each community's id once, a duplicated one included. */
 const selectable = (snapshot: NoteSnapshot<CommunityFields>): string[] => [
   ...new Set(snapshot.notes.flatMap((note) => (note.id === undefined ? [] : [note.id]))),
 ];
 
 /** The selection the rule gives for the stored choice and the index's communities. */
-const derive = (
-  stored: string | undefined,
-  snapshot: NoteSnapshot<CommunityFields>,
-): CommunitySelection => {
+const derive = (stored: unknown, snapshot: NoteSnapshot<CommunityFields>): CommunitySelection => {
   if (!snapshot.ready) return { ready: false, id: undefined, choiceNeeded: false };
   const ids = selectable(snapshot);
   const id = selectedCommunity(stored, ids);
-  return { ready: true, id, choiceNeeded: id === undefined && ids.length > 1 };
+  return { ready: true, id, choiceNeeded: id === undefined && ids.length > 0 };
 };
 
 /**
@@ -63,7 +55,8 @@ export const communitySelectionLayer = Layer.effect(
   Effect.gen(function* () {
     const index = yield* NoteIndex;
     const device = yield* DeviceStore;
-    let stored = storedId(yield* device.read(SELECTION_KEY));
+    /** As the device store holds it; the rule uses it only if it is a current community's id. */
+    let stored: unknown = yield* device.read(SELECTION_KEY);
     let latest = yield* index.snapshot(communityType);
     const ref = yield* SubscriptionRef.make(derive(stored, latest));
     const lock = yield* Semaphore.make(1);

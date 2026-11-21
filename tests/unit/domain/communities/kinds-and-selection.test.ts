@@ -34,6 +34,7 @@ describe("kindSuggestions", () => {
         { unit_label: "Wohnungen" },
         { kind: " ", unit_label: "Wohnungen" },
         { kind: "Haus", unit_label: "" },
+        { kind: "Haus", unit_label: "  " },
       ]),
     ).toEqual(BUILT_IN);
   });
@@ -56,6 +57,8 @@ describe("selectedCommunity: the selection rule", () => {
   it("selects none of two or more when nothing usable is stored", () => {
     expect(selectedCommunity(undefined, [A, B])).toBeUndefined();
     expect(selectedCommunity("community-gone", [A, B])).toBeUndefined();
+    expect(selectedCommunity({ id: A }, [A, B])).toBeUndefined();
+    expect(selectedCommunity(3, [A])).toBe(A);
   });
 
   it("selects none when there is no community", () => {

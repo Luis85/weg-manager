@@ -185,4 +185,52 @@ describe("the community selection", () => {
       assert.isUndefined(yield* storedSelection);
     }).pipe(Effect.provide(fixture.layer));
   });
+
+  it.effect("leaves out a note without an id", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      seed(fixture, 1);
+      fixture.memory.seed(`${FOLDER}/Ohne id.md`, communityNote(2, { id: undefined }));
+      yield* ready;
+      yield* settle;
+      assert.deepStrictEqual(yield* communitySelection, selection(communityId(1)));
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("publishes nothing and writes nothing when a change keeps the selection", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      seed(fixture, 1);
+      yield* ready;
+      yield* settle;
+      const seen: CommunitySelection[] = [];
+      yield* Effect.forkChild(
+        Stream.runForEach(communitySelectionChanges, (next) =>
+          Effect.sync(() => {
+            seen.push(next);
+          }),
+        ),
+      );
+      yield* settle;
+      fixture.memory.seed(`${FOLDER}/G1.md`, communityNote(1, { name: "Umbenannt" }));
+      yield* indexed;
+      assert.deepStrictEqual(seen, [selection(communityId(1))]);
+      assert.strictEqual(fixture.deviceWrites(), 1);
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("selects by the rule but stores nothing while a read failed", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      seed(fixture, 2);
+      yield* ready;
+      yield* settle;
+      fixture.setFailUnreadable(true);
+      yield* NoteStore.use((store) => store.trash(`${FOLDER}/G2.md`));
+      fixture.memory.seed(`${FOLDER}/Ohne Eigenschaften.md`, "none");
+      yield* indexed;
+      assert.deepStrictEqual(yield* communitySelection, selection(communityId(1)));
+      assert.isUndefined(yield* storedSelection);
+    }).pipe(Effect.provide(fixture.layer));
+  });
 });

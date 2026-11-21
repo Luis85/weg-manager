@@ -38,13 +38,16 @@ export type OtherCommunity = {
 };
 
 export type CommunityRuleContext = {
-  /** Every other community; the one being edited is not among them. */
+  /**
+   * The communities to compare with. The one being edited may be among them: its loaded values
+   * are never checked (`loaded`).
+   */
   readonly others: readonly OtherCommunity[];
   /**
    * The values the edited community had when the form loaded it. A value kept as it was is not
    * checked against the others, so a duplicate made outside the plugin does not block a save.
    */
-  readonly loaded?: OtherCommunity;
+  readonly loaded?: OtherCommunity | undefined;
 };
 
 /** The short code as stored: what the user typed, trimmed and upper-case. */
@@ -88,9 +91,7 @@ const taken = (
   value: string | undefined,
   context: CommunityRuleContext,
 ): boolean =>
-  value !== undefined &&
-  value !== context.loaded?.[key] &&
-  context.others.some((other) => other[key] === value);
+  value !== context.loaded?.[key] && context.others.some((other) => other[key] === value);
 
 /**
  * The rules a community must meet to be saved (PBI-56): the field rules of the note type, a short

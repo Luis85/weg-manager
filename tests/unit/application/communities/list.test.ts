@@ -130,9 +130,10 @@ const community = (extra: Record<string, unknown>, others: Record<string, unknow
   }).communities[0];
 
 describe("canChangeShortCode", () => {
-  it("is false for a valid, unique short code", () => {
-    const valid = community({});
-    assert.isFalse(valid !== undefined && canChangeShortCode(valid));
+  it("is false for a valid, unique short code, also beside another field's issue", () => {
+    for (const found of [community({}), community({ color: "amber" })]) {
+      assert.isFalse(found !== undefined && canChangeShortCode(found));
+    }
   });
 
   it("is true for a missing, broken or duplicate short code", () => {
@@ -199,8 +200,9 @@ describe("shownName", () => {
       notes: [
         decoded("x/Datei A.md", communityNote(1, { name: "Ahornweg" })),
         decoded("x/Datei B.md", communityNote(2, { name: 3 })),
+        decoded("x/Notes.md über C.md", communityNote(3, { name: 4 })),
       ],
     });
-    assert.deepStrictEqual(communities.map(shownName), ["Ahornweg", "Datei B"]);
+    assert.deepStrictEqual(communities.map(shownName), ["Ahornweg", "Datei B", "Notes.md über C"]);
   });
 });

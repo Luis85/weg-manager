@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import {
   InvalidCommunityError,
   canChangeShortCode,
@@ -13,6 +13,7 @@ import {
   NoteStore,
   NoteWriteRefusedError,
 } from "../../../../src/application/notes";
+import { NoteWriteError } from "../../../../src/application/notes/errors";
 import type { CommunityInput } from "../../../../src/domain/communities";
 import {
   FOLDER,
@@ -221,10 +222,55 @@ describe("updateCommunity", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
-  it.effect("finds a note renamed meanwhile by its id", () => {
+  it.effect("tries up to the hundredth name", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {
       const community = yield* loaded(fixture);
+      for (let n = 1; n <= 99; n += 1) {
+        fixture.memory.seed(`${FOLDER}/${n === 1 ? "Neu" : `Neu (${n})`}.md`, "none");
+      }
+      const note = yield* updateCommunity(community, inputOf(community, { name: "Neu" }));
+      assert.strictEqual(note.path, `${FOLDER}/Neu (100).md`);
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("stops trying names when the rename fails for another reason", () => {
+    const fixture = communitiesFixture();
+    let renames = 0;
+    const failing = Layer.effect(
+      NoteStore,
+      NoteStore.useSync((store) =>
+        NoteStore.of({
+          ...store,
+          rename: () =>
+            Effect.suspend(() => {
+              renames += 1;
+              return Effect.fail(new NoteWriteError({ cause: new Error("disk") }));
+            }),
+        }),
+      ),
+    );
+    return Effect.gen(function* () {
+      const community = yield* loaded(fixture);
+      const note = yield* updateCommunity(community, inputOf(community, { name: "Neu" })).pipe(
+        Effect.provide(failing),
+      );
+      assert.strictEqual(note.path, PATH);
+      assert.strictEqual(renames, 1);
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("finds a note renamed meanwhile by its id", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      fixture.memory.seed(PATH, communityNote(1), BODY);
+      fixture.memory.seed(
+        `${FOLDER}/Andere.md`,
+        communityNote(2, { name: "Andere", color: "blue" }),
+      );
+      yield* ready;
+      const community = (yield* communityList).communities[1];
+      if (community === undefined) throw new Error("no community");
       yield* NoteStore.use((store) => store.rename(PATH, "Eigener Name"));
       yield* indexed;
       const note = yield* updateCommunity(community, inputOf(community, { kind: "Haus" }));

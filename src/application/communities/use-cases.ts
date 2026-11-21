@@ -19,7 +19,7 @@ import {
 } from "../notes";
 import { Logger, SettingsService } from "../shell";
 import { InvalidCommunityError } from "./errors";
-import { canChangeShortCode, toCommunityList, type Community } from "./list";
+import { canChangeShortCode, fileNameOf, toCommunityList, type Community } from "./list";
 
 /**
  * The folder below the root folder where new community notes go. Part of the file contract, so it
@@ -36,9 +36,11 @@ export const communityList = Effect.map(noteSnapshot(communityType), toCommunity
 /** The communities: the current list first, then each change. */
 export const communityListChanges = Stream.map(noteChanges(communityType), toCommunityList);
 
-/** The other communities' valid values: what the uniqueness rules compare with. */
-const othersThan = (communities: readonly Community[], id: string | undefined) =>
-  communities.filter((community) => id === undefined || community.id !== id).map((c) => c.values);
+/**
+ * Every community's valid values: what the uniqueness rules compare with. The edited community is
+ * among them; the rules never check its loaded values against anything.
+ */
+const valuesOf = (communities: readonly Community[]) => communities.map((c) => c.values);
 
 /** The values to save, or the issues why not. Every field is set once the rules pass. */
 const checked = (
@@ -59,7 +61,7 @@ const checked = (
 export const createCommunity = (input: CommunityInput) =>
   Effect.gen(function* () {
     const { communities } = yield* communityList;
-    const values = yield* checked(input, { others: othersThan(communities, undefined) });
+    const values = yield* checked(input, { others: valuesOf(communities) });
     const { rootFolder } = yield* (yield* SettingsService).current;
     const frontmatter = yield* newRecordFrontmatter(communityType, values);
     return yield* (yield* NoteStore).create({
@@ -77,9 +79,6 @@ const pathOf = (community: Community) =>
     );
     return found?.path ?? community.path;
   });
-
-const fileNameOf = (path: string): string =>
-  path.slice(path.lastIndexOf("/") + 1).replace(/\.md$/, "");
 
 /**
  * Gives the file the community's new name, when the name changed and the file still carries the
@@ -119,7 +118,7 @@ export const updateCommunity = (community: Community, input: CommunityInput) =>
       ? input
       : { ...input, short_code: loaded.short_code ?? input.short_code };
     const values = yield* checked(fixed, {
-      others: othersThan(communities, community.id),
+      others: valuesOf(communities),
       loaded,
     });
     const path = yield* pathOf(community);

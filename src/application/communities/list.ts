@@ -32,7 +32,8 @@ export type CommunityList = IndexStatus & { readonly communities: readonly Commu
 
 const DUPLICATE = { key: "short_code", code: "short-code.duplicate" } as const;
 
-const fileNameOf = (path: string): string =>
+/** The file name of a note's path, without folder and `.md`. */
+export const fileNameOf = (path: string): string =>
   path.slice(path.lastIndexOf("/") + 1).replace(/\.md$/, "");
 
 /** The name a list shows: the community's name, else its file name. */
@@ -47,7 +48,7 @@ export const shownName = (community: Community): string =>
 const byName: Order.Order<Community> = Order.combine(
   Order.make((a: Community, b: Community) => {
     const order = shownName(a).localeCompare(shownName(b), "de", { numeric: true });
-    return order < 0 ? -1 : order > 0 ? 1 : 0;
+    return Math.sign(order) as -1 | 0 | 1;
   }),
   Order.mapInput(Order.String, (community: Community) => community.path),
 );

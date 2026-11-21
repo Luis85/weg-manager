@@ -15,6 +15,7 @@ describe("communityFileName", () => {
     expect(communityFileName("A\\B", "AW")).toBe("A-B");
     expect(communityFileName("Haus #3 ^a [b]", "AW")).toBe("Haus -3 -a -b-");
     expect(communityFileName("A//B", "AW")).toBe("A-B");
+    expect(communityFileName("/Ahorn", "AW")).toBe("-Ahorn");
   });
 
   it("collapses white space and drops leading and trailing dots and spaces", () => {
@@ -43,6 +44,8 @@ describe("followsName: the file still carries the name the plugin gave it", () =
     expect(followsName("Ahornweg 12", "Ahornweg 12", "AW")).toBe(true);
     expect(followsName("Ahornweg 12 (2)", "Ahornweg 12", "AW")).toBe(true);
     expect(followsName("Ahornweg 12 (17)", "Ahornweg 12", "AW")).toBe(true);
+    expect(followsName("Ahornweg 12 (100)", "Ahornweg 12", "AW")).toBe(true);
+    expect(followsName("WEG (2)", "WEG (2)", "AW")).toBe(true);
     expect(followsName("Ahornweg 12-14", "Ahornweg 12/14", "AW")).toBe(true);
     expect(followsName("AW", "...", "AW")).toBe(true);
   });
@@ -58,6 +61,7 @@ describe("followsName: the file still carries the name the plugin gave it", () =
     expect(followsName("Ahornweg 12 (2a)", "Ahornweg 12", "AW")).toBe(false);
     expect(followsName("Ahornweg 12 (02)", "Ahornweg 12", "AW")).toBe(false);
     expect(followsName("Ahornweg 12 alt", "Ahornweg 12", "AW")).toBe(false);
+    expect(followsName("Ahornweg (2) 12", "Ahornweg 12", "AW")).toBe(false);
     expect(followsName("x Ahornweg 12", "Ahornweg 12", "AW")).toBe(false);
   });
 });

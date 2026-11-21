@@ -2,7 +2,7 @@ import { Duration, Effect, Layer } from "effect";
 import { TestClock } from "effect/testing";
 import { communitySelectionLayer } from "../../../src/application/communities";
 import { INDEX_BATCH_QUIET, NoteStore } from "../../../src/application/notes";
-import type { DeviceValue } from "../../../src/application/shell";
+import { DeviceStore, type DeviceValue } from "../../../src/application/shell";
 import { communityType } from "../../../src/domain/communities";
 import { sequentialIdGenerator } from "../../../src/infrastructure/memory/notes";
 import { deviceStoreInMemory } from "../../../src/infrastructure/memory/shell";
@@ -41,9 +41,24 @@ export type CommunitiesFixtureOptions = {
 export const communitiesFixture = (options: CommunitiesFixtureOptions = {}) => {
   const index = indexFixture({ types: [communityType], settings: options.settings });
   const ids = sequentialIdGenerator();
-  const services = Layer.mergeAll(index.layer, ids.layer, deviceStoreInMemory(options.device));
+  let deviceWrites = 0;
+  const device = Layer.effect(
+    DeviceStore,
+    DeviceStore.useSync((store) =>
+      DeviceStore.of({
+        ...store,
+        write: (key, value) =>
+          Effect.suspend(() => {
+            deviceWrites += 1;
+            return store.write(key, value);
+          }),
+      }),
+    ),
+  ).pipe(Layer.provide(deviceStoreInMemory(options.device)));
+  const services = Layer.mergeAll(index.layer, ids.layer, device);
   const layer = communitySelectionLayer.pipe(Layer.provideMerge(services));
-  return { ...index, layer };
+  /** How often the device store was written. */
+  return { ...index, layer, deviceWrites: () => deviceWrites };
 };
 
 /** Builds the index: `VaultReady`, then the first build. */

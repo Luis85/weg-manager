@@ -155,6 +155,22 @@ describe("deleteCommunity", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
+  it.effect("deletes a note without an id by its own path", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      fixture.memory.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", id: undefined }));
+      fixture.memory.seed(`${FOLDER}/B.md`, communityNote(2, { name: "B", id: undefined }));
+      yield* ready;
+      const [, second] = (yield* communityList).communities;
+      if (second === undefined) throw new Error("no community");
+      yield* deleteCommunity(second);
+      assert.deepStrictEqual(
+        (yield* listed).map((note) => note.path),
+        [`${FOLDER}/A.md`],
+      );
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
   it.effect("fails with NoteNotFoundError when the note is gone", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {

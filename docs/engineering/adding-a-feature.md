@@ -44,7 +44,7 @@ The walking skeleton (greeting and markdown file count) in module `shell` is the
      settings: () => import("./communities").then(({ communitiesScreens }) => communitiesScreens.settings),
      ```
 
-   - The screen reads its route with `useRoute()` and moves on with `useNavigate()`. A record that no longer exists renders `NotFoundState` from the shell's index.
+   - The screen reads its route with `useRoute()` and moves on with `useNavigate()`; the view's own history records the step, and `useHistory()` offers `back` and `forward` if a screen needs them beside the frame's controls. A record that no longer exists renders `NotFoundState` from the shell's index.
    - A command that opens the screen calls `openRoute(plugin.app.workspace, route)`.
    - Test: navigation through `mountTest` with test routes, or the app's routes through `mountApp` (`tests/support/surface.ts`); the decoder's fallbacks in `tests/unit/application/`.
 6. **Registration** (`src/bootstrap.ts`). Push an undo step for everything you register, so a failed bootstrap releases it. Test: `tests/dom/lifecycle.test.ts`.

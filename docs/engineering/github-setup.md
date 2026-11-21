@@ -6,7 +6,7 @@ The repository's CI runs on GitHub Actions (decided 2026-11-21, replacing the bl
 
 | File | Trigger | What it does |
 | --- | --- | --- |
-| `.github/workflows/ci.yml` | push to `main`, every pull request | job `verify`: `npm ci`, `npm run verify`; uploads `reports` (JUnit, Cobertura) even on failure and `plugin` (`dist/`) on success. Jobs `e2e (earliest/earliest)` and `e2e (latest/latest)`: `npm run test:e2e` in a real Obsidian under Xvfb, with Obsidian kept in the Actions cache |
+| `.github/workflows/ci.yml` | push to `main`, every pull request | job `verify`: `npm ci`, `npm run verify`; uploads `reports` (JUnit, Cobertura) even on failure and `plugin` (`dist/`) on success. Job `e2e`: `npm run test:e2e` in the latest real Obsidian under Xvfb, with Obsidian kept in the Actions cache |
 | `.github/workflows/nightly-mutation.yml` | nightly 02:17 UTC on the default branch, or by hand | `npm run test:mutation:full`; uploads `reports/mutation/` |
 | `.github/workflows/release.yml` | a pushed tag `x.y.z` (no `v`) | `npm run verify`, `npm run release:package -- --tag x.y.z`, then a GitHub release with `main.js`, `manifest.json` and `styles.css` |
 
@@ -18,7 +18,7 @@ All logic lives in npm scripts. The YAML only installs Node from `.nvmrc` and ca
 2. **Protect `main`.** *Settings → Rules → Rulesets → New branch ruleset* for `main`:
    - require a pull request before merging, with at least one approval;
    - require status checks to pass, and add **`CI / verify`** (it appears after the workflow has run once);
-   - add the two **`CI / e2e (…)`** checks too, once they have run without a flake for about two weeks; until then they report but do not block;
+   - add **`CI / e2e`** too, once they have run without a flake for about two weeks; until then they report but do not block;
    - block force pushes;
    - allow only squash merges (*Settings → General → Pull Requests*).
 3. **Prove the rule.** Open a pull request containing a planted type error (for example `const x: number = "a";` in `src/domain/settings.ts`). The `verify` check must fail and the merge button must stay blocked. Close the PR without merging.

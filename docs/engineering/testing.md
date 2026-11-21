@@ -49,10 +49,9 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 
 `npm run test:e2e` builds the plugin and runs `tests/e2e/specs/*.e2e.ts` with WebdriverIO and [`wdio-obsidian-service`](https://github.com/jesse-r-s-hines/wdio-obsidian-service) in a **real Obsidian app**. Background and alternatives: [Testing research](../design/research/Testing%20research%20-%20Obsidian%20end-to-end%20tests.md).
 
-- **Versions.** `OBSIDIAN_VERSIONS` picks app/installer pairs; the default is `earliest/earliest latest/latest`:
-  - `earliest` is `minAppVersion` (1.15.1) on the oldest installer it accepts (1.5.8, Electron 28);
-  - `latest` is the newest of both.
-  - For a quicker local run: `OBSIDIAN_VERSIONS=latest/latest npm run test:e2e` (in PowerShell, `$env:OBSIDIAN_VERSIONS="latest/latest"` first).
+- **Versions.** The suite runs the latest Obsidian app on the latest installer (`latest/latest`); CI does the same.
+  - `OBSIDIAN_VERSIONS` takes other app/installer pairs. For example, `earliest/earliest` is `minAppVersion` (1.15.1) on the oldest installer it accepts (1.5.8, Electron 28).
+  - In PowerShell, set it with `$env:OBSIDIAN_VERSIONS="earliest/earliest"` first.
 - **First run.** The first run downloads Obsidian into `.obsidian-cache/` (git-ignored, about 1.3 GB unpacked). Never commit or share it: Obsidian's terms forbid redistribution.
 - **Display.** On Linux without a display, run `xvfb-run -a npm run test:e2e`. Windows and macOS need nothing extra.
 - **Isolation.** Each spec file gets a fresh Obsidian with a copy of `tests/e2e/vaults/basic`, and `dist/` is installed as the plugin.

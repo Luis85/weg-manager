@@ -9,14 +9,11 @@ import { parseObsidianVersions } from "wdio-obsidian-service";
 const rootDir = resolve(import.meta.dirname, "../..");
 const cacheDir = resolve(rootDir, ".obsidian-cache");
 
-// earliest = manifest minAppVersion (1.15.1) on the oldest installer it accepts;
-// latest = newest app on the newest installer.
-const versions = await parseObsidianVersions(
-  env["OBSIDIAN_VERSIONS"] ?? "earliest/earliest latest/latest",
-  {
-    cacheDir,
-  },
-);
+// Latest app on the latest installer. OBSIDIAN_VERSIONS overrides it, e.g. "earliest/earliest"
+// for minAppVersion on the oldest installer it accepts.
+const versions = await parseObsidianVersions(env["OBSIDIAN_VERSIONS"] ?? "latest/latest", {
+  cacheDir,
+});
 // CI keys its download cache on this line (.github/workflows/ci.yml).
 if (env["CI"]) process.stdout.write(`obsidian-cache-key: ${JSON.stringify(versions)}\n`);
 

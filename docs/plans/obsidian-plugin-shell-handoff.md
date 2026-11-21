@@ -242,7 +242,7 @@ Decided by the owner on 2026-11-21, following [the testing research](../design/r
 
 - **`minAppVersion` is 1.15.1** (`manifest.json`, `versions.json`, the test double). The `obsidian` types stay at 1.14.4, because no 1.15.x types have been published. ADR 0001 records the exception.
 - **E2e suite.** `npm run test:e2e` runs three specs in the real Obsidian 1.15.1 app, on installers 1.5.8 and 1.15.1, using `wdio-obsidian-service` 3.5.0 and WebdriverIO 10.2.0. Details are in `docs/engineering/testing.md`.
-- **CI.** The new `e2e (earliest/earliest)` and `e2e (latest/latest)` jobs run beside `verify` and are not required yet.
+- **CI.** A new `e2e` job runs beside `verify` and is not required yet. It started as an `earliest/earliest` + `latest/latest` matrix; since 2026-11-21 it runs **`latest/latest` only** (owner's decision).
 - **Results in this container.**
   - Each planted defect was caught by its spec: a console warning, a portal outside the pop-out, a dead theme binding.
   - After filtering Chromium's benign `ResizeObserver loop` notification, 8 of 8 consecutive runs passed, each taking about 15 seconds for both versions. The one failure before that fix was that notification.

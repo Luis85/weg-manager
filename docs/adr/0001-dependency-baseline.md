@@ -76,7 +76,7 @@ The `vue-demi` postinstall script is not run (npm 11 `allowScripts`); `vue-demi`
 
 - `isDesktopOnly: true` until the plugin is verified on Obsidian mobile.
 - Prettier rather than `oxfmt` while `oxfmt` is 0.x.
-- `minAppVersion` is **1.15.1**, the current stable Obsidian app (owner's decision, 2026-11-21). The `obsidian` types package has no 1.15.x release yet, so the types stay at 1.14.4. Code may only use APIs that the 1.14.4 types declare. When 1.15.x types appear, upgrade them and re-check this rule. The end-to-end suite runs the real 1.15.1 app on the oldest installer it accepts (1.5.8) and on the latest installer (1.15.1).
+- `minAppVersion` is **1.15.1**, the current stable Obsidian app (owner's decision, 2026-11-21). The `obsidian` types package has no 1.15.x release yet, so the types stay at 1.14.4. Code may only use APIs that the 1.14.4 types declare. When 1.15.x types appear, upgrade them and re-check this rule. The end-to-end suite runs the latest Obsidian app on the latest installer only; the oldest installer that 1.15.1 accepts (1.5.8) is no longer tested in CI.
 
 ## Re-check cadence
 

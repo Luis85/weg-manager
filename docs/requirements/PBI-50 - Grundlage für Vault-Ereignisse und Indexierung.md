@@ -52,3 +52,13 @@ Es gibt nur das einmalige `markdownFileCount` (`src/application/ports.ts`, `Vaul
 ## Herkunft und Bezüge
 
 Code-Review der Plugin-Shell vom 21.11.2026. Technische Grundlage für [[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]] (Neueinlesen nach externer Änderung) und die Laufzeitgrenze aus B-NFR-11.
+
+## Kommentare
+
+- 21.11.2026: Kriterien 2 bis 6 sind umgesetzt, Kriterium 1 in allgemeinerer Form, siehe ADR 0004 (`docs/adr/0004-event-system.md`).
+  - **Event-Bus statt eigenem Port:** Statt eines eigenen Ports `VaultEvents` gibt es einen allgemeinen `EventBus` (`src/application/event-bus.ts`) mit dem typisierten Vokabular `AppEvent` (`src/application/events.ts`). Er überträgt Datei-, Metadaten- und Workspace-Ereignisse und später auch Fachereignisse.
+  - **Ereignisweitergabe nach Layout-Ready:** Die Obsidian-Anbindung (`src/infrastructure/obsidian/events.ts`) hält Ereignisse bis `LayoutReady` zurück und meldet alle Listener beim Dispose ab.
+  - **Dateianzahl folgt den Ereignissen:** Die Anzahl im Panel aktualisiert sich nach Anlegen, Löschen und Umbenennen (300 ms entprellt).
+  - **Tests:** Im Double, in der Plugin-Lebensdauer und e2e (`tests/e2e/specs/events.e2e.ts`).
+  - **Offen:** die eigentliche Indexierung. Sie gehört zum ersten Fachfeature.
+

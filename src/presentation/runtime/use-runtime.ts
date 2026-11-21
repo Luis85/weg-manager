@@ -12,6 +12,8 @@ import {
 import type { AppRuntime, AppServices } from "../../application/app-services";
 import { reportDefect } from "../../application/defects";
 import type { AppError } from "../../application/errors";
+import { EventBus } from "../../application/event-bus";
+import type { AppEvent } from "../../application/events";
 import { SettingsService, type SettingsStatus } from "../../application/settings-service";
 import { describeError, type UserMessage } from "../../application/user-messages";
 import type { Settings } from "../../domain/settings";
@@ -131,6 +133,36 @@ export const useSettings = (): Readonly<ShallowRef<Settings>> => {
     .catch(() => undefined);
   onScopeDispose(() => controller.abort());
   return settings;
+};
+
+/**
+ * Calls `handler` for every `AppEvent` from now until the component's scope ends. A throwing
+ * handler is reported as a defect and the subscription keeps running.
+ */
+export const useAppEvents = (handler: (event: AppEvent) => void): void => {
+  const runtime = useRuntime();
+  const controller = new AbortController();
+  void runtime
+    .runPromiseExit(
+      Effect.scoped(
+        EventBus.use((bus) =>
+          Effect.flatMap(bus.subscribe, (events) =>
+            Stream.runForEach(events, (event) =>
+              Effect.sync(() => {
+                try {
+                  handler(event);
+                } catch (error) {
+                  void reportVueError(runtime, error);
+                }
+              }),
+            ),
+          ),
+        ),
+      ),
+      { signal: controller.signal },
+    )
+    .catch(() => undefined);
+  onScopeDispose(() => controller.abort());
 };
 
 /** Whether settings can be written; fixed for one plugin load. */

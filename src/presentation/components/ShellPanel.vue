@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import UCard from "@nuxt/ui/components/Card.vue";
 import USkeleton from "@nuxt/ui/components/Skeleton.vue";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onScopeDispose } from "vue";
+import { changesMarkdownFiles } from "../../application/events";
 import { countMarkdownFiles } from "../../application/use-cases";
-import { useEffectAction, useSettings } from "../runtime/use-runtime";
+import { RECOUNT_DELAY_MS, debounce } from "../recount";
+import { useAppEvents, useEffectAction, useSettings } from "../runtime/use-runtime";
 import AboutDialog from "./AboutDialog.vue";
 import ErrorNotice from "./ErrorNotice.vue";
 import GreetingForm from "./GreetingForm.vue";
@@ -15,16 +17,24 @@ const { pending, value: fileCount, message: countMessage } = count;
 const recount = () => count.run();
 
 const showError = computed(() => countMessage.value !== undefined && !pending.value);
-const showCount = computed(
-  () => !showError.value && fileCount.value !== undefined && !pending.value,
-);
-/** Counting, or not yet started: the region is busy until a count or an error arrives. */
-const busy = computed(() => !showError.value && !showCount.value);
+/** A recount keeps the previous count visible; only the first count shows the skeleton. */
+const showCount = computed(() => !showError.value && fileCount.value !== undefined);
+/** No count or error yet: the skeleton stands in. */
+const waiting = computed(() => !showError.value && !showCount.value);
+/** Busy for screen readers while any count runs, including a recount. */
+const busy = computed(() => waiting.value || pending.value);
 const countLabel = computed(() =>
   fileCount.value === 1
     ? "1 Markdown-Datei im Vault"
     : `${String(fileCount.value)} Markdown-Dateien im Vault`,
 );
+
+/** Recount once a burst of vault changes adds, removes or renames Markdown files. */
+const later = debounce(recount, RECOUNT_DELAY_MS);
+useAppEvents((event) => {
+  if (changesMarkdownFiles(event)) later.trigger();
+});
+onScopeDispose(later.cancel);
 
 onMounted(recount);
 </script>
@@ -52,7 +62,7 @@ onMounted(recount);
         data-testid="file-count-region"
       >
         <p v-if="showCount" data-testid="file-count">{{ countLabel }}</p>
-        <template v-else-if="busy">
+        <template v-else-if="waiting">
           <USkeleton class="wm:h-5 wm:w-48" aria-hidden="true" data-testid="file-count-pending" />
           <span class="wm:sr-only">Zähle Notizen …</span>
         </template>

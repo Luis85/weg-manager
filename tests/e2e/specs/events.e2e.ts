@@ -1,7 +1,7 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
 import { obsidianPage } from "wdio-obsidian-service";
-import { PLUGIN_ID, installConsoleSpy, pluginProblems } from "../support";
+import { PLUGIN_ID, ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
 
 type Counts = Record<"vault" | "metadataCache" | "workspace", Record<string, number>>;
 
@@ -66,6 +66,26 @@ describe("host events in Obsidian", function () {
     });
     // Let the metadata cache and the event bus settle before reading the console.
     await browser.pause(500);
+    expect(await pluginProblems()).toEqual([]);
+  });
+
+  it("updates the open view's file count when notes come and go", async function () {
+    await openView();
+    const count = browser.$(ROOT).$("[data-testid=file-count]");
+    await expect(count).toHaveText("3 Markdown-Dateien im Vault");
+    await browser.executeObsidian(async ({ app }) => {
+      await app.vault.create("Neu.md", "# Neu\n");
+    });
+    await expect(count).toHaveText("4 Markdown-Dateien im Vault");
+    await browser.executeObsidian(async ({ app }) => {
+      const file = app.vault.getFileByPath("Neu.md");
+      if (file) await app.fileManager.renameFile(file, "Neu.txt");
+    });
+    await expect(count).toHaveText("3 Markdown-Dateien im Vault");
+    await browser.executeObsidian(async ({ app }) => {
+      const file = app.vault.getFileByPath("Neu.txt");
+      if (file) await app.vault.delete(file);
+    });
     expect(await pluginProblems()).toEqual([]);
   });
 });

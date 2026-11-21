@@ -2,15 +2,13 @@ import { Effect, Layer, Result } from "effect";
 import { normalizePath, stringifyYaml, type App, type Plugin, type TFile } from "obsidian";
 import {
   NoteNotFoundError,
-  NotePathTakenError,
   NoteStore,
   NoteUnreadableError,
   applyPatch,
-  checkNoteName,
   copyFrontmatter,
   createNote,
   recordNotes,
-  renamedNotePath,
+  planRename,
   writeCommand,
   type FrontmatterChange,
   type NewNote,
@@ -39,7 +37,11 @@ const noteText = (frontmatter: Readonly<Record<string, unknown>>, body: string):
 const obsidianNoteStore = (app: App): NoteStore["Service"] => {
   const { vault, metadataCache, fileManager } = app;
 
-  const taken = (path: string) => vault.getAbstractFileByPath(path) !== null;
+  /** Obsidian's lookups are case-sensitive (d.ts), so clashes are found among the children. */
+  const siblingsOf = (folder: string) =>
+    (folder === "/" ? vault.getRoot() : vault.getFolderByPath(folder))?.children.map(
+      (child) => child.path,
+    ) ?? [];
 
   const frontmatterOf = (file: TFile) =>
     copyFrontmatter(metadataCache.getFileCache(file)?.frontmatter);
@@ -53,7 +55,7 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
     });
 
   const create = (note: NewNote) =>
-    createNote(note, normalizePath, taken, async ({ folder, path, frontmatter }, body) => {
+    createNote(note, normalizePath, siblingsOf, async ({ folder, path, frontmatter }, body) => {
       if (folder !== "/" && vault.getFolderByPath(folder) === null) {
         await vault.createFolder(folder);
       }
@@ -100,10 +102,8 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
   const rename = (path: string, newName: string) =>
     Effect.gen(function* () {
       const file = yield* find(path);
-      yield* checkNoteName(newName);
-      const target = renamedNotePath(file.path, newName, normalizePath);
+      const target = yield* planRename(file.path, newName, normalizePath, siblingsOf);
       if (target === file.path) return { path: target, frontmatter: frontmatterOf(file) };
-      if (taken(target)) return yield* new NotePathTakenError();
       return yield* writeCommand(async () => {
         await fileManager.renameFile(file, target);
         return Result.succeed<Note>({ path: file.path, frontmatter: frontmatterOf(file) });

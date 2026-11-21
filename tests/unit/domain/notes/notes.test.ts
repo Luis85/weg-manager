@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   RECORD_SCHEMA_PREFIX,
+  clashKey,
   clashName,
   isRecordFrontmatter,
   noteNameIssue,
@@ -51,5 +52,22 @@ describe("clashName", () => {
     expect(clashName("Ahornweg", 1)).toBe("Ahornweg");
     expect(clashName("Ahornweg", 2)).toBe("Ahornweg (2)");
     expect(clashName("Ahornweg", 10)).toBe("Ahornweg (10)");
+  });
+});
+
+describe("clashKey", () => {
+  it("is the same for names that differ only in case", () => {
+    expect(clashKey("WEG Manager/Ahornweg.md")).toBe(clashKey("weg manager/AHORNWEG.MD"));
+    expect(clashKey("Ahornweg.md")).toBe("ahornweg.md");
+  });
+
+  it("is the same for the composed and the decomposed form of an umlaut", () => {
+    expect(clashKey("Mu\u0308ller")).toBe(clashKey("M\u00FCller"));
+    expect(clashKey("M\u00DCLLER")).toBe("m\u00FCller");
+  });
+
+  it("keeps names apart that differ in more than case and form", () => {
+    expect(clashKey("Muller")).not.toBe(clashKey("M\u00FCller"));
+    expect(clashKey("Ahornweg (2)")).not.toBe(clashKey("Ahornweg"));
   });
 });

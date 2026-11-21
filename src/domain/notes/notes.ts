@@ -36,3 +36,11 @@ export const noteNameIssue = (name: string): NoteNameIssue | undefined => {
 /** The name for the `attempt`-th try when names clash: `Name`, `Name (2)`, `Name (3)`, … */
 export const clashName = (name: string, attempt: number): string =>
   attempt === 1 ? name : `${name} (${attempt})`;
+
+/**
+ * What two file names have to share to clash: Windows and macOS, the product's platforms, ignore
+ * case, and macOS stores umlauts decomposed (NFD) where the others compose them (NFC). Names with
+ * the same key are one file there, or two files a sync cannot keep apart. `toLowerCase` uses
+ * Unicode's default case mapping, so the key is the same in every locale.
+ */
+export const clashKey = (name: string): string => name.normalize("NFC").toLowerCase();

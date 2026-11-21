@@ -62,7 +62,7 @@ describe("createNote", () => {
       const note = yield* createNote(
         { folder: "/F/", name: "A", frontmatter, body: "# A\n" },
         normalize,
-        (path) => path === "F/A.md",
+        (folder) => (folder === "F" ? ["F/a.md"] : []),
         (plan, body) => {
           writes.push([plan, body]);
           return Promise.resolve();
@@ -83,7 +83,7 @@ describe("createNote", () => {
       yield* createNote(
         { folder: "", name: "A", frontmatter: {} },
         normalize,
-        () => false,
+        () => [],
         (_, body) => {
           bodies.push(body);
           return Promise.resolve();
@@ -103,11 +103,11 @@ describe("createNote", () => {
           return Promise.reject(new Error("EACCES"));
         };
         const invalid = yield* Effect.flip(
-          createNote({ folder: "", name: ".x", frontmatter: {} }, normalize, () => false, write),
+          createNote({ folder: "", name: ".x", frontmatter: {} }, normalize, () => [], write),
         );
         assert.deepStrictEqual([invalid._tag, calls], ["InvalidNoteNameError", 0]);
         const failed = yield* Effect.flip(
-          createNote({ folder: "", name: "x", frontmatter: {} }, normalize, () => false, write),
+          createNote({ folder: "", name: "x", frontmatter: {} }, normalize, () => [], write),
         );
         assert.deepStrictEqual([failed._tag, calls], ["NoteWriteError", 1]);
       }),

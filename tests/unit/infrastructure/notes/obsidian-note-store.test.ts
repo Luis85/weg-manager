@@ -10,8 +10,6 @@ import { NORMALIZE_CASES } from "../../../support/notes/fidelity";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
-const parentOf = (path: string) => path.slice(0, Math.max(path.lastIndexOf("/"), 0));
-
 const textOf = (frontmatter: Parameters<NoteStoreFixture["seed"]>[1], body = ""): string => {
   if (frontmatter === "none") return body;
   if (frontmatter === "broken") return `---\nschema: [unclosed\n---\n${body}`;
@@ -21,16 +19,8 @@ const textOf = (frontmatter: Parameters<NoteStoreFixture["seed"]>[1], body = "")
 /** The Obsidian adapter on the double, with handles that go through the double's public API. */
 const onDouble = (app = new App()): NoteStoreFixture => ({
   layer: noteStoreLayer(app as never),
-  seed: async (path, frontmatter, body) => {
-    const folder = parentOf(path);
-    if (folder !== "" && app.vault.getFolderByPath(folder) === null) {
-      await app.vault.createFolder(folder);
-    }
-    const file = app.vault.getFileByPath(path);
-    const text = textOf(frontmatter, body);
-    if (file === null) await app.vault.create(path, text);
-    else await app.vault.process(file, () => text);
-  },
+  seed: (path, frontmatter, body) =>
+    Promise.resolve(app.vault.seedFile(path, textOf(frontmatter, body))),
   settle: () => app.metadataCache.whenIndexed(),
   body: async (path) => {
     const file = app.vault.getFileByPath(path);
@@ -50,7 +40,15 @@ const onDouble = (app = new App()): NoteStoreFixture => ({
   heldWrites: () => app.vault.heldWrites(),
 });
 
+/** As on Windows and macOS: the disk refuses a second name that differs only in case or form. */
+const onCaseInsensitiveDisk = () => {
+  const app = new App();
+  app.vault.caseInsensitive = true;
+  return onDouble(app);
+};
+
 noteStoreContract("Obsidian adapter on the double", () => onDouble());
+noteStoreContract("Obsidian adapter on a case-insensitive disk", onCaseInsensitiveDisk);
 
 const run = <A, E>(app: App, use: (store: NoteStore["Service"]) => Effect.Effect<A, E>) =>
   NoteStore.use(use).pipe(Effect.provide(noteStoreLayer(app as never)));

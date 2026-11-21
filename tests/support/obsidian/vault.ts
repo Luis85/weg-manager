@@ -25,6 +25,9 @@ export class TFile extends TAbstractFile {
 }
 
 export class TFolder extends TAbstractFile {
+  /** The files and folders directly inside, kept up to date by the vault. */
+  children: TAbstractFile[] = [];
+
   isRoot(): boolean {
     return this.path === "/";
   }
@@ -38,6 +41,12 @@ const enoent = (path: string, call = "open") =>
 
 const eacces = (path: string) =>
   new Error(`EACCES: permission denied, open '${VAULT_ROOT}/${path}'`);
+
+const eexist = (path: string) =>
+  new Error(`EEXIST: file already exists, open '${VAULT_ROOT}/${path}'`);
+
+/** How a case-insensitive, normalising file system (Windows, macOS) compares two names. */
+const diskKey = (path: string) => path.normalize("NFC").toLowerCase();
 
 const parentOf = (path: string): string => {
   const slash = path.lastIndexOf("/");
@@ -77,11 +86,18 @@ const gate = () => {
  *
  * Test knobs: `failReads` (listing and the metadata cache throw), `failWrites` (every write
  * rejects without changing anything), `holdWrites`/`releaseWrites`/`heldWrites`,
- * `setMarkdownFileCount`.
+ * `setMarkdownFileCount`, and `seedFile` for a file that appears from outside (Sync, another app),
+ * also under a path that is not normalized.
+ *
+ * `caseInsensitive` models the disk of Windows and macOS: a write to a path that differs from
+ * another entry only in case or Unicode form fails with EEXIST, and renaming a file to another case
+ * of its own name works. Lookups stay exact, as the d.ts documents them ("case sensitive"), so an
+ * adapter has to find such a clash itself.
  */
 export class Vault extends Events {
   failReads = false;
   failWrites = false;
+  caseInsensitive = false;
   readonly root = new TFolder("/");
   /** Double-internal: the metadata cache indexes each file whose text changed. */
   indexer: (file: TFile) => void = () => undefined;
@@ -128,8 +144,9 @@ export class Vault extends Events {
     await this.beforeWrite(path);
     if (this.entries.has(path)) throw new Error("File already exists.");
     if (this.getFolderByPath(parentOf(path)) === null) throw enoent(path);
+    if (this.collides(path)) throw eexist(path);
     const file = new TFile(path);
-    this.entries.set(path, file);
+    this.link(file);
     this.texts.set(file, data);
     file.stat = { ctime: Date.now(), mtime: Date.now(), size: data.length };
     this.trigger("create", file);
@@ -150,8 +167,9 @@ export class Vault extends Events {
         continue;
       }
       if (existing !== null) throw new Error(`ENOTDIR: not a directory, mkdir '${prefix}'`);
+      if (this.collides(prefix)) throw eexist(prefix);
       folder = new TFolder(prefix);
-      this.entries.set(prefix, folder);
+      this.link(folder);
       this.trigger("create", folder);
     }
     return folder;
@@ -167,14 +185,40 @@ export class Vault extends Events {
   /** Test helper: `count` empty notes at the vault root, as if they were there at startup. */
   setMarkdownFileCount(count: number): void {
     for (const file of this.getFiles()) {
-      this.entries.delete(file.path);
+      this.unlink(file);
       this.texts.delete(file);
     }
     for (let index = 0; index < count; index += 1) {
       const file = new TFile(`note-${index}.md`);
-      this.entries.set(file.path, file);
+      this.link(file);
       this.texts.set(file, "");
     }
+  }
+
+  /**
+   * Test helper: a file written from outside Obsidian (a person, Sync, an agent) as Obsidian then
+   * sees it: missing folders and the file appear with `create`, an existing file changes with
+   * `modify`, and the metadata cache indexes it. No checks, no waiting, no failure knobs.
+   */
+  seedFile(path: string, text: string): void {
+    const segments = path.split("/");
+    for (let depth = 1; depth < segments.length; depth += 1) {
+      const prefix = segments.slice(0, depth).join("/");
+      if (this.getAbstractFileByPath(prefix) !== null) continue;
+      const folder = new TFolder(prefix);
+      this.link(folder);
+      this.trigger("create", folder);
+    }
+    const existing = this.getFileByPath(path);
+    if (existing !== null) {
+      this.write(existing, text);
+      return;
+    }
+    const file = new TFile(path);
+    this.link(file);
+    this.texts.set(file, text);
+    this.trigger("create", file);
+    this.indexer(file);
   }
 
   holdWrites(): void {
@@ -224,10 +268,11 @@ export class Vault extends Events {
     if (this.entries.get(file.path) !== file) throw enoent(file.path, "rename");
     if (this.entries.has(newPath)) throw new Error("Destination file already exists!");
     if (this.getFolderByPath(parentOf(newPath)) === null) throw enoent(newPath, "rename");
+    if (this.collides(newPath, file)) throw eexist(newPath);
     const oldPath = file.path;
-    this.entries.delete(oldPath);
+    this.unlink(file);
     file.path = newPath;
-    this.entries.set(newPath, file);
+    this.link(file);
     this.trigger("rename", file, oldPath);
   }
 
@@ -241,8 +286,28 @@ export class Vault extends Events {
   /** Double-internal: removes one entry and fires `delete`. */
   remove(entry: TAbstractFile): void {
     if (this.entries.get(entry.path) !== entry) throw enoent(entry.path, "unlink");
-    this.entries.delete(entry.path);
+    this.unlink(entry);
     if (entry instanceof TFile) this.texts.delete(entry);
     this.trigger("delete", entry);
+  }
+
+  /** On a case-insensitive disk: another entry already holds `path` in another case or form. */
+  private collides(path: string, except?: TAbstractFile): boolean {
+    if (!this.caseInsensitive) return false;
+    const key = diskKey(path);
+    return [...this.entries.values()].some(
+      (entry) => entry !== except && diskKey(entry.path) === key,
+    );
+  }
+
+  private link(entry: TAbstractFile): void {
+    this.entries.set(entry.path, entry);
+    this.getFolderByPath(parentOf(entry.path))?.children.push(entry);
+  }
+
+  private unlink(entry: TAbstractFile): void {
+    this.entries.delete(entry.path);
+    const parent = this.getFolderByPath(parentOf(entry.path));
+    if (parent !== null) parent.children = parent.children.filter((child) => child !== entry);
   }
 }

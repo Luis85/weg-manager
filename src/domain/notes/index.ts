@@ -2,6 +2,7 @@
 export {
   NoteNameIssue,
   RECORD_SCHEMA_PREFIX,
+  clashKey,
   clashName,
   isRecordFrontmatter,
   noteNameIssue,

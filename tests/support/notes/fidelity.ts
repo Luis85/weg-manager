@@ -72,6 +72,9 @@ export const VAULT_FACTS = {
   create: { result: null, events: ["vault:create A/n.md", "metadataCache:changed A/n.md"] },
   createAgain: { result: "Error: File already exists.", events: [] },
   cacheAfterCreate: { a: 1, b: 2 },
+  children: ["A/B", "A/n.md"],
+  rootChildren: true,
+  lookupInOtherCase: null,
   processUnchanged: { result: "---\na: 1\nb: 2\n---\nbody\n", events: [] },
   frontmatterUnchanged: { events: [] },
   frontmatterThrows: { result: "Error: stop", events: [] },
@@ -114,6 +117,7 @@ export const VAULT_FACTS = {
 const COMMUNITY = { schema: "weg-manager.community/v1", name: "Ahornweg 12", tags: ["a", "b"] };
 const FIRST = "WEG Manager/Gemeinschaften/Ahornweg.md";
 const SECOND = "WEG Manager/Gemeinschaften/Ahornweg (2).md";
+const BY_CASE = "WEG Manager/Gemeinschaften/ahornweg (3).md";
 const OUTSIDE = {
   schema: "weg-manager.community/v1",
   zeta: 1,
@@ -160,6 +164,11 @@ export const STORE_REPORT = {
     },
     events: [],
   },
+  // Names clash regardless of case: "ahornweg" and "ahornweg (2)" are taken.
+  caseClash: {
+    result: { ok: true, value: { path: BY_CASE, frontmatter: COMMUNITY } },
+    events: [`vault:create ${BY_CASE}`, `metadataCache:changed ${BY_CASE}`],
+  },
   update: {
     result: { ok: true, value: { path: "Archiv/Fremd.md", frontmatter: UPDATED } },
     events: ["vault:modify Archiv/Fremd.md", "metadataCache:changed Archiv/Fremd.md"],
@@ -178,6 +187,11 @@ export const STORE_REPORT = {
     events: ["vault:rename Archiv/Fremd.md -> Archiv/Umbenannt.md"],
   },
   renamedText: UPDATED_TEXT,
+  // A note may take its own name in another case.
+  renameCase: {
+    result: { ok: true, value: { path: "Archiv/UMBENANNT.md", frontmatter: UPDATED } },
+    events: ["vault:rename Archiv/Umbenannt.md -> Archiv/UMBENANNT.md"],
+  },
   renameTaken: { result: { ok: false, tag: "NotePathTakenError" }, events: [] },
   trash: {
     result: { ok: true },
@@ -188,8 +202,9 @@ export const STORE_REPORT = {
     result: {
       ok: true,
       value: [
-        { path: "Archiv/Umbenannt.md", frontmatter: UPDATED },
+        { path: "Archiv/UMBENANNT.md", frontmatter: UPDATED },
         { path: FIRST, frontmatter: COMMUNITY },
+        { path: BY_CASE, frontmatter: COMMUNITY },
       ],
     },
     events: [],

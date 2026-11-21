@@ -1,7 +1,7 @@
 import { Effect, Result } from "effect";
 import { NoteWriteError } from "./errors";
 import { copyFrontmatter } from "./frontmatter";
-import { planNewNote, type Normalize, type PlannedNote } from "./paths";
+import { planNewNote, type Normalize, type PlannedNote, type SiblingsOf } from "./paths";
 import type { NewNote, Note } from "./ports";
 
 /**
@@ -18,17 +18,17 @@ export const writeCommand = <A, E>(
   ).pipe(Effect.flatMap((result) => Effect.fromResult(result)));
 
 /**
- * `NoteStore.create` for any adapter: checks the name, picks a free path (`taken` says what is in
- * the vault) and runs `write` as one command. `write` creates the folder when missing and the
- * note with `body`.
+ * `NoteStore.create` for any adapter: checks the name, picks a free path (`siblingsOf` says what
+ * the folder holds) and runs `write` as one command. `write` creates the folder when missing and
+ * the note with `body`.
  */
 export const createNote = (
   note: NewNote,
   normalize: Normalize,
-  taken: (path: string) => boolean,
+  siblingsOf: SiblingsOf,
   write: (plan: PlannedNote, body: string) => Promise<void>,
 ) =>
-  Effect.flatMap(planNewNote(note, normalize, taken), (plan) =>
+  Effect.flatMap(planNewNote(note, normalize, siblingsOf), (plan) =>
     writeCommand(async () => {
       await write(plan, note.body ?? "");
       return Result.succeed<Note>({

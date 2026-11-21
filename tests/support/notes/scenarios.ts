@@ -76,6 +76,13 @@ export const vaultFacts = async (
     }),
     createAgain: await step(() => app.vault.create("A/n.md", "")),
     cacheAfterCreate: app.metadataCache.getFileCache(file("A/n.md"))?.frontmatter,
+    // The store finds name clashes among a folder's children; lookups by path are case-sensitive.
+    children: app.vault
+      .getFolderByPath("A")
+      ?.children.map((child) => child.path)
+      .toSorted(),
+    rootChildren: app.vault.getRoot().children.some((child) => child.path === "A"),
+    lookupInOtherCase: app.vault.getAbstractFileByPath("a/N.md"),
     processUnchanged: await step(() => app.vault.process(file("A/n.md"), (data) => data)),
     frontmatterUnchanged: await step(() => pfm("A/n.md", (fm) => Object.assign(fm, { a: 1 }))),
     frontmatterThrows: await step(() =>
@@ -191,6 +198,8 @@ export const storeScenario = async ({ app, plugins }: Context, settleMs: number)
     createdText: await text("WEG Manager/Gemeinschaften/Ahornweg.md"),
     clash: await step(() => probe.create(community)),
     list: await step(() => probe.list()),
+    // On Linux the disk would take "ahornweg.md" beside "Ahornweg.md"; the store must not.
+    caseClash: await step(() => probe.create({ ...community, name: "ahornweg" })),
     update: await step(() =>
       probe.update("Archiv/Fremd.md", { set: { name: "Neu", added: "x" }, remove: ["gone"] }),
     ),
@@ -200,8 +209,9 @@ export const storeScenario = async ({ app, plugins }: Context, settleMs: number)
     broken: await step(() => probe.update("Kaputt.md", { set: { a: 1 } })),
     rename: await step(() => probe.rename("/Archiv//Fremd.md", "Umbenannt")),
     renamedText: await text("Archiv/Umbenannt.md"),
+    renameCase: await step(() => probe.rename("Archiv/Umbenannt.md", "UMBENANNT")),
     renameTaken: await step(() =>
-      probe.rename("WEG Manager/Gemeinschaften/Ahornweg (2).md", "Ahornweg"),
+      probe.rename("WEG Manager/Gemeinschaften/Ahornweg (2).md", "AHORNWEG"),
     ),
     trash: await step(() => probe.trash("WEG Manager/Gemeinschaften/Ahornweg (2).md")),
     readTrashed: await step(() => probe.read("WEG Manager/Gemeinschaften/Ahornweg (2).md")),

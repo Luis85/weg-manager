@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { clashName, noteNameIssue } from "../../domain/notes";
+import { clashKey, clashName, noteNameIssue } from "../../domain/notes";
 import { InvalidNoteNameError, NotePathTakenError } from "./errors";
 import { copyFrontmatter } from "./frontmatter";
 import type { Frontmatter, NewNote } from "./ports";
@@ -9,6 +9,18 @@ export const MAX_NAME_ATTEMPTS = 100;
 
 /** The adapter's `normalizePath` (Obsidian's, or the in-memory copy of it). */
 export type Normalize = (path: string) => string;
+
+/** The paths of every file and folder directly in a normalized folder (`/` is the vault root). */
+export type SiblingsOf = (folder: string) => readonly string[];
+
+/** Whether a path clashes with one of `paths` (other than `except`), by `clashKey`. */
+const clashesWith = (paths: readonly string[], except?: string) => {
+  const keys = new Set(paths.filter((path) => path !== except).map(clashKey));
+  return (path: string): boolean => keys.has(clashKey(path));
+};
+
+const folderOf = (path: string, normalize: Normalize): string =>
+  normalize(path.slice(0, Math.max(path.lastIndexOf("/"), 0)));
 
 const notePath = (folder: string, name: string, normalize: Normalize): string =>
   normalize(`${folder}/${name}.md`);
@@ -38,7 +50,25 @@ export const freeNotePath = (
 
 /** The path of the note at `path` after a rename to `newName`, in the same folder. */
 export const renamedNotePath = (path: string, newName: string, normalize: Normalize): string =>
-  notePath(path.slice(0, Math.max(path.lastIndexOf("/"), 0)), newName, normalize);
+  notePath(folderOf(path, normalize), newName, normalize);
+
+/**
+ * The path for renaming the note at `path` to `newName`: refused when another entry of the folder
+ * clashes with it (`clashKey`), allowed for the note's own name in another case.
+ */
+export const planRename = (
+  path: string,
+  newName: string,
+  normalize: Normalize,
+  siblingsOf: SiblingsOf,
+): Effect.Effect<string, InvalidNoteNameError | NotePathTakenError> =>
+  Effect.flatMap(checkNoteName(newName), () => {
+    const target = renamedNotePath(path, newName, normalize);
+    const taken = clashesWith(siblingsOf(folderOf(path, normalize)), path);
+    return target !== path && taken(target)
+      ? Effect.fail(new NotePathTakenError())
+      : Effect.succeed(target);
+  });
 
 /** Where and with what a new note is written. */
 export type PlannedNote = {
@@ -47,15 +77,19 @@ export type PlannedNote = {
   readonly frontmatter: Frontmatter;
 };
 
-/** Checks the name, normalizes the folder and picks the first free path for `note`. */
+/**
+ * Checks the name, normalizes the folder and picks the first path for `note` that clashes with
+ * nothing in the folder (`clashKey`: case and Unicode form do not count).
+ */
 export const planNewNote = (
   note: NewNote,
   normalize: Normalize,
-  taken: (path: string) => boolean,
+  siblingsOf: SiblingsOf,
 ): Effect.Effect<PlannedNote, InvalidNoteNameError | NotePathTakenError> =>
   Effect.gen(function* () {
     yield* checkNoteName(note.name);
     const folder = normalize(note.folder);
+    const taken = clashesWith(siblingsOf(folder));
     const path = yield* freeNotePath(folder, note.name, normalize, taken);
     return { folder, path, frontmatter: copyFrontmatter(note.frontmatter) };
   });

@@ -1,15 +1,13 @@
 import { Effect, Layer, Result } from "effect";
 import {
   NoteNotFoundError,
-  NotePathTakenError,
   NoteStore,
   NoteUnreadableError,
   applyPatch,
-  checkNoteName,
   copyFrontmatter,
   createNote,
   recordNotes,
-  renamedNotePath,
+  planRename,
   writeCommand,
   type Frontmatter,
   type FrontmatterChange,
@@ -61,7 +59,8 @@ export const memoryNoteStore = () => {
   let open = true;
   let waiting: (() => void)[] = [];
 
-  const taken = (path: string) => notes.has(path) || folders.has(path);
+  const siblingsOf = (folder: string) =>
+    [...notes.keys(), ...folders].filter((path) => folderOf(path) === folder);
   const addFolders = (folder: string) => {
     for (const ancestor of ancestors(folder)) folders.add(ancestor);
   };
@@ -98,7 +97,7 @@ export const memoryNoteStore = () => {
     });
 
   const create = (note: NewNote) =>
-    createNote(note, normalizePath, taken, async ({ folder, path, frontmatter }, body) => {
+    createNote(note, normalizePath, siblingsOf, async ({ folder, path, frontmatter }, body) => {
       await disk();
       addFolders(folder);
       notes.set(path, { frontmatter, body });
@@ -131,11 +130,9 @@ export const memoryNoteStore = () => {
   const rename = (path: string, newName: string) =>
     Effect.gen(function* () {
       const found = yield* find(path);
-      yield* checkNoteName(newName);
-      const target = renamedNotePath(found.path, newName, normalizePath);
+      const target = yield* planRename(found.path, newName, normalizePath, siblingsOf);
       const note = { path: target, frontmatter: copyFrontmatter(found.stored.frontmatter) };
       if (target === found.path) return note;
-      if (taken(target)) return yield* new NotePathTakenError();
       return yield* write(() => {
         notes.delete(found.path);
         notes.set(target, found.stored);

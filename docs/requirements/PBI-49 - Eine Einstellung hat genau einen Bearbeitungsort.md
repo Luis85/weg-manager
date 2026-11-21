@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -60,3 +60,4 @@ Code-Review der Plugin-Shell vom 21.11.2026. Ergänzt [[PBI-48 - Externe Änderu
   - **Entprellen (3) und ungespeicherter Wert beim Schließen (4):** gegenstandslos, weil der Tab kein Textfeld mehr hat; das Schreiben von `data.json` bei jedem Tastendruck entfällt damit.
   - **Nachführen des unberührten Felds (2):** bereits früher umgesetzt (siehe Kommentar oben).
   - **Tests:** `tests/dom/settings-tab.test.ts` (nur Protokollstufe, kein Textfeld), `tests/e2e/specs/settings-and-theme.e2e.ts` (Tab ohne Textfeld, Begrüßung über das Formular der Ansicht gespeichert, leere Begrüßung nie geschrieben).
+- 21.11.2026: Abgeschlossen, ausgeliefert mit PR #4 (Plugin-Shell). Kriterien 1 und 2 sind umgesetzt, 3 und 4 gegenstandslos, 5 deckt den verbleibenden Umfang ab.

@@ -8,7 +8,7 @@ describe("settings changed outside Obsidian", function () {
     await installConsoleSpy();
     await openView();
     const greeting = browser.$(ROOT).$("[data-testid=greeting]");
-    await expect(greeting).toHaveText("Hello from WEG Manager");
+    await expect(greeting).toHaveText("Hallo von WEG Manager");
     await writeData({ schemaVersion: 1, greeting: "Über Sync angekommen" });
     await expect(greeting).toHaveText("Über Sync angekommen");
   });

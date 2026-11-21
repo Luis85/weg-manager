@@ -36,7 +36,7 @@ describe("plugin lifecycle in Obsidian", function () {
     await openView();
     const root = browser.$(ROOT);
     await expect(root).toBeDisplayed();
-    await expect(root.$("[data-testid=greeting]")).toHaveText("Hello from WEG Manager");
+    await expect(root.$("[data-testid=greeting]")).toHaveText("Hallo von WEG Manager");
     await expect(root.$("[data-testid=file-count]")).toHaveText("3 Markdown-Dateien im Vault");
   });
 
@@ -54,7 +54,7 @@ describe("plugin lifecycle in Obsidian", function () {
       app.workspace.getLeavesOfType(type).at(-1)?.detach();
     }, VIEW_TYPE);
     await expect(browser.$$(ROOT)).toBeElementsArrayOfSize(1);
-    await expect(browser.$(ROOT).$("[data-testid=greeting]")).toHaveText("Hello from WEG Manager");
+    await expect(browser.$(ROOT).$("[data-testid=greeting]")).toHaveText("Hallo von WEG Manager");
   });
 
   it("leaves nothing behind after three disable/enable cycles", async function () {

@@ -53,7 +53,7 @@ describe("view in a pop-out window", function () {
 
     await browser.switchToWindow(await popoutHandle(main));
     const root = browser.$(ROOT);
-    await expect(root.$("[data-testid=greeting]")).toHaveText("Hello from WEG Manager");
+    await expect(root.$("[data-testid=greeting]")).toHaveText("Hallo von WEG Manager");
     await root.$("button=Über").click();
     await expect(root.$("[data-testid=about-body]")).toBeDisplayed();
     await browser.keys("Escape");

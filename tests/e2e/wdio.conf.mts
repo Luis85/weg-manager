@@ -31,6 +31,10 @@ export const config: WebdriverIO.Config = {
       plugins: ["dist"],
       vault: "tests/e2e/vaults/basic",
     },
+    // Without a stored choice Obsidian takes its language from Chromium's locale, so the whole app
+    // starts German, as for a German user, and the plugin follows it. The specs assert German
+    // texts; language.e2e.ts switches to English itself.
+    "goog:chromeOptions": { args: ["--lang=de"] },
   })),
   services: ["obsidian"],
   reporters: ["obsidian"],

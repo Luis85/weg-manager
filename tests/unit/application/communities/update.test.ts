@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
+import { Effect, Fiber, Layer } from "effect";
 import {
   InvalidCommunityError,
   canChangeShortCode,
@@ -23,6 +23,7 @@ import {
   ready,
   stored,
 } from "../../../support/communities/fixture";
+import { settle } from "../../../support/notes/index-fixture";
 
 const PATH = `${FOLDER}/Gemeinschaft 1.md`;
 const BODY = "Eigene Notizen\n";
@@ -246,6 +247,26 @@ describe("updateCommunity", () => {
         fixture.logger.entries().filter((entry) => entry.event.startsWith("communities.")),
         [{ level: "warn", event: "communities.rename.failed" }],
       );
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("still renames the file when an unload interrupts while the save is written", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      const community = yield* loaded(fixture);
+      fixture.memory.holdWrites();
+      const saving = yield* Effect.forkChild(
+        updateCommunity(community, inputOf(community, { name: "Neu" })),
+      );
+      yield* settle;
+      assert.strictEqual(fixture.memory.heldWrites(), 1);
+      // `ManagedRuntime.dispose` interrupts the command's fiber and waits for it.
+      const unloading = yield* Effect.forkChild(Fiber.interrupt(saving));
+      yield* settle;
+      fixture.memory.releaseWrites();
+      yield* Fiber.join(unloading);
+      assert.deepStrictEqual(yield* paths, [`${FOLDER}/Neu.md`]);
+      assert.strictEqual((yield* stored(`${FOLDER}/Neu.md`)).frontmatter["name"], "Neu");
     }).pipe(Effect.provide(fixture.layer));
   });
 

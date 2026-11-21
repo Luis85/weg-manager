@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "WEG Manager Obsidian plugin architecture",
+    "output": "docs/archify/architecture-plugin-20261121-115300/plugin-architecture.html",
+    "quality_profile": "showcase",
+    "locale": "en",
+    "repository": {
+      "url": "https://github.com/Luis85/weg-manager",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "ca6385d2f2c41babe75ee1a950d813822ec9b806"
+    }
+  },
+  "components": [
+    { "id": "obsidian", "type": "external", "label": "Obsidian app 1.15.1", "sublabel": "host: lifecycle, views, vault & workspace events", "pos": [40, 40], "size": [1170, 56], "sources": [{ "path": "manifest.json", "line": 1, "end_line": 9 }] },
+    { "id": "plugin", "type": "backend", "label": "WegManagerPlugin", "sublabel": "src/main.ts · onload / onunload", "pos": [40, 180], "size": [170, 62], "sources": [{ "path": "src/main.ts", "line": 6, "end_line": 26 }] },
+    { "id": "bootstrap", "type": "backend", "label": "bootstrap", "sublabel": "wires one load, undo on unload", "pos": [290, 180], "size": [170, 62], "sources": [{ "path": "src/bootstrap.ts", "line": 47, "end_line": 115 }] },
+    { "id": "registrations", "type": "backend", "label": "Commands · ribbon", "sublabel": "settings tab (native API)", "pos": [540, 180], "size": [170, 62], "sources": [{ "path": "src/infrastructure/obsidian/commands.ts", "line": 12, "end_line": 28 }, { "path": "src/infrastructure/obsidian/settings-tab.ts", "line": 35, "end_line": 45 }] },
+    { "id": "hostevents", "type": "backend", "label": "Host events adapter", "sublabel": "on() → AppEvent, offref on dispose", "pos": [790, 180], "size": [170, 62], "tag": "gated by LayoutReady", "sources": [{ "path": "src/infrastructure/obsidian/events.ts", "line": 30, "end_line": 139 }] },
+    { "id": "shellview", "type": "frontend", "label": "ShellView", "sublabel": "ItemView, one per open leaf", "pos": [1040, 180], "size": [170, 62], "sources": [{ "path": "src/infrastructure/obsidian/shell-view.ts", "line": 11, "end_line": 48 }] },
+    { "id": "eventbus", "type": "messagebus", "label": "EventBus", "sublabel": "unbounded PubSub of AppEvent", "pos": [790, 320], "size": [170, 62], "sources": [{ "path": "src/application/event-bus.ts", "line": 11, "end_line": 48 }, { "path": "src/application/events.ts", "line": 1, "end_line": 40 }] },
+    { "id": "surface", "type": "frontend", "label": "Vue + Nuxt UI surface", "sublabel": "mountSurface · ShellPanel", "pos": [1040, 320], "size": [170, 62], "sources": [{ "path": "src/presentation/mount.ts", "line": 37, "end_line": 78 }, { "path": "src/presentation/components/ShellPanel.vue", "line": 1, "end_line": 40 }] },
+    { "id": "bridge", "type": "frontend", "label": "Runtime bridge", "sublabel": "useEffectAction · useAppEvents", "pos": [1040, 460], "size": [170, 62], "tag": "only presentation → effect", "sources": [{ "path": "src/presentation/runtime/use-runtime.ts", "line": 58, "end_line": 166 }] },
+    { "id": "application", "type": "backend", "label": "Use cases + services", "sublabel": "SettingsService · Logger", "pos": [290, 460], "size": [170, 62], "tag": "ManagedRuntime", "sources": [{ "path": "src/application/use-cases.ts", "line": 10, "end_line": 36 }, { "path": "src/application/settings-service.ts", "line": 62, "end_line": 97 }, { "path": "src/infrastructure/obsidian/app-layer.ts", "line": 13, "end_line": 23 }] },
+    { "id": "domain", "type": "backend", "label": "Domain rules", "sublabel": "decodeSettings · validatePatch", "pos": [40, 460], "size": [170, 62], "tag": "pure", "sources": [{ "path": "src/domain/settings.ts", "line": 79, "end_line": 111 }] },
+    { "id": "adapters", "type": "backend", "label": "Obsidian adapters", "sublabel": "store, notices, vault, clipboard", "pos": [290, 600], "size": [170, 62], "sources": [{ "path": "src/infrastructure/obsidian/layers.ts", "line": 18, "end_line": 67 }] },
+    { "id": "vault", "type": "database", "label": "Vault on disk", "sublabel": "notes · plugin data.json", "pos": [40, 600], "size": [170, 62], "sources": [{ "path": "src/infrastructure/obsidian/layers.ts", "line": 20, "end_line": 41 }] },
+    { "id": "defects", "type": "security", "label": "Defects + logging", "sublabel": "reportDefect → console sink", "pos": [1040, 600], "size": [170, 62], "tag": "incident id", "sources": [{ "path": "src/application/defects.ts", "line": 15, "end_line": 27 }, { "path": "src/infrastructure/logging/console-sink.ts", "line": 1, "end_line": 28 }] }
+  ],
+  "connections": [
+    { "id": "host-loads-plugin", "from": "obsidian", "to": "plugin", "label": "onload", "variant": "emphasis" },
+    { "id": "plugin-starts-bootstrap", "from": "plugin", "to": "bootstrap", "label": "starts", "variant": "emphasis" },
+    { "id": "bootstrap-registers", "from": "bootstrap", "to": "registrations", "label": "adds" },
+    { "id": "bootstrap-builds-runtime", "from": "bootstrap", "to": "application", "label": "makeRuntime(appLayer)", "variant": "emphasis" },
+    { "id": "host-emits-events", "from": "obsidian", "to": "hostevents", "label": "vault / workspace events", "variant": "dashed" },
+    { "id": "host-opens-view", "from": "obsidian", "to": "shellview", "label": "onOpen" },
+    { "id": "events-published", "from": "hostevents", "to": "eventbus", "label": "publish", "variant": "dashed" },
+    { "id": "view-mounts-surface", "from": "shellview", "to": "surface", "label": "mount" },
+    { "id": "bus-to-surface", "from": "eventbus", "to": "surface", "label": "events", "variant": "dashed" },
+    { "id": "surface-uses-bridge", "from": "surface", "to": "bridge", "label": "composables" },
+    { "id": "bridge-runs-use-cases", "from": "bridge", "to": "application", "label": "run use case", "variant": "emphasis" },
+    { "id": "services-validate", "from": "application", "to": "domain", "label": "validate" },
+    { "id": "services-use-ports", "from": "application", "to": "adapters", "label": "ports" },
+    { "id": "adapters-io", "from": "adapters", "to": "vault", "label": "file I/O" },
+    { "id": "bridge-reports-defects", "from": "bridge", "to": "defects", "label": "defects", "variant": "security" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Layers", "items": ["domain ← application ← infrastructure / presentation", "Only infrastructure/obsidian imports obsidian", "Boundaries enforced by oxlint and fallow"] },
+    { "dot": "emerald", "title": "Lifecycle", "items": ["One ManagedRuntime per plugin load", "Unload closes every view, then disposes the runtime", "A failing release step no longer skips the others"] },
+    { "dot": "violet", "title": "Events (ADR 0004)", "items": ["Obsidian events become plain AppEvent data", "Held back until LayoutReady", "Panel recounts 300 ms after Markdown changes"] },
+    { "dot": "amber", "title": "Outside the bundle", "items": ["harness/: same layers with browser adapters", "tests/: Obsidian double, e2e in real Obsidian"] }
+  ]
+}

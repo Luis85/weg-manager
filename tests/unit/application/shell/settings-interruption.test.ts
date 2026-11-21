@@ -49,7 +49,11 @@ describe("SettingsService under interruption", () => {
       const exit = await running;
       await settle();
       assert.isTrue(Exit.isFailure(exit));
-      assert.deepStrictEqual(store.stored(), { ...DEFAULT_SETTINGS, greeting: "Moin" });
+      assert.deepStrictEqual(store.stored(), {
+        schemaVersion: 1,
+        greeting: "Moin",
+        logLevel: "warn",
+      });
       assert.deepStrictEqual(
         await runtime.runPromise(SettingsService.use((service) => service.current)),
         { ...DEFAULT_SETTINGS, greeting: "Moin" },
@@ -73,7 +77,9 @@ describe("SettingsService under interruption", () => {
       yield* Fiber.join(first);
       yield* Effect.promise(settle);
       yield* Fiber.join(interrupting);
-      assert.deepStrictEqual(store.saved(), [{ ...DEFAULT_SETTINGS, greeting: "Erste" }]);
+      assert.deepStrictEqual(store.saved(), [
+        { schemaVersion: 1, greeting: "Erste", logLevel: "warn" },
+      ]);
       assert.strictEqual((yield* service.current).greeting, "Erste");
     }).pipe(Effect.provide(layer));
   });

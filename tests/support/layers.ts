@@ -16,7 +16,10 @@ import {
 } from "../../src/application/ports";
 import type { UserMessage } from "../../src/application/user-messages";
 
-/** A gate that holds an effect until `release()`; `held()` counts waiting effects. */
+/**
+ * A gate that holds work until `release()`; `held()` counts what waits. `pass` is an effect that an
+ * interruption cancels; `wait()` is a promise that nothing cancels.
+ */
 const gate = () => {
   let open = true;
   let waiting: (() => void)[] = [];
@@ -24,8 +27,14 @@ const gate = () => {
     if (open) return resume(Effect.void);
     waiting.push(() => resume(Effect.void));
   });
+  const wait = () =>
+    new Promise<void>((resolve) => {
+      if (open) return resolve();
+      waiting.push(resolve);
+    });
   return {
     pass,
+    wait,
     hold: () => {
       open = false;
     },
@@ -43,11 +52,17 @@ export type StoreOptions = {
   readonly initial?: unknown;
   readonly failLoad?: boolean;
   readonly failSave?: boolean;
+  /**
+   * Saves behave like the real adapter over `plugin.saveData`: a promise that, once started, writes
+   * even if the caller is interrupted. By default an interrupted held save never writes.
+   */
+  readonly uncancellableSaves?: boolean;
 };
 
 /**
  * A settings store backed by memory; `saved()` lists every value written, in order.
  * `writeExternally` replaces the content as Sync or another program would, without a save.
+ * `stored()` is what the file holds now.
  */
 export const inMemoryStore = (options: StoreOptions = {}) => {
   const saved: unknown[] = [];
@@ -55,53 +70,79 @@ export const inMemoryStore = (options: StoreOptions = {}) => {
   let stored = options.initial;
   let failLoad = options.failLoad ?? false;
   let failSave = options.failSave ?? false;
+  const write = (data: unknown) => {
+    saved.push(data);
+    stored = data;
+  };
+  const cancellableSave = (data: unknown) =>
+    Effect.andThen(
+      saves.pass,
+      Effect.suspend(() =>
+        failSave
+          ? Effect.fail(new StorageError({ cause: new Error("save failed") }))
+          : Effect.sync(() => write(data)),
+      ),
+    );
+  const uncancellableSave = (data: unknown) =>
+    Effect.tryPromise({
+      try: () =>
+        saves.wait().then(() => {
+          if (failSave) throw new Error("save failed");
+          write(data);
+        }),
+      catch: (cause) => new StorageError({ cause }),
+    });
   const layer = Layer.succeed(SettingsStore)({
     load: Effect.suspend(() =>
       failLoad
         ? Effect.fail(new StorageError({ cause: new Error("load failed") }))
         : Effect.sync(() => stored),
     ),
-    save: (data: unknown) =>
-      Effect.andThen(
-        saves.pass,
-        Effect.suspend(() =>
-          failSave
-            ? Effect.fail(new StorageError({ cause: new Error("save failed") }))
-            : Effect.sync(() => {
-                saved.push(data);
-                stored = data;
-              }),
-        ),
-      ),
+    save: options.uncancellableSaves === true ? uncancellableSave : cancellableSave,
   });
   return {
     layer,
     saved: () => [...saved],
+    stored: () => stored,
     writeExternally: (data: unknown) => {
       stored = data;
     },
     setFailLoad: (value: boolean) => {
       failLoad = value;
     },
-    /** Holds every save until `releaseSaves()`. */
+    /** Holds every save until `releaseSaves()`; `heldSaves()` counts the waiting ones. */
     holdSaves: saves.hold,
     releaseSaves: saves.release,
+    heldSaves: saves.held,
     setFailSave: (value: boolean) => {
       failSave = value;
     },
   };
 };
 
-/** Records every notification instead of showing it. */
+/**
+ * Records every notification instead of showing it. `hold()` keeps each notification waiting until
+ * `release()`, as a slow host would; an interruption cancels a held one, which is then not recorded.
+ */
 export const recordingNotifier = () => {
   const messages: UserMessage[] = [];
+  const shown = gate();
   const layer = Layer.succeed(Notifier)({
     notify: (message: UserMessage) =>
-      Effect.sync(() => {
-        messages.push(message);
-      }),
+      Effect.andThen(
+        shown.pass,
+        Effect.sync(() => {
+          messages.push(message);
+        }),
+      ),
   });
-  return { layer, messages: () => [...messages] };
+  return {
+    layer,
+    messages: () => [...messages],
+    hold: shown.hold,
+    release: shown.release,
+    held: shown.held,
+  };
 };
 
 /** A vault whose markdown file count is fixed, failing, or changed by the test. */

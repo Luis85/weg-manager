@@ -19,9 +19,9 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 
 - `tests/support/obsidian/` is an in-memory double of the `obsidian` API. `getLanguage()` returns German (`DEFAULT_TEST_LANGUAGE`), the product's primary language, so the exact German texts of the dom tests stay meaningful; a suite that calls `setLanguage("en")` sets it back to `DEFAULT_TEST_LANGUAGE` in `afterEach` (see `tests/dom/language.test.ts`). `vault`, `metadataCache` and `workspace` are `Events`: `trigger(name, ...args)` fires an event and `listenerCount(name?)` counts live listeners. `workspace.layoutReady = false` with `markLayoutReady()` simulates startup. `TFile` and `TFolder` are classes, so `instanceof` works. A suite opts in with `vi.mock("obsidian", () => import("@test/obsidian"))`. Without that, importing `obsidian` throws `OBSIDIAN_REQUIRES_TEST_DOUBLE`.
 - `tests/support/layers.ts` holds in-memory Layers:
-  - the store, with `holdSaves`/`releaseSaves` and `setFailSave`;
+  - the store, with `holdSaves`/`releaseSaves`/`heldSaves` and `setFailSave`. By default an interrupted held save never writes. `uncancellableSaves: true` models the real adapter over `plugin.saveData`: once started, the save writes even if the caller is interrupted. Use it to test interruption;
   - a controllable vault, with `hold`/`release`/`set`;
-  - recording notifier, logger and clipboard;
+  - recording notifier (with `hold`/`release`/`held`), logger and clipboard;
   - sequential incident ids `T-1`, `T-2`, …
   - `recordingEventBus()`: the real `EventBusLive` that records every published event, with `failNextPublish`.
 - `tests/support/runtime.ts` provides `testRuntime(options)`: a full `AppRuntime` plus handles to every Layer. Use `rejectUpdates` to simulate a service that rejects a value the form accepted, and `language: "en"` for the English catalog (German by default). Hand-built Layers in unit tests add `testMessages` (German) from `tests/support/layers.ts`.

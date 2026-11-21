@@ -1,4 +1,4 @@
-import { Context, Effect, Equal, Layer, Option, SubscriptionRef, type Stream } from "effect";
+import { Context, Effect, Equal, Layer, Semaphore, SubscriptionRef, type Stream } from "effect";
 import {
   DEFAULT_SETTINGS,
   decodeSettings,
@@ -28,11 +28,13 @@ export class SettingsService extends Context.Service<
   {
     readonly current: Effect.Effect<Settings>;
     readonly status: Effect.Effect<SettingsStatus>;
+    /** Validates and saves a patch. Once the save has started, an interruption waits for it. */
     update(patch: Partial<EditableSettings>): Effect.Effect<Settings, UpdateSettingsError>;
     /**
      * Reads the store again (after Sync or another program changed `data.json`), publishes new
      * values through `changes` and a new status through `statusChanges`. Never fails: an unreadable
-     * or newer file switches to read-only, as on load. Unchanged values publish nothing.
+     * or newer file switches to read-only, as on load. Unchanged values publish nothing. Once the
+     * file is read, an interruption waits until status, notice and settings are all applied.
      */
     readonly reload: Effect.Effect<void>;
     /** Emits the current value first, then every change. */
@@ -91,33 +93,45 @@ export const SettingsServiceLive = Layer.effect(
 
     const ref = yield* SubscriptionRef.make(loaded.settings);
     const statusRef = yield* SubscriptionRef.make(toStatus(loaded));
+    /**
+     * Serialises updates and reloads. Waiting for it stays interruptible: nothing has changed yet.
+     * What follows a save or a read runs uninterruptibly, because `plugin.saveData` cannot be
+     * cancelled: an interruption there would leave the file and every view out of step.
+     */
+    const lock = yield* Semaphore.make(1);
 
     const update = (patch: Partial<EditableSettings>) =>
-      SubscriptionRef.modifyEffect(ref, (current) =>
+      lock.withPermit(
         Effect.gen(function* () {
           const { readOnlyReason } = yield* SubscriptionRef.get(statusRef);
           if (readOnlyReason !== undefined) {
             return yield* new ReadOnlySettingsError({ reason: readOnlyReason });
           }
-          const result = validatePatch(current, patch);
+          const result = validatePatch(yield* SubscriptionRef.get(ref), patch);
           if (!result.ok) return yield* new InvalidSettingsError({ issues: result.issues });
-          yield* store.save(encodeSettings(result.settings));
-          return [result.settings, result.settings] as const;
+          const { settings } = result;
+          return yield* Effect.uninterruptible(
+            store
+              .save(encodeSettings(settings))
+              .pipe(Effect.andThen(SubscriptionRef.set(ref, settings)), Effect.as(settings)),
+          );
         }),
       );
 
-    const reload = SubscriptionRef.modifySomeEffect(ref, (current) =>
+    const apply = (next: Loaded) =>
       Effect.gen(function* () {
-        const next = yield* read;
         const status = toStatus(next);
-        const previous = yield* SubscriptionRef.get(statusRef);
-        if (!Equal.equals(previous, status)) {
+        if (!Equal.equals(yield* SubscriptionRef.get(statusRef), status)) {
           yield* SubscriptionRef.set(statusRef, status);
           yield* announce(next);
         }
-        const changed = !Equal.equals(current, next.settings);
-        return [undefined, changed ? Option.some(next.settings) : Option.none()] as const;
-      }),
+        if (!Equal.equals(yield* SubscriptionRef.get(ref), next.settings)) {
+          yield* SubscriptionRef.set(ref, next.settings);
+        }
+      });
+
+    const reload = lock.withPermit(
+      Effect.flatMap(read, (next) => Effect.uninterruptible(apply(next))),
     );
 
     return SettingsService.of({

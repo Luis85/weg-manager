@@ -42,7 +42,7 @@ describe("languageFromCode", () => {
     expect(languageFromCode(code)).toBe("de");
   });
 
-  it.each(["en", "en-GB", "fr", "pt-BR", "zh-TW", "deu", "", "/home/me/de.json"])(
+  it.each(["en", "en-GB", "fr", "pt-BR", "zh-TW", "deu", "", "/home/me/de.json", "/home/me/de"])(
     "falls back to English for %j",
     (code) => {
       expect(languageFromCode(code)).toBe("en");

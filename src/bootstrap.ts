@@ -3,6 +3,7 @@ import type { Plugin } from "obsidian";
 import type { AppRuntime } from "./application/app-services";
 import { reportDefect } from "./application/defects";
 import { catalogFor } from "./application/i18n";
+import { toLoggedError } from "./application/logged-error";
 import { Logger, Messages } from "./application/ports";
 import { SettingsService } from "./application/settings-service";
 import { describeDefect } from "./application/user-messages";
@@ -151,7 +152,7 @@ export const reportUnloadFailure = (cause: unknown): void => {
   consoleSink.write({
     level: "error",
     event: "plugin.unload.failed",
-    context: { cause: String(cause) },
+    error: toLoggedError(cause),
     incidentId,
   });
   showMessage(describeDefect(incidentId, catalogFor(hostLanguage())));

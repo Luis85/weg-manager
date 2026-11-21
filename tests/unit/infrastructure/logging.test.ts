@@ -7,10 +7,16 @@ import { incidentsLayer } from "../../../src/infrastructure/logging/incidents";
 
 const LEVELS = ["error", "warn", "info", "debug"] as const;
 
+const LOGGED_ERROR = {
+  name: "TypeError",
+  message: "File already exists: Ahornweg/Punkt 12.md",
+  frames: ["run (main.js:1:2)"],
+};
+
 const call = (level: string) => [
   "[weg-manager]",
   `e.${level}`,
-  { context: { n: 1 }, incidentId: "AB12CD" },
+  { data: { n: 1 }, error: LOGGED_ERROR, incidentId: "AB12CD" },
 ];
 
 afterEach(() => {
@@ -27,7 +33,13 @@ describe("consoleSinkLayer", () => {
       };
       const sink = yield* LogSink;
       for (const level of LEVELS) {
-        sink.write({ level, event: `e.${level}`, context: { n: 1 }, incidentId: "AB12CD" });
+        sink.write({
+          level,
+          event: `e.${level}`,
+          data: { n: 1 },
+          error: LOGGED_ERROR,
+          incidentId: "AB12CD",
+        });
       }
       assert.deepStrictEqual(spies.error.mock.calls, [call("error")]);
       assert.deepStrictEqual(spies.warn.mock.calls, [call("warn")]);

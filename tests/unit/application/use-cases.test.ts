@@ -140,7 +140,7 @@ describe("buildDiagnostics", () => {
     const { layer } = diagnosticsSetup({ initial: { greeting: 5 } });
     return Effect.gen(function* () {
       const logger = yield* Logger;
-      yield* logger.log({ level: "warn", event: "vault.read.failed", context: { attempt: 2 } });
+      yield* logger.log({ level: "warn", event: "vault.read.failed", data: { attempt: 2 } });
       const report = yield* buildDiagnostics;
       assert.include(report, "0.1.0");
       assert.include(report, "1.15.1");
@@ -152,30 +152,28 @@ describe("buildDiagnostics", () => {
     }).pipe(Effect.provide(layer));
   });
 
-  it.effect("redacts note content, paths, names and long strings", () => {
+  it.effect("names the error of an entry and its frames but never its message", () => {
     const { layer } = diagnosticsSetup();
     return Effect.gen(function* () {
       const logger = yield* Logger;
       yield* logger.log({
         level: "error",
         event: "note.parse.failed",
-        context: {
-          content: "Eigentümerversammlung geheim",
-          path: "Gemeinschaften/Ahornweg.md",
-          name: "Ahornweg.md",
-          body: "Text",
-          text: "Mehr Text",
-          long: "x".repeat(201),
-          nested: { path: "a/b.md" },
-          short: "ok",
+        data: { lines: 3, readOnly: true },
+        error: {
+          name: "VaultError",
+          message: "File already exists: Ahornweg/Punkt 12.md",
+          frames: ["parse (main.js:1:2)"],
         },
       });
       const report = yield* buildDiagnostics;
-      for (const secret of ["geheim", "Ahornweg", "Mehr Text", "a/b.md", "x".repeat(201)]) {
+      assert.include(report, "note.parse.failed");
+      assert.include(report, '{"lines":3,"readOnly":true}');
+      assert.include(report, "VaultError");
+      assert.include(report, "parse (main.js:1:2)");
+      for (const secret of ["Ahornweg", "Punkt", "already exists"]) {
         assert.notInclude(report, secret);
       }
-      assert.include(report, '"short":"ok"');
-      assert.include(report, "[redacted]");
     }).pipe(Effect.provide(layer));
   });
 

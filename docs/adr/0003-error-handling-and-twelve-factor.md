@@ -1,6 +1,6 @@
 # ADR 0003 · Error handling and Twelve-Factor rules
 
-- Status: accepted; texts amended by [ADR 0005](0005-ui-language.md) (German and English)
+- Status: accepted; texts amended by [ADR 0005](0005-ui-language.md) (German and English); diagnostics amended on 2026-11-21 (see the note at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -15,7 +15,7 @@ Users of this plugin are volunteer board members, not developers. A failure must
 - `describeError` is exhaustive over `_tag`, so a new error without a message is a type error.
 - Texts are German, du-form, cause then action (handoff HO-06).
 - **Defects** (bugs) go through `reportDefect` exactly once per boundary. It logs the cause with a six-character incident id and shows the user only that id and the diagnostics action.
-- **Diagnostics** replace console digging. `copy-diagnostics` copies a redacted report with the last 50 log entries.
+- **Diagnostics** replace console digging. `copy-diagnostics` copies a report with the last 50 log entries. The report is built from typed fields only (event, counts and flags, the error's name and sanitised stack frames), never from free text, so it needs no redaction.
 
 Details and the how-to: `docs/engineering/error-handling.md`.
 
@@ -43,3 +43,11 @@ VII and VIII are listed so that nobody adds a local server or a worker without a
 - Each new failure costs a tag, a message and a test. In return, every failure reaches the user in plain words.
 - Message texts are pinned by tests, so changing the wording is a deliberate change.
 - Incident ids are not cryptographic. They only correlate a notice with a log entry.
+
+## Amendment, 2026-11-21: typed diagnostics
+
+The first version redacted the report by key name and string length. That failed both ways. A real stack is longer than 200 characters, so a defect showed only `{"cause":"[redacted]"}`. A short message or a thrown string passed through, although it can name a file ("File already exists: Ahornweg/Punkt 12.md"), which B-NFR-07 forbids in diagnostics.
+
+Decision: a log entry carries `data` (counts and flags) and `error` (`{ name, message, frames }`) instead of free-form `context`. `toLoggedError` reduces a cause to a strict-identifier name and frames that hold only the last path segment of a location. The diagnostics report prints name and frames, never the message. The raw message goes to the console sink only. `redact` and its length rule are deleted.
+
+Consequence: a defect in a user's report shows its error type and where it happened, and the type system, not a filter, keeps note content and paths out. Details: `docs/engineering/error-handling.md`.

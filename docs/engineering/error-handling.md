@@ -40,18 +40,25 @@ Every boundary catches defects and calls `reportDefect`, once:
 - the Vue `errorHandler` of each surface;
 - unload (`reportUnloadFailure`, used when the runtime itself is gone).
 
-`reportDefect` logs `defect.reported` at `error` level with the cause and a six-character incident id (0–9, A–Z), then notifies `describeDefect(id, messages)`. An interruption, for example an unload during a pending action, is not a defect and stays silent.
+`reportDefect` logs `defect.reported` at `error` level with the cause as a `LoggedError` (`toLoggedError`, see Logging) and a six-character incident id (0–9, A–Z), then notifies `describeDefect(id, messages)`. An interruption, for example an unload during a pending action, is not a defect and stays silent.
 
 ## Logging
 
-- `Logger` takes structured entries `{ level, event, context?, incidentId? }`.
+- `Logger` takes structured entries `{ level, event, data?, error?, incidentId? }`. There is no free-form context.
+- `data` holds counts and flags only (`number | boolean`). Anything categorical goes into the dotted `event` name, never into a string value.
+- `error` is a `LoggedError`: `{ name, message, frames }`. `toLoggedError(cause)` (`src/application/logged-error.ts`) builds it from anything that was thrown. It is the only way to put a cause into a log entry.
+  - `name` is the error's `name` if it is a plain identifier (a letter, then letters, digits, `_`, `$` or `.`, at most 64 characters). Otherwise it is `Error`. A cause that is not an `Error` is named `NonError`.
+  - `message` is the raw message, or `String(cause)`. It goes to the console sink only, never into the diagnostics report.
+  - `frames` come from the stack, at most 10. Each frame keeps the function name (if it is made of code characters only) and the file's last path segment with `:line:col`. Directories and query strings are dropped. A line that is not a V8 frame (`at fn (location)`, `at location`) or a JavaScriptCore/Firefox frame (`fn@location`) is dropped, which covers the `Name: message` line and every line of a multi-line message.
 - Event names are stable and dotted: `settings.load.failed`, `plugin.loaded`, `defect.reported`.
 - The level comes from the `logLevel` setting (default `warn`); development builds log everything.
 - The only `console` use in shipped code is `src/infrastructure/logging/console-sink.ts`. `info` goes to `console.debug`, because Obsidian's guidelines allow only warn, error and debug.
-- Never put note content in a log entry.
+- Never put note content in a log entry. The types make this hard to do by accident: `data` cannot hold a string, and the message is kept out of the report.
 
 ## Diagnostics
 
 The `copy-diagnostics` command builds a plain-text report and puts it on the clipboard: plugin version, API version, platform, UI language, settings status and issues, log level, and the last 50 log entries. The report stays German in every UI language, so support reads one format; only the confirmation notice follows the UI language.
 
-`redact` replaces the values of the keys `content`, `body`, `text`, `path` and `name`, and any string longer than 200 characters, with `[redacted]`. `tests/unit/application/diagnostics.test.ts` pins the exact format.
+The report prints, for each entry: the timestamp, level, event, incident id, `data` as JSON, and the error's `name` with its sanitised frames (one per line, indented). It never prints `message`. This is an allow-list by type: nothing in the report is a free-form string. There is no `redact` step and no length rule. A new field on `LogEntry` must be a type that is safe to print, and the report must be taught to print it on purpose.
+
+`tests/unit/application/diagnostics.test.ts` pins the exact format. `tests/unit/application/diagnostics-leaks.test.ts` runs a defect through the report and checks, also with property tests, that neither the message nor any directory of a stack location appears in it.

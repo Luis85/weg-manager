@@ -19,7 +19,8 @@
     "release/**",
     ".stryker-tmp/**",
     ".superpowers/**",
-    ".obsidian-cache/**"
+    ".obsidian-cache/**",
+    ".archify/**"
   ],
   "duplicates": {
     "minTokens": 50

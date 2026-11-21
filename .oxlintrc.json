@@ -17,7 +17,8 @@
     "reports/**",
     ".stryker-tmp/**",
     ".superpowers/**",
-    ".obsidian-cache/**"
+    ".obsidian-cache/**",
+    ".archify/**"
   ],
   "rules": {
     "no-console": "error",

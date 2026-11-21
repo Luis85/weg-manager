@@ -30,6 +30,7 @@ export default defineConfig(
       ".superpowers/**",
       ".obsidian/**",
       ".obsidian-cache/**",
+      ".archify/**",
     ],
   },
   // Obsidian's review rules (guidelines, manifest, LICENSE); includes eslint and typescript-eslint presets.

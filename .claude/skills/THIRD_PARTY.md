@@ -66,3 +66,19 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## tt-a1i/archify
+
+`archify` is copied from [tt-a1i/archify](https://github.com/tt-a1i/archify) (folder `archify/`), skill version 3.2.0, commit `8509a3d`, the location Archify documents for Claude Code (`.claude/skills/`). The install was checked with `node .claude/skills/archify/bin/archify.mjs doctor` ("Archify is ready").
+
+One deliberate change: the 15 pre-rendered demo pages `examples/*.html` (about 13 MB) are left out. The skill's instructions use only the `examples/*.json` sources, which are kept, and a demo can be rebuilt from its JSON. Everything else is unchanged.
+
+- Needs Node 18+, no npm install.
+- Diagrams are written to `.archify/<type>-<slug>-<timestamp>/` in the working directory. The formatter and linters skip that folder; whether a diagram is committed is decided per diagram.
+- During delivery, Archify can check online for a newer stable release and show a reminder. It never updates itself.
+- To update: replace the folder with a newer upstream `archify/` (again without `examples/*.html`), run `doctor`, and adjust the version and commit above.
+
+### License
+
+Apache License 2.0; the full text is in `archify/LICENSE`, and `archify/NOTICE` and `archify/THIRD_PARTY_NOTICES.md` carry the required notices. The repository also ships `archify/LICENSE-MIT`.
+

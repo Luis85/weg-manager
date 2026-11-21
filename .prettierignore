@@ -17,3 +17,4 @@ coverage/
 reports/
 .stryker-tmp/
 .obsidian-cache/
+.archify/

@@ -44,15 +44,22 @@ export type StoreOptions = {
   readonly failSave?: boolean;
 };
 
-/** A settings store backed by memory; `saved()` lists every value written, in order. */
+/**
+ * A settings store backed by memory; `saved()` lists every value written, in order.
+ * `writeExternally` replaces the content as Sync or another program would, without a save.
+ */
 export const inMemoryStore = (options: StoreOptions = {}) => {
   const saved: unknown[] = [];
   const saves = gate();
+  let stored = options.initial;
+  let failLoad = options.failLoad ?? false;
   let failSave = options.failSave ?? false;
   const layer = Layer.succeed(SettingsStore)({
-    load: options.failLoad
-      ? Effect.fail(new StorageError({ cause: new Error("load failed") }))
-      : Effect.sync(() => (saved.length > 0 ? saved.at(-1) : options.initial)),
+    load: Effect.suspend(() =>
+      failLoad
+        ? Effect.fail(new StorageError({ cause: new Error("load failed") }))
+        : Effect.sync(() => stored),
+    ),
     save: (data: unknown) =>
       Effect.andThen(
         saves.pass,
@@ -61,6 +68,7 @@ export const inMemoryStore = (options: StoreOptions = {}) => {
             ? Effect.fail(new StorageError({ cause: new Error("save failed") }))
             : Effect.sync(() => {
                 saved.push(data);
+                stored = data;
               }),
         ),
       ),
@@ -68,6 +76,12 @@ export const inMemoryStore = (options: StoreOptions = {}) => {
   return {
     layer,
     saved: () => [...saved],
+    writeExternally: (data: unknown) => {
+      stored = data;
+    },
+    setFailLoad: (value: boolean) => {
+      failLoad = value;
+    },
     /** Holds every save until `releaseSaves()`. */
     holdSaves: saves.hold,
     releaseSaves: saves.release,

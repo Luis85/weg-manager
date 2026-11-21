@@ -212,20 +212,30 @@ export abstract class SettingTab {
 
   setControlValue(_key: string, _value: unknown): void | Promise<void> {}
 
+  /** Test helper: whether the tab is shown (between `display()` and `hide()`). */
+  shown = false;
+
+  /** As in Obsidian 1.15.1: re-reads the definitions and re-renders the tab while it is shown. */
   update(): void {
     this.settingItems = this.getSettingDefinitions();
+    if (this.shown) this.render();
   }
 
   display(): void {
+    this.shown = true;
     this.update();
+  }
+
+  hide(): void {
+    this.shown = false;
+    this.containerEl.replaceChildren();
+  }
+
+  private render(): void {
     this.containerEl.replaceChildren();
     for (const item of this.settingItems) {
       if (evaluate(item.visible, true)) this.renderItem(item);
     }
-  }
-
-  hide(): void {
-    this.containerEl.replaceChildren();
   }
 
   /** Test helper: resolves once the latest `setControlValue` call has settled. */

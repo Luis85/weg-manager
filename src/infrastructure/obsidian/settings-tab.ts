@@ -43,7 +43,7 @@ export class ShellSettingTab extends PluginSettingTab {
   }
 
   override getSettingDefinitions(): SettingDefinitionItem[] {
-    const readOnly = this.mirror.status.readOnlyReason;
+    const readOnly = this.mirror.status().readOnlyReason;
     const disabled = readOnly !== undefined;
     const items: SettingDefinitionItem[] = [
       {

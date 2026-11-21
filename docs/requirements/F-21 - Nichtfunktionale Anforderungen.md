@@ -27,11 +27,11 @@ Die Anforderungen gelten für alle jeweils betroffenen Features und PBIs, unabh�
 
 ## Anforderungen und Prüfziele
 
-Alle B-NFR sind geplante Releasekriterien. Konkrete Referenzgeräte und Versionen werden vor Entwicklungsfreigabe festgelegt; diese Lücke ist sichtbar und keine Freistellung von der mobilen Anforderung.
+Alle B-NFR sind geplante Releasekriterien. Desktop-Referenz und Versionen werden vor Entwicklungsfreigabe festgelegt. Die mobile Anforderung folgt nach dem MVP ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]); ihr Referenz-Handy wird mit dem mobilen Ausbau festgelegt.
 
 | ID | Anforderung und Prüfung |
 | --- | --- |
-| B-NFR-01 Offline und KI-Unabhängigkeit | AT-B01–13 funktionieren für lokale Bearbeitung bei gesperrtem Netzwerk ohne KI und eigenes Konto. Externer tatsächlicher Mailversand findet separat statt. |
+| B-NFR-01 Offline und KI-Unabhängigkeit | AT-B01–12 funktionieren für lokale Bearbeitung bei gesperrtem Netzwerk ohne KI und eigenes Konto. Externer tatsächlicher Mailversand findet separat statt. |
 | B-NFR-02 Datenerhalt | Abbruch, wiederholte Aktion, externe Änderung und Wiederherstellung verlieren keine bestätigten Daten; keine stillen Dubletten. Fremde Notizinhalte und Properties bleiben erhalten. |
 | B-NFR-03 Fachkorrektheit | Die für den MVP anwendbaren DF-Regeln und Abnahmeanker bestehen; berechnete Zeitkennzahlen aus DF-14 werden erst mit PBI-36 abgenommen; Datumswechsel, unbekannte Werte, Reaktionen und Zustände bleiben korrekt getrennt. Kein Zahlungsrechenmodell im MVP. |
 | B-NFR-04 Reaktionszeit | Fortgeführtes Desktop-Prüfziel: erste Übersicht in 19 von 20 Starts binnen fünf Sekunden; Filtern/Öffnen nach Initialisierung in mindestens 95 % von 30 Aktionen binnen 300 ms. |
@@ -39,7 +39,7 @@ Alle B-NFR sind geplante Releasekriterien. Konkrete Referenzgeräte und Versione
 | B-NFR-06 Bedienbarkeit | Kernreise per Tastatur, sichtbarer Fokus, Text zusätzlich zu Statusfarben, erreichbare Aktionen und Fehler bei 200 % Zoom; deutsche Fachsprache. Mobile Kernaktionen ohne Desktopausweichschritt. |
 | B-NFR-07 Vertraulichkeit | Keine automatische externe Übertragung von Akten/Diagnosen; lokale Diagnosen standardmäßig ohne Akteninhalte, Namen und vollständige Dateipfade. Keine echten Eigentümerdaten in Testmaterial oder Repository. |
 | B-NFR-08 Sichere Darstellung | Fremde Texte und erzeugte Übersichten führen keinen eingebetteten Code aus, laden keine externen Inhalte nach und offenbaren keine ungewählten lokalen Dateien. Originale bleiben unverändert, keine aktive Einbettung in externe Übersichten. |
-| B-NFR-09 Plattformen | Windows 11 als Desktop-Referenz plus festgelegtes Pilot-Handy; minimale und zum Release aktuelle stabile unterstützte Obsidian-Version prüfen. Kein Desktop-only-Produktversprechen. |
+| B-NFR-09 Plattformen | Windows 11 als Desktop-Referenz; minimale und zum Release aktuelle stabile unterstützte Obsidian-Version prüfen. Das Pilot-Handy kommt mit der mobilen Wochenarbeit nach dem MVP (K-09); das Produktziel bleibt nicht Desktop-only. |
 | B-NFR-10 Portabilität | Jeder Vorgang bleibt direkt aus normalen Dateien ohne Plugin, ohne Obsidian und ohne vorherigen Export zugänglich und vertragskonform bearbeitbar. Originale und Beziehungen bleiben verfügbar; Sicherung in leerem Arbeitsbereich stellt sie wieder her. Export, Sicherung und interne Übergabe bleiben unterscheidbar. |
 | B-NFR-11 Laufzeit | Einstieg und Wiederaufnahme aktualisieren Fristen. Keine angeblich erfolgte Hintergrundprüfung bei geschlossener App. Deaktivierung beendet eigene Laufzeitaktivität und entfernt keine Akten. |
 | B-NFR-12 Verständliche Fehler | Fehler bewahren Eingaben und nennen Handlung; beschädigte Referenzen und neuere unbekannte Schemata werden nicht still überschrieben. Versionen sind für Diagnose erkennbar. |
@@ -56,12 +56,12 @@ Dieses Feature führt Qualitätsbedingungen, keine zusätzlichen Funktionsstorie
 
 - Datenerhalt, Konflikte, Portabilität und verständliche Fehler: [[PBI-30 - Bestand sichern und wiederherstellen]], [[PBI-31 - Konflikte ohne Datenverlust klären]].
 - Offlinearbeit, KI-Unabhängigkeit, Einstieg und Laufzeitgrenzen: [[PBI-32 - Ohne KI selbstständig beginnen]] sowie die gesamte Kernreise.
-- Mobile Bedienbarkeit und Plattformen: [[PBI-33 - Wochenarbeit auf dem Handy abschließen]]; Tastaturbedienung und erreichbare Aktionen betreffen zusätzlich alle relevanten Oberflächen.
+- Mobile Bedienbarkeit und Plattformen: [[PBI-33 - Wochenarbeit auf dem Handy abschließen]] (nach dem MVP); Tastaturbedienung und erreichbare Aktionen betreffen zusätzlich alle relevanten Oberflächen.
 - Vertraulichkeit und sichere Darstellung: [[F-11 - Vertraulichkeit und gezielte Übergabe]] sowie Quellenübernahme, Nachrichten und Ausgaben.
 - Fachkorrektheit: die anwendbaren Regeln in [[Product Backlog.base#Business Rules]] und die jeweiligen PBI-Akzeptanzkriterien.
 - Reaktions- und Speicherzeiten: Messungen am hier beschriebenen Referenzbestand über die betroffenen Ansichten und Bearbeitungsschritte.
 
-Der interne Abnahmeplan AT-B01 bis AT-B13, AT-B15/16 und AT-B18 steht im [[02-MVP-PRD]]; AT-B14 bestätigt erst die öffentliche Installierbarkeit. Die Prüfziele sind Anforderungen, keine bereits gemessenen Ergebnisse. Eigene zusätzliche PBIs werden erst angelegt, wenn ein eigenständiges Nutzerergebnis vorliegt; ein Mess- oder Technikschritt allein wird nicht künstlich zur User Story gemacht.
+Der interne Abnahmeplan AT-B01 bis AT-B12, AT-B15/16 und AT-B18 steht im [[02-MVP-PRD]] (AT-B13 folgt mit der mobilen Wochenarbeit nach dem MVP); AT-B14 bestätigt erst die öffentliche Installierbarkeit. Die Prüfziele sind Anforderungen, keine bereits gemessenen Ergebnisse. Eigene zusätzliche PBIs werden erst angelegt, wenn ein eigenständiges Nutzerergebnis vorliegt; ein Mess- oder Technikschritt allein wird nicht künstlich zur User Story gemacht.
 
 ## Herkunft und Pflege
 

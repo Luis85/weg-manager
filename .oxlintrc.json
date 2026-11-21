@@ -1,0 +1,178 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "vue", "import", "unicorn", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
+  "ignorePatterns": [
+    "docs/**",
+    ".claude/**",
+    "skills/**",
+    "dist/**",
+    "release/**",
+    "reports/**",
+    ".stryker-tmp/**",
+    ".superpowers/**",
+    ".obsidian-cache/**"
+  ],
+  "rules": {
+    "no-console": "error",
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": ["_tag"]
+      }
+    ],
+    "import/no-unassigned-import": [
+      "error",
+      {
+        "allow": ["**/*.css"]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["scripts/**", "src/infrastructure/logging/**"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["src/domain/**", "src/application/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["obsidian", "electron", "vue", "@nuxt/*", "@tanstack/*", "@vue/*"],
+                "message": "domain and application import only effect and inner layers."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/infrastructure/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["obsidian", "vue", "@nuxt/*", "@tanstack/*", "@vue/*"],
+                "message": "obsidian only in src/infrastructure/obsidian/**; vue and UI libraries only in src/presentation/**."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/infrastructure/obsidian/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["vue", "@nuxt/*", "@tanstack/*", "@vue/*"],
+                "message": "vue and UI libraries only in src/presentation/**."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/presentation/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["obsidian", "effect", "effect/*", "**/infrastructure/**"],
+                "message": "presentation calls use cases through src/presentation/runtime; it never imports obsidian, effect or infrastructure."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/presentation/runtime/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["obsidian", "**/infrastructure/**"],
+                "message": "presentation never imports obsidian or infrastructure."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/main.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["effect", "effect/*", "vue", "@nuxt/*", "@tanstack/*", "@vue/*"],
+                "message": "main.ts is composition only; wiring lives in bootstrap.ts."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/bootstrap.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["vue", "@nuxt/*", "@tanstack/*", "@vue/*"],
+                "message": "vue and UI libraries only in src/presentation/**."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["harness/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["obsidian", "**/infrastructure/obsidian/**"],
+                "message": "the harness runs in a plain browser without obsidian."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["tests/e2e/**"],
+      "rules": {
+        "no-await-in-loop": "off",
+        "unicorn/consistent-function-scoping": "off"
+      }
+    }
+  ]
+}

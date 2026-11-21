@@ -22,9 +22,12 @@ Die Produktkonzeption wird in Obsidian als verknüpfte Markdown-Notes bearbeitet
 | `docs/business-rules/`  | Einzelne fachliche Regeln und Abnahmebeispiele. `type: BusinessRule`, stabile Kennung, Status und Geltungsbereich; keine Backlog-Arbeitselemente.                               |
 | `docs/decisions/`       | Einzelne Produkt- und Konzeptentscheidungen mit Begründung, Auswirkungen und offenen Punkten. `type: Decision`; Status `vorgeschlagen`, `im-entwurf`, `teilweise-festgelegt` oder `festgelegt`.                         |
 | `docs/hypothesis/`      | Prüffähige Annahmen mit Herkunft, vorgeschlagener Untersuchung und Evidenzgrenzen. `type: Hypothesis`; ein ungeprüfter Nutzen wird nicht als bewiesen dargestellt.              |
-| `docs/plans/`           | Technische Umsetzungspläne, derzeit der Blueprint für die Plugin-Shell; ohne Frontmatter und keine Konzeptnotes. |
 | `docs/releases/`        | Geplante Releases als `type: Release`. Anforderungen werden explizit über `release` zugeordnet; die Zugehörigkeit ist keine Fertigmeldung.                                      |
 | `docs/agents/`          | Konfiguration für die Engineering-Skills unter `.claude/skills/` (Issue Tracker, Triage-Labels, Domain Docs), eingebunden über `AGENTS.md`. Agentenkonfiguration, keine Konzeptnotes; ohne `type`, Backlog-Eltern oder Ränge. |
+| `docs/adr/`             | Technische Architekturentscheidungen des Plugins (ADR, englisch), z. B. Abhängigkeitsstand. Getrennt von den Produktentscheidungen in `docs/decisions/`. |
+| `docs/engineering/`     | Entwicklerdokumentation des Plugins (englisch): Architektur, Features hinzufügen, Tests, Fehlerbehandlung, Release, GitHub-Einrichtung. |
+| `docs/plans/`           | Umsetzungspläne und Übergaben für Agentenläufe (Blueprint, Handoff). Arbeitsstand, keine Produktvorgabe. |
+| `docs/archify/`         | Mit Archify erzeugte Diagramme und Erklärseiten, je Auftrag ein Ordner `<typ>-<slug>-<zeitstempel>/` mit Quelle (`candidate.json` bzw. `candidate.archify.md`) und eigenständiger HTML-Datei. Anschauungsmaterial, keine Produktvorgabe. |
 
 Die vorhandene [[Product Backlog.base]] enthält die aktuellen View-Konfigurationen. Navigation zu einer Sammlung erfolgt über eine tatsächlich vorhandene View, beispielsweise [[Product Backlog.base#Business Rules]]. `docs/release-notes/` ist dort als künftiger Ablageort für Release Notes konfiguriert, derzeit aber kein vorhandener Dokumentordner. Weitere konfigurierte Ablageorte stehen unten; sie werden erst bei tatsächlichem Bedarf angelegt.
 
@@ -70,7 +73,7 @@ Technische Lösung und Aufwand bleiben in dieser Konzeptphase offen. Fachliche R
 
 ## Backlog-Regeln aus der bisherigen Konfiguration
 
-Die folgenden strukturellen Regeln wurden aus der entfernten `README_PRODUCT_BACKLOG.md` übernommen. Aktuelle Propertynamen und View-Einstellungen stehen in `Product Backlog.base`; die menschlich gepflegten Konventionen oben ergänzen sie. Diese zentrale README ist keine vom Plugin automatisch erzeugte Datei.
+Die folgenden strukturellen Regeln wurden aus der entfernten `README_PRODUCT_BACKLOG.md` übernommen. Aktuelle Propertynamen und View-Einstellungen stehen in `docs/Product Backlog.base`; die menschlich gepflegten Konventionen oben ergänzen sie. Diese zentrale README ist keine vom Plugin automatisch erzeugte Datei.
 
 ### Typen und zulässige Beziehungen
 
@@ -143,7 +146,7 @@ Aktuell ist Designstand v2: vier Navigationsziele plus Kontakte und Einstellunge
 
 ## Verteilbare Claude Skills
 
-Der Ordner `skills/` enthält Skill-Quellen und das [Paketmanifest](../skills/manifest.json), `skills/dist/` die beim Build erzeugten ZIPs. Der Ordner ist nicht versioniert; Links auf das ZIP funktionieren erst nach einem lokalen Build. [weg-gmail-to-vault](../skills/weg-gmail-to-vault/SKILL.md) ist der erste konkrete MVP-Skill. `scripts/package_claude_skills.py` baut das Paket reproduzierbar; `tests/skills/` enthält ausschließlich synthetische Tests für Writer und Paket. Dies ist Skill-Infrastruktur, keine implementierte Pluginoberfläche oder eigener Gmail-Connector. Es werden keine zusätzlichen README-Dateien angelegt.
+Der Ordner `skills/` enthält Skill-Quellen und das [Paketmanifest](../skills/manifest.json). Die ZIPs werden nicht eingecheckt: `python3 skills/package_claude_skills.py` erzeugt sie unter `skills/dist/`, die CI stellt sie als Artefakt `claude-skills` bereit. [weg-gmail-to-vault](../skills/weg-gmail-to-vault/SKILL.md) ist der erste konkrete MVP-Skill. `skills/package_claude_skills.py` baut das Paket reproduzierbar; `skills/tests/` enthält ausschließlich synthetische Tests für Writer und Paket. Dies ist Skill-Infrastruktur, keine implementierte Pluginoberfläche oder eigener Gmail-Connector. Es werden keine zusätzlichen README-Dateien angelegt.
 
 [[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] ist explizit dem MVP zugeordnet; das gemischte F-18 erhält keine pauschale Releasezuordnung für alle Kinder. Die Plugininstallation und ein tatsächlicher Claude-/Gmail-Test bleiben offen. `pages` und `user-flows` dieser neuen Story bleiben bis zur konkreten Ergänzung der Sitemap v2 leer; alte oder ähnliche Ansichten werden nicht als bereits fertiges Integrationsdesign ausgegeben.
 

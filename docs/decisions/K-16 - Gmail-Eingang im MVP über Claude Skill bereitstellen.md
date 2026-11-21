@@ -24,7 +24,7 @@ Ein eigener WEG-Manager-MCP-Server ist nicht erforderlich. Der vorhandene Claude
 
 ## Konkreter Stand
 
-[Skill-Quelldatei](../../skills/weg-gmail-to-vault/SKILL.md), [ZIP-Paket](../../skills/dist/weg-gmail-to-vault-0.1.0.zip) und [Paketmanifest](../../skills/manifest.json) liegen im Repository. Der Plugininstaller ist noch nicht implementiert. Ein Live-Test mit Claude und einem echten Gmail-Konto ist noch ausstehend; lokale Tests und eine synthetische Agentenanwendung sind dokumentiert.
+[Skill-Quelldatei](../../skills/weg-gmail-to-vault/SKILL.md) und [Paketmanifest](../../skills/manifest.json) liegen im Repository. Das ZIP-Paket `skills/dist/weg-gmail-to-vault-0.1.0.zip` wird nicht eingecheckt, sondern mit `python3 skills/package_claude_skills.py` erzeugt; die CI baut es bei jedem Lauf und stellt es als Artefakt `claude-skills` bereit. Der Plugininstaller ist noch nicht implementiert. Ein Live-Test mit Claude und einem echten Gmail-Konto ist noch ausstehend; lokale Tests und eine synthetische Agentenanwendung sind dokumentiert.
 
 ## Bezüge
 

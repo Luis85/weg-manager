@@ -1,6 +1,6 @@
 # Issue tracker: Obsidian backlog
 
-Issues and specs for this repo live as Markdown notes with YAML frontmatter, shown through `Product Backlog.base`. GitHub Issues is not used. `docs/README_DOCS.md` is the authority on conventions; read it before writing any note. Where this file and it disagree, it wins.
+Issues and specs for this repo live as Markdown notes with YAML frontmatter, shown through `docs/Product Backlog.base`. GitHub Issues is not used. `docs/README_DOCS.md` is the authority on conventions; read it before writing any note. Where this file and it disagree, it wins.
 
 ## Conventions
 

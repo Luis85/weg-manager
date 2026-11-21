@@ -29,8 +29,7 @@ Die Prüfung am 21.11.2026 hat gezeigt, dass die Notes außerhalb des Backlogs o
 | Lokale Kennungen kollidieren | A1–A7 und E1–E5 in [[Konzept - Vorbereitung ohne KI]], D1–D9 und M1–M5 als Bildschirmkennungen, H-01 bis H-08 in [[05-Annahmen-und-Entscheidungen]] mit anderem Inhalt als unter `docs/hypothesis` |
 | Veraltete Notes ohne Kennzeichnung | Research vom 15.11.2026 beschreibt noch den Handwerker-Zuschnitt; inzwischen mit `status: historisch` und Geltungshinweisen behoben |
 | Verknüpfungen nur in eine Richtung | Neue Jobs und Interviews waren von keiner Produkt-Note aus erreichbar; Pages tragen kein `actors` |
-| Notes in keiner View | Produktvision, PRD, `docs/plans/`; die View „Design Foundations“ zeigt zugleich PNG-, CSS- und HTML-Dateien |
-| Links auf Build-Ausgaben | Vier Links zeigen auf ein ZIP unter `skills/dist/`, das nicht versioniert ist |
+| Notes in keiner View | Produktvision, PRD, `docs/plans/`, `docs/engineering/`, `docs/adr/`; die View „Design Foundations“ zeigt zugleich PNG-, CSS- und HTML-Dateien |
 
 Für PBIs lösen Plugin und Konventionen diese Fragen bereits. Für die übrigen Notes fehlt eine solche Grundlage. Je mehr Research, Jobs und Interviews entstehen, desto teurer wird das.
 
@@ -126,11 +125,11 @@ Ein Skript unter `scripts/` prüft bei jedem Commit:
 
 - Pflicht-Properties und erlaubte Werte je Typ,
 - eindeutige Kennungen und das Dateinamenmuster,
-- auflösbare Wikilinks und relative Links; Links auf Build-Ausgaben wie `skills/dist/` sind ausdrücklich erlaubt oder werden durch einen Verweis auf das Manifest ersetzt,
+- auflösbare Wikilinks und relative Links; auf Build-Ausgaben wie `skills/dist/` wird nicht verlinkt, sondern mit Pfad und Build-Befehl verwiesen,
 - keine Links in `docs/_intake/`,
 - `superseded-by` bei `status: historisch`.
 
-Es läuft lokal und, sobald vorhanden, in der CI. Es ändert keine Dateien und meldet nur. Tests liegen wie die übrigen unter `tests/`.
+Es läuft lokal und in der CI, ändert keine Dateien und meldet nur. Ablage und Tests folgen den Konventionen unter `docs/engineering/`.
 
 ## Abgrenzung und betrachtete Alternative
 

@@ -1,0 +1,94 @@
+/*
+ * Stands in for Obsidian: the theme variables tokens.css reads, plus page chrome. Not scoped,
+ * because it plays the host (vite.harness.config.ts skips it in scopeCss).
+ */
+body.theme-light {
+  --background-primary: #ffffff;
+  --background-secondary: #f6f6f6;
+  --background-modifier-border: #e0e0e0;
+  --text-normal: #222222;
+  --text-muted: #5c5c5c;
+  --text-on-accent: #ffffff;
+  --interactive-accent: #7b6cd9;
+  --text-error: #d12f2f;
+  --text-success: #198038;
+  --text-warning: #b25b00;
+}
+
+body.theme-dark {
+  --background-primary: #1e1e1e;
+  --background-secondary: #262626;
+  --background-modifier-border: #3a3a3a;
+  --text-normal: #dadada;
+  --text-muted: #a3a3a3;
+  --text-on-accent: #ffffff;
+  --interactive-accent: #8a7cf0;
+  --text-error: #fb6464;
+  --text-success: #4cc47a;
+  --text-warning: #e8a04c;
+}
+
+body {
+  --font-interface: system-ui, sans-serif;
+  --font-monospace: ui-monospace, monospace;
+  --radius-s: 4px;
+  margin: 0;
+  font-family: var(--font-interface);
+  background: var(--background-secondary);
+  color: var(--text-normal);
+}
+
+.harness-bar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.harness-surfaces {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px;
+}
+
+.harness-leaf {
+  flex: 1;
+  min-width: 0;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.harness-narrow {
+  flex: 0 0 320px;
+}
+
+.harness-notices {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  max-width: 360px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.harness-notices li {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+}
+
+@media (max-width: 720px) {
+  .harness-surfaces {
+    flex-direction: column;
+  }
+  .harness-narrow {
+    flex-basis: auto;
+    width: 320px;
+    max-width: 100%;
+  }
+}

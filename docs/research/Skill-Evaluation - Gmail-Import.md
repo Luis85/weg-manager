@@ -17,7 +17,7 @@ Sein vorgeschlagener Output hatte jedoch kein gemeinsames `type`-/Schemaversions
 
 ## Deterministische Tests
 
-[Testdateien](../../tests/skills/test_gmail_to_vault.py) prüfen den lokalen Writer; [Pakettests](../../tests/skills/test_skill_package.py) prüfen Struktur, Prüfsumme und Reproduzierbarkeit. Die Tests wurden zuerst ohne Implementierung ausgeführt und scheiterten am fehlenden Modul. Die folgenden Implementierungs- und Regressionstests decken beobachtete Format-/Dateisystemfälle ab.
+[Testdateien](../../skills/tests/test_gmail_to_vault.py) prüfen den lokalen Writer; [Pakettests](../../skills/tests/test_skill_package.py) prüfen Struktur, Prüfsumme und Reproduzierbarkeit. Die Tests wurden zuerst ohne Implementierung ausgeführt und scheiterten am fehlenden Modul. Die folgenden Implementierungs- und Regressionstests decken beobachtete Format-/Dateisystemfälle ab.
 
 **26 Tests bestanden:** 24 Writer-Tests und zwei Pakettests. Ein zusätzlicher Symlink-Test wurde auf diesem System übersprungen, weil das Anlegen eines Symlinks nicht erlaubt war; daraus wird kein bestandener Plattformtest abgeleitet. Geprüft wurden unter anderem Vorschau ohne Schreibzugriff, Ausgabeformat, Konto-/Nachrichtenidentität, gleiche Threads, wiederholte Suchseiten, umbenannte vorhandene Notes, alte Identitätsfelder, YAML-Kommentare/quotierte Feldnamen, fehlende Daten, Teiltext, abweichender neuer Quellinhalt, untrusted Text, Pfadgrenzen, vorhandene Zielkollision, beschädigtes Frontmatter, unabhängige Behandlung fehlerhafter Datensätze und keine Anhangsdownloadbehauptung.
 

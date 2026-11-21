@@ -38,9 +38,9 @@ Der vorhandene Connector kann selbst MCP verwenden. „Ohne eigenen MCP-Server�
 | Notizvertrag | [Schema v1](../../skills/weg-gmail-to-vault/references/email-note-schema.md), Quelle für Felder, Identität und Unvollständigkeit. |
 | Laufzeitbeschreibung | [Installation und Fähigkeiten](../../skills/weg-gmail-to-vault/references/runtime-and-installation.md). |
 | Writer | [import_messages.py](../../skills/weg-gmail-to-vault/scripts/import_messages.py), Python 3.10+, Standardbibliothek, keine Netzwerkaufrufe. |
-| Verteilbares Paket | [ZIP 0.1.0](../../skills/dist/weg-gmail-to-vault-0.1.0.zip), ein oberster Skillordner, alle Runtime-Ressourcen enthalten. |
+| Verteilbares Paket | ZIP 0.1.0 (`skills/dist/weg-gmail-to-vault-0.1.0.zip`, nicht eingecheckt; erzeugt mit `python3 skills/package_claude_skills.py`, in der CI als Artefakt `claude-skills`), ein oberster Skillordner, alle Runtime-Ressourcen enthalten. |
 | Installationsmanifest | [manifest.json](../../skills/manifest.json), Version, Paketpfad, Prüfsumme, Größe und benötigte Fähigkeiten. Prüfsumme ist Integritätsvergleich, keine Signatur oder Identitätsprüfung des Herausgebers. |
-| Reproduzierbarer Build | [package_claude_skills.py](../../scripts/package_claude_skills.py). Baut das Paket, installiert aber nichts. |
+| Reproduzierbarer Build | [package_claude_skills.py](../../skills/package_claude_skills.py). Baut das Paket, installiert aber nichts. |
 
 Die spätere Plugininstallation bietet entweder den unterstützten lokalen Claude-Code-Projektpfad `.claude/skills/weg-gmail-to-vault/` an oder stellt das ZIP für Claudes Skillimport bereit. Zielpfad und vorhandene Version werden sichtbar; vorhandene Nutzeranpassungen nicht blind überschreiben. Archive nur unter dem gewählten Ziel entpacken, keine absoluten Pfade/Traversal/Symlinks aus einem Paket akzeptieren. Die noch nicht implementierte Installation muss zusätzlich zum Paketstand geprüft werden.
 

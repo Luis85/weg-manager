@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "types": ["node"],
+    "paths": {
+      "@test/obsidian": ["../tests/support/obsidian/index.ts"]
+    },
+    "allowJs": true
+  },
+  "include": [
+    "../src/**/*.ts",
+    "../src/**/*.vue",
+    "../tests/**/*.ts",
+    "../tests/**/*.vue",
+    "../harness/**/*.ts",
+    "../harness/**/*.vue",
+    "../src/env.d.ts"
+  ],
+  "exclude": ["../tests/e2e/**"]
+}

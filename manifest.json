@@ -1,0 +1,9 @@
+{
+  "id": "weg-manager",
+  "name": "WEG Manager",
+  "version": "0.1.0",
+  "minAppVersion": "1.15.1",
+  "description": "Track open items, weekly work and follow-ups for German condominium (WEG) advisory boards.",
+  "author": "Luis Mendez",
+  "isDesktopOnly": true
+}

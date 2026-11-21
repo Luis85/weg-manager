@@ -1,0 +1,28 @@
+/* Plugin tokens, mapped once from Obsidian's theme variables so light/dark and themes follow the host. */
+:root {
+  --wm-bg: var(--background-primary);
+  --wm-bg-secondary: var(--background-secondary);
+  --wm-border: var(--background-modifier-border);
+  --wm-text: var(--text-normal);
+  --wm-text-muted: var(--text-muted);
+  --wm-text-on-accent: var(--text-on-accent);
+  --wm-accent: var(--interactive-accent);
+  --wm-error: var(--text-error);
+  --wm-success: var(--text-success);
+  --wm-warning: var(--text-warning);
+  --wm-font: var(--font-interface);
+  --wm-font-mono: var(--font-monospace);
+  --wm-radius: var(--radius-s);
+}
+
+/*
+ * Tailwind's text scale (emitted as --wm-text-*) follows Obsidian's UI font sizes, so the plugin
+ * scales with the user's interface font size. The rem fallbacks only apply outside Obsidian
+ * (browser harness). xl and 2xl stay on Tailwind's scale: Obsidian has no larger UI size.
+ */
+@theme {
+  --text-xs: var(--font-ui-smaller, 0.75rem);
+  --text-sm: var(--font-ui-small, 0.875rem);
+  --text-base: var(--font-ui-medium, 1rem);
+  --text-lg: var(--font-ui-large, 1.125rem);
+}

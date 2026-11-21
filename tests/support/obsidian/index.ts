@@ -28,7 +28,11 @@ export {
   settingsIn,
 } from "./settings";
 export { ItemView, View, WorkspaceLeaf, type ViewCreator } from "./views";
-export { MetadataCache, TAbstractFile, TFile, TFolder, Vault } from "./vault";
+export { FileManager } from "./file-manager";
+export { MetadataCache, type CachedMetadata } from "./metadata-cache";
+export { normalizePath } from "./paths";
+export { TAbstractFile, TFile, TFolder, Vault } from "./vault";
+export { YAMLParseError, parseYaml, stringifyYaml } from "./yaml";
 export { Workspace } from "./workspace";
 export { WorkspaceRibbon, type RibbonItem } from "./ribbon";
 export { installDomExtensions } from "./dom";

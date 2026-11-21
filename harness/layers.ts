@@ -2,12 +2,12 @@ import { Effect, Layer } from "effect";
 import type { AppServices } from "../src/application/app-services";
 import { AppEvent } from "../src/application/events";
 import { appNoteTypes } from "../src/application/note-types";
+import { communitySelectionLayer } from "../src/application/communities";
 import { noteIndexLayer } from "../src/application/notes";
 import { messagesLayer } from "../src/application/messages";
 import {
   Clipboard,
   ClipboardError,
-  deviceStoreInMemory,
   EventBus,
   EventBusLive,
   HostInfo,
@@ -22,6 +22,7 @@ import {
   type UserMessage,
 } from "../src/application/shell";
 import { memoryNoteStore, sequentialIdGenerator } from "../src/infrastructure/memory/notes";
+import { deviceStoreInMemory } from "../src/infrastructure/memory/shell";
 import { consoleSinkLayer } from "../src/infrastructure/logging/console-sink";
 import { incidentsLayer } from "../src/infrastructure/logging/incidents";
 
@@ -115,7 +116,8 @@ export const harnessLayer = (
   );
   // Built last, as the host event adapter is in the plugin: the browser has no metadata cache to
   // wait for, so the vault is ready at once and the index builds from the in-memory notes.
-  return vaultReadyAtOnce.pipe(Layer.provideMerge(notes));
+  const communities = communitySelectionLayer.pipe(Layer.provideMerge(notes));
+  return vaultReadyAtOnce.pipe(Layer.provideMerge(communities));
 };
 
 const vaultReadyAtOnce = Layer.effectDiscard(

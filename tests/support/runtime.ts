@@ -1,9 +1,11 @@
 import { Effect, Layer, ManagedRuntime } from "effect";
 import type { AppRuntime } from "../../src/application/app-services";
 import { AppEvent } from "../../src/application/events";
+import { communitySelectionLayer } from "../../src/application/communities";
+import { appNoteTypes } from "../../src/application/note-types";
 import { noteIndexLayer, type NoteTypeRegistry } from "../../src/application/notes";
 import { EventBus } from "../../src/application/shell/event-bus";
-import { deviceStoreInMemory } from "../../src/application/shell/device-store";
+import { deviceStoreInMemory } from "../../src/infrastructure/memory/shell";
 import { memoryNoteStore, sequentialIdGenerator } from "../../src/infrastructure/memory/notes";
 import { InvalidSettingsError } from "../../src/application/shell/errors";
 import { messagesLayer } from "../../src/application/messages";
@@ -29,7 +31,7 @@ export type TestRuntimeOptions = {
   readonly rejectUpdates?: readonly SettingsIssue[];
   /** The UI language; German by default, so the exact-text tests pin the product's language. */
   readonly language?: Language;
-  /** The note types the index holds; none by default, as in the plugin today. */
+  /** Note types the index holds beside the plugin's own (`appNoteTypes`), e.g. test types. */
   readonly noteTypes?: NoteTypeRegistry;
 };
 
@@ -75,7 +77,10 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
     deviceStoreInMemory(),
     sequentialIdGenerator().layer,
   );
-  const layer = noteIndexLayer(options.noteTypes ?? []).pipe(Layer.provideMerge(services));
+  const types = [...appNoteTypes, ...(options.noteTypes ?? [])];
+  const layer = communitySelectionLayer.pipe(
+    Layer.provideMerge(noteIndexLayer(types).pipe(Layer.provideMerge(services))),
+  );
   const runtime: AppRuntime = ManagedRuntime.make(layer);
   /** What the host event adapter publishes once Obsidian's cache holds every note. */
   const vaultReady = () =>

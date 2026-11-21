@@ -1,6 +1,7 @@
-import { Effect, Option, Result, Stream, type Layer } from "effect";
+import { Effect, Layer, Option, Result, Stream } from "effect";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AppRuntime, AppServices } from "../../../../src/application/app-services";
+import { appNoteTypes } from "../../../../src/application/note-types";
 import {
   NoteStore,
   noteChanges,
@@ -9,6 +10,7 @@ import {
   unindexedSnapshot,
   type NoteSnapshot,
 } from "../../../../src/application/notes";
+import { communitiesLayer } from "../../../../src/infrastructure/obsidian/communities";
 import { useStream } from "../../../../src/presentation/shell";
 import { host } from "../../../support/composable";
 import { FULL, testItem } from "../../../support/notes/test-note-type";
@@ -40,13 +42,16 @@ afterEach(async () => {
 
 /**
  * The plugin's own composition on the Obsidian double: the shell's Layers with the notes module's
- * built on them (the Obsidian `NoteStore` and the index for the test type), host events last.
+ * built on them (the Obsidian `NoteStore` and the index for the app's types and the test type),
+ * the communities module on those, host events last.
  */
 const start = async (plugin: InstanceType<typeof Bare>) => {
   const layer: Layer.Layer<AppServices> = shellLayer(
     plugin as never,
     { developmentMode: false, language: "de" },
-    notesLayer(plugin as never, [testItem]),
+    communitiesLayer.pipe(
+      Layer.provideMerge(notesLayer(plugin as never, [...appNoteTypes, testItem])),
+    ),
   );
   const runtime: AppRuntime = ManagedRuntime.make(layer);
   runtimes.push(runtime);

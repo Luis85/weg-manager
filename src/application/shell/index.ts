@@ -1,7 +1,6 @@
 // The public face of the shell's application layer (ADR 0006): other modules, other layers and the
 // composition files import only this.
 export { reportDefect } from "./defects";
-export { deviceStoreInMemory } from "./device-store";
 export {
   ClipboardError,
   ReadOnlySettingsError,

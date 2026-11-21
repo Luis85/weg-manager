@@ -3,6 +3,7 @@
 The walking skeleton (greeting and markdown file count) in module `shell` is the worked example. A new module gets a folder per layer; see [Modules](architecture.md#modules) for its `index.ts` and the composing files. Each step lists the file it uses as a model and the test that comes **first**: write it, see it fail, then implement.
 
 1. **Domain rule** (`src/domain/shell/settings.ts`). Pure functions and Effect Schema, no services, no language: a broken rule is a `SettingsIssue` code with its data (`{ code: "greeting.length", max }`). Test: `tests/unit/domain/<module>/*.test.ts`, with the exact issues.
+   - A new setting is one entry in `FIELDS` in `settings.ts` plus its key in `Settings` and its issue code; see [Settings](architecture.md#settings). Decode, patch validation and encode follow from it.
    - Word each new issue code in both catalogs (`src/application/shell/i18n/de.ts`, `en.ts`) and pin both sentences in `tests/unit/application/shell/i18n.test.ts`.
 2. **Port, service, use case** (`src/application/shell/`).
    - A new capability the host provides becomes a port in the module's `ports.ts`.

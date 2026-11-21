@@ -69,11 +69,12 @@ describe("copyFrontmatter", () => {
 describe("recordNotes", () => {
   it("keeps the records, sorted by path, each with its own copy of the frontmatter", () => {
     const shared = { schema: "weg-manager.community/v1", tags: ["a"] };
+    // Neither sorted nor reversed, so only a real sort gives the expected order.
     const notes = recordNotes([
+      { path: "a/Erste.md", frontmatter: { schema: "weg-manager.item/v2" } },
       { path: "b/Zweite.md", frontmatter: shared },
       { path: "Ohne.md", frontmatter: { title: "x" } },
       { path: "Kaputt.md", frontmatter: undefined },
-      { path: "a/Erste.md", frontmatter: { schema: "weg-manager.item/v2" } },
       { path: "B.md", frontmatter: { schema: "weg-manager.item/v1" } },
     ]);
     expect(notes).toEqual([

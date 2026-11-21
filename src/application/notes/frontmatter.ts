@@ -1,3 +1,4 @@
+import { Array as Arr, Order } from "effect";
 import { isRecordFrontmatter } from "../../domain/notes";
 import type { Frontmatter, FrontmatterPatch, Note } from "./ports";
 
@@ -8,8 +9,10 @@ import type { Frontmatter, FrontmatterPatch, Note } from "./ports";
  */
 export const applyPatch = (target: Record<string, unknown>, patch: FrontmatterPatch): void => {
   const set = patch.set ?? {};
-  for (const key of patch.remove ?? []) {
-    if (!Object.hasOwn(set, key)) Reflect.deleteProperty(target, key);
+  if (patch.remove !== undefined) {
+    for (const key of patch.remove) {
+      if (!Object.hasOwn(set, key)) Reflect.deleteProperty(target, key);
+    }
   }
   for (const [key, value] of Object.entries(set)) target[key] = structuredClone(value);
 };
@@ -20,10 +23,8 @@ export const copyFrontmatter = (frontmatter: Frontmatter | null | undefined): Fr
 
 type Candidate = { readonly path: string; readonly frontmatter: Frontmatter | undefined };
 
-const byPath = (a: Note, b: Note): number => {
-  if (a.path === b.path) return 0;
-  return a.path < b.path ? -1 : 1;
-};
+/** Code-unit order of the path, the same on every device and in every locale. */
+const byPath: Order.Order<Note> = Order.mapInput(Order.String, (note: Note) => note.path);
 
 /** The records among `candidates`, each with its own copy, sorted by path (code-unit order). */
 export const recordNotes = (candidates: Iterable<Candidate>): Note[] => {
@@ -33,5 +34,5 @@ export const recordNotes = (candidates: Iterable<Candidate>): Note[] => {
       notes.push({ path, frontmatter: copyFrontmatter(frontmatter) });
     }
   }
-  return notes.toSorted(byPath);
+  return Arr.sort(notes, byPath);
 };

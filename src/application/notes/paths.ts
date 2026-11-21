@@ -65,9 +65,8 @@ export const planRename = (
   Effect.flatMap(checkNoteName(newName), () => {
     const target = renamedNotePath(path, newName, normalize);
     const taken = clashesWith(siblingsOf(folderOf(path, normalize)), path);
-    return target !== path && taken(target)
-      ? Effect.fail(new NotePathTakenError())
-      : Effect.succeed(target);
+    // `taken` leaves the note's own path out, so its own name in another case is free.
+    return taken(target) ? Effect.fail(new NotePathTakenError()) : Effect.succeed(target);
   });
 
 /** Where and with what a new note is written. */

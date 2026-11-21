@@ -82,8 +82,10 @@ describe.each(CATALOGS)("describeError ($language)", (messages) => {
 
   it("never leaks the cause text of any error", () => {
     expect.hasAssertions();
+    // Bracketed, so no catalog text can hold it by chance (a bare "rope" is in "properties").
+    const cause = string().map((text) => `⟦${text}⟧`);
     fcAssert(
-      property(string(), (text) => {
+      property(cause, (text) => {
         const errors: AppError[] = [
           new StorageError({ cause: new Error(text) }),
           new VaultReadError({ cause: new Error(text) }),

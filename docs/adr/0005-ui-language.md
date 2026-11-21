@@ -1,6 +1,6 @@
 # ADR 0005 · UI language follows Obsidian
 
-- Status: accepted
+- Status: accepted; the greeting it describes was removed on 2026-11-21 (see the note at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -26,3 +26,9 @@ Every text the plugin showed was German and hard-wired: issue sentences in `src/
 - Ribbon entries are keyed by `<plugin id>:<title>` in Obsidian. A translated title would give the icon a new id on a language change, so Obsidian would forget its position and hidden state. Resolved (owner decision, 2026-11-21): the ribbon title is the product name "WEG Manager" (`PRODUCT_NAME`) in every language, so the id stays the same. Bootstrap adds the icon after the commands, so a failed load leaves none behind without Obsidian's internal `removeRibbonAction`.
 - The Obsidian double (`tests/support/obsidian/language.ts`) starts in German; `setLanguage` switches it. The e2e Obsidian starts German through Chromium's `--lang=de`; `language.e2e.ts` switches to English.
 - A third language means a new `Language` member, a new catalog, a Nuxt UI locale import and a mapping in `languageFromCode`.
+
+## Amendment, 2026-11-21: the greeting is gone
+
+The sample greeting was demo data of the plugin shell. The community slice (PBI-56) replaced the demo, and with it went `Settings.greeting`, `greetingOf`, `LEGACY_DEFAULT_GREETING`, the issue code `greeting.length` and the catalog key `defaultGreeting`. An old `greeting` key in `data.json` is an unknown key now and is dropped on decode without an issue; `SETTINGS_VERSION` stays 1.
+
+Everything else in this ADR stands: the language is chosen once per plugin load from Obsidian's, the domain returns issue codes and the catalogs word them, there is one typed catalog per language and module, and the diagnostics report stays German. The rule the greeting illustrated also stands for the settings that remain: a value that is still the default is left out of the file, so older versions read it without an issue (`rootFolder` today).

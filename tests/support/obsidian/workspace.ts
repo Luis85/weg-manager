@@ -1,3 +1,4 @@
+import type { App } from "./app";
 import { Events } from "./events";
 import { WorkspaceRibbon } from "./ribbon";
 import { WorkspaceLeaf, type ViewCreator } from "./views";
@@ -9,6 +10,19 @@ export class Workspace extends Events {
   private readonly creators = new Map<string, ViewCreator>();
   layoutReady = true;
   private readonly layoutCallbacks: (() => void)[] = [];
+  /** Test helper: how often `requestSaveLayout` was called. */
+  layoutSaves = 0;
+  /** Obsidian debounces the save; the double counts the requests. */
+  readonly requestSaveLayout = Object.assign(
+    () => {
+      this.layoutSaves += 1;
+    },
+    { cancel: () => undefined, run: () => undefined },
+  );
+
+  constructor(readonly app: App) {
+    super();
+  }
 
   registerViewCreator(type: string, creator: ViewCreator): void {
     this.creators.set(type, creator);

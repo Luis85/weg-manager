@@ -14,6 +14,11 @@ export class InvalidCommunityError extends Schema.TaggedError<InvalidCommunityEr
 /** Every expected failure of the communities module. Each needs a text in its describer. */
 export type CommunitiesError = InvalidCommunityError;
 
-export const COMMUNITIES_ERROR_TAGS: ReadonlySet<string> = new Set<CommunitiesError["_tag"]>([
-  "InvalidCommunityError",
-]);
+/** One key per member of `CommunitiesError`; typecheck fails while one is missing or extra. */
+const COMMUNITIES_ERROR_TAG_KEYS = {
+  InvalidCommunityError: true,
+} satisfies Record<CommunitiesError["_tag"], true>;
+
+export const COMMUNITIES_ERROR_TAGS: ReadonlySet<string> = new Set(
+  Object.keys(COMMUNITIES_ERROR_TAG_KEYS),
+);

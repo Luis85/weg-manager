@@ -4,23 +4,25 @@ The tracer slice, module `communities`, is the worked example: the first record 
 
 A feature is a module: one folder per layer, each with an `index.ts` (see [Modules](architecture.md#modules)). It imports `notes` and `shell` only through their indexes; `shell` and `notes` never import it.
 
-The shared files only compose. A new module adds one line to each of these, and typecheck fails until it does:
+The shared files only compose. A new module adds one line to each of these. Typecheck fails until it adds the lines marked *typecheck*, as soon as the module's code uses the part (a use case that needs its services, an error, a text, an event, a route); a unit test fails until it adds the note types; nothing fails for a missing navigation entry or frame part, which only does not show:
 
-| File | Line |
-| --- | --- |
-| `src/application/app-services.ts` | its services in `AppServices` |
-| `src/application/errors.ts` and `user-messages.ts` | its errors in `AppError`, its describer in `describeError` |
-| `src/application/messages.ts` | its part of `Catalog`, in `de` and `en` |
-| `src/application/events.ts` | its event record, when it has events |
-| `src/application/routes.ts` | its route schema in `Route` |
-| `src/application/note-types.ts` | its note types in `appNoteTypes` |
-| `src/infrastructure/obsidian/app-layer.ts` | its Layer in `appLayer` |
-| `src/presentation/app-surface.ts` | its screens, navigation entry and frame parts |
+| File | Line | Enforced by |
+| --- | --- | --- |
+| `src/application/app-services.ts` | its services in `AppServices` | typecheck |
+| `src/application/errors.ts` and `user-messages.ts` | its errors in `AppError`, its describer in `describeError` | typecheck |
+| `src/application/messages.ts` | its part of `Catalog`, in `de` and `en` | typecheck |
+| `src/application/events.ts` | its event record, when it has events | typecheck |
+| `src/application/routes.ts` | its route schema in `Route` | typecheck |
+| `src/application/note-types.ts` | its note types in `appNoteTypes` | `tests/unit/application/note-types.test.ts`: every note type a domain `index.ts` exports must be registered once; the test lists the domain indexes and fails until the new folder is in `DOMAIN_INDEXES` |
+| `src/infrastructure/obsidian/app-layer.ts` | its Layer in `appLayer` | typecheck (`appLayer` must provide `AppServices`) |
+| `src/presentation/app-surface.ts` | its screens, navigation entry and frame parts | typecheck for the screens (one per `Route` name); the navigation entry and the frame parts are not checked |
+
+Inside the module, its error union and the tag record its type guard reads (`COMMUNITIES_ERROR_TAG_KEYS` in `src/application/communities/errors.ts`) must name the same errors; typecheck fails while the record misses one or has one too many.
 
 ## 0. Words and contract
 
 - Put each new domain term into `GLOSSARY.md` before it enters code: English in code, German in the UI and in `docs/` (ADR 0006). The slice uses *community*, *short code*, *kind*, *unit label* and *community selection*, and added *colour*, *community switch*, *conflict* and *read-only*.
-- Register the module in `FEATURE_MODULES` in `eslint.config.mjs`. Its folders become fallow zones by themselves. If another module will import it, add it to the `allow` lists of the layer rules in `configs/fallow.json` too, next to `<layer>/shell`; fallow refuses a rule that names a zone with no folder yet, so add each entry with the first file of that folder.
+- Register the module in `FEATURE_MODULES` in `eslint.config.mjs`. Its folders become fallow zones by themselves and fall under the layer rules (`domain`, `application`, `adapters`, `presentation`) of `configs/fallow.json`, so the module may import `shell`, `notes` and every feature listed there. For other features to import it, add `<layer>/<module>` to the `allow` list of each of those layer rules where the module has a folder, next to `<layer>/communities`: fallow does not let a discovered zone import a sibling the rule does not name, and it has no wildcard for that. fallow refuses a rule that names a zone with no folder yet, so add each entry with the first file of that folder. fallow's cycle check keeps imports between features acyclic.
 - Write the file contract page with the note type: one German page per type and version in `docs/contracts/` (`DV-01 - Gemeinschaft v1.md`), in the manner described in [docs/README_DOCS.md](../README_DOCS.md).
 
 ## 1. Domain: the note type and the rules

@@ -2,6 +2,8 @@ import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GREETING_MAX_LENGTH } from "../../../src/domain/settings";
 import { validatePatch, DEFAULT_SETTINGS } from "../../../src/domain/settings";
+import { ReadOnlySettingsError } from "../../../src/application/errors";
+import { describeError } from "../../../src/application/user-messages";
 import { mountSurface } from "../../../src/presentation/mount";
 import { testRuntime, type TestRuntimeOptions } from "../../support/runtime";
 
@@ -165,12 +167,23 @@ describe("ShellPanel", () => {
     expect(panel.store.saved()).toEqual([expect.objectContaining({ greeting: "Moin" })]);
   });
 
-  it("shows the read-only hint and disables saving for a read-only store", async () => {
-    const panel = await open({ store: { failLoad: true } });
-    expect(panel.q("read-only-hint")).not.toBeNull();
-    expect(panel.submit().disabled).toBe(true);
-    expect(panel.input().disabled).toBe(true);
-  });
+  it.each([
+    ["an unreadable store", { failLoad: true }, "unreadable"],
+    ["settings from a newer version", { initial: { schemaVersion: 99 } }, "newer-version"],
+  ] as const)(
+    "shows the read-only cause and action and disables saving for %s",
+    async (_, store, reason) => {
+      const panel = await open({ store });
+      const hint = panel.q("read-only-hint");
+      const expected = describeError(new ReadOnlySettingsError({ reason }));
+      expect(hint?.getAttribute("role")).toBe("alert");
+      expect(hint?.textContent).toContain(expected.title);
+      expect(hint?.textContent).toContain(expected.detail);
+      expect(hint?.textContent).toContain("Diagnose kopieren");
+      expect(panel.submit().disabled).toBe(true);
+      expect(panel.input().disabled).toBe(true);
+    },
+  );
 
   it("writes no state and warns nothing when unmounted during a pending count", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});

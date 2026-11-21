@@ -1,9 +1,11 @@
 import { Events } from "./events";
+import { WorkspaceRibbon } from "./ribbon";
 import { WorkspaceLeaf, type ViewCreator } from "./views";
 
 export class Workspace extends Events {
   readonly leaves: WorkspaceLeaf[] = [];
   readonly revealed: WorkspaceLeaf[] = [];
+  readonly leftRibbon = new WorkspaceRibbon();
   private readonly creators = new Map<string, ViewCreator>();
   layoutReady = true;
   private readonly layoutCallbacks: (() => void)[] = [];

@@ -60,7 +60,7 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 
 | Spec | Covers |
 | --- | --- |
-| `lifecycle.e2e.ts` | opening the view, reveal instead of duplicate, two tabs with one closed, three disable/enable cycles leaving no view, ribbon icon or command behind, clean console |
+| `lifecycle.e2e.ts` | opening the view, reveal instead of duplicate, two tabs with one closed, the ribbon entry exactly once in `app.workspace.leftRibbon.items` after each load and none after disable, three disable/enable cycles leaving no view, ribbon icon or command behind, clean console |
 | `settings-and-theme.e2e.ts` | the native settings tab saving to `data.json`, empty greeting never written, light/dark switch with Obsidian's colours reaching the surface, newer `data.json` shown read-only and never overwritten |
 | `popout.e2e.ts` | the view moved to a pop-out: surface, portal and About dialog in the pop-out's document, theme switch there, clean close |
 

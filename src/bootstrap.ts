@@ -8,7 +8,7 @@ import { consoleSink } from "./infrastructure/logging/console-sink";
 import { appLayer } from "./infrastructure/obsidian/app-layer";
 import { registerCommands } from "./infrastructure/obsidian/commands";
 import { showMessage } from "./infrastructure/obsidian/notices";
-import { bindRibbonIcon } from "./infrastructure/obsidian/ribbon";
+import { RIBBON_ICON, RIBBON_TITLE, releaseRibbonIcon } from "./infrastructure/obsidian/ribbon";
 import { runSafely } from "./infrastructure/obsidian/run";
 import { mirrorSettings } from "./infrastructure/obsidian/settings-mirror";
 import { ShellSettingTab } from "./infrastructure/obsidian/settings-tab";
@@ -89,10 +89,14 @@ export const bootstrap = async (
         runtime,
         Effect.promise(() => openView(plugin)),
       );
-    undo.push(bindRibbonIcon(plugin, mirror, open));
+    // Added once; the user can hide it from the ribbon's context menu. Only a failed bootstrap
+    // removes its ribbon icon and commands. On a normal unload Obsidian removes them itself, and
+    // removing by id here could hit those of a quick re-enable.
+    const ribbon = plugin.addRibbonIcon(RIBBON_ICON, RIBBON_TITLE, () => open());
+    undo.push(() => {
+      if (!started) releaseRibbonIcon(plugin, ribbon);
+    });
     const removeCommands = registerCommands(plugin, runtime, () => open().then(() => undefined));
-    // Only a failed bootstrap removes its commands. On a normal unload Obsidian removes them
-    // itself, and removing by id here could hit the commands of a quick re-enable.
     undo.push(() => {
       if (!started) removeCommands();
     });

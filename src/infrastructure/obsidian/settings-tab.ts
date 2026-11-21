@@ -4,20 +4,27 @@ import type { AppRuntime } from "../../application/app-services";
 import { ReadOnlySettingsError, type UpdateSettingsError } from "../../application/errors";
 import { Notifier } from "../../application/ports";
 import type { SettingsService } from "../../application/settings-service";
-import { setLogLevel, setRibbonIconVisible, updateGreeting } from "../../application/use-cases";
+import { setLogLevel, updateGreeting } from "../../application/use-cases";
 import { describeError } from "../../application/user-messages";
-import { LOG_LEVELS, validatePatch, type LogLevel, type Settings } from "../../domain/settings";
+import { validatePatch, type LogLevel, type Settings } from "../../domain/settings";
 import { runSafely } from "./run";
 import type { SettingsMirror } from "./settings-mirror";
 
-type Key = "greeting" | "showRibbonIcon" | "logLevel";
+type Key = "greeting" | "logLevel";
+
+/** German labels for the dropdown; the stored values stay `error`, `warn`, `info`, `debug`. */
+const LOG_LEVEL_LABELS = {
+  error: "Fehler",
+  warn: "Warnungen",
+  info: "Informationen",
+  debug: "Details",
+} satisfies Record<LogLevel, string>;
 
 const updates: Record<
   Key,
   (value: unknown) => Effect.Effect<Settings, UpdateSettingsError, SettingsService>
 > = {
   greeting: (value) => updateGreeting(String(value)),
-  showRibbonIcon: (value) => setRibbonIconVisible(value === true),
   logLevel: (value) => setLogLevel(value as LogLevel),
 };
 
@@ -50,17 +57,12 @@ export class ShellSettingTab extends PluginSettingTab {
         },
       },
       {
-        name: "Symbol im Menüband",
-        desc: "Zeigt das Symbol zum Öffnen der Ansicht im Menüband.",
-        control: { type: "toggle", key: "showRibbonIcon", disabled },
-      },
-      {
         name: "Protokollstufe",
         desc: "Wie ausführlich das Plugin in die Entwicklerkonsole schreibt.",
         control: {
           type: "dropdown",
           key: "logLevel",
-          options: Object.fromEntries(LOG_LEVELS.map((level) => [level, level])),
+          options: LOG_LEVEL_LABELS,
           disabled,
         },
       },

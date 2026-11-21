@@ -2,6 +2,7 @@ import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h, type ComponentInternalInstance } from "vue";
 import { SettingsService } from "../../../../src/application/shell/settings-service";
+import { encodeSettings } from "../../../../src/domain/shell";
 import GreetingForm from "../../../../src/presentation/shell/components/GreetingForm.vue";
 import { mountSurface } from "../../../../src/presentation/shell/mount";
 import { testRuntime, type TestRuntimeOptions } from "../../../support/runtime";
@@ -135,7 +136,7 @@ describe("GreetingForm closed during a save", () => {
     const current = await test.runtime.runPromise(
       SettingsService.use((service) => service.current),
     );
-    expect(current).toEqual(test.store.stored());
+    expect(encodeSettings(current)).toEqual(test.store.stored());
     expect({
       pending: save.pending.value,
       value: save.value.value,

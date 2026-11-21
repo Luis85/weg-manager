@@ -14,6 +14,8 @@ export const shellDe: ShellCatalog = {
     "greeting.length": ({ max }) => `Die Begrüßung muss 1 bis ${max} Zeichen lang sein.`,
     "logLevel.unknown": ({ allowed }) =>
       `Die Protokollstufe muss eine von ${allowed.join(", ")} sein.`,
+    "rootFolder.invalid": ({ max }) =>
+      `Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens ${max} Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.`,
   },
   errors: {
     storage: {

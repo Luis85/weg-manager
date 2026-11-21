@@ -37,13 +37,13 @@ export type SettingsFields<F extends object, Issue extends IssueLike> = {
  */
 export type Migrations = Readonly<Record<number, (raw: Record<string, unknown>) => unknown>>;
 
-export type DecodedSettings<S, Issue extends IssueLike> = {
+export type Decoded<S, Issue extends IssueLike> = {
   readonly settings: S;
   readonly issues: readonly (Issue | StructuralIssue)[];
   readonly writable: boolean;
 };
 
-export type PatchResult<S, Issue extends IssueLike> =
+export type PatchOutcome<S, Issue extends IssueLike> =
   | { readonly ok: true; readonly settings: S }
   | { readonly ok: false; readonly issues: readonly Issue[] };
 
@@ -76,7 +76,10 @@ export const makeSettingsCodec = <
   for (const { name, field } of declared) Object.assign(defaults, { [name]: field.default });
 
   /** Reads the declared fields only: unknown keys are dropped, a bad value falls back alone. */
-  const readFields = (raw: Readonly<Record<string, unknown>>, issues: Array<Issue>): Settings => {
+  const readFields = (
+    raw: Readonly<Record<string, unknown>>,
+    issues: Array<Issue | StructuralIssue>,
+  ): Settings => {
     const settings = { ...defaults };
     for (const { name, field, read } of declared) {
       if (!(name in raw)) continue;
@@ -105,6 +108,22 @@ export const makeSettingsCodec = <
     return Result.succeed(current);
   };
 
+  /** Decodes an object that is not newer than this plugin: migrates it, then reads the fields. */
+  const decodeObject = (
+    raw: Record<string, unknown>,
+    fileVersion: unknown,
+  ): Decoded<Settings, Issue> => {
+    const migrated = isVersion(fileVersion) ? migrate(raw, fileVersion) : Result.succeed(raw);
+    if (Result.isFailure(migrated)) {
+      return { settings: defaults, issues: [migrated.failure], writable: true };
+    }
+    const issues: Array<Issue | StructuralIssue> = [];
+    if (fileVersion !== undefined && !isVersion(fileVersion))
+      issues.push({ code: "schema.invalid" });
+    const settings = readFields(migrated.success, issues);
+    return { settings, issues, writable: true };
+  };
+
   /**
    * Decodes the file's content. Never throws. Older files are migrated in memory first, and the
    * file itself is rewritten only by the next save: an older plugin on another device must not see
@@ -112,7 +131,7 @@ export const makeSettingsCodec = <
    * one; a file of a newer version loads defaults and is marked read-only so it is never
    * overwritten; a file a step cannot migrate loads defaults like an unreadable one.
    */
-  const decode = (raw: unknown): DecodedSettings<Settings, Issue> => {
+  const decode = (raw: unknown): Decoded<Settings, Issue> => {
     if (raw === undefined || raw === null)
       return { settings: defaults, issues: [], writable: true };
     if (!Predicate.isObject(raw)) {
@@ -126,16 +145,7 @@ export const makeSettingsCodec = <
         writable: false,
       };
     }
-    const issues: Array<Issue | StructuralIssue> = [];
-    if (fileVersion !== undefined && !isVersion(fileVersion))
-      issues.push({ code: "schema.invalid" });
-    const migrated = isVersion(fileVersion) ? migrate(raw, fileVersion) : Result.succeed(raw);
-    if (Result.isFailure(migrated)) {
-      return { settings: defaults, issues: [migrated.failure], writable: true };
-    }
-    const fieldIssues: Array<Issue> = [];
-    const settings = readFields(migrated.success, fieldIssues);
-    return { settings, issues: [...issues, ...fieldIssues], writable: true };
+    return decodeObject(raw, fileVersion);
   };
 
   /** What goes into the file: the version and the declared fields, but not defaults that may stay out. */
@@ -149,7 +159,7 @@ export const makeSettingsCodec = <
   };
 
   /** Applies a patch of fields to the current settings; the result is all-or-nothing. */
-  const validatePatch = (current: Settings, patch: Partial<F>): PatchResult<Settings, Issue> => {
+  const validatePatch = (current: Settings, patch: Partial<F>): PatchOutcome<Settings, Issue> => {
     const issues: Array<Issue> = [];
     const settings = readFields({ ...current, ...patch }, issues);
     return issues.length === 0 ? { ok: true, settings } : { ok: false, issues };

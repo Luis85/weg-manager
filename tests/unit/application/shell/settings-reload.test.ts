@@ -58,6 +58,7 @@ describe("SettingsService.reload", () => {
         schemaVersion: 1,
         greeting: "Neu",
         logLevel: "info",
+        rootFolder: "WEG Manager",
       });
       assert.deepStrictEqual(statuses, [WRITABLE]);
       assert.deepStrictEqual(store.saved(), []);

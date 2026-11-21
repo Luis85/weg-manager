@@ -13,6 +13,8 @@ export const shellEn: ShellCatalog = {
       `The settings from schema version ${from} couldn't be upgraded to the current version.`,
     "greeting.length": ({ max }) => `The greeting must be 1 to ${max} characters long.`,
     "logLevel.unknown": ({ allowed }) => `The log level must be one of ${allowed.join(", ")}.`,
+    "rootFolder.invalid": ({ max }) =>
+      `The root folder must be a vault folder path of at most ${max} characters, with "/" between folder names, without "." or ".." as folder names and without the characters * " \\ < > : | ?.`,
   },
   errors: {
     storage: {

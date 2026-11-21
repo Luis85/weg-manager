@@ -1,12 +1,15 @@
 import { Schema, SchemaGetter } from "effect";
+import { DEFAULT_ROOT_FOLDER, ROOT_FOLDER_MAX_LENGTH, RootFolder } from "./root-folder";
 import {
   StructuralIssue,
   makeSettingsCodec,
-  type DecodedSettings as CodecDecoded,
+  type Decoded,
   type Migrations,
-  type PatchResult as CodecPatchResult,
+  type PatchOutcome,
   type SettingsFields,
 } from "./settings-codec";
+
+export { DEFAULT_ROOT_FOLDER, ROOT_FOLDER_MAX_LENGTH };
 
 export const SETTINGS_VERSION = 1;
 export const GREETING_MAX_LENGTH = 200;
@@ -25,6 +28,8 @@ export type Settings = {
   /** `null`: not customised, the view shows the default greeting of the UI language. */
   readonly greeting: string | null;
   readonly logLevel: LogLevel;
+  /** Vault-relative folder of the plugin's notes. No interface edits it yet (ADR 0007). */
+  readonly rootFolder: string;
 };
 
 export type EditableSettings = Omit<Settings, "schemaVersion">;
@@ -40,14 +45,15 @@ export const SettingsIssue = Schema.Union([
     code: Schema.Literal("logLevel.unknown"),
     allowed: Schema.Array(Schema.Literals(LOG_LEVELS)),
   }),
+  Schema.Struct({ code: Schema.Literal("rootFolder.invalid"), max: Schema.Number }),
 ]);
 
 export type SettingsIssue = typeof SettingsIssue.Type;
 
 type FieldIssue = Exclude<SettingsIssue, StructuralIssue>;
 
-export type DecodedSettings = CodecDecoded<Settings, FieldIssue>;
-export type PatchResult = CodecPatchResult<Settings, FieldIssue>;
+export type DecodedSettings = Decoded<Settings, FieldIssue>;
+export type PatchResult = PatchOutcome<Settings, FieldIssue>;
 
 /** Trimmed, 1 to 200 characters; the legacy default and `null` both mean "not customised". */
 const Greeting = Schema.NullOr(
@@ -62,8 +68,8 @@ const Greeting = Schema.NullOr(
 /**
  * One declaration per setting: its schema, its default, the issue a bad value produces and whether
  * a default stays out of the file. Decode, patch validation and encode all follow from this.
- * A greeting that is not customised is left out of the file, so it reads the same in every plugin
- * version: older ones fall back to their own default without an issue.
+ * A greeting or root folder that is still the default is left out of the file, so it reads the same
+ * in every plugin version: older ones fall back to their own default without an issue.
  */
 const FIELDS: SettingsFields<EditableSettings, FieldIssue> = {
   greeting: {
@@ -77,6 +83,12 @@ const FIELDS: SettingsFields<EditableSettings, FieldIssue> = {
     default: "warn",
     issue: { code: "logLevel.unknown", allowed: LOG_LEVELS },
     omitWhenDefault: false,
+  },
+  rootFolder: {
+    schema: RootFolder,
+    default: DEFAULT_ROOT_FOLDER,
+    issue: { code: "rootFolder.invalid", max: ROOT_FOLDER_MAX_LENGTH },
+    omitWhenDefault: true,
   },
 };
 

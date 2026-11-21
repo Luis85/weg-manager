@@ -16,6 +16,8 @@ export const describeIssue = (issue: SettingsIssue, messages: ShellCatalog): str
       return messages.issues[issue.code](issue);
     case "logLevel.unknown":
       return messages.issues[issue.code](issue);
+    case "rootFolder.invalid":
+      return messages.issues[issue.code](issue);
   }
 };
 

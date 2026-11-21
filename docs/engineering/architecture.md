@@ -28,8 +28,8 @@ flowchart LR
 | Layer | Imports | Owns |
 | --- | --- | --- |
 | `src/domain` | `effect` | Pure rules: `decodeSettings`, `validatePatch`, defaults |
-| `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`), `SettingsService`, use cases, tagged errors, the German message catalog |
-| `src/infrastructure/obsidian` | `obsidian`, application, presentation | Adapter Layers, commands, ribbon, settings tab, `ShellView` |
+| `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`), `SettingsService`, `EventBus` and the `AppEvent` vocabulary, use cases, tagged errors, the German message catalog |
+| `src/infrastructure/obsidian` | `obsidian`, application, presentation | Adapter Layers (including `hostEventsLayer`), commands, ribbon, settings tab, `ShellView` |
 | `src/presentation` | `vue`, `@nuxt/ui`, `@tanstack/vue-form`, application, domain | Vue surfaces. Components never see an Effect value; they call use cases through `useEffectAction` |
 | `harness/` | everything except `obsidian` | Browser stand-in for Obsidian with scenario Layers |
 
@@ -38,6 +38,15 @@ flowchart LR
 ## Runtime
 
 One `ManagedRuntime` exists per plugin load (`makeRuntime(appLayer(plugin))`). Every surface, command and settings control runs effects through it. Module-level mutable state is not allowed in `src/**`; state belongs to the runtime or is persisted in `data.json`.
+
+## Events
+
+Decision record: [ADR 0004](../adr/0004-event-system.md).
+
+- `AppEvent` (`src/application/events.ts`) is one tagged union of plain data for host and domain events. Switch on `_tag`.
+- `EventBus` publishes them through an unbounded PubSub: `on(tag)` gives a narrowed stream, `subscribe` subscribes at once for forked consumers.
+- `hostEventsLayer` maps Obsidian's `vault`, `metadataCache` and `workspace` events at the edge. It publishes nothing until the layout is ready, then `LayoutReady`, then file events. Folders are not published.
+- Its listeners and the PubSub belong to the runtime: `runtime.dispose()` removes every listener with `offref` and ends every stream, also after a failed or aborted bootstrap.
 
 ## Lifecycle
 

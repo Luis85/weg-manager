@@ -7,7 +7,8 @@ The walking skeleton (greeting and markdown file count) is the worked example. E
    - A new capability the host provides becomes a port in `ports.ts`.
    - A new expected failure becomes a tagged error, as described in [error-handling.md](error-handling.md).
    - The use case in `use-cases.ts` is the only API presentation calls.
-   - Test: `tests/unit/application/*.test.ts` with the in-memory Layers from `tests/support/layers.ts`.
+   - To react to vault or workspace changes, subscribe via `EventBus.on("FileCreated")` (or `subscribe` for a forked consumer) instead of listening to Obsidian. A new kind of event, including a domain event, becomes a member of `AppEvent` (see [ADR 0004](../adr/0004-event-system.md)). Wait for `LayoutReady` before reading the vault's state.
+   - Test: `tests/unit/application/*.test.ts` with the in-memory Layers from `tests/support/layers.ts`; `recordingEventBus()` records what was published.
 3. **Adapter** (`src/infrastructure/obsidian/layers.ts`). This is the only place that touches the `obsidian` API. Add the Layer to `appLayer`. Test: `tests/dom/infrastructure/*.test.ts` against the Obsidian double. Extend the double in `tests/support/obsidian/` when the API you need is missing.
 4. **Component** (`src/presentation/components/`).
    - Call the use case through `useEffectAction(useCase)` and read state through `useSettings()`.

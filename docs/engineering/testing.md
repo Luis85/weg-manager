@@ -17,12 +17,13 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 
 ## Support code
 
-- `tests/support/obsidian/` is an in-memory double of the `obsidian` API. A suite opts in with `vi.mock("obsidian", () => import("@test/obsidian"))`. Without that, importing `obsidian` throws `OBSIDIAN_REQUIRES_TEST_DOUBLE`.
+- `tests/support/obsidian/` is an in-memory double of the `obsidian` API. `vault`, `metadataCache` and `workspace` are `Events`: `trigger(name, ...args)` fires an event and `listenerCount(name?)` counts live listeners. `workspace.layoutReady = false` with `markLayoutReady()` simulates startup. `TFile` and `TFolder` are classes, so `instanceof` works. A suite opts in with `vi.mock("obsidian", () => import("@test/obsidian"))`. Without that, importing `obsidian` throws `OBSIDIAN_REQUIRES_TEST_DOUBLE`.
 - `tests/support/layers.ts` holds in-memory Layers:
   - the store, with `holdSaves`/`releaseSaves` and `setFailSave`;
   - a controllable vault, with `hold`/`release`/`set`;
   - recording notifier, logger and clipboard;
   - sequential incident ids `T-1`, `T-2`, …
+  - `recordingEventBus()`: the real `EventBusLive` that records every published event, with `failNextPublish`.
 - `tests/support/runtime.ts` provides `testRuntime(options)`: a full `AppRuntime` plus handles to every Layer. Use `rejectUpdates` to simulate a service that rejects a value the form accepted.
 
 ## Mutation testing
@@ -62,6 +63,7 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 | --- | --- |
 | `lifecycle.e2e.ts` | opening the view, reveal instead of duplicate, two tabs with one closed, three disable/enable cycles leaving no view, ribbon icon or command behind, clean console |
 | `settings-and-theme.e2e.ts` | the native settings tab saving to `data.json`, empty greeting never written, light/dark switch with Obsidian's colours reaching the surface, newer `data.json` shown read-only and never overwritten |
+| `events.e2e.ts` | one listener per host event on Obsidian's internal `Events._` map, all removed on each disable; creating, changing, opening, renaming and deleting a note with a clean console |
 | `popout.e2e.ts` | the view moved to a pop-out: surface, portal and About dialog in the pop-out's document, theme switch there, clean close |
 
 The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaught error. It ignores only Chromium's `ResizeObserver loop` notification. It is installed after the first load, so the three disable/enable cycles provide the load coverage.

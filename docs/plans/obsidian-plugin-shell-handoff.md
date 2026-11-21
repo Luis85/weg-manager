@@ -334,8 +334,13 @@ Source: `docs/design/research/Plugin research - Obsidian best practices.md`.
 - Mutation (incremental): 98.9 %.
 - `main.js`: about 556 KB.
 
+**Resolved afterwards (owner decisions, same day):**
+- **Gmail ZIP:** stored uncompressed, so the checksum is the same on every machine. `skills/manifest.json` is regenerated; a test fails when it is stale.
+- **Ribbon:** added after the commands, so a failed bootstrap leaves none. No private API, no failure e2e spec, and no e2e checks of what Obsidian itself does on unload. The title is "WEG Manager" in both languages, so the ribbon position survives a language switch.
+- **PBI-49:** the greeting is edited only in the view's form. The settings tab keeps the plugin settings (log level). Criteria 3 and 4 are obsolete.
+- **Backlog:** PBI-48–50 moved to the new F-24 "Technische Plugin-Grundlagen" under E-07.
+- **PR #4:** now targets `main`.
+
 **Open:**
-- PBI-49: criteria 1, 3 and 4.
-- The `skills/manifest.json` checksum does not match a fresh build. This was already the case before this work.
-- After a language switch, the ribbon icon forgets its position once, because its id contains the title.
+- A throw in `addSettingTab` or `registerView` would leave the ribbon icon behind (accepted trade-off, see `architecture.md`).
 - A failed bootstrap leaves 7 harmless `registerEvent` closures until unload.

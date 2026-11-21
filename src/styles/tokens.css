@@ -26,13 +26,13 @@
   --wm-bad-fg: color-mix(in oklab, var(--text-error) 55%, var(--text-normal));
   --wm-ok-fg: color-mix(in oklab, var(--text-success) 55%, var(--text-normal));
   /*
-   * Fills under on-accent text (solid buttons): the hue darkened with 35 % black, so the host's
+   * Fills under on-accent text (solid buttons): the hue darkened with 40 % black, so the host's
    * on-accent text reaches 4.5:1 also at Nuxt UI's 75 % hover shade on a white page.
    */
-  --wm-primary-fill: color-mix(in oklab, var(--interactive-accent) 65%, black);
-  --wm-warn-fill: color-mix(in oklab, var(--text-warning) 65%, black);
-  --wm-bad-fill: color-mix(in oklab, var(--text-error) 65%, black);
-  --wm-ok-fill: color-mix(in oklab, var(--text-success) 65%, black);
+  --wm-primary-fill: color-mix(in oklab, var(--interactive-accent) 60%, black);
+  --wm-warn-fill: color-mix(in oklab, var(--text-warning) 60%, black);
+  --wm-bad-fill: color-mix(in oklab, var(--text-error) 60%, black);
+  --wm-ok-fill: color-mix(in oklab, var(--text-success) 60%, black);
   --wm-on-fill: var(--text-on-accent);
   /*
    * The boundary of a form field (WCAG 1.4.11, 3:1): the muted text 70 % into the background.

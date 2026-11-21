@@ -6,16 +6,16 @@ Decision record: [ADR 0003](../adr/0003-error-handling-and-twelve-factor.md).
 
 | Kind | What it is | Where it goes |
 | --- | --- | --- |
-| **Expected failure** | A tagged error in the Effect error channel, part of the `AppError` union in `src/application/errors.ts` | `describeError(error, messages)` turns it into a `UserMessage` in the UI language, which a notice or an `ErrorNotice.vue` shows |
+| **Expected failure** | A tagged error in the Effect error channel, part of the `AppError` union in `src/application/errors.ts`, which joins the modules' error unions | `describeError(error, messages)` turns it into a `UserMessage` in the UI language, which a notice or an `ErrorNotice.vue` shows |
 | **Defect** | A bug: a thrown exception, `Effect.die`, or a Vue render error | `reportDefect(cause)` logs it with an incident id and shows only that id |
 
 The user never sees a stack trace, a path, a raw `error.message` or note content.
 
 ## Adding an expected failure
 
-1. Add a `Schema.TaggedError` class to `src/application/errors.ts` and add it to `AppError`.
-2. `describeError` is exhaustive over `_tag`, so typecheck now fails until you add the new case to `src/application/user-messages.ts`. Its title and detail go into `Catalog` (`src/application/i18n/catalog.ts`) and into both `de.ts` and `en.ts`; typecheck fails until both have them.
-3. Add a test in `tests/unit/application/user-messages.test.ts` for the exact German text (and the English one where it matters), and run the property test against leaks, which runs for both catalogs.
+1. Add a `Schema.TaggedError` class to the module's `errors.ts` (for the shell `src/application/shell/errors.ts`) and add it to the module's error union (`ShellError`), which `AppError` (`src/application/errors.ts`) includes.
+2. The module's describer is exhaustive over `_tag`, so typecheck now fails until you add the new case to `describeShellError` in `src/application/shell/user-messages.ts`. Its title and detail go into the module's catalog type (`ShellCatalog` in `src/application/shell/i18n/catalog.ts`) and into both `de.ts` and `en.ts`; typecheck fails until both have them. A new module's error union joins `AppError` and gets its branch in `describeError` (`src/application/user-messages.ts`).
+3. Add a test in `tests/unit/application/shell/user-messages.test.ts` for the exact German text (and the English one where it matters), and run the property test against leaks, which runs for both catalogs.
 4. Return the error from the port or service that can fail. Components get it in `.error` and `.message` of `useQuery(...)` or `useCommand(...)`. A command that fails after its view closed shows the message as a notice.
 
 ## Writing a message
@@ -46,7 +46,7 @@ Every boundary catches defects and calls `reportDefect`, once:
 
 - `Logger` takes structured entries `{ level, event, data?, error?, incidentId? }`. There is no free-form context.
 - `data` holds counts and flags only (`number | boolean`). Anything categorical goes into the dotted `event` name, never into a string value.
-- `error` is a `LoggedError`: `{ name, message, frames }`. `toLoggedError(cause)` (`src/application/logged-error.ts`) builds it from anything that was thrown. It is the only way to put a cause into a log entry.
+- `error` is a `LoggedError`: `{ name, message, frames }`. `toLoggedError(cause)` (`src/application/shell/logged-error.ts`) builds it from anything that was thrown. It is the only way to put a cause into a log entry.
   - `name` is the error's `name` if it is a plain identifier (a letter, then letters, digits, `_`, `$` or `.`, at most 64 characters). Otherwise it is `Error`. A cause that is not an `Error` is named `NonError`.
   - `message` is the raw message, or `String(cause)`. It goes to the console sink only, never into the diagnostics report.
   - `frames` come from the stack, at most 10. Each frame keeps the function name (if it is made of code characters only) and the file's last path segment with `:line:col`. Directories and query strings are dropped. A line that is not a V8 frame (`at fn (location)`, `at location`) or a JavaScriptCore/Firefox frame (`fn@location`) is dropped, which covers the `Name: message` line and every line of a multi-line message.
@@ -61,4 +61,4 @@ The `copy-diagnostics` command builds a plain-text report and puts it on the cli
 
 The report prints, for each entry: the timestamp, level, event, incident id, `data` as JSON, and the error's `name` with its sanitised frames (one per line, indented). It never prints `message`. This is an allow-list by type: nothing in the report is a free-form string. There is no `redact` step and no length rule. A new field on `LogEntry` must be a type that is safe to print, and the report must be taught to print it on purpose.
 
-`tests/unit/application/diagnostics.test.ts` pins the exact format. `tests/unit/application/diagnostics-leaks.test.ts` runs a defect through the report and checks, also with property tests, that neither the message nor any directory of a stack location appears in it.
+`tests/unit/application/shell/diagnostics.test.ts` pins the exact format. `tests/unit/application/shell/diagnostics-leaks.test.ts` runs a defect through the report and checks, also with property tests, that neither the message nor any directory of a stack location appears in it.

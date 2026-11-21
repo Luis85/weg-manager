@@ -96,7 +96,7 @@
             "patterns": [
               {
                 "group": ["obsidian", "effect", "effect/*", "**/infrastructure/**"],
-                "message": "presentation calls use cases through src/presentation/runtime; it never imports obsidian, effect or infrastructure."
+                "message": "presentation calls use cases through src/presentation/shell/runtime; it never imports obsidian, effect or infrastructure."
               }
             ]
           }
@@ -104,7 +104,7 @@
       }
     },
     {
-      "files": ["src/presentation/runtime/**"],
+      "files": ["src/presentation/shell/runtime/**"],
       "rules": {
         "no-restricted-imports": [
           "error",

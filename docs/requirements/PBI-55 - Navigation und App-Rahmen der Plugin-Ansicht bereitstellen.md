@@ -57,3 +57,4 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Abschnitt 3 (Lücken B3 und B
 ## Kommentare
 
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
+- 21.11.2026: Vorgabe aus PBI-51: `src/presentation/shell/` bekommt zwei öffentliche Einstiege. `index.ts` ist die Schnittstelle für Fachkomponenten (`useQuery`, `useCommand`, `useStream`, Routen-Composables, gemeinsame Komponenten) und darf Vue laden. `host.ts` ist Vue-frei und enthält, was `bootstrap` und die Obsidian-Adapter beim Laden brauchen (`releaseAll`, `loadSurface`). Lint und fallow lassen genau diese beiden Dateien als Einstieg zu; `docs/adr/0006-module-structure.md` wird entsprechend ergänzt.

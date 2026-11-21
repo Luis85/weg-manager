@@ -1,18 +1,21 @@
 import { Effect, Layer } from "effect";
 import type { AppServices } from "../src/application/app-services";
-import { ClipboardError, StorageError, VaultReadError } from "../src/application/errors";
-import { EventBusLive } from "../src/application/event-bus";
-import { messagesLayer, type Language } from "../src/application/i18n";
-import { LoggerLive } from "../src/application/logger";
+import { messagesLayer } from "../src/application/messages";
 import {
   Clipboard,
+  ClipboardError,
+  EventBusLive,
   HostInfo,
+  LoggerLive,
   Notifier,
+  SettingsServiceLive,
   SettingsStore,
+  StorageError,
+  VaultReadError,
   VaultReader,
-} from "../src/application/ports";
-import { SettingsServiceLive } from "../src/application/settings-service";
-import type { UserMessage } from "../src/application/user-messages";
+  type Language,
+  type UserMessage,
+} from "../src/application/shell";
 import { consoleSinkLayer } from "../src/infrastructure/logging/console-sink";
 import { incidentsLayer } from "../src/infrastructure/logging/incidents";
 

@@ -1,8 +1,8 @@
 import { Effect, Layer } from "effect";
-import { ClipboardError, StorageError, VaultReadError } from "../../src/application/errors";
-import { EventBus, EventBusLive } from "../../src/application/event-bus";
+import { ClipboardError, StorageError, VaultReadError } from "../../src/application/shell/errors";
+import { EventBus, EventBusLive } from "../../src/application/shell/event-bus";
 import type { AppEvent } from "../../src/application/events";
-import { messagesLayer } from "../../src/application/i18n";
+import { messagesLayer } from "../../src/application/messages";
 import {
   Clipboard,
   HostInfo,
@@ -13,8 +13,8 @@ import {
   SettingsStore,
   VaultReader,
   type LogEntry,
-} from "../../src/application/ports";
-import type { UserMessage } from "../../src/application/user-messages";
+} from "../../src/application/shell/ports";
+import type { UserMessage } from "../../src/application/shell/user-messages";
 
 /**
  * A gate that holds work until `release()`; `held()` counts what waits. `pass` is an effect that an

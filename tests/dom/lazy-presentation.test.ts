@@ -9,7 +9,7 @@ vi.mock("vue", async (importOriginal) => {
   evaluated.push("vue");
   return importOriginal();
 });
-vi.mock("../../src/presentation/mount", async (importOriginal) => {
+vi.mock("../../src/presentation/shell/mount", async (importOriginal) => {
   evaluated.push("mount");
   return importOriginal();
 });

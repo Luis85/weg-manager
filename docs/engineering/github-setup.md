@@ -40,7 +40,7 @@ Making `CI / e2e` a required check is a repository setting. It is yours to set, 
    - add **`CI / e2e`** too, once they have run without a flake for about two weeks; until then they report but do not block;
    - block force pushes;
    - allow only squash merges (*Settings → General → Pull Requests*).
-3. **Prove the rule.** Open a pull request containing a planted type error (for example `const x: number = "a";` in `src/domain/settings.ts`). The `verify` check must fail and the merge button must stay blocked. Close the PR without merging.
+3. **Prove the rule.** Open a pull request containing a planted type error (for example `const x: number = "a";` in `src/domain/shell/settings.ts`). The `verify` check must fail and the merge button must stay blocked. Close the PR without merging.
 4. **First release.** See [releasing.md](releasing.md). The first tag also shows whether the `release` workflow may create releases in your repository.
 
 ## Distribution

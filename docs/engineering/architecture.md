@@ -1,6 +1,6 @@
 # Architecture
 
-The plugin is layered as ports and adapters, and dependencies point inward only. Tools enforce the boundaries, not convention: oxlint `no-restricted-imports` (`.oxlintrc.json`) and fallow `boundaries` (`configs/fallow.json`). Decision record: [ADR 0002](../adr/0002-architecture.md).
+The plugin is layered as ports and adapters, and dependencies point inward only. Each layer is sliced into modules (see [Modules](#modules)). Tools enforce the boundaries, not convention: oxlint `no-restricted-imports` (`.oxlintrc.json`) for layers, ESLint `no-restricted-imports` (`eslint.config.mjs`) for modules, and fallow `boundaries` (`configs/fallow.json`) for both. Decision record: [ADR 0002](../adr/0002-architecture.md).
 
 ```mermaid
 flowchart LR
@@ -11,7 +11,7 @@ flowchart LR
     logging["logging/ (only console use)"]
   end
   subgraph pres["presentation (Vue + Nuxt UI)"]
-    rt["runtime/use-runtime.ts (only importer of effect)"]
+    rt["shell/runtime/use-runtime.ts (only importer of effect)"]
   end
   app["application: ports, services, use cases, errors, messages"]
   dom["domain: settings schema and rules"]
@@ -27,13 +27,46 @@ flowchart LR
 
 | Layer | Imports | Owns |
 | --- | --- | --- |
-| `src/domain` | `effect` | Pure rules: `decodeSettings`, `validatePatch`, defaults |
-| `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`, `Messages`), `SettingsService`, `EventBus` and the `AppEvent` vocabulary, use cases, tagged errors, the German and English message catalogs (`i18n/`) |
-| `src/infrastructure/obsidian` | `obsidian`, application, presentation | Adapter Layers (including `hostEventsLayer`), commands, ribbon, settings tab, `ShellView` |
+| `src/domain` | `effect` | Pure rules: `decodeSettings`, `validatePatch`, defaults (`shell/settings.ts`) |
+| `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`, `Messages`), `SettingsService`, `EventBus` and the `AppEvent` vocabulary, use cases, tagged errors, the German and English message catalogs (`shell/i18n/`, composed in `messages.ts`) |
+| `src/infrastructure/obsidian` | `obsidian`, application, presentation | Adapter Layers (including `hostEventsLayer`), commands, ribbon, settings tab, `ShellView` (`shell/`), `appLayer` |
 | `src/presentation` | `vue`, `@nuxt/ui`, `@tanstack/vue-form`, application, domain | Vue surfaces. Components never see an Effect value. They run reads through `useQuery` and state changes through `useCommand` |
 | `harness/` | everything except `obsidian` | Browser stand-in for Obsidian with scenario Layers |
 
-`infrastructure` may import `presentation` only because `ShellView` mounts the surface (handoff ruling 14). It loads `presentation/mount` with a dynamic `import()`; nothing that runs at plugin load may import a module that pulls in Vue (see [Lazy presentation](#lazy-presentation)).
+`infrastructure` may import `presentation` only because `ShellView` mounts the surface (handoff ruling 14). It loads `presentation/shell/mount` through `loadSurface`, a dynamic `import()` in `src/presentation/shell/surface.ts`; nothing that runs at plugin load may import a module that pulls in Vue (see [Lazy presentation](#lazy-presentation)).
+
+## Modules
+
+Decision record: [ADR 0006](../adr/0006-module-structure.md). Each layer is sliced into module folders; today the only module is `shell`.
+
+| Layer | Module folders | Files at the layer root (composition only) |
+| --- | --- | --- |
+| domain | `src/domain/<module>/` | none |
+| application | `src/application/<module>/` | `errors.ts` (`AppError`), `events.ts` (`AppEvent`), `app-services.ts` (`AppServices`, `AppRuntime`), `messages.ts` (`Catalog`, `de`, `en`, `catalogFor`, `languageFromCode`, `messagesLayer`), `user-messages.ts` (`describeError`) |
+| infrastructure | `src/infrastructure/obsidian/<module>/` | `obsidian/app-layer.ts` (`appLayer`), plus `logging/` and `runtime.ts`, which are not Obsidian adapters and stay where they were |
+| presentation | `src/presentation/<module>/` | none |
+
+- **Public face.** Each module folder has an `index.ts`. Code outside the folder imports only that, also the same module from another layer (`../../../application/shell`, never `…/shell/ports`). Tests may import a module's files directly.
+- **Direction.** feature → `notes` → `shell`. `shell` imports no other module; `notes` imports only `shell`; feature modules may import each other's index, acyclically.
+- **Composition.** A root file composes module parts and holds no rule of its own: `AppError = ShellError`, `AppEvent = Data.TaggedEnum<ShellEvents>`, `AppServices = ShellServices`, `Catalog = { shell: ShellCatalog }`, `appLayer` = `shellLayer`. A new module adds its part to each (`ShellError | NotesError`, `ShellEvents & NotesEvents`, …).
+- **`describeError`** hands an error to its module's describer with that module's part of the catalog: `describeShellError(error, messages.shell)`. A second module narrows first (`isNotesError(error) ? describeNotesError(error, messages.notes) : …`). An error union added to `AppError` without its describer does not compile.
+- **`Messages`** stays one service holding the whole `Catalog`; module code reads its own part (`(yield* Messages).shell`). The shell's catalog part carries `language`.
+- **Type-only edges to the root.** `EventBus` and `Messages` live in the shell but carry the composed types, so `src/application/shell/` imports `AppEvent` and `Catalog` from the root as types only. Runtime imports go the other way only, so there is no runtime cycle.
+- **Presentation entry.** `src/presentation/shell/index.ts` stays free of Vue: it offers `releaseAll` and `loadSurface`, the lazy `import("./mount")` that `ShellView` calls.
+
+### Enforcement
+
+| Rule | Tool |
+| --- | --- |
+| Layers (which packages and layers a folder may import) | oxlint `no-restricted-imports` overrides in `.oxlintrc.json`, path-based; fallow zone rules |
+| Import a module only through its `index.ts` | ESLint `no-restricted-imports` (`eslint.config.mjs`, every file in `src/`); fallow `publicFiles: ["index.ts"]` on every discovered module zone |
+| Direction between modules | ESLint, from the ordered module list `CORE_MODULES` (`shell`, `notes`) and `FEATURE_MODULES` (`communities`); fallow rules keep each `shell` zone to the shell and the composition files |
+| Every `src/` file belongs to a zone | fallow `boundaries.coverage.requireAllFiles` |
+
+- The module rules live in ESLint, not oxlint: an oxlint override replaces the `no-restricted-imports` options of an earlier matching override instead of adding to them, so a module rule there would switch off the layer rule for the same files. The ESLint block comes after `oxlint.buildFromOxlintConfigFile`, which turns the rule off in ESLint.
+- fallow discovers one zone per module and layer (`autoDiscover`): `domain/<module>`, `application/<module>`, `adapters/<module>` (`src/infrastructure/obsidian/<module>/`), `presentation/<module>`. The application root files are the zone `application-composition`; `logging/`, `runtime.ts` and `app-layer.ts` the zone `infrastructure`. A discovered zone may not import a sibling zone unless a rule names it, so the layer rules name `<layer>/shell`.
+- **Adding a module:** add its name to `CORE_MODULES` or `FEATURE_MODULES` in `eslint.config.mjs`. Its folders become fallow zones by themselves and may import `shell`. A module that other modules import (`notes`) is also added to the `allow` lists of the layer rules in `configs/fallow.json`, next to `<layer>/shell`; fallow refuses a rule that names a zone with no folder yet.
+- Proved on 2026-11-21 with planted violations (each failed, then was removed): an import of `../shell/ports` from a throwaway module folder (ESLint and fallow), `obsidian` in `src/application/shell/` (oxlint), `effect` in a component (oxlint), presentation → infrastructure (oxlint and fallow), `shell` → `notes` (ESLint and fallow), and one plant per oxlint override.
 
 ## Runtime
 
@@ -43,7 +76,7 @@ One `ManagedRuntime` exists per plugin load (`makeRuntime(appLayer(plugin))`). E
 
 Decision record: [ADR 0005](../adr/0005-ui-language.md).
 
-- `hostLanguage()` (`src/infrastructure/obsidian/language.ts`) reads Obsidian's `getLanguage()` once per load: `de` and `de-*` give German, everything else English.
+- `hostLanguage()` (`src/infrastructure/obsidian/shell/language.ts`) reads Obsidian's `getLanguage()` once per load: `de` and `de-*` give German, everything else English.
 - `obsidianLayer(plugin, language)` provides the `Messages` service, the catalog of that language. Use cases take it with `yield* Messages`, bootstrap for commands and settings tab, components with `useMessages()`. Nuxt UI's locale follows it.
 - The domain returns issue codes; `describeIssue` words them. The greeting is `null` while not customised and then shows the language's default.
 
@@ -51,7 +84,7 @@ Decision record: [ADR 0005](../adr/0005-ui-language.md).
 
 Decision record: [ADR 0004](../adr/0004-event-system.md).
 
-- `AppEvent` (`src/application/events.ts`) is one tagged union of plain data for host and domain events. Switch on `_tag`.
+- `AppEvent` (`src/application/events.ts`) is one tagged union of plain data for host and domain events, built from the modules' event records (the shell's are in `src/application/shell/events.ts`). Switch on `_tag`.
 - `EventBus` publishes them through an unbounded PubSub: `on(tag)` gives a narrowed stream, `subscribe` subscribes at once for forked consumers.
 - `hostEventsLayer` maps Obsidian's `vault`, `metadataCache` and `workspace` events at the edge. It publishes nothing until the layout is ready, then `LayoutReady`, then file events. Folders are not published.
 - Its listeners and the PubSub belong to the runtime: `runtime.dispose()` removes every listener with `offref` and ends every stream, also after a failed or aborted bootstrap.
@@ -73,7 +106,7 @@ sequenceDiagram
   Note over B: aborted? dispose and return an inert handle
   B->>O: commands, ribbon, settings tab, registerView
   O->>V: onOpen
-  V->>V: contentEl.empty(), import("presentation/mount")
+  V->>V: contentEl.empty(), loadSurface() = import("presentation/shell/mount")
   Note over V: closed meanwhile? do not mount
   V->>V: mountSurface(contentEl, runtime)
   O->>M: onExternalSettingsChange (data.json changed on disk)
@@ -102,9 +135,9 @@ sequenceDiagram
 
 ## Lazy presentation
 
-- Vue, Nuxt UI, reka-ui, VueUse and TanStack Form are evaluated on the first `import("presentation/mount")` in `ShellView.onOpen`, not in `onload`. `bootstrap` imports only the Vue-free `presentation/release`.
+- Vue, Nuxt UI, reka-ui, VueUse and TanStack Form are evaluated on the first `import("presentation/shell/mount")`, which `ShellView.onOpen` starts through `loadSurface`, not in `onload`. `bootstrap` imports only the Vue-free `presentation/shell` index (`releaseAll`, `loadSurface`).
 - The bundle stays one CommonJS file (`codeSplitting: false`): rolldown wraps the dynamically imported modules in a lazy init function inside `main.js`.
-- `tests/dom/lazy-presentation.test.ts` fails if loading the plugin evaluates `vue` or `presentation/mount`.
+- `tests/dom/lazy-presentation.test.ts` fails if loading the plugin evaluates `vue` or `presentation/shell/mount`.
 - Measured on 2026-11-21 in Node 24 on the built `main.js` with a stubbed `obsidian` and `document` (41 alternating runs each, compile included; not an Obsidian startup number): Vue's runtime-dom no longer runs at `require` but when the view opens, and the median `require` time fell from 43 ms to 38 ms. The init wrappers grew `main.js` from 541 KB to 550 KB.
 
 ## A surface

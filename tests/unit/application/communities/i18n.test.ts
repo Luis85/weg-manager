@@ -30,7 +30,12 @@ const rendered = (catalog: CommunitiesCatalog) => ({
   },
   colorTaken: catalog.colorTaken("Petrol"),
   suggestion: catalog.suggestion({ kind: "WEG", unit_label: "Einheiten" }),
-  conflict: { ...catalog.conflict, loaded: catalog.conflict.loaded("WEG") },
+  conflict: {
+    ...catalog.conflict,
+    loaded: catalog.conflict.loaded("WEG"),
+    mine: catalog.conflict.mine("Haus"),
+    theirs: catalog.conflict.theirs("Tiefgarage"),
+  },
   deletion: { ...catalog.deletion, detail: catalog.deletion.detail("Ahornweg 12") },
   issues: Object.fromEntries(
     Object.entries(catalog.issues).map(([code, text]) => [code, text("Feld")]),
@@ -67,6 +72,7 @@ describe("the communities catalog", () => {
         kind: "Art",
         unit_label: "Einheitenbezeichnung",
       },
+      noShortCode: "?",
       shortCodeHint: "2 bis 5 Zeichen aus A–Z und 0–9, nach dem Anlegen fest.",
       shortCodeFixed: "Das Kürzel ist nach dem Anlegen fest.",
       colors: {
@@ -97,8 +103,8 @@ describe("the communities catalog", () => {
         detail:
           "Diese Felder wurden auch außerhalb des Formulars geändert. Wähle je Feld den Wert, der gelten soll, und speichere.",
         loaded: "Beim Öffnen: WEG",
-        mine: "Deine Eingabe",
-        theirs: "In der Notiz",
+        mine: "Deine Eingabe: Haus",
+        theirs: "In der Notiz: Tiefgarage",
         apply: "Auswahl speichern",
         empty: "(leer)",
       },
@@ -162,6 +168,7 @@ describe("the communities catalog", () => {
         kind: "Kind",
         unit_label: "Unit label",
       },
+      noShortCode: "?",
       shortCodeHint: "2 to 5 characters from A–Z and 0–9, fixed once created.",
       shortCodeFixed: "The short code is fixed once created.",
       colors: {
@@ -192,8 +199,8 @@ describe("the communities catalog", () => {
         detail:
           "These fields were also changed outside the form. Choose the value that applies for each field, then save.",
         loaded: "When opened: WEG",
-        mine: "Your input",
-        theirs: "In the note",
+        mine: "Your input: Haus",
+        theirs: "In the note: Tiefgarage",
         apply: "Save choice",
         empty: "(empty)",
       },

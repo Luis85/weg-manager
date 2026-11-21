@@ -7,12 +7,16 @@ describe("appRoutes", () => {
     expect(appRoutes.start).toStrictEqual({ name: "welcome" });
   });
 
-  it("decodes the shell's route", () => {
+  it("decodes the shell's route and the community settings", () => {
     expect(appRoutes.decode({ name: "welcome" })).toStrictEqual({ name: "welcome" });
+    expect(appRoutes.decode({ name: "settings", section: "communities", extra: 1 })).toStrictEqual({
+      name: "settings",
+      section: "communities",
+    });
   });
 
   it("falls back to the start route for anything else", () => {
-    expect(appRoutes.decode({ name: "settings", section: "communities" })).toBe(appRoutes.start);
+    expect(appRoutes.decode({ name: "settings", section: "contacts" })).toBe(appRoutes.start);
     expect(appRoutes.decode("welcome")).toBe(appRoutes.start);
   });
 });

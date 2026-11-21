@@ -35,6 +35,8 @@ export type CommunitiesCatalog = {
   };
   /** The label of each field, also used to word its issues. */
   readonly fields: Readonly<Record<CommunityKey, string>>;
+  /** What a badge shows for a community without a valid short code. */
+  readonly noShortCode: string;
   readonly shortCodeHint: string;
   readonly shortCodeFixed: string;
   readonly colors: Readonly<Record<CommunityColor, string>>;
@@ -55,8 +57,8 @@ export type CommunitiesCatalog = {
     readonly title: string;
     readonly detail: string;
     loaded(value: string): string;
-    readonly mine: string;
-    readonly theirs: string;
+    mine(value: string): string;
+    theirs(value: string): string;
     readonly apply: string;
     /** How an unset value is shown. */
     readonly empty: string;

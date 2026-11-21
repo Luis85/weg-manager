@@ -28,6 +28,7 @@ export const communitiesDe: CommunitiesCatalog = {
     kind: "Art",
     unit_label: "Einheitenbezeichnung",
   },
+  noShortCode: "?",
   shortCodeHint: "2 bis 5 Zeichen aus A–Z und 0–9, nach dem Anlegen fest.",
   shortCodeFixed: "Das Kürzel ist nach dem Anlegen fest.",
   colors: {
@@ -58,8 +59,8 @@ export const communitiesDe: CommunitiesCatalog = {
     detail:
       "Diese Felder wurden auch außerhalb des Formulars geändert. Wähle je Feld den Wert, der gelten soll, und speichere.",
     loaded: (value) => `Beim Öffnen: ${value}`,
-    mine: "Deine Eingabe",
-    theirs: "In der Notiz",
+    mine: (value) => `Deine Eingabe: ${value}`,
+    theirs: (value) => `In der Notiz: ${value}`,
     apply: "Auswahl speichern",
     empty: "(leer)",
   },

@@ -28,6 +28,7 @@ export const communitiesEn: CommunitiesCatalog = {
     kind: "Kind",
     unit_label: "Unit label",
   },
+  noShortCode: "?",
   shortCodeHint: "2 to 5 characters from A–Z and 0–9, fixed once created.",
   shortCodeFixed: "The short code is fixed once created.",
   colors: {
@@ -58,8 +59,8 @@ export const communitiesEn: CommunitiesCatalog = {
     detail:
       "These fields were also changed outside the form. Choose the value that applies for each field, then save.",
     loaded: (value) => `When opened: ${value}`,
-    mine: "Your input",
-    theirs: "In the note",
+    mine: (value) => `Your input: ${value}`,
+    theirs: (value) => `In the note: ${value}`,
     apply: "Save choice",
     empty: "(empty)",
   },

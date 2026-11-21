@@ -10,6 +10,7 @@ import { memoryNoteStore, sequentialIdGenerator } from "../../src/infrastructure
 import { InvalidSettingsError } from "../../src/application/shell/errors";
 import { messagesLayer } from "../../src/application/messages";
 import type { Language } from "../../src/application/shell/i18n/catalog";
+import type { DeviceValue } from "../../src/application/shell";
 import { SettingsService, SettingsServiceLive } from "../../src/application/shell/settings-service";
 import type { SettingsIssue } from "../../src/domain/shell/settings";
 import {
@@ -33,6 +34,8 @@ export type TestRuntimeOptions = {
   readonly language?: Language;
   /** Note types the index holds beside the plugin's own (`appNoteTypes`), e.g. test types. */
   readonly noteTypes?: NoteTypeRegistry;
+  /** What the device store holds at start, e.g. a stored community selection. */
+  readonly device?: Readonly<Record<string, DeviceValue>>;
 };
 
 const rejecting = (issues: readonly SettingsIssue[]) =>
@@ -74,7 +77,7 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
     messages,
     events.layer,
     notes.layer.pipe(Layer.provide(events.layer)),
-    deviceStoreInMemory(),
+    deviceStoreInMemory(options.device),
     sequentialIdGenerator().layer,
   );
   const types = [...appNoteTypes, ...(options.noteTypes ?? [])];

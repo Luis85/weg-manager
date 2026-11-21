@@ -3,6 +3,8 @@ import { describe, it } from "mocha";
 import { ROOT, VIEW_TYPE, installConsoleSpy, openView, pluginProblems } from "../support";
 
 const WORKSPACE_FILE = ".obsidian/workspace.json";
+/** The start route: the community settings. */
+const COMMUNITIES = { name: "settings", section: "communities" };
 /** The view the history test opens with a test-only route (see there). */
 const PROBE = "[data-e2e=probe]";
 
@@ -41,21 +43,23 @@ describe("navigation and view state in Obsidian", function () {
   it("keeps the route in the leaf's view state", async function () {
     await installConsoleSpy();
     await openView();
-    await expect(browser.$(ROOT).$("[data-testid=greeting]")).toBeDisplayed();
+    await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();
     expect(await viewState()).toMatchObject({
       type: VIEW_TYPE,
-      state: { route: { name: "welcome" } },
+      state: { route: COMMUNITIES },
     });
-    await expect(browser.$(ROOT).$("nav li button[aria-current=page]")).toHaveText("Start");
+    await expect(browser.$(ROOT).$("nav li button[aria-current=page]")).toHaveText(
+      "Gemeinschaften",
+    );
     await expect(browser.$(ROOT).$('nav button[aria-label="Zurück"]')).toBeDisabled();
   });
 
   it("falls back to the start route for a broken or unknown state", async function () {
     for (const state of [{ route: { name: "gone" } }, { route: 42 }, { route: null }, {}]) {
       await setViewState(state);
-      expect(await viewState()).toMatchObject({ state: { route: { name: "welcome" } } });
+      expect(await viewState()).toMatchObject({ state: { route: COMMUNITIES } });
     }
-    await expect(browser.$(ROOT).$("[data-testid=greeting]")).toBeDisplayed();
+    await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();
     expect(await pluginProblems()).toEqual([]);
   });
 
@@ -77,7 +81,7 @@ describe("navigation and view state in Obsidian", function () {
       VIEW_TYPE,
       WORKSPACE_FILE,
     );
-    expect(saved).toEqual([{ route: { name: "welcome" } }]);
+    expect(saved).toEqual([{ route: COMMUNITIES }]);
   });
 
   it("stays in its tab when a note is opened while it is the active tab", async function () {
@@ -102,7 +106,7 @@ describe("navigation and view state in Obsidian", function () {
     }, VIEW_TYPE);
     expect(tabs).toEqual({ pluginType: VIEW_TYPE, sameTab: false, noteInOtherTab: true });
     // The plugin tab is in the background now, so its surface is in the DOM but hidden.
-    await expect(browser.$(ROOT).$("[data-testid=greeting]")).toExist();
+    await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toExist();
   });
 
   it("goes back and forward between routes with the frame's controls", async function () {
@@ -141,20 +145,20 @@ describe("navigation and view state in Obsidian", function () {
       await leaf.open(view);
     }, VIEW_TYPE);
     const root = browser.$(`${PROBE} ${ROOT}`);
-    await expect(root.$("[data-testid=greeting]")).toBeDisplayed();
+    await expect(root.$("[data-testid=communities-screen]")).toBeDisplayed();
     await expect(control("Zurück")).toBeDisabled();
 
     await root.$("nav").$("button=Probe").click();
     await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
     await root.$("[data-testid=not-found] button").click();
-    await expect(root.$("[data-testid=greeting]")).toBeDisplayed();
-    expect(await probeRoute()).toEqual({ name: "welcome" });
+    await expect(root.$("[data-testid=communities-screen]")).toBeDisplayed();
+    expect(await probeRoute()).toEqual(COMMUNITIES);
 
     await control("Zurück").click();
     await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
     expect(await probeRoute()).toEqual({ name: "probe" });
     await control("Zurück").click();
-    await expect(root.$("[data-testid=greeting]")).toBeDisplayed();
+    await expect(root.$("[data-testid=communities-screen]")).toBeDisplayed();
     await expect(control("Zurück")).toBeDisabled();
     await control("Vorwärts").click();
     await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
@@ -179,11 +183,11 @@ describe("navigation and view state in Obsidian", function () {
       VIEW_TYPE,
     );
     expect(restored).toHaveLength(1);
-    expect(restored[0]).toMatchObject({ type: VIEW_TYPE, state: { route: { name: "welcome" } } });
+    expect(restored[0]).toMatchObject({ type: VIEW_TYPE, state: { route: COMMUNITIES } });
     await installConsoleSpy();
     await openView();
-    await expect(browser.$(ROOT).$("[data-testid=greeting]")).toBeDisplayed();
-    expect(await viewState()).toMatchObject({ state: { route: { name: "welcome" } } });
+    await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();
+    expect(await viewState()).toMatchObject({ state: { route: COMMUNITIES } });
     await expect(browser.$(ROOT).$('nav button[aria-label="Zurück"]')).toBeDisabled();
     expect(await pluginProblems()).toEqual([]);
   });

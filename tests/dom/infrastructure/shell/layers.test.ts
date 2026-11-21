@@ -6,7 +6,6 @@ import {
   HostInfo,
   Notifier,
   SettingsStore,
-  VaultReader,
 } from "../../../../src/application/shell/ports";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
@@ -30,15 +29,15 @@ describe("obsidianLayer", () => {
   it.effect("saves through plugin.saveData", () => {
     const { registry, layer } = setup();
     return Effect.gen(function* () {
-      yield* (yield* SettingsStore).save({ greeting: "Moin" });
-      assert.deepStrictEqual(registry.saved, [{ greeting: "Moin" }]);
+      yield* (yield* SettingsStore).save({ logLevel: "debug" });
+      assert.deepStrictEqual(registry.saved, [{ logLevel: "debug" }]);
     }).pipe(Effect.provide(layer));
   });
 
   it.effect("loads plugin data", () => {
-    const { layer } = setup({ data: { greeting: "Hallo" } });
+    const { layer } = setup({ data: { logLevel: "info" } });
     return Effect.gen(function* () {
-      assert.deepStrictEqual(yield* (yield* SettingsStore).load, { greeting: "Hallo" });
+      assert.deepStrictEqual(yield* (yield* SettingsStore).load, { logLevel: "info" });
     }).pipe(Effect.provide(layer));
   });
 
@@ -69,18 +68,6 @@ describe("obsidianLayer", () => {
       assert.isAbove(NOTICE_DURATION.warning, NOTICE_DURATION.info);
     }),
   );
-
-  it.effect("counts markdown files and maps a throw to VaultReadError", () => {
-    const { app, layer } = setup();
-    return Effect.gen(function* () {
-      const vault = yield* VaultReader;
-      app.vault.setMarkdownFileCount(3);
-      assert.strictEqual(yield* vault.markdownFileCount, 3);
-      app.vault.failReads = true;
-      const error = yield* Effect.flip(vault.markdownFileCount);
-      assert.strictEqual(error._tag, "VaultReadError");
-    }).pipe(Effect.provide(layer));
-  });
 
   it.effect("writes to the clipboard and maps a rejection to ClipboardError", () => {
     const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValueOnce();

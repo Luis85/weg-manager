@@ -209,7 +209,7 @@ describe("rebuilding the note index", () => {
       yield* built;
       const settings = yield* SettingsService;
       const reads = fixture.reads();
-      yield* settings.update({ greeting: "Moin" });
+      yield* settings.update({ logLevel: "debug" });
       yield* settle;
       assert.deepStrictEqual(paths(yield* unindexed), ["WEG Manager/A.md"]);
       assert.deepStrictEqual(fixture.logger.entries().length, 1);

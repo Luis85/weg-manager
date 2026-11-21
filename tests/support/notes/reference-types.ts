@@ -1,23 +1,13 @@
 import type { NoteTypeRegistry } from "../../../src/application/notes";
+import { communityType } from "../../../src/domain/communities";
 import { date, defineNoteType, required, text } from "../../../src/domain/notes";
 
 /**
- * The two types of the F-21 reference vault (`scripts/reference-vault.mjs`), declared as the
- * generator writes them, for the index's budget tests and the e2e probe. Test-only: `community`
- * is specified by its own slice, and `item` stands for the types not built yet.
+ * The two types of the F-21 reference vault (`scripts/reference-vault.mjs`), for the index's
+ * budget tests and the e2e probe: the plugin's own `community` type, and the test-only `item`,
+ * declared as the generator writes it, for the types not built yet.
  */
-export const referenceCommunity = defineNoteType({
-  type: "community",
-  version: 1,
-  fields: {
-    name: required(text()),
-    short_code: required(text()),
-    color: text(),
-    kind: text(),
-    unit_label: text(),
-  },
-  migrations: {},
-});
+export const referenceCommunity = communityType;
 
 export const referenceItem = defineNoteType({
   type: "item",

@@ -17,6 +17,12 @@ export const SHELL_ICONS = [
   "lucide:refresh-cw",
   "lucide:arrow-left",
   "lucide:arrow-right",
+  "lucide:building-2",
+  "lucide:plus",
+  "lucide:pencil",
+  "lucide:trash-2",
+  "lucide:check",
+  "lucide:lock",
 ];
 
 export type SharedOptions = {

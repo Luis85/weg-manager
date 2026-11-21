@@ -57,7 +57,6 @@ describe("UI language follows Obsidian", () => {
     const { registry, plugin } = await loaded("de");
     expect(commandNames(registry)).toEqual({
       "open-view": "Ansicht öffnen",
-      "show-greeting": "Begrüßung anzeigen",
       "copy-diagnostics": "Diagnose kopieren",
     });
     expect(registry.ribbonIcons.map(({ title }) => title)).toEqual(["WEG Manager"]);
@@ -74,7 +73,6 @@ describe("UI language follows Obsidian", () => {
       const { registry, plugin } = await loaded(language);
       expect(commandNames(registry)).toEqual({
         "open-view": "Open view",
-        "show-greeting": "Show greeting",
         "copy-diagnostics": "Copy diagnostics",
       });
       // The product name in every language, so the entry id does not change with the language.
@@ -87,19 +85,17 @@ describe("UI language follows Obsidian", () => {
     },
   );
 
-  it("shows the old stored default as the German default greeting", async () => {
+  it("loads an old file with a greeting without a notice and does not rewrite it", async () => {
     const old = { schemaVersion: 1, greeting: "Hello from WEG Manager", logLevel: "warn" };
     const { registry, plugin } = await loaded("de", old);
-    await registry.runCommand("show-greeting");
-    expect(recordedNotices().at(-1)?.text).toContain("Hallo von WEG Manager");
+    expect(recordedNotices()).toEqual([]);
     expect(registry.saved).toEqual([]);
     plugin.unload();
   });
 
-  it("keeps a typed greeting in English", async () => {
-    const { registry, plugin } = await loaded("en", { greeting: "Moin" });
-    await registry.runCommand("show-greeting");
-    expect(recordedNotices().at(-1)?.text).toContain("Moin");
+  it("words a notice in English", async () => {
+    const { plugin } = await loaded("en", { schemaVersion: 2 });
+    expect(recordedNotices().at(-1)?.text).toContain("Settings are read-only");
     plugin.unload();
   });
 
@@ -126,18 +122,22 @@ describe("UI language follows Obsidian", () => {
     await leaf.setViewState({ type: SHELL_VIEW_TYPE });
     await settle();
     const root = document.querySelector(".weg-manager-root")!;
-    await vi.waitFor(() => expect(root.querySelector("[data-testid=file-count]")).not.toBeNull());
-    expect(root.querySelector("[data-testid=greeting]")?.textContent.trim()).toBe(
-      "Hello from WEG Manager",
+    await vi.waitFor(() =>
+      expect(root.querySelector("[data-testid=communities-screen]")).not.toBeNull(),
     );
-    expect(root.querySelector("[data-testid=file-count]")?.textContent.trim()).toMatch(
-      /^\d+ Markdown files? in the vault$/,
+    expect(root.querySelector("[data-testid=communities-screen] h2")?.textContent.trim()).toBe(
+      "Communities",
     );
-    expect(root.querySelector("button[type=submit]")?.textContent.trim()).toBe("Save");
-    [...root.querySelectorAll("button")].find((b) => b.textContent.includes("About"))?.click();
+    expect(root.querySelector("nav li button[aria-current=page]")?.textContent.trim()).toBe(
+      "Communities",
+    );
+    [...root.querySelectorAll("button")]
+      .find((b) => b.textContent.includes("Add community"))
+      ?.click();
     await settle();
     const dialog = root.querySelector("[role=dialog]");
-    expect(dialog?.textContent).toContain("About WEG Manager");
+    expect(dialog?.textContent).toContain("New community");
+    expect(root.querySelector("[data-testid=community-save]")?.textContent.trim()).toBe("Save");
     const labels = [...(dialog?.querySelectorAll("button") ?? [])].map((button) =>
       button.getAttribute("aria-label"),
     );

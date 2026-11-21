@@ -1,9 +1,9 @@
 import type { Plugin } from "obsidian";
 import type { AppRuntime } from "../../../application/app-services";
-import { copyDiagnostics, showGreeting, type ShellCatalog } from "../../../application/shell";
+import { copyDiagnostics, type ShellCatalog } from "../../../application/shell";
 import { runSafely } from "./run";
 
-const COMMAND_IDS = ["open-view", "show-greeting", "copy-diagnostics"] as const;
+const COMMAND_IDS = ["open-view", "copy-diagnostics"] as const;
 
 /**
  * Adds the plugin's commands (no default hotkeys), named in the UI language. Returns an undo for
@@ -26,7 +26,6 @@ export const registerCommands = (
     added.push(id);
   };
   add("open-view", names.openView, openView);
-  add("show-greeting", names.showGreeting, () => runSafely(runtime, showGreeting));
   add("copy-diagnostics", names.copyDiagnostics, () => runSafely(runtime, copyDiagnostics));
   return () => {
     for (const id of added) plugin.removeCommand(id);

@@ -1,4 +1,5 @@
 import { Layer } from "effect";
+import { communitiesDe, communitiesEn, type CommunitiesCatalog } from "./communities";
 import { notesDe, notesEn, type NotesCatalog } from "./notes";
 import { Messages, shellDe, shellEn, type Language, type ShellCatalog } from "./shell";
 
@@ -6,10 +7,14 @@ import { Messages, shellDe, shellEn, type Language, type ShellCatalog } from "./
  * Every text the user sees, for one language: one part per module (ADR 0006), each typed by its
  * module, so a key missing in one language fails typecheck. The `Messages` service holds it whole.
  */
-export type Catalog = { readonly shell: ShellCatalog; readonly notes: NotesCatalog };
+export type Catalog = {
+  readonly shell: ShellCatalog;
+  readonly notes: NotesCatalog;
+  readonly communities: CommunitiesCatalog;
+};
 
-export const de: Catalog = { shell: shellDe, notes: notesDe };
-export const en: Catalog = { shell: shellEn, notes: notesEn };
+export const de: Catalog = { shell: shellDe, notes: notesDe, communities: communitiesDe };
+export const en: Catalog = { shell: shellEn, notes: notesEn, communities: communitiesEn };
 
 const CATALOGS: Readonly<Record<Language, Catalog>> = { de, en };
 

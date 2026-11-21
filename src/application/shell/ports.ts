@@ -1,7 +1,7 @@
 // Stryker disable StringLiteral: the only strings here are service keys; they only have to be unique and tests cannot observe their text.
 import { Context, type Effect } from "effect";
 import type { LogLevel } from "../../domain/shell";
-import type { ClipboardError, StorageError, VaultReadError } from "./errors";
+import type { ClipboardError, StorageError } from "./errors";
 import type { Catalog } from "../messages";
 import type { UserMessage } from "./user-messages";
 
@@ -19,11 +19,6 @@ export class Notifier extends Context.Service<
   Notifier,
   { notify(message: UserMessage): Effect.Effect<void> }
 >()("weg-manager/application/Notifier") {}
-
-export class VaultReader extends Context.Service<
-  VaultReader,
-  { readonly markdownFileCount: Effect.Effect<number, VaultReadError> }
->()("weg-manager/application/VaultReader") {}
 
 /**
  * What the log keeps of a thrown cause. `name` is a strict identifier and `frames` hold no path

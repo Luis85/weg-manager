@@ -1,5 +1,5 @@
 import { flushPromises } from "@vue/test-utils";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { defineComponent, h } from "vue";
 import { memoryNavigation } from "../../../../src/presentation/shell/host";
 import { runtimes } from "../../../support/composable";
@@ -245,13 +245,18 @@ describe("the app frame", () => {
     expect(without.querySelector("[data-testid=frame-context]")).toBeNull();
   });
 
-  it("shows the app's one route as the one entry, with the demo panel", async () => {
-    const { runtime } = make({ store: { initial: { greeting: "Moin" } } });
+  it("starts on the community settings, its one entry, with the switch in the context area", async () => {
+    const { runtime } = make();
     const root = newRoot();
     closes.push(mountApp(root, runtime));
     await settle();
-    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Start"]);
+    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Gemeinschaften"]);
     expect(navButtons(root)[0]?.getAttribute("aria-current")).toBe("page");
-    expect(root.querySelector("section [data-testid=greeting]")?.textContent).toContain("Moin");
+    await vi.waitFor(() =>
+      expect(root.querySelector("section [data-testid=communities-screen]")).not.toBeNull(),
+    );
+    await vi.waitFor(() =>
+      expect(root.querySelector("nav [data-testid=community-switch]")).not.toBeNull(),
+    );
   });
 });

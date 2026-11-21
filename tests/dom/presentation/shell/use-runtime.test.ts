@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import { VaultReadError } from "../../../../src/application/shell/errors";
-import { countMarkdownFiles, updateGreeting } from "../../../../src/application/shell/use-cases";
+import { setLogLevel } from "../../../../src/application/shell/use-cases";
 import { useQuery, useSettings } from "../../../../src/presentation/shell";
 import { reportVueError, useRuntime } from "../../../../src/presentation/shell/runtime/use-runtime";
 import { host, runtimes } from "../../../support/composable";
@@ -14,8 +14,8 @@ afterEach(disposeAll);
 
 describe("useQuery", () => {
   it("stores a success value and clears pending", async () => {
-    const { runtime } = make();
-    const { exposed } = host(runtime, () => useQuery(() => countMarkdownFiles));
+    const { runtime, source } = make();
+    const { exposed } = host(runtime, () => useQuery(() => source.read));
     const running = exposed.run();
     expect(exposed.pending.value).toBe(true);
     await running;
@@ -61,37 +61,35 @@ describe("useQuery", () => {
   });
 
   it("interrupts the first run when a second starts", async () => {
-    const { runtime, vault } = make();
-    vault.hold();
-    const { exposed } = host(runtime, () => useQuery(() => countMarkdownFiles));
+    const { runtime, source } = make();
+    source.hold();
+    const { exposed } = host(runtime, () => useQuery(() => source.read));
     const first = exposed.run();
     await flushPromises();
-    expect(vault.held()).toBe(1);
+    expect(source.held()).toBe(1);
     const second = exposed.run();
     await first;
     expect(exposed.pending.value).toBe(true);
     expect(exposed.value.value).toBeUndefined();
-    vault.set(9);
-    vault.release();
+    source.set(9);
+    source.release();
     await second;
-    expect(vault.held()).toBe(0);
+    expect(source.held()).toBe(0);
     expect(exposed.value.value).toBe(9);
     expect(exposed.pending.value).toBe(false);
   });
 
   it("interrupts a pending run when the scope ends and drops its result", async () => {
-    const { runtime, vault, notifier } = make();
-    vault.hold();
+    const { runtime, source, notifier } = make();
+    source.hold();
     const counted: number[] = [];
     const { wrapper, exposed } = host(runtime, () =>
-      useQuery(() =>
-        Effect.tap(countMarkdownFiles, (count) => Effect.sync(() => counted.push(count))),
-      ),
+      useQuery(() => Effect.tap(source.read, (count) => Effect.sync(() => counted.push(count)))),
     );
     const running = exposed.run();
     await flushPromises();
     wrapper.unmount();
-    vault.release();
+    source.release();
     await running;
     await flushPromises();
     expect(counted).toEqual([]);
@@ -101,8 +99,8 @@ describe("useQuery", () => {
   });
 
   it("treats a disposed runtime as a defect it cannot report, without rejecting", async () => {
-    const { runtime } = make();
-    const { exposed } = host(runtime, () => useQuery(() => countMarkdownFiles));
+    const { runtime, source } = make();
+    const { exposed } = host(runtime, () => useQuery(() => source.read));
     await runtime.dispose();
     await expect(exposed.run()).resolves.toBeUndefined();
     expect(exposed.error.value).toBeUndefined();
@@ -113,14 +111,14 @@ describe("useSettings and useRuntime", () => {
   it("follows settings changes until the scope ends", async () => {
     const { runtime } = make();
     const { wrapper, exposed } = host(runtime, () => useSettings());
-    expect(exposed.value.greeting).toBeNull();
-    await runtime.runPromise(updateGreeting("Moin"));
+    expect(exposed.value.logLevel).toBe("warn");
+    await runtime.runPromise(setLogLevel("debug"));
     await flushPromises();
-    expect(exposed.value.greeting).toBe("Moin");
+    expect(exposed.value.logLevel).toBe("debug");
     wrapper.unmount();
-    await runtime.runPromise(updateGreeting("Später"));
+    await runtime.runPromise(setLogLevel("error"));
     await flushPromises();
-    expect(exposed.value.greeting).toBe("Moin");
+    expect(exposed.value.logLevel).toBe("debug");
   });
 
   it("throws outside a mounted surface", () => {

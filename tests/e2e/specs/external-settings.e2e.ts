@@ -1,24 +1,51 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
-import { ROOT, installConsoleSpy, openView, pluginProblems, readData, writeData } from "../support";
+import {
+  ROOT,
+  installConsoleSpy,
+  logLevelControl,
+  openView,
+  pluginProblems,
+  readData,
+  settingsTabContent,
+  writeData,
+} from "../support";
 
-/** PBI-48: `data.json` changed outside Obsidian (Sync, another program) reaches the open view. */
+/** PBI-48: `data.json` changed outside Obsidian (Sync, another program) reaches the plugin. */
 describe("settings changed outside Obsidian", function () {
-  it("shows a greeting written to data.json from outside in the open view", async function () {
+  it("shows a root folder written to data.json from outside in the open view", async function () {
     await installConsoleSpy();
     await openView();
-    const greeting = browser.$(ROOT).$("[data-testid=greeting]");
-    await expect(greeting).toHaveText("Hallo von WEG Manager");
-    await writeData({ schemaVersion: 1, greeting: "Über Sync angekommen" });
-    await expect(greeting).toHaveText("Über Sync angekommen");
+    const intro = browser.$(ROOT).$("[data-testid=communities-intro]");
+    await expect(intro).toHaveText(
+      "Jede Gemeinschaft ist eine Notiz im Ordner „WEG Manager/Gemeinschaften“.",
+    );
+    await writeData({ schemaVersion: 1, rootFolder: "Beirat", logLevel: "info" });
+    await expect(intro).toHaveText(
+      "Jede Gemeinschaft ist eine Notiz im Ordner „Beirat/Gemeinschaften“.",
+    );
+  });
+
+  it("shows a log level written from outside in the settings tab", async function () {
+    expect(await logLevelControl()).toEqual({ value: "info", disabled: false });
+    await writeData({ schemaVersion: 1, rootFolder: "Beirat", logLevel: "debug" });
+    await browser.waitUntil(async () => (await logLevelControl()).value === "debug", {
+      timeoutMsg: "the settings tab never showed the new log level",
+    });
   });
 
   it("turns read-only for a file from a newer version and never overwrites it", async function () {
-    const newer = { schemaVersion: 99, greeting: "Aus der Zukunft" };
+    const newer = { schemaVersion: 99, logLevel: "error" };
     await writeData(newer);
-    const root = browser.$(ROOT);
-    await expect(root.$("[data-testid=read-only-hint]")).toBeDisplayed();
-    await expect(root.$("button[type=submit]")).toBeDisabled();
+    await browser.waitUntil(async () => (await logLevelControl()).disabled === true, {
+      timeoutMsg: "the settings tab never turned read-only",
+    });
+    expect((await settingsTabContent()).names).toEqual([
+      "Protokollstufe",
+      "Einstellungen schreibgeschützt",
+    ]);
+    await logLevelControl("info");
+    await browser.pause(300);
     expect(await readData()).toEqual(newer);
   });
 

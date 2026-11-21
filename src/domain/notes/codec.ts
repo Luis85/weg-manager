@@ -1,7 +1,9 @@
 import type { Result } from "effect";
-import { decodeNote } from "./decode";
+import { decodeNote, readFields } from "./decode";
 import type {
   DecodedNote,
+  FieldIssue,
+  FieldIssueCode,
   Frontmatter,
   NoteFields,
   NoteInput,
@@ -22,6 +24,13 @@ export const defineNoteType = <const F extends NoteFields>(spec: NoteTypeSpec<F>
   keys: Object.keys(spec.fields) as Array<keyof F & string>,
   /** Reads a note as a record of this type; never throws. */
   decode: (note: NoteInput): DecodedNote<F> => decodeNote(spec, note),
+  /**
+   * Checks values a form is about to save against the field rules, as `decode` checks a note's:
+   * one issue per required field that is unset (`undefined` or `null`) and per value its schema
+   * rejects, in declaration order. Keys the type does not declare are ignored.
+   */
+  check: (values: Readonly<Record<string, unknown>>): readonly FieldIssue<FieldIssueCode<F>>[] =>
+    readFields(spec.fields, values).issues,
   /** The frontmatter of a new note with `id` (from `IdGenerator`) and `values`. */
   newFrontmatter: (id: string, values: RecordValues<F>): Frontmatter =>
     newNoteFrontmatter(spec, id, values),

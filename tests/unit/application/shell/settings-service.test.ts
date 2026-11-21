@@ -35,12 +35,12 @@ describe("SettingsService", () => {
 
   it.effect("falls back for one invalid field, notifies once and saves nothing", () => {
     const { store, notifier, layer } = setup({
-      initial: { schemaVersion: 1, greeting: 7, logLevel: "debug" },
+      initial: { schemaVersion: 1, rootFolder: 7, logLevel: "debug" },
     });
     return Effect.gen(function* () {
       const service = yield* SettingsService;
       const current = yield* service.current;
-      assert.strictEqual(current.greeting, DEFAULT_SETTINGS.greeting);
+      assert.strictEqual(current.rootFolder, DEFAULT_SETTINGS.rootFolder);
       assert.strictEqual(current.logLevel, "debug");
       assert.strictEqual(notifier.messages().length, 1);
       assert.strictEqual(notifier.messages()[0]?.severity, "warning");
@@ -55,27 +55,26 @@ describe("SettingsService", () => {
       const service = yield* SettingsService;
       const collected = yield* Effect.forkChild(Stream.runCollect(Stream.take(service.changes, 2)));
       yield* Effect.yieldNow;
-      const updated = yield* service.update({ greeting: "Yo" });
-      assert.strictEqual(updated.greeting, "Yo");
-      assert.deepStrictEqual(store.saved(), [
-        { schemaVersion: 1, greeting: "Yo", logLevel: "warn" },
-      ]);
+      const updated = yield* service.update({ logLevel: "debug" });
+      assert.strictEqual(updated.logLevel, "debug");
+      assert.deepStrictEqual(store.saved(), [{ schemaVersion: 1, logLevel: "debug" }]);
       const emitted = yield* Fiber.join(collected);
       assert.deepStrictEqual(
-        Array.from(emitted).map((settings) => settings.greeting),
-        [DEFAULT_SETTINGS.greeting, "Yo"],
+        Array.from(emitted).map((settings) => settings.logLevel),
+        [DEFAULT_SETTINGS.logLevel, "debug"],
       );
     }).pipe(Effect.provide(layer));
   });
 
   it.effect(
-    "loads an old file with the stored default as not customised and drops it on save",
+    "ignores the greeting of an old file without an issue and drops it on the next save",
     () => {
-      const old = { schemaVersion: 1, greeting: "Hello from WEG Manager", logLevel: "warn" };
+      const old = { schemaVersion: 1, greeting: "Moin", logLevel: "warn" };
       const { store, notifier, layer } = setup({ initial: old });
       return Effect.gen(function* () {
         const service = yield* SettingsService;
-        assert.isNull((yield* service.current).greeting);
+        assert.deepStrictEqual(yield* service.current, DEFAULT_SETTINGS);
+        assert.deepStrictEqual(yield* service.status, { writable: true, issues: [] });
         assert.deepStrictEqual(notifier.messages(), []);
         assert.deepStrictEqual(store.saved(), []);
         yield* service.update({ logLevel: "info" });
@@ -88,7 +87,7 @@ describe("SettingsService", () => {
     const { store, layer } = setup();
     return Effect.gen(function* () {
       const service = yield* SettingsService;
-      const error = yield* Effect.flip(service.update({ greeting: "" }));
+      const error = yield* Effect.flip(service.update({ rootFolder: "a/../b" }));
       assert.strictEqual(error._tag, "InvalidSettingsError");
       assert.deepStrictEqual(store.saved(), []);
       assert.deepStrictEqual(yield* service.current, DEFAULT_SETTINGS);
@@ -96,11 +95,11 @@ describe("SettingsService", () => {
   });
 
   it.effect("is read-only for settings from a newer version and never writes", () => {
-    const { store, notifier, layer } = setup({ initial: { schemaVersion: 2, greeting: "Neu" } });
+    const { store, notifier, layer } = setup({ initial: { schemaVersion: 2, logLevel: "info" } });
     return Effect.gen(function* () {
       const service = yield* SettingsService;
       assert.strictEqual((yield* service.status).writable, false);
-      const error = yield* Effect.flip(service.update({ greeting: "Yo" }));
+      const error = yield* Effect.flip(service.update({ logLevel: "debug" }));
       assert.deepStrictEqual(
         { tag: error._tag, reason: error._tag === "ReadOnlySettingsError" ? error.reason : null },
         { tag: "ReadOnlySettingsError", reason: "newer-version" },
@@ -121,7 +120,7 @@ describe("SettingsService", () => {
         readOnlyReason: "unreadable",
       });
       assert.strictEqual(notifier.messages().length, 1);
-      const error = yield* Effect.flip(service.update({ greeting: "Yo" }));
+      const error = yield* Effect.flip(service.update({ logLevel: "debug" }));
       assert.deepStrictEqual(
         { tag: error._tag, reason: error._tag === "ReadOnlySettingsError" ? error.reason : null },
         { tag: "ReadOnlySettingsError", reason: "unreadable" },
@@ -158,13 +157,13 @@ describe("SettingsService", () => {
 
   it.effect("falls back to the default root folder alone and notifies once", () => {
     const { notifier, layer } = setup({
-      initial: { schemaVersion: 1, greeting: "Moin", rootFolder: "a/../b" },
+      initial: { schemaVersion: 1, logLevel: "info", rootFolder: "a/../b" },
     });
     return Effect.gen(function* () {
       const service = yield* SettingsService;
       const current = yield* service.current;
       assert.strictEqual(current.rootFolder, "WEG Manager");
-      assert.strictEqual(current.greeting, "Moin");
+      assert.strictEqual(current.logLevel, "info");
       assert.deepStrictEqual((yield* service.status).issues, [
         { code: "rootFolder.invalid", max: 100 },
       ]);
@@ -176,7 +175,7 @@ describe("SettingsService", () => {
     const { layer } = setup({ failSave: true });
     return Effect.gen(function* () {
       const service = yield* SettingsService;
-      const error = yield* Effect.flip(service.update({ greeting: "Yo" }));
+      const error = yield* Effect.flip(service.update({ logLevel: "debug" }));
       assert.strictEqual(error._tag, "StorageError");
       assert.deepStrictEqual(yield* service.current, DEFAULT_SETTINGS);
     }).pipe(Effect.provide(layer));
@@ -187,19 +186,19 @@ describe("SettingsService", () => {
     return Effect.gen(function* () {
       const service = yield* SettingsService;
       yield* Effect.all(
-        [service.update({ greeting: "Eins" }), service.update({ logLevel: "debug" })],
+        [service.update({ rootFolder: "Beirat" }), service.update({ logLevel: "debug" })],
         {
           concurrency: "unbounded",
         },
       );
       const current = yield* service.current;
-      assert.strictEqual(current.greeting, "Eins");
+      assert.strictEqual(current.rootFolder, "Beirat");
       assert.strictEqual(current.logLevel, "debug");
       assert.strictEqual(store.saved().length, 2);
       assert.deepStrictEqual(store.saved()[1], {
         schemaVersion: 1,
-        greeting: "Eins",
         logLevel: "debug",
+        rootFolder: "Beirat",
       });
     }).pipe(Effect.provide(layer));
   });

@@ -15,7 +15,7 @@ import type { SettingsMirror } from "./settings-mirror";
 
 /**
  * Obsidian's declarative settings API (1.13+): searchable, rendered by Obsidian. It holds only the
- * plugin-wide technical settings; feature data such as the greeting is edited in the plugin's
+ * plugin-wide technical settings; feature data such as the communities is edited in the plugin's
  * views (PBI-49). Values come from the settings mirror; every change goes through a use case.
  * Texts come from the catalog of the UI language.
  */

@@ -5,15 +5,8 @@ import { messagesLayer } from "../../../../src/application/messages";
 import type { Language } from "../../../../src/application/shell/i18n/catalog";
 import { Logger } from "../../../../src/application/shell/ports";
 import { SettingsServiceLive } from "../../../../src/application/shell/settings-service";
+import { copyDiagnostics, setLogLevel } from "../../../../src/application/shell/use-cases";
 import {
-  copyDiagnostics,
-  countMarkdownFiles,
-  setLogLevel,
-  showGreeting,
-  updateGreeting,
-} from "../../../../src/application/shell/use-cases";
-import {
-  fixedVault,
   inMemoryStore,
   recordingClipboard,
   recordingLogger,
@@ -31,94 +24,18 @@ const settingsWith = (options: StoreOptions = {}, language: Language = "de") => 
   return { notifier, store, layer };
 };
 
-describe("settings use cases", () => {
-  it.effect("updates the greeting and the log level", () =>
+describe("setLogLevel", () => {
+  it.effect("updates the log level", () =>
     Effect.gen(function* () {
-      assert.strictEqual((yield* updateGreeting("Servus")).greeting, "Servus");
       assert.strictEqual((yield* setLogLevel("debug")).logLevel, "debug");
     }).pipe(Effect.provide(settingsWith().layer)),
   );
 
-  it.effect("fails updateGreeting with InvalidSettingsError for an empty greeting", () =>
+  it.effect("fails with InvalidSettingsError for a level that does not exist", () =>
     Effect.gen(function* () {
-      const error = yield* Effect.flip(updateGreeting("  "));
+      const error = yield* Effect.flip(setLogLevel("loud" as never));
       assert.strictEqual(error._tag, "InvalidSettingsError");
     }).pipe(Effect.provide(settingsWith().layer)),
-  );
-
-  it.effect("showGreeting notifies the current greeting", () => {
-    const { notifier, layer } = settingsWith({ initial: { greeting: "Moin" } });
-    return Effect.gen(function* () {
-      yield* showGreeting;
-      assert.deepStrictEqual(
-        notifier.messages().map((message) => message.detail),
-        ["Moin"],
-      );
-      assert.deepStrictEqual(notifier.messages()[0], {
-        severity: "info",
-        title: "WEG Manager",
-        detail: "Moin",
-      });
-    }).pipe(Effect.provide(layer));
-  });
-});
-
-describe("default greeting", () => {
-  it.effect.each(["de", "en"] as const)(
-    "showGreeting shows the default of the UI language (%s) while none is typed",
-    (language) => {
-      const { notifier, layer } = settingsWith({}, language);
-      return Effect.gen(function* () {
-        yield* showGreeting;
-        assert.strictEqual(
-          notifier.messages()[0]?.detail,
-          language === "de" ? "Hallo von WEG Manager" : "Hello from WEG Manager",
-        );
-      }).pipe(Effect.provide(layer));
-    },
-  );
-
-  it.effect("shows the language's default for a file that stored the old default", () => {
-    const old = { schemaVersion: 1, greeting: "Hello from WEG Manager", logLevel: "warn" };
-    const { notifier, layer } = settingsWith({ initial: old }, "de");
-    return Effect.gen(function* () {
-      yield* showGreeting;
-      assert.strictEqual(notifier.messages()[0]?.detail, "Hallo von WEG Manager");
-    }).pipe(Effect.provide(layer));
-  });
-
-  it.effect("stores the language's default greeting as not customised", () => {
-    const { store, layer } = settingsWith({ initial: { greeting: "Moin" } }, "de");
-    return Effect.gen(function* () {
-      const saved = yield* updateGreeting(" Hallo von WEG Manager ");
-      assert.isNull(saved.greeting);
-      assert.deepStrictEqual(store.saved(), [{ schemaVersion: 1, logLevel: "warn" }]);
-    }).pipe(Effect.provide(layer));
-  });
-
-  it.effect("keeps a typed greeting that is the default of another language", () => {
-    const { layer } = settingsWith({}, "en");
-    return Effect.gen(function* () {
-      assert.strictEqual(
-        (yield* updateGreeting("Hallo von WEG Manager")).greeting,
-        "Hallo von WEG Manager",
-      );
-    }).pipe(Effect.provide(layer));
-  });
-});
-
-describe("countMarkdownFiles", () => {
-  it.effect("returns the vault's count", () =>
-    Effect.gen(function* () {
-      assert.strictEqual(yield* countMarkdownFiles, 12);
-    }).pipe(Effect.provide(fixedVault(12))),
-  );
-
-  it.effect("fails with VaultReadError", () =>
-    Effect.gen(function* () {
-      const error = yield* Effect.flip(countMarkdownFiles);
-      assert.strictEqual(error._tag, "VaultReadError");
-    }).pipe(Effect.provide(fixedVault("fail"))),
   );
 });
 
@@ -138,7 +55,7 @@ const diagnosticsSetup = (
 
 describe("buildDiagnostics", () => {
   it.effect("reports versions, settings status and recent entries", () => {
-    const { layer } = diagnosticsSetup({ initial: { greeting: 5 } });
+    const { layer } = diagnosticsSetup({ initial: { rootFolder: 5 } });
     return Effect.gen(function* () {
       const logger = yield* Logger;
       yield* logger.log({ level: "warn", event: "vault.read.failed", data: { attempt: 2 } });
@@ -147,7 +64,7 @@ describe("buildDiagnostics", () => {
       assert.include(report, "1.15.1");
       assert.include(report, "test");
       assert.match(report, /Einstellungen beschreibbar: ja/);
-      assert.include(report, "Begrüßung");
+      assert.include(report, "Wurzelordner");
       assert.include(report, "vault.read.failed");
       assert.include(report, '"attempt":2');
     }).pipe(Effect.provide(layer));

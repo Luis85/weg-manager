@@ -1,0 +1,67 @@
+/*
+ * Community colours (PBI-56). A note stores the English name of a palette colour; the shades are
+ * the plugin's and may change without touching a note. Light shades carry white text, dark shades
+ * dark text, each at a contrast of at least 4.5:1. The short code is always shown as text, so the
+ * colour never carries meaning alone.
+ */
+:root,
+.light {
+  --wm-community-teal: #0f766e;
+  --wm-community-violet: #6d28d9;
+  --wm-community-blue: #1d4ed8;
+  --wm-community-rust: #9a3412;
+  --wm-community-slate: #475569;
+  --wm-community-cyan: #0e7490;
+  --wm-community-pink: #be185d;
+  --wm-community-olive: #4d7c0f;
+  --wm-community-on: #ffffff;
+}
+
+.dark {
+  --wm-community-teal: #2bb3a3;
+  --wm-community-violet: #a78bfa;
+  --wm-community-blue: #60a5fa;
+  --wm-community-rust: #fb923c;
+  --wm-community-slate: #94a3b8;
+  --wm-community-cyan: #22d3ee;
+  --wm-community-pink: #f472b6;
+  --wm-community-olive: #84cc16;
+  --wm-community-on: #18181b;
+}
+
+[data-community-color] {
+  color: var(--wm-community-on);
+}
+
+[data-community-color="teal"] {
+  background-color: var(--wm-community-teal);
+}
+[data-community-color="violet"] {
+  background-color: var(--wm-community-violet);
+}
+[data-community-color="blue"] {
+  background-color: var(--wm-community-blue);
+}
+[data-community-color="rust"] {
+  background-color: var(--wm-community-rust);
+}
+[data-community-color="slate"] {
+  background-color: var(--wm-community-slate);
+}
+[data-community-color="cyan"] {
+  background-color: var(--wm-community-cyan);
+}
+[data-community-color="pink"] {
+  background-color: var(--wm-community-pink);
+}
+[data-community-color="olive"] {
+  background-color: var(--wm-community-olive);
+}
+
+/* No colour, or one the palette does not have: a dashed outline in the text colour. */
+[data-community-color="none"] {
+  color: var(--wm-text);
+  background-color: transparent;
+  outline: 1px dashed var(--wm-text-muted);
+  outline-offset: -1px;
+}

@@ -6,7 +6,7 @@ import { AppEvent } from "../../../../src/application/events";
 import { en } from "../../../../src/application/messages";
 import { EventBus } from "../../../../src/application/shell/event-bus";
 import { SettingsService } from "../../../../src/application/shell/settings-service";
-import { setLogLevel, updateGreeting } from "../../../../src/application/shell/use-cases";
+import { setLogLevel } from "../../../../src/application/shell/use-cases";
 import {
   useAppEvents,
   useMessages,
@@ -104,14 +104,12 @@ describe("useSettings and useSettingsStatus", () => {
       settings: useSettings(),
       status: useSettingsStatus(),
     }));
-    expect(exposed.settings.value.greeting).toBeNull();
+    expect(exposed.settings.value.logLevel).toBe("warn");
     expect(exposed.status.value.writable).toBe(true);
-    await runtime.runPromise(updateGreeting("Moin"));
     await runtime.runPromise(setLogLevel("debug"));
     await flushPromises();
     expect(exposed.settings.value).toEqual({
       schemaVersion: 1,
-      greeting: "Moin",
       logLevel: "debug",
       rootFolder: "WEG Manager",
     });

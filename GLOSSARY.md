@@ -20,6 +20,14 @@ _Avoid_: type, category, legal form
 What a community calls the things its owners own, such as Einheiten or Stellplätze.
 _Avoid_: unit type, unit name
 
+**Colour** (German: Farbe):
+The colour that marks a community beside its short code, one of a fixed palette and different for each community. It never carries meaning alone: the short code is always shown with it.
+_Avoid_: theme, accent
+
+**Community switch** (German: Gemeinschaftswechsel):
+The control in the app frame that shows the community selection and changes it, for every open view.
+_Avoid_: filter, picker, dropdown
+
 **Community selection** (German: Gemeinschaftskontext):
 The community the user is working in right now. It is visible before any editing or output.
 _Avoid_: filter, context, tenant, current community
@@ -39,6 +47,14 @@ _Avoid_: schema (the version marker inside a note), format, data model
 **Issue**:
 A named reason why a note or a value breaks its file contract or a rule. An issue is shown to the user and never repaired silently.
 _Avoid_: error, warning, violation, problem
+
+**Read-only** (German: schreibgeschützt):
+A note the plugin shows but never writes, because a write could damage it: it comes from a newer version, or its identity is missing, broken or shared.
+_Avoid_: locked, disabled, invalid
+
+**Conflict** (German: Konflikt):
+A field that the user changed in a form and someone else changed in the note meanwhile, to another value. Nothing is saved until the user chooses which value applies.
+_Avoid_: collision, clash, merge error
 
 **Tracer slice** (German: Durchstich):
 The first record type built through every layer, to prove the path that all later types take.

@@ -96,7 +96,7 @@
             "patterns": [
               {
                 "group": ["obsidian", "effect", "effect/*", "**/infrastructure/**"],
-                "message": "presentation calls use cases through src/presentation/runtime; it never imports obsidian, effect or infrastructure."
+                "message": "presentation calls use cases through src/presentation/shell/runtime; it never imports obsidian, effect or infrastructure."
               }
             ]
           }

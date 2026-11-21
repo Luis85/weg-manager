@@ -17,5 +17,5 @@
     "../harness/**/*.vue",
     "../src/env.d.ts"
   ],
-  "exclude": ["../tests/skills/**", "../tests/e2e/**"]
+  "exclude": ["../tests/e2e/**"]
 }

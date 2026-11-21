@@ -72,7 +72,7 @@ Technische Lösung und Aufwand bleiben in dieser Konzeptphase offen. Fachliche R
 
 ## Backlog-Regeln aus der bisherigen Konfiguration
 
-Die folgenden strukturellen Regeln wurden aus der entfernten `README_PRODUCT_BACKLOG.md` übernommen. Aktuelle Propertynamen und View-Einstellungen stehen in `Product Backlog.base`; die menschlich gepflegten Konventionen oben ergänzen sie. Diese zentrale README ist keine vom Plugin automatisch erzeugte Datei.
+Die folgenden strukturellen Regeln wurden aus der entfernten `README_PRODUCT_BACKLOG.md` übernommen. Aktuelle Propertynamen und View-Einstellungen stehen in `docs/Product Backlog.base`; die menschlich gepflegten Konventionen oben ergänzen sie. Diese zentrale README ist keine vom Plugin automatisch erzeugte Datei.
 
 ### Typen und zulässige Beziehungen
 
@@ -145,7 +145,7 @@ Aktuell ist Designstand v2: vier Navigationsziele plus Kontakte und Einstellunge
 
 ## Verteilbare Claude Skills
 
-Der Ordner `skills/` enthält Skill-Quellen und das [Paketmanifest](../skills/manifest.json), `skills/dist/` die erzeugten ZIPs. [weg-gmail-to-vault](../skills/weg-gmail-to-vault/SKILL.md) ist der erste konkrete MVP-Skill. `scripts/package_claude_skills.py` baut das Paket reproduzierbar; `tests/skills/` enthält ausschließlich synthetische Tests für Writer und Paket. Dies ist Skill-Infrastruktur, keine implementierte Pluginoberfläche oder eigener Gmail-Connector. Es werden keine zusätzlichen README-Dateien angelegt.
+Der Ordner `skills/` enthält Skill-Quellen und das [Paketmanifest](../skills/manifest.json), `skills/dist/` die erzeugten ZIPs. [weg-gmail-to-vault](../skills/weg-gmail-to-vault/SKILL.md) ist der erste konkrete MVP-Skill. `skills/package_claude_skills.py` baut das Paket reproduzierbar; `skills/tests/` enthält ausschließlich synthetische Tests für Writer und Paket. Dies ist Skill-Infrastruktur, keine implementierte Pluginoberfläche oder eigener Gmail-Connector. Es werden keine zusätzlichen README-Dateien angelegt.
 
 [[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] ist explizit dem MVP zugeordnet; das gemischte F-18 erhält keine pauschale Releasezuordnung für alle Kinder. Die Plugininstallation und ein tatsächlicher Claude-/Gmail-Test bleiben offen. `pages` und `user-flows` dieser neuen Story bleiben bis zur konkreten Ergänzung der Sitemap v2 leer; alte oder ähnliche Ansichten werden nicht als bereits fertiges Integrationsdesign ausgegeben.
 

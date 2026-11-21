@@ -69,7 +69,7 @@ Die vollständige Wochenarbeit funktioniert auch auf dem Handy.
 | [Sitemap](docs/design/sitemap/00%20-%20Sitemap.md) | Ansichten und Navigation (VIEW-01 bis VIEW-08) |
 | [Handoff](docs/design/handoff/00%20-%20Handoff%20%C3%9Cbersicht.md) | Umsetzungspaket: Tokens, Komponenten, Zustände, Texte, Abnahme, offene Punkte |
 
-Die Dokumentation ist als Obsidian-Vault mit verknüpften Notizen angelegt. Anforderungen (Epics, Features, PBIs) liegen unter `docs/requirements`, Fachregeln unter `docs/business-rules`, Entscheidungen unter `docs/decisions`; die Übersichten liefert `Product Backlog.base`.
+Die Dokumentation ist als Obsidian-Vault mit verknüpften Notizen angelegt. Anforderungen (Epics, Features, PBIs) liegen unter `docs/requirements`, Fachregeln unter `docs/business-rules`, Entscheidungen unter `docs/decisions`; die Übersichten liefert `docs/Product Backlog.base`.
 
 ## Entwicklung
 
@@ -90,7 +90,7 @@ npm run verify    # Qualitätstor: Format, Lint, Typen, Tests mit Coverage, Anal
 | `build`, `check:dist` | `dist/main.js`, `styles.css`, `manifest.json` und ihre Invarianten |
 | `version`, `release:package` | Versionssprung und Release-Paket, siehe Releasing |
 
-Für die eigene Vault-Konfiguration: `node_modules/`, `dist/`, `coverage/`, `reports/` und `.stryker-tmp/` unter *Einstellungen → Dateien und Links → Ausgeschlossene Dateien* eintragen, da der Vault die Repo-Wurzel ist.
+Für die eigene Vault-Konfiguration: `node_modules/`, `dist/`, `reports/`, `release/`, `.stryker-tmp/`, `.obsidian-cache/` und `.fallow/` unter *Einstellungen → Dateien und Links → Ausgeschlossene Dateien* eintragen, da der Vault die Repo-Wurzel ist.
 
 Entwicklerdokumentation (englisch): [Architektur](docs/engineering/architecture.md) · [Feature hinzufügen](docs/engineering/adding-a-feature.md) · [Tests](docs/engineering/testing.md) · [Fehlerbehandlung](docs/engineering/error-handling.md) · [Releasing](docs/engineering/releasing.md) · [GitHub-Einrichtung](docs/engineering/github-setup.md) · [ADRs](docs/adr/)
 
@@ -101,9 +101,10 @@ Entwicklerdokumentation (englisch): [Architektur](docs/engineering/architecture.
 | `src/` | Plugin-Quellcode: `domain`, `application`, `infrastructure`, `presentation` |
 | `harness/` | Browser-Harness für UI-Arbeit ohne Obsidian |
 | `docs/` | Produktkonzept, Anforderungen, Design, Prototyp, Entwicklerdokumentation |
-| `skills/` | Claude Skill `weg-gmail-to-vault` (0.1.0): übernimmt ausgewählte Gmail-Nachrichten lesend als Notizen in den Vault |
-| `scripts/` | Build-, Prüf- und Release-Skripte des Plugins; `package_claude_skills.py` baut das Skillpaket (`--output-dir`) |
-| `tests/` | Plugin-Tests (`unit`, `dom`, Obsidian-Testdouble) sowie Tests für Skillpaket und Gmail-Import |
+| `skills/` | Claude Skill `weg-gmail-to-vault` (0.1.0): übernimmt ausgewählte Gmail-Nachrichten lesend als Notizen in den Vault; mit Paketskript `package_claude_skills.py` (`--output-dir`) und Tests unter `skills/tests/` (`python3 -m unittest discover -s skills/tests`) |
+| `scripts/` | Build-, Prüf- und Release-Skripte des Plugins |
+| `configs/` | Konfiguration von Vite, Vitest, Stryker, fallow und TypeScript (Begründung in `docs/engineering/architecture.md`) |
+| `tests/` | Plugin-Tests (`unit`, `dom`, `e2e`, Obsidian-Testdouble) |
 
 ## Lizenz
 

@@ -6,7 +6,7 @@ import unittest
 import zipfile
 
 ROOT=Path(__file__).resolve().parents[2]
-SPEC=importlib.util.spec_from_file_location('package_skills',ROOT/'scripts/package_claude_skills.py')
+SPEC=importlib.util.spec_from_file_location('package_skills',ROOT/'skills/package_claude_skills.py')
 mod=importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(mod)
 

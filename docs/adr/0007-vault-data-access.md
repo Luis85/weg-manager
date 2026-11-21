@@ -75,7 +75,7 @@ unit_label: Einheiten
 
 - **Adapter calls.** The Obsidian adapter uses `vault.create`, `vault.createFolder` (for missing folders), `vault.process` (for updates, since the second amendment below; it used `fileManager.processFrontMatter` before), `fileManager.trashFile` and `fileManager.renameFile`. Name clashes compare `clashKey` (NFC, then lower case), also against folders, whatever the disk does.
 - **Unreadable notes.** Under *Broken notes*, "one of the plugin's folders" is the `rootFolder` setting. The index asks `NoteStore.unreadable(folder)`, because Obsidian's cache cannot tell a note with broken YAML from a note without frontmatter except through its `yaml` section.
-- **The conflict form** shows, per conflicting field, the value when the form opened, the user's and the note's current one; the user picks one per field, and the form saves again against the current note.
+- **The conflict form** shows, per conflicting field, the value when the form opened, the user's and the note's current one; the user picks one per field, and the form saves again against the current note. Applying the choice ends the conflict view: a chosen value that breaks a rule (a property emptied outside) stays in the editable form with its field's issue, and the next save goes against the same note values.
 - **Unregistered records.** A valid `schema` of a type no feature registered, and a malformed `schema`, are shown as issues (`schema.unknown-type`, `schema.malformed`), never dropped.
 - **Not built.** A fallback when a Markdown file is never indexed (it would hold `VaultReady` back), and a body section for any type.
 

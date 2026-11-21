@@ -114,6 +114,28 @@ describe("editing a community", () => {
     expect((await read(screen)).frontmatter).toEqual({ ...AW, kind: "Haus" });
   });
 
+  it("takes an empty note value into an editable form that saves once the field is valid", async () => {
+    const screen = await editing();
+    // Someone empties the property in Obsidian while the form is open.
+    screen.notes.seed(PATH, { ...AW, kind: null });
+    await fill(screen, { kind: "Haus" });
+    await save(screen);
+    await screen.click(
+      screen.q("conflict-kind")?.querySelector("[data-testid=choose-theirs]") ?? undefined,
+    );
+    await screen.click(screen.q("conflict-apply"));
+    expect(screen.q("community-conflict")).toBeUndefined();
+    expect(screen.input("field-kind").value).toBe("");
+    expect(screen.q("community-form")?.textContent).toContain("„Art“ fehlt. Gib einen Wert ein.");
+    const saveButton = () => screen.q("community-save") as HTMLButtonElement;
+    expect(saveButton().disabled).toBe(false);
+    expect((await read(screen)).frontmatter).toEqual({ ...AW, kind: null });
+    await fill(screen, { kind: "Reihenhaus" });
+    await save(screen);
+    await screen.until(() => expect(screen.q("community-form")).toBeUndefined());
+    expect((await read(screen)).frontmatter).toEqual({ ...AW, kind: "Reihenhaus" });
+  });
+
   it("tells the user when the note is gone, and keeps the input", async () => {
     const screen = await editing();
     await screen.runtime.runPromise(NoteStore.use((store) => store.trash(PATH)));

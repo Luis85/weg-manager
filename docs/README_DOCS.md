@@ -9,10 +9,11 @@ Die Produktkonzeption wird in Obsidian als verknüpfte Markdown-Notes bearbeitet
 | `docs/`                 | [Produktvision](01-Produktvision.md), [MVP-PRD](02-MVP-PRD.md) und diese Ordnerübersicht. Vision beschreibt Richtung und Nutzen, das PRD Umfang und Abnahme.                    |
 | `docs/_intake/`         | Temporärer Eingang für Informationen und erste Auswertungen. Git-ignoriert und regelmäßig geleert; kein dauerhaftes Linkziel für Konzeptnotes.                                  |
 | `docs/requirements/`    | Epics, Features und User Stories als PBIs. Hierarchie durch `parent`, nicht durch Unterordner. Querschnittliche Fähigkeiten und nichtfunktionale Anforderungen gehören zu E-07. |
+| `docs/jobs-to-be-done/` | Jobs-to-be-Done der Nutzerrollen als lösungsneutrale Grundlage für User Research und späteres Design. Job-Sätze nach „Als <Rolle> muss ich …, um …“ mit Ergebnis, Verbindlichkeit und Status; keine Produktvorgaben. |
+| `docs/research/` | Recherche, Quellen und Untersuchungen zur fachlichen und technischen Einordnung als Grundlage für späteres Design. Ergebnisse sind nicht automatisch Produktvorgaben. |
 | `docs/design/`          | Fachliche Modellierung und vorbereitende Untersuchung; noch kein technisches Implementierungsschema.                                                                            |
 | `docs/design/actors/`   | Beteiligte menschliche Rollen und externe Systeme. `type: Actor`, Unterscheidung über `kind: Human` oder `kind: System`.                                                        |
 | `docs/design/entities/` | Fachliche Informationsobjekte mit Angaben, Beziehungen und Regeln. `type: Entity`; `scope` unterscheidet MVP und späteren Ausbau.                                               |
-| `docs/design/research/` | Recherche, Quellen und Untersuchungen zur fachlichen und technischen Einordnung. Ergebnisse sind nicht automatisch Produktvorgaben.                                             |
 | `docs/design/sitemap/` | Benötigte MVP-Ansichten als `type: Page`, mit Navigation, Zuständen, NuxtUI-Zuordnung, vollständigen fachlichen Verweisen und eingebetteten Desktop-/Mobile-Mockups. |
 | `docs/design/sitemap/assets/` | Generierte statische PNG-Reviewboards, Bildschirmfotos des klickbaren Prototyps (`v2-P-*`) und dokumentierte Bildprompts; keine Implementierungsscreenshots oder App-Ressourcen. |
 | `docs/design/prototype/` | Klickbarer HTML-Prototyp mit synthetischen Daten und seine Standnote; bei Abweichung maßgeblich vor älteren Mockups, nachrangig zu Regeln, PBIs und Handoff. |
@@ -28,7 +29,7 @@ Die vorhandene [[Product Backlog.base]] enthält die aktuellen View-Konfiguratio
 
 ## Benennung und Verknüpfung
 
-Ordner sind keine Obsidian-Linkziele. Für Sammlungen werden die vorhandenen Base Views verwendet; einzelne Notes bleiben direkt verlinkt. View-Namen müssen exakt der Base-Konfiguration entsprechen. Bei Umbenennung einer View sind auch die Links anzupassen. Die View „Design Foundations“ umfasst Akteure, Entitäten und Research und gruppiert sie nach Ordner; ein Alias wie „Entitätsnotes“ setzt keinen zusätzlichen Filter.
+Ordner sind keine Obsidian-Linkziele. Für Sammlungen werden die vorhandenen Base Views verwendet; einzelne Notes bleiben direkt verlinkt. View-Namen müssen exakt der Base-Konfiguration entsprechen. Bei Umbenennung einer View sind auch die Links anzupassen. Die View „Design Foundations“ umfasst Akteure, Entitäten, Research und Jobs-to-be-Done und gruppiert sie nach Ordner; ein Alias wie „Entitätsnotes“ setzt keinen zusätzlichen Filter.
 
 | Sammlung | Base View |
 | --- | --- |
@@ -37,7 +38,7 @@ Ordner sind keine Obsidian-Linkziele. Für Sammlungen werden die vorhandenen Bas
 | Business Rules | [[Product Backlog.base#Business Rules]] |
 | Entscheidungen | [[Product Backlog.base#Decisions]] |
 | Hypothesen | [[Product Backlog.base#Hypothesis]] |
-| Akteure, Entitäten und Research | [[Product Backlog.base#Design Foundations]] |
+| Akteure, Entitäten, Research und Jobs-to-be-Done | [[Product Backlog.base#Design Foundations]] |
 
 
 Der `_intake`-Ordner ist eine vorübergehende Ablage und wird regelmäßig geleert. Konzeptnotes verlinken weder direkt noch per Wikilink auf seinen Inhalt. Quellen werden mit Titel, Version beziehungsweise Datum benannt; relevante Anforderungen, Entscheidungen und Regeln müssen unabhängig davon in den Konzeptnotes verständlich bleiben.

@@ -52,8 +52,10 @@ views:
   - type: table
     name: Design Foundations
     filters:
-      and:
+      or:
         - file.inFolder("docs/design")
+        - file.inFolder("docs/research")
+        - file.inFolder("docs/jobs-to-be-done")
     groupBy:
       property: file.folder
       direction: ASC

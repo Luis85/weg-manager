@@ -12,7 +12,7 @@ date: 2026-11-15
 
 **Obsidian ist eine plausible Grundlage für einen lokalen WEG-Arbeitsplatz mit einem aktiven Bearbeiter.** Eine Vorgangsakte kann Originale, Kommunikation, Aufgaben und dokumentierte Entscheidungen zusammenhalten. Die Plattform liefert jedoch weder einen ständig laufenden Erinnerungsdienst noch die Zugriffsrechte eines Eigentümerportals. Diese Grenzen prägen das MVP und den späteren Cloud-Ausbau.
 
-Diese Recherche wertet öffentliche Primärquellen aus; es wurden weder ein Plugin implementiert noch Plattformtests durchgeführt. **Fakten** beschreiben dokumentierte Eigenschaften. **Architekturentscheidungen** sind daraus abgeleitete Vorschläge des aktuellen PRD. **Annahmen** müssen erst in Umsetzung und Pilot geprüft werden. Verbindliche Produktanforderungen stehen im [MVP-PRD](../../02-MVP-PRD.md). Stand der Recherche: 15. November 2026.
+Diese Recherche wertet öffentliche Primärquellen aus; es wurden weder ein Plugin implementiert noch Plattformtests durchgeführt. **Fakten** beschreiben dokumentierte Eigenschaften. **Architekturentscheidungen** sind daraus abgeleitete Vorschläge des aktuellen PRD. **Annahmen** müssen erst in Umsetzung und Pilot geprüft werden. Verbindliche Produktanforderungen stehen im [MVP-PRD](../02-MVP-PRD.md). Stand der Recherche: 15. November 2026.
 
 ## 1. Lokale Daten als tragfähiger Kern
 

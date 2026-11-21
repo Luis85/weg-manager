@@ -7,7 +7,7 @@ date: 2026-11-15
 
 # Skill-Evaluation · Gmail-Import
 
-Geprüft ist [weg-gmail-to-vault](../../../skills/weg-gmail-to-vault/SKILL.md) Version 0.1.0. **Kein Live-Claude-/Gmail-Test, kein Zugriff auf echte Konten, keine echten Mails importiert.** Die Anwendungssimulation wurde durch einen Codex-Subagenten mit synthetischen Connector-Fixtures in einem isolierten OS-Tempvault durchgeführt.
+Geprüft ist [weg-gmail-to-vault](../../skills/weg-gmail-to-vault/SKILL.md) Version 0.1.0. **Kein Live-Claude-/Gmail-Test, kein Zugriff auf echte Konten, keine echten Mails importiert.** Die Anwendungssimulation wurde durch einen Codex-Subagenten mit synthetischen Connector-Fixtures in einem isolierten OS-Tempvault durchgeführt.
 
 ## Baseline vor dem Skill
 
@@ -17,7 +17,7 @@ Sein vorgeschlagener Output hatte jedoch kein gemeinsames `type`-/Schemaversions
 
 ## Deterministische Tests
 
-[Testdateien](../../../tests/skills/test_gmail_to_vault.py) prüfen den lokalen Writer; [Pakettests](../../../tests/skills/test_skill_package.py) prüfen Struktur, Prüfsumme und Reproduzierbarkeit. Die Tests wurden zuerst ohne Implementierung ausgeführt und scheiterten am fehlenden Modul. Die folgenden Implementierungs- und Regressionstests decken beobachtete Format-/Dateisystemfälle ab.
+[Testdateien](../../tests/skills/test_gmail_to_vault.py) prüfen den lokalen Writer; [Pakettests](../../tests/skills/test_skill_package.py) prüfen Struktur, Prüfsumme und Reproduzierbarkeit. Die Tests wurden zuerst ohne Implementierung ausgeführt und scheiterten am fehlenden Modul. Die folgenden Implementierungs- und Regressionstests decken beobachtete Format-/Dateisystemfälle ab.
 
 **26 Tests bestanden:** 24 Writer-Tests und zwei Pakettests. Ein zusätzlicher Symlink-Test wurde auf diesem System übersprungen, weil das Anlegen eines Symlinks nicht erlaubt war; daraus wird kein bestandener Plattformtest abgeleitet. Geprüft wurden unter anderem Vorschau ohne Schreibzugriff, Ausgabeformat, Konto-/Nachrichtenidentität, gleiche Threads, wiederholte Suchseiten, umbenannte vorhandene Notes, alte Identitätsfelder, YAML-Kommentare/quotierte Feldnamen, fehlende Daten, Teiltext, abweichender neuer Quellinhalt, untrusted Text, Pfadgrenzen, vorhandene Zielkollision, beschädigtes Frontmatter, unabhängige Behandlung fehlerhafter Datensätze und keine Anhangsdownloadbehauptung.
 

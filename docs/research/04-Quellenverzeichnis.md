@@ -81,8 +81,8 @@ Für diese Dokumente gilt der Abrufstand 15.11.2026. Die aktuelle Dokumentation 
 | Grundlage                                                        | Bedeutung im Paket                                                                                                               |
 | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | Auftrag des Produktverantwortlichen                              | Plugin zuerst, öffentliche Veröffentlichung vor dem Pilot, ein vorhandener Nutzer mit eigener WEG, später optionaler Webservice. |
-| [Produktvision 1.0](../../01-Produktvision.md)                         | Aktuelles Nutzenversprechen und Produktprinzipien.                                                                               |
-| [MVP-PRD 1.0](../../02-MVP-PRD.md)                                     | Verbindliche Umsetzungsgrundlage des Entwurfs und festgelegte Abnahmen.                                                          |
+| [Produktvision 1.0](../01-Produktvision.md)                         | Aktuelles Nutzenversprechen und Produktprinzipien.                                                                               |
+| [MVP-PRD 1.0](../02-MVP-PRD.md)                                     | Verbindliche Umsetzungsgrundlage des Entwurfs und festgelegte Abnahmen.                                                          |
 | [Annahmen und Entscheidungen](05-Annahmen-und-Entscheidungen.md) | Trennung von Vorgaben, Defaults und offenen Nachweisen.                                                                          |
 
 

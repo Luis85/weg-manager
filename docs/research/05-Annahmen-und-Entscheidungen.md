@@ -8,7 +8,7 @@ date: 2026-11-15
 
 # Annahmen, Entscheidungen und offene Nachweise
 
-**Stand: 15.11.2026.** Dieses Register trennt die vom Auftraggeber festgelegte Richtung von vorgeschlagenen Produkt-Defaults und noch ungeprüften Hypothesen. Das [MVP-PRD](../../02-MVP-PRD.md) enthält die vollständigen Anforderungen und Abnahmeregeln. Das Register führt keine zusätzlichen Releasebedingungen ein.
+**Stand: 15.11.2026.** Dieses Register trennt die vom Auftraggeber festgelegte Richtung von vorgeschlagenen Produkt-Defaults und noch ungeprüften Hypothesen. Das [MVP-PRD](../02-MVP-PRD.md) enthält die vollständigen Anforderungen und Abnahmeregeln. Das Register führt keine zusätzlichen Releasebedingungen ein.
 
 ## 1. Vom Auftraggeber festgelegte Richtung
 

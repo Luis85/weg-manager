@@ -10,7 +10,7 @@ date: 2026-11-15
 
 **Stand: 15.11.2026.** Die Recherche unterstützt einen eng geführten lokalen Arbeitsplatz für eine Person, die ihre eigene WEG organisiert. Der Kern ist ein nachvollziehbarer Handwerkervorgang mit einem erkennbaren nächsten Schritt. Ob der Aufwand für Obsidian und die manuelle Dokumentation durch diesen Nutzen aufgewogen wird, kann erst der Pilot nach Veröffentlichung zeigen.
 
-Die verbindliche Spezifikation steht im [MVP-PRD](../../02-MVP-PRD.md), das Nutzenversprechen in der [Produktvision](../../01-Produktvision.md). Die folgenden Schlussfolgerungen erklären diese Richtung und markieren die offenen Nachweise.
+Die verbindliche Spezifikation steht im [MVP-PRD](../02-MVP-PRD.md), das Nutzenversprechen in der [Produktvision](../01-Produktvision.md). Die folgenden Schlussfolgerungen erklären diese Richtung und markieren die offenen Nachweise.
 
 ## 1. Was die Recherche belegt
 

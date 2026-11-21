@@ -211,7 +211,8 @@ Follow the blueprint, applying rulings 3–5, and write ADR 0002 and ADR 0003 to
 | `npm run verify` | passed: format, lint, typecheck, coverage (lines 98.2, statements 97.1, functions 95.1, branches 94.3), analyze, build (`main.js` 534 KB, `styles.css` 62 KB), check:dist |
 | `npm run test:mutation:full` | passed: 96.8 % (domain 95.0, application 97.9); 5 equivalent survivors |
 | Discriminating checks | passed: the head test fails without the no-op plugin; the dispose-order test fails without the undo step; a surviving `decodeSettings` mutant appears without the `schemaVersion: 2` tests; the gate stops at `typecheck` on a planted type error |
-| Fresh clone `npm ci && npm run verify:full` | see below |
+| Fresh clone `npm ci && npm run verify:full` | passed: all 8 steps, mutation 96.8 % (337 s) |
+| GitHub Actions `CI / verify` on PR #4 | passed |
 | Obsidian app, GitHub branch protection | not run (manual, see `docs/engineering/testing.md` and `github-setup.md`) |
 
 ### Rulings from run 2

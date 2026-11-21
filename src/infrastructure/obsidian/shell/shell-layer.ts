@@ -18,11 +18,17 @@ export type ShellLayerOptions = LoggerOptions & {
   readonly language: Language;
 };
 
-/** The shell's services for one plugin load, wired to the Obsidian adapters. */
-export const shellLayer = (
+/**
+ * The shell's services for one plugin load, wired to the Obsidian adapters, with `followers`
+ * (the other modules' services, which may need the shell's) built on them. The host event adapter
+ * comes last, so a follower that subscribes to the event bus while it is built sees `LayoutReady`
+ * and `VaultReady`, which the adapter may publish while it is built itself.
+ */
+export const shellLayer = <A, E>(
   plugin: Plugin,
   options: ShellLayerOptions,
-): Layer.Layer<ShellServices> => {
+  followers: Layer.Layer<A, E, ShellServices>,
+): Layer.Layer<ShellServices | A, E> => {
   const settings = SettingsServiceLive.pipe(
     Layer.provideMerge(obsidianLayer(plugin, options.language)),
   );
@@ -33,5 +39,7 @@ export const shellLayer = (
     EventBusLive,
   );
   // Built last, so every subscriber that a service starts while it is built sees `LayoutReady`.
-  return hostEventsLayer(plugin).pipe(Layer.provideMerge(services));
+  return hostEventsLayer(plugin).pipe(
+    Layer.provideMerge(followers.pipe(Layer.provideMerge(services))),
+  );
 };

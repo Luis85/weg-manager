@@ -1,5 +1,5 @@
 import { Effect, Layer, Result } from "effect";
-import { normalizePath, stringifyYaml, type App, type Plugin, type TFile } from "obsidian";
+import { normalizePath, stringifyYaml, type App, type CachedMetadata, type TFile } from "obsidian";
 import {
   NoteNotFoundError,
   NoteStore,
@@ -7,16 +7,15 @@ import {
   applyPatch,
   copyFrontmatter,
   createNote,
+  pathsInFolder,
   recordNotes,
   planRename,
   writeCommand,
   type FrontmatterChange,
   type NewNote,
   type Note,
-  type NotesServices,
 } from "../../../application/notes";
 import { VaultReadError } from "../../../application/shell";
-import { randomIdGeneratorLayer } from "./id-generator";
 
 /** Obsidian's parser throws this when a note's YAML is broken. */
 const isYamlError = (cause: unknown): boolean =>
@@ -24,6 +23,18 @@ const isYamlError = (cause: unknown): boolean =>
 
 const vaultRead = <A>(read: () => A) =>
   Effect.try({ try: read, catch: (cause) => new VaultReadError({ cause }) });
+
+/**
+ * True when the cache shows a frontmatter block it could not read. Measured in Obsidian 1.15.1
+ * (`tests/support/notes/fidelity.ts`): broken YAML, and YAML that is no map, leave no
+ * `frontmatter` and no `frontmatterPosition`, but the block stays a `yaml` section; a note
+ * without a block has none. A block of two fences holds nothing to read and does not count.
+ */
+const hasUnreadableFrontmatter = (cache: CachedMetadata | null): boolean => {
+  if (cache === null || cache.frontmatter !== undefined) return false;
+  const block = cache.sections?.find((section) => section.type === "yaml");
+  return block !== undefined && block.position.end.line > block.position.start.line + 1;
+};
 
 /** A new note's text: the frontmatter as Obsidian writes YAML, then the body. */
 const noteText = (frontmatter: Readonly<Record<string, unknown>>, body: string): string =>
@@ -121,6 +132,16 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
         })),
       ),
     ),
+    unreadable: (folder) =>
+      vaultRead(() =>
+        pathsInFolder(
+          vault
+            .getMarkdownFiles()
+            .filter((file) => hasUnreadableFrontmatter(metadataCache.getFileCache(file)))
+            .map((file) => file.path),
+          normalizePath(folder),
+        ),
+      ),
     read: (path) =>
       Effect.flatMap(find(path), (file) =>
         vaultRead(() => ({ path: file.path, frontmatter: frontmatterOf(file) })),
@@ -135,7 +156,3 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
 /** The Obsidian `NoteStore` of `app` as a Layer; the e2e probe plugin builds it the same way. */
 export const noteStoreLayer = (app: App): Layer.Layer<NoteStore> =>
   Layer.succeed(NoteStore)(obsidianNoteStore(app));
-
-/** The notes module's services for one plugin load. */
-export const notesLayer = (plugin: Plugin): Layer.Layer<NotesServices> =>
-  Layer.merge(noteStoreLayer(plugin.app), randomIdGeneratorLayer);

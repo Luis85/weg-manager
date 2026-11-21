@@ -123,6 +123,20 @@ export const vaultFacts = async (
       frontmatter: cache?.frontmatter,
       position: cache?.frontmatterPosition !== undefined,
     }))(app.metadataCache.getFileCache(file("A/broken.md"))),
+    // A block of broken YAML has no `frontmatter` and no position, but a `yaml` section, as a
+    // block that holds nothing; a plain note has no `yaml` section.
+    createEmptyBlock: await step(async () => {
+      await app.vault.create("A/empty.md", "---\n---\nbody\n");
+    }),
+    blocks: ["A/broken.md", "A/empty.md", "A/n.md", "A/plain.md"].map((path) => {
+      const cache = app.metadataCache.getFileCache(file(path));
+      const yaml = cache?.sections?.find((section) => section.type === "yaml");
+      return {
+        path,
+        frontmatter: cache?.frontmatter !== undefined,
+        yaml: yaml === undefined ? null : [yaml.position.start.line, yaml.position.end.line],
+      };
+    }),
     brokenYaml: await step(() =>
       pfm("A/broken.md", (fm) => {
         fm["a"] = 1;
@@ -191,6 +205,7 @@ export const storeScenario = async ({ app, plugins }: Context, settleMs: number)
   );
   await app.vault.create("Ohne Schema.md", "---\ntitle: Notiz\n---\nText\n");
   await app.vault.create("Kaputt.md", "---\nschema: [unclosed\n---\nText\n");
+  await app.vault.create("Archiv/Kaputt.md", "---\nschema: [unclosed\n---\nText\n");
   await settle();
 
   const report = {
@@ -198,6 +213,7 @@ export const storeScenario = async ({ app, plugins }: Context, settleMs: number)
     createdText: await text("WEG Manager/Gemeinschaften/Ahornweg.md"),
     clash: await step(() => probe.create(community)),
     list: await step(() => probe.list()),
+    unreadable: await step(() => probe.unreadable("Archiv")),
     // On Linux the disk would take "ahornweg.md" beside "Ahornweg.md"; the store must not.
     caseClash: await step(() => probe.create({ ...community, name: "ahornweg" })),
     update: await step(() =>

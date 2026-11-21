@@ -1,4 +1,10 @@
-import type { FieldIssue, NoteNameIssue, RecordIssue, WriteRefusal } from "../../../domain/notes";
+import type {
+  FieldIssue,
+  NoteNameIssue,
+  RecordIssue,
+  UnindexedIssue,
+  WriteRefusal,
+} from "../../../domain/notes";
 
 type Text = { readonly title: string; readonly detail: string };
 
@@ -12,6 +18,13 @@ type RecordIssueTexts = {
  * catalog, so the feature hands its label in.
  */
 type FieldIssueTexts = { readonly [Code in FieldIssue["code"]]: (label: string) => string };
+
+/** One sentence per reason why a note belongs to no known type; the issue's data fills it. */
+type UnindexedIssueTexts = {
+  readonly [Code in UnindexedIssue["code"]]: (
+    issue: Extract<UnindexedIssue, { code: Code }>,
+  ) => string;
+};
 
 /**
  * Every text of the notes module the user sees, for one language: the module's part of the app's
@@ -32,7 +45,9 @@ export type NotesCatalog = {
       readonly title: string;
       readonly detail: Readonly<Record<WriteRefusal, string>>;
     };
+    readonly indexRead: Text;
   };
   readonly recordIssues: RecordIssueTexts;
   readonly fieldIssues: FieldIssueTexts;
+  readonly unindexedIssues: UnindexedIssueTexts;
 };

@@ -110,6 +110,17 @@ describe("Obsidian NoteStore adapter", () => {
     }),
   );
 
+  it.effect("counts a frontmatter block that holds nothing as readable", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      app.vault.seedFile("F/Leer.md", "---\n---\nbody\n");
+      app.vault.seedFile("F/Kaputt.md", "---\nschema: [unclosed\n---\n");
+      app.vault.seedFile("F/Kaputt.txt", "---\nschema: [unclosed\n---\n");
+      yield* Effect.promise(() => app.metadataCache.whenIndexed());
+      assert.deepStrictEqual(yield* run(app, (notes) => notes.unreadable("F")), ["F/Kaputt.md"]);
+    }),
+  );
+
   it.effect("treats a non-Markdown file as no note", () =>
     Effect.gen(function* () {
       const app = new App();

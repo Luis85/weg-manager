@@ -95,6 +95,15 @@ export const VAULT_FACTS = {
   },
   createBroken: { events: ["vault:create A/broken.md", "metadataCache:changed A/broken.md"] },
   brokenCache: { position: false },
+  createEmptyBlock: {
+    events: ["vault:create A/empty.md", "metadataCache:changed A/empty.md"],
+  },
+  blocks: [
+    { path: "A/broken.md", frontmatter: false, yaml: [0, 2] },
+    { path: "A/empty.md", frontmatter: false, yaml: [0, 1] },
+    { path: "A/n.md", frontmatter: true, yaml: [0, 5] },
+    { path: "A/plain.md", frontmatter: false, yaml: null },
+  ],
   brokenYaml: { result: "YAMLParseError", events: [] },
   renameOntoFile: { result: "Error: Destination file already exists!", events: [] },
   renameIntoMissingFolder: { result: "Error: ENOENT", events: [] },
@@ -164,6 +173,8 @@ export const STORE_REPORT = {
     },
     events: [],
   },
+  // Found by the `yaml` section the cache keeps for a block it could not read; in the folder only.
+  unreadable: { result: { ok: true, value: ["Archiv/Kaputt.md"] }, events: [] },
   // Names clash regardless of case: "ahornweg" and "ahornweg (2)" are taken.
   caseClash: {
     result: { ok: true, value: { path: BY_CASE, frontmatter: COMMUNITY } },

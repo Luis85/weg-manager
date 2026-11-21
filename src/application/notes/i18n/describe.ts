@@ -1,4 +1,4 @@
-import type { NoteIssue } from "../../../domain/notes";
+import type { NoteIssue, UnindexedIssue } from "../../../domain/notes";
 import type { NotesCatalog } from "./catalog";
 
 /**
@@ -27,6 +27,19 @@ export const describeNoteIssue = (
     case "id.other-type":
       return texts[issue.code](issue);
     case "id.duplicate":
+      return texts[issue.code](issue);
+  }
+};
+
+/** Why a note belongs to no known note type, as a sentence: first the cause, then the action. */
+export const describeUnindexedIssue = (issue: UnindexedIssue, messages: NotesCatalog): string => {
+  const texts = messages.unindexedIssues;
+  switch (issue.code) {
+    case "schema.malformed":
+      return texts[issue.code](issue);
+    case "schema.unknown-type":
+      return texts[issue.code](issue);
+    case "frontmatter.unreadable":
       return texts[issue.code](issue);
   }
 };

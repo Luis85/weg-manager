@@ -5,10 +5,14 @@ import { parseYaml } from "./yaml";
 type Loc = { readonly line: number; readonly col: number; readonly offset: number };
 type Pos = { readonly start: Loc; readonly end: Loc };
 
+/** One block of a note; the double knows only the frontmatter block (`yaml`). */
+export type SectionCache = { readonly type: string; readonly position: Pos };
+
 /** The part of Obsidian's `CachedMetadata` the double fills. */
 export type CachedMetadata = {
   readonly frontmatter?: Record<string, unknown>;
   readonly frontmatterPosition?: Pos;
+  readonly sections?: readonly SectionCache[];
 };
 
 /** A note's text split as Obsidian does: the YAML between the `---` lines, and the body after. */
@@ -26,17 +30,22 @@ export const splitFrontmatter = (text: string): SplitNote | undefined => {
 const indexOf = (text: string): CachedMetadata => {
   const split = splitFrontmatter(text);
   if (split === undefined) return {};
+  const line = text.slice(0, split.closing).split("\n").length - 1;
+  const position = {
+    start: { line: 0, col: 0, offset: 0 },
+    end: { line, col: 3, offset: split.closing + 3 },
+  };
+  // Obsidian lists the block as a `yaml` section whether or not it can read it.
+  const sections = [{ type: "yaml", position }];
   let frontmatter: Record<string, unknown> | null;
   try {
     frontmatter = parseYaml(split.yaml);
   } catch {
     // Obsidian keeps a note with broken YAML without `frontmatter` and without its position.
-    return {};
+    return { sections };
   }
-  if (frontmatter === null) return {};
-  const line = text.slice(0, split.closing).split("\n").length - 1;
-  const end = { line, col: 3, offset: split.closing + 3 };
-  return { frontmatter, frontmatterPosition: { start: { line: 0, col: 0, offset: 0 }, end } };
+  if (frontmatter === null) return { sections };
+  return { frontmatter, frontmatterPosition: position, sections };
 };
 
 /**

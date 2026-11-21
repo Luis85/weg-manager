@@ -41,6 +41,8 @@ Zeitfresser anhand der beobachteten Tätigkeiten priorisieren. Keine neue MVP-Re
 
 [Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`).
 
+**Bezug zum Jobkatalog:** Die Annahme entspricht der Randbedingung J-RB1 in [[JTBD - Verwaltungsbeirat]].
+
 ## Prüfergebnis
 
 Noch keine Prüfung dokumentiert. Spätere Ergebnisse mit Datum, beobachtetem Kontext, Evidenz und Einschränkungen ergänzen; Status nicht allein aufgrund eines implementierten Features ändern.

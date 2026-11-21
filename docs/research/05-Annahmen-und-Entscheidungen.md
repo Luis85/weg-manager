@@ -1,12 +1,15 @@
 ---
 type: Entscheidungsregister
 product: WEG Manager
-status: arbeitsstand
+status: historisch
 version: "1.0"
 date: 2026-11-15
 ---
 
 # Annahmen, Entscheidungen und offene Nachweise
+
+> [!warning] Historischer Stand
+> Dieses Register stammt aus dem früheren Zuschnitt (Stand 15.11.2026). Mehrere Defaults widersprechen dem aktuellen PRD, etwa „eine aktive WEG je Vault“ (P-01), „Desktop zuerst“ (P-02) oder die drei Hauptansichten (P-07). **Die Kennungen H-01 bis H-08, D-xx und P-xx in dieser Note sind nicht identisch mit den Hypothesen unter `docs/hypothesis` oder den Entscheidungen unter `docs/decisions`.** Aktuelle Annahmen: [[Product Backlog.base#Hypothesis]]; Entscheidungen: [[Product Backlog.base#Decisions]].
 
 **Stand: 15.11.2026.** Dieses Register trennt die vom Auftraggeber festgelegte Richtung von vorgeschlagenen Produkt-Defaults und noch ungeprüften Hypothesen. Das [MVP-PRD](../02-MVP-PRD.md) enthält die vollständigen Anforderungen und Abnahmeregeln. Das Register führt keine zusätzlichen Releasebedingungen ein.
 

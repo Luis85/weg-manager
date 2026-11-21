@@ -12,7 +12,7 @@ canvas: https://claude.ai/artifact/8KsVenY2P3dVbSRL1Phf5S
 
 Neuentwurf des MVP-UI auf Basis von [[02-MVP-PRD]], PBI-01–33, DF-01–15 und [[F-21 - Nichtfunktionale Anforderungen]]. Anlass war das Review des ersten Entwurfs: zu viele gleichrangige Seiten (17), unklarer Einstieg in die Wochenarbeit, zu textlastige Darstellung. Der erste Entwurf wurde verworfen und ist nicht mehr Teil der Dokumentation. Keine Implementierung, keine Entwicklungsfreigabe.
 
-**Einstieg:** [[UI-Research - v2 Muster und Plattform]] → [[00 - Sitemap]] → [[FLOW-01 - Gesamtfluss des Beirats-MVP]] → [[VIEW-02 - Wochenarbeit]]. Vorbereitung ohne KI: [[Konzept - Vorbereitung ohne KI]]. Klickbarer Prototyp: `prototype/WEG-Manager-Prototyp.html`, Stand: [[Prototyp - Stand Pilot]]. Umsetzungspaket: [[00 - Handoff Übersicht]]. Alle Mockups liegen als PNG unter `sitemap/assets/v2-*.png` und editierbar im Design-Canvas (Link im Frontmatter, privat bis zur Freigabe).
+**Einstieg:** [[UI-Research - v2 Muster und Plattform]] → [[00 - Sitemap]] → [[FLOW-01 - Gesamtfluss des Beirats-MVP]] → [[VIEW-02 - Wochenarbeit]]. Vorbereitung ohne KI: [[Konzept - Vorbereitung ohne KI]]. Klickbarer Prototyp: `docs/design/prototype/WEG-Manager-Prototyp.html`, Stand: [[Prototyp - Stand Pilot]]. Umsetzungspaket: [[00 - Handoff Übersicht]]. Alle Mockups liegen als PNG unter `docs/design/sitemap/assets/v2-*.png` und editierbar im Design-Canvas (Link im Frontmatter, privat bis zur Freigabe).
 
 ## Kernentscheidungen v2
 

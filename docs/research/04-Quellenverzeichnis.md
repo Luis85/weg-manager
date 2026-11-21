@@ -8,6 +8,9 @@ date: 2026-11-15
 
 # Quellenverzeichnis und Aussagegrenzen
 
+> [!note] Geltung
+> Das Verzeichnis umfasst die Recherche vom 15.11.2026. Spätere Notes wie die JTBD-, UI- und Integrationsresearch führen ihre Quellen selbst.
+
 **Recherche- und Paketstand: 15. November 2026.** Dieses Verzeichnis erschließt die externe Produktrecherche, Herkunft und Lizenz des beigefügten Skills sowie den direkten Pilotinput und dessen fachliche Einordnung. Es enthält direkte Links und erklärt, welche Aussagen die Quellen tragen. Eine Quelle kann mehreren Dokumenten dienen.
 
 ## Methode und Herkunft
@@ -80,9 +83,9 @@ Für diese Dokumente gilt der Abrufstand 15.11.2026. Die aktuelle Dokumentation 
 
 | Grundlage                                                        | Bedeutung im Paket                                                                                                               |
 | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Auftrag des Produktverantwortlichen                              | Plugin zuerst, öffentliche Veröffentlichung vor dem Pilot, ein vorhandener Nutzer mit eigener WEG, später optionaler Webservice. |
-| [Produktvision 1.0](../01-Produktvision.md)                         | Aktuelles Nutzenversprechen und Produktprinzipien.                                                                               |
-| [MVP-PRD 1.0](../02-MVP-PRD.md)                                     | Verbindliche Umsetzungsgrundlage des Entwurfs und festgelegte Abnahmen.                                                          |
+| Auftrag des Produktverantwortlichen                              | Plugin zuerst, öffentliche Veröffentlichung vor dem Pilot, ein Pilot als Beirat zweier Gemeinschaften, später optionaler Webservice. |
+| [Produktvision 1.1](../01-Produktvision.md)                         | Aktuelles Nutzenversprechen und Produktprinzipien.                                                                               |
+| [MVP-PRD 1.1](../02-MVP-PRD.md)                                     | Verbindliche Umsetzungsgrundlage des Entwurfs und festgelegte Abnahmen.                                                          |
 | [Annahmen und Entscheidungen](05-Annahmen-und-Entscheidungen.md) | Trennung von Vorgaben, Defaults und offenen Nachweisen.                                                                          |
 
 

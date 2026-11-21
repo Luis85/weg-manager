@@ -8,6 +8,9 @@ date: 2026-11-15
 
 # Obsidian, Architektur und Betrieb
 
+> [!note] Geltung
+> Plattformbefunde bleiben gültig. Aussagen zu Vorgangsakte, Zahlungsbeträgen und Kalenderexport stammen aus dem früheren Handwerker-Zuschnitt und betreffen den Ausbau [[F-17 - Rechnungen und Zahlungen führen]]. Den Dateivertrag präzisieren [[K-14 - Markdown und Frontmatter als offene Datengrundlage]] und [[Datenkonzept - Offene Notizen und Agentenzugriff]].
+
 ## Einordnung und Ergebnis
 
 **Obsidian ist eine plausible Grundlage für einen lokalen WEG-Arbeitsplatz mit einem aktiven Bearbeiter.** Eine Vorgangsakte kann Originale, Kommunikation, Aufgaben und dokumentierte Entscheidungen zusammenhalten. Die Plattform liefert jedoch weder einen ständig laufenden Erinnerungsdienst noch die Zugriffsrechte eines Eigentümerportals. Diese Grenzen prägen das MVP und den späteren Cloud-Ausbau.
@@ -30,7 +33,7 @@ Dateipfade sind keine dauerhaften fachlichen Identitäten. Jede Entität benöti
 
 **Architekturentscheidung:** Bases kann frei zusammenstellbare Übersichten ermöglichen. Die verbindlichen Fachregeln bleiben im Plugin: beispielsweise die Trennung zwischen Rechnung, Zahlungseintrag und Belegnachweis. Eine Tabellenformel ersetzt keine Prüfung, ob eine Abschlagszahlung bereits in einer Schlussrechnung berücksichtigt wurde.
 
-Die drei vorgesehenen Hauptansichten „Heute“, „Vorgänge“ und „Vorgangsakte“ sollen den Arbeitsablauf unmittelbar verständlich machen. Nutzer müssen keine Queries, Templates oder Properties konfigurieren, um den ersten Vorgang anzulegen. Bases ist deshalb eine mögliche Ergänzung, keine neue Voraussetzung und kein zusätzlicher MVP-Arbeitsbereich.
+Die Ansichten aus [[00 - Sitemap]] sollen den Arbeitsablauf unmittelbar verständlich machen. Nutzer müssen keine Queries, Templates oder Properties konfigurieren, um den ersten Vorgang anzulegen. Bases ist deshalb eine mögliche Ergänzung, keine neue Voraussetzung und kein zusätzlicher MVP-Arbeitsbereich.
 
 ## 3. Schreiben, prüfen und wiederherstellen
 
@@ -46,7 +49,7 @@ Geldbeträge werden in ganzzahligen Cent gespeichert. Ungeklärte Dokumentgrundl
 
 **Fakt:** Node.js- und Electron-APIs stehen auf mobilen Obsidian-Plattformen nicht zur Verfügung. Das Manifest kann ein Plugin mit `isDesktopOnly: true` auf Desktop beschränken. [T04] Intervalle und Ereignisbeobachter gehören zum Plugin-Lebenszyklus und sollen beim Entladen entfernt werden. [T05]
 
-**Architekturentscheidung:** Die erste Freigabe erfolgt für den tatsächlich geprüften Desktop-Umfang; Windows 11 ist die vorgeschlagene Referenzumgebung. Die Existenz von Obsidian auf mehreren Betriebssystemen begründet noch keine getestete Plugin-Kompatibilität. Mobile Nutzung bleibt ein späterer Ausbau.
+**Architekturentscheidung:** Die erste Freigabe erfolgt für den tatsächlich geprüften Desktop-Umfang; Windows 11 ist die vorgeschlagene Referenzumgebung. Die Existenz von Obsidian auf mehreren Betriebssystemen begründet noch keine getestete Plugin-Kompatibilität. Die vollständige mobile Wochenarbeit ist MVP-Anforderung (B-FR-13, [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]); die Grenzen von Node und Electron auf Mobilgeräten gelten als Umsetzungsrisiko.
 
 Fällige Aufgaben erscheinen beim Öffnen und während aktiver Nutzung. Hinweise dürfen nach Neustart weder verloren gehen noch unkontrolliert mehrfach erscheinen. Außerhalb laufenden Obsidian gibt das MVP kein Erinnerungsversprechen. Der vorgesehene Kalenderexport kann Termine an eine externe Kalenderanwendung übergeben; deren Benachrichtigungen liegen anschließend außerhalb der Plugin-Kontrolle.
 
@@ -56,7 +59,7 @@ Fällige Aufgaben erscheinen beim Öffnen und während aktiver Nutzung. Hinweise
 
 **Fakt:** Obsidian kann Community-Plugins nicht zuverlässig auf einzelne Berechtigungen beschränken. Plugins übernehmen grundsätzlich die Zugriffsmöglichkeiten der Anwendung. [T06] Ein geteilter Obsidian-Sync-Vault bietet keine feingranularen Rechte; Mitwirkende erhalten weitgehend dieselben Rechte wie der Eigentümer. Gleichzeitiges Bearbeiten derselben Datei ist keine kollaborative Live-Bearbeitung. [T07]
 
-**Architekturentscheidung:** Das MVP hat einen aktiven Bearbeiter und eine aktive WEG pro Vault. Ein gemeinsamer Vault wird nicht als Eigentümerportal angeboten. Interne Kommentare, Kontaktdaten und Rechnungen erfordern eine bewusst ausgewählte Weitergabe. Der vorgesehene Export enthält eine statische HTML-Übersicht und ausdrücklich ausgewählte Originaldateien; verknüpfte Dokumente werden nicht automatisch mitgenommen.
+**Architekturentscheidung:** Das MVP hat einen aktiven Bearbeiter und mindestens zwei getrennte Gemeinschaften ([[K-02 - Zwei Gemeinschaften für einen Bearbeiter]]). Ein gemeinsamer Vault wird nicht als Eigentümerportal angeboten. Interne Kommentare, Kontaktdaten und Rechnungen erfordern eine bewusst ausgewählte Weitergabe. Der vorgesehene Export enthält eine statische HTML-Übersicht und ausdrücklich ausgewählte Originaldateien; verknüpfte Dokumente werden nicht automatisch mitgenommen.
 
 Die generierte Übersicht darf keine Skripte oder externen Ressourcen laden. Unveränderte Originaldateien können eigene aktive Inhalte enthalten; eine entsprechende Garantie für sämtliche Anlagen wäre falsch. Originale werden verlinkt und nicht als aktive Dokumentansicht eingebettet. Eine vollständige interne Sicherung bleibt eine andere Handlung als ein freigegebener Vorgangsexport.
 

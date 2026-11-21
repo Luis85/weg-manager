@@ -8,6 +8,9 @@ date: 2026-11-15
 
 # Markt, Zielgruppe und Geschäftsmodell
 
+> [!note] Geltung
+> Der Marktbefund bleibt gültig. Zielperson, Differenzierung und die Ansicht „Heute“ beziehen sich auf den früheren Zuschnitt für eine Person, die ihre eigene WEG mit Handwerkervorgängen organisiert. Aktueller Einstieg ist der Beirat ([[K-01 - Beirat als erster Produkteinstieg]], [[JTBD - Verwaltungsbeirat]]); zur Verwalter-Persona siehe [[Persona-Research - Wohnungsverwalter]].
+
 **Quellenstand: 15. November 2026.** Dieses Dokument begründet die Positionierung von WEG Manager und benennt die Annahmen, die der erste Pilot nach Veröffentlichung prüfen soll. Produktumfang und Abnahmekriterien stehen im MVP-PRD.
 
 ## 1. Kernaussage und Evidenzstatus

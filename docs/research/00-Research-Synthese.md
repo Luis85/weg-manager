@@ -1,12 +1,15 @@
 ---
 type: ResearchSynthese
 product: WEG Manager
-status: research
+status: historisch
 version: "1.0"
 date: 2026-11-15
 ---
 
 # Research-Synthese – Konsequenzen für Produkt und MVP
+
+> [!warning] Historischer Stand
+> Diese Synthese beschreibt den früheren Zuschnitt mit Handwerkervorgang und den Ansichten „Heute“, „Vorgänge“ und „Vorgangsakte“ (Stand 15.11.2026, vor dem Beiratsfokus). Sie gilt nicht für den aktuellen Umfang. Maßgeblich sind [[02-MVP-PRD]], [[00 - Sitemap]] und [[K-01 - Beirat als erster Produkteinstieg]]; die Grundlagen des Beiratsjobs stehen in [[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]].
 
 **Stand: 15.11.2026.** Die Recherche unterstützt einen eng geführten lokalen Arbeitsplatz für eine Person, die ihre eigene WEG organisiert. Der Kern ist ein nachvollziehbarer Handwerkervorgang mit einem erkennbaren nächsten Schritt. Ob der Aufwand für Obsidian und die manuelle Dokumentation durch diesen Nutzen aufgewogen wird, kann erst der Pilot nach Veröffentlichung zeigen.
 

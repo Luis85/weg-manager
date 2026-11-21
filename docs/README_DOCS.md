@@ -9,19 +9,20 @@ Die Produktkonzeption wird in Obsidian als verknüpfte Markdown-Notes bearbeitet
 | `docs/`                 | [Produktvision](01-Produktvision.md), [MVP-PRD](02-MVP-PRD.md) und diese Ordnerübersicht. Vision beschreibt Richtung und Nutzen, das PRD Umfang und Abnahme.                    |
 | `docs/_intake/`         | Temporärer Eingang für Informationen und erste Auswertungen. Git-ignoriert und regelmäßig geleert; kein dauerhaftes Linkziel für Konzeptnotes.                                  |
 | `docs/requirements/`    | Epics, Features und User Stories als PBIs. Hierarchie durch `parent`, nicht durch Unterordner. Querschnittliche Fähigkeiten und nichtfunktionale Anforderungen gehören zu E-07. |
-| `docs/jobs-to-be-done/` | Jobs-to-be-Done der Nutzerrollen als lösungsneutrale Grundlage für User Research und späteres Design. Job-Sätze nach „Als <Rolle> muss ich …, um …“ mit Ergebnis, Verbindlichkeit und Status; keine Produktvorgaben. |
-| `docs/research/` | Recherche, Quellen und Untersuchungen zur fachlichen und technischen Einordnung als Grundlage für späteres Design. Ergebnisse sind nicht automatisch Produktvorgaben. |
+| `docs/jobs-to-be-done/` | Jobkataloge je Nutzerrolle als lösungsneutrale Grundlage für User Research und späteres Design, derzeit für den Verwaltungsbeirat. `type: JobsToBeDone`; Job-Sätze nach „Als <Rolle> muss ich …, um …“ mit Kennung `J-…`, Ergebnis, Verbindlichkeit und Status; keine Produktvorgaben. |
+| `docs/research/` | Recherche, Quellen, Konzepte und Interviewleitfäden zur fachlichen und technischen Einordnung als Grundlage für späteres Design. Ergebnisse sind nicht automatisch Produktvorgaben. Notes aus einem früheren Zuschnitt tragen `status: historisch` und einen Geltungshinweis. |
 | `docs/design/`          | Fachliche Modellierung und vorbereitende Untersuchung; noch kein technisches Implementierungsschema.                                                                            |
 | `docs/design/actors/`   | Beteiligte menschliche Rollen und externe Systeme. `type: Actor`, Unterscheidung über `kind: Human` oder `kind: System`.                                                        |
 | `docs/design/entities/` | Fachliche Informationsobjekte mit Angaben, Beziehungen und Regeln. `type: Entity`; `scope` unterscheidet MVP und späteren Ausbau.                                               |
 | `docs/design/sitemap/` | Benötigte MVP-Ansichten als `type: Page`, mit Navigation, Zuständen, NuxtUI-Zuordnung, vollständigen fachlichen Verweisen und eingebetteten Desktop-/Mobile-Mockups. |
-| `docs/design/sitemap/assets/` | Generierte statische PNG-Reviewboards, Bildschirmfotos des klickbaren Prototyps (`v2-P-*`) und dokumentierte Bildprompts; keine Implementierungsscreenshots oder App-Ressourcen. |
+| `docs/design/sitemap/assets/` | Generierte statische PNG-Reviewboards und Bildschirmfotos des klickbaren Prototyps (`v2-P-*`); keine Implementierungsscreenshots oder App-Ressourcen. |
 | `docs/design/prototype/` | Klickbarer HTML-Prototyp mit synthetischen Daten und seine Standnote; bei Abweichung maßgeblich vor älteren Mockups, nachrangig zu Regeln, PBIs und Handoff. |
 | `docs/design/handoff/` | Umsetzungspaket für die Implementierung: Tokens, Komponenten, Navigation, Zustände, Datenbindung, Texte, Plattform, Abnahme und offene Punkte. |
 | `docs/design/user-flows/` | Abläufe als `type: UserFlow` mit Mermaid-Diagrammen, Page-Verweisen, Zustandsübergängen, Abbruch- und Fehlerpfaden. |
 | `docs/business-rules/`  | Einzelne fachliche Regeln und Abnahmebeispiele. `type: BusinessRule`, stabile Kennung, Status und Geltungsbereich; keine Backlog-Arbeitselemente.                               |
-| `docs/decisions/`       | Einzelne Produkt- und Konzeptentscheidungen mit Begründung, Auswirkungen und offenen Punkten. `type: Decision`; Status trennt Vorschlag und Festlegung.                         |
+| `docs/decisions/`       | Einzelne Produkt- und Konzeptentscheidungen mit Begründung, Auswirkungen und offenen Punkten. `type: Decision`; Status `vorgeschlagen`, `im-entwurf`, `teilweise-festgelegt` oder `festgelegt`.                         |
 | `docs/hypothesis/`      | Prüffähige Annahmen mit Herkunft, vorgeschlagener Untersuchung und Evidenzgrenzen. `type: Hypothesis`; ein ungeprüfter Nutzen wird nicht als bewiesen dargestellt.              |
+| `docs/plans/`           | Technische Umsetzungspläne, derzeit der Blueprint für die Plugin-Shell; ohne Frontmatter und keine Konzeptnotes. |
 | `docs/releases/`        | Geplante Releases als `type: Release`. Anforderungen werden explizit über `release` zugeordnet; die Zugehörigkeit ist keine Fertigmeldung.                                      |
 | `docs/agents/`          | Konfiguration für die Engineering-Skills unter `.claude/skills/` (Issue Tracker, Triage-Labels, Domain Docs), eingebunden über `AGENTS.md`. Agentenkonfiguration, keine Konzeptnotes; ohne `type`, Backlog-Eltern oder Ränge. |
 
@@ -29,7 +30,7 @@ Die vorhandene [[Product Backlog.base]] enthält die aktuellen View-Konfiguratio
 
 ## Benennung und Verknüpfung
 
-Ordner sind keine Obsidian-Linkziele. Für Sammlungen werden die vorhandenen Base Views verwendet; einzelne Notes bleiben direkt verlinkt. View-Namen müssen exakt der Base-Konfiguration entsprechen. Bei Umbenennung einer View sind auch die Links anzupassen. Die View „Design Foundations“ umfasst Akteure, Entitäten, Research und Jobs-to-be-Done und gruppiert sie nach Ordner; ein Alias wie „Entitätsnotes“ setzt keinen zusätzlichen Filter.
+Ordner sind keine Obsidian-Linkziele. Für Sammlungen werden die vorhandenen Base Views verwendet; einzelne Notes bleiben direkt verlinkt. View-Namen müssen exakt der Base-Konfiguration entsprechen. Bei Umbenennung einer View sind auch die Links anzupassen. Die View „Design Foundations“ umfasst alles unter `docs/design` sowie `docs/research` und `docs/jobs-to-be-done` und gruppiert nach Ordner; ein Alias wie „Entitätsnotes“ setzt keinen zusätzlichen Filter.
 
 | Sammlung | Base View |
 | --- | --- |
@@ -38,7 +39,7 @@ Ordner sind keine Obsidian-Linkziele. Für Sammlungen werden die vorhandenen Bas
 | Business Rules | [[Product Backlog.base#Business Rules]] |
 | Entscheidungen | [[Product Backlog.base#Decisions]] |
 | Hypothesen | [[Product Backlog.base#Hypothesis]] |
-| Akteure, Entitäten, Research und Jobs-to-be-Done | [[Product Backlog.base#Design Foundations]] |
+| Design, Research und Jobs-to-be-Done | [[Product Backlog.base#Design Foundations]] |
 
 
 Der `_intake`-Ordner ist eine vorübergehende Ablage und wird regelmäßig geleert. Konzeptnotes verlinken weder direkt noch per Wikilink auf seinen Inhalt. Quellen werden mit Titel, Version beziehungsweise Datum benannt; relevante Anforderungen, Entscheidungen und Regeln müssen unabhängig davon in den Konzeptnotes verständlich bleiben.
@@ -126,7 +127,7 @@ Diese Ablagezuordnung ist keine Aufforderung, leere Ordner oder vorzeitige Imple
 
 Die vorhandene View [[Product Backlog.base#Design Foundations]] umfasst auch die Ansichten und User-Flows. Eine gesonderte Sitemap-/Flow-View kann bei Bedarf anhand `type: Page` beziehungsweise `type: UserFlow` angelegt werden; bestehende Views werden durch die Designarbeit nicht verändert.
 
-Aktuell ist Designstand v2: vier Navigationsziele plus Kontakte und Einstellungen als Nebenbereiche, acht Ansichten (`VIEW-01` bis `VIEW-08`), acht User-Flows, Mockups unter `docs/design/sitemap/assets/v2-*.png`. Startpunkte sind [[UI-Design - Leitlinien und Reviewumfang]], [[00 - Sitemap]], [[FLOW-01 - Gesamtfluss des Beirats-MVP]] und [[VIEW-02 - Wochenarbeit]]. [[Konzept - Vorbereitung ohne KI]] beschreibt die regelbasierte Vorbereitung. Der klickbare Prototyp liegt als eigenständige HTML-Datei unter `docs/design/prototype`; `docs/design/handoff` enthält das Umsetzungspaket (Tokens, Komponenten, Zustände, Datenbindung, Texte, Plattform, Abnahme, offene Punkte) mit Einstieg [[00 - Handoff Übersicht]]. Handoff-Notes tragen `type: Handoff`. Ansichten verknüpfen ihre Anforderungen und fachlichen Grundlagen über `requirements`, `actors`, `entities`, `business-rules`, `decisions` und `hypotheses`. `mockups` nennt die tatsächlich gespeicherten PNGs; der Note-Body bettet sie sichtbar ein. `UserFlow`-Notes verknüpfen die beteiligten Ansichten über `pages`. Diese Fachartefakte erhalten keine Backlog-Eltern oder Ränge und keine Tags.
+Aktuell ist Designstand v2: vier Navigationsziele plus Kontakte und Einstellungen als Nebenbereiche, acht Ansichten (`VIEW-01` bis `VIEW-08`), acht User-Flows, Mockups unter `docs/design/sitemap/assets/v2-*.png`. Startpunkte sind [[UI-Design - Leitlinien und Reviewumfang]], [[00 - Sitemap]], [[FLOW-01 - Gesamtfluss des Beirats-MVP]] und [[VIEW-02 - Wochenarbeit]]. [[Konzept - Vorbereitung ohne KI]] beschreibt die regelbasierte Vorbereitung. Der klickbare Prototyp liegt als eigenständige HTML-Datei unter `docs/design/prototype`; `docs/design/handoff` enthält das Umsetzungspaket (Tokens, Komponenten, Zustände, Datenbindung, Texte, Plattform, Abnahme, offene Punkte) mit Einstieg [[00 - Handoff Übersicht]]. Handoff-Notes tragen `type: Handoff`. Ansichten verknüpfen ihre Anforderungen und fachlichen Grundlagen über `requirements`, `entities`, `business-rules`, `decisions` und, wo vorhanden, `hypotheses`; `actors` ist an Ansichten noch nicht gepflegt. `mockups` nennt die tatsächlich gespeicherten PNGs; der Note-Body bettet sie sichtbar ein. `UserFlow`-Notes verknüpfen die beteiligten Ansichten über `pages`. Diese Fachartefakte erhalten keine Backlog-Eltern oder Ränge und keine Tags.
 
 ## Offene Fachnotizen als Produktgrundlage
 
@@ -142,7 +143,7 @@ Aktuell ist Designstand v2: vier Navigationsziele plus Kontakte und Einstellunge
 
 ## Verteilbare Claude Skills
 
-Der Ordner `skills/` enthält Skill-Quellen und das [Paketmanifest](../skills/manifest.json), `skills/dist/` die erzeugten ZIPs. [weg-gmail-to-vault](../skills/weg-gmail-to-vault/SKILL.md) ist der erste konkrete MVP-Skill. `scripts/package_claude_skills.py` baut das Paket reproduzierbar; `tests/skills/` enthält ausschließlich synthetische Tests für Writer und Paket. Dies ist Skill-Infrastruktur, keine implementierte Pluginoberfläche oder eigener Gmail-Connector. Es werden keine zusätzlichen README-Dateien angelegt.
+Der Ordner `skills/` enthält Skill-Quellen und das [Paketmanifest](../skills/manifest.json), `skills/dist/` die beim Build erzeugten ZIPs. Der Ordner ist nicht versioniert; Links auf das ZIP funktionieren erst nach einem lokalen Build. [weg-gmail-to-vault](../skills/weg-gmail-to-vault/SKILL.md) ist der erste konkrete MVP-Skill. `scripts/package_claude_skills.py` baut das Paket reproduzierbar; `tests/skills/` enthält ausschließlich synthetische Tests für Writer und Paket. Dies ist Skill-Infrastruktur, keine implementierte Pluginoberfläche oder eigener Gmail-Connector. Es werden keine zusätzlichen README-Dateien angelegt.
 
 [[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] ist explizit dem MVP zugeordnet; das gemischte F-18 erhält keine pauschale Releasezuordnung für alle Kinder. Die Plugininstallation und ein tatsächlicher Claude-/Gmail-Test bleiben offen. `pages` und `user-flows` dieser neuen Story bleiben bis zur konkreten Ergänzung der Sitemap v2 leer; alte oder ähnliche Ansichten werden nicht als bereits fertiges Integrationsdesign ausgegeben.
 

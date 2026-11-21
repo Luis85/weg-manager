@@ -39,7 +39,7 @@ Diese Regeln folgen aus PRD/DF/F-21 und der obigen Recherche; sie sind vorgeschl
 
 ## Gestaltungs- und Prüfraster
 
-Desktopreferenz 1440 × 1024, Mobilreferenz 390 × 844, zusätzlich 320 CSS-Pixel und 200 % Zoom. Ruhiges helles NuxtUI-Konzept mit Weiß/Slate, Petrol #0F766E und Body 16 px. Diese Maße sind Entwurfsparameter, keine vorweggenommene Geräteabnahme. NuxtUI-Komponentennamen in den Page Notes sind geplante Zuordnungen, keine zugesicherte API-Verfügbarkeit oder Accessibility-Konformität.
+Desktopreferenz 1440 × 1024, Mobilreferenz 390 × 844, zusätzlich 320 CSS-Pixel und 200 % Zoom. Farben, Schrift und Größen nach [[UI-Design - Leitlinien und Reviewumfang]] und [[01 - Design Tokens]]. Diese Maße sind Entwurfsparameter, keine vorweggenommene Geräteabnahme. NuxtUI-Komponentennamen in den Page Notes sind geplante Zuordnungen, keine zugesicherte API-Verfügbarkeit oder Accessibility-Konformität.
 
 Mobile Abläufe müssen Lesen, Quellenprüfung, Wahl, Notizeingabe, Entwurfsprüfung, Vertraulichkeitsvorschau und Übergabe vollständig erlauben. Rückkehr aus Originalansicht oder externer Mail-App darf bestätigte Eingaben nicht verlieren. Lange Texte, Softkeyboard, Abbruch und Wiederaufnahme gehören zum späteren Test, nicht nur die Startansicht. Es entsteht kein neuer Push-/Syncdienst.
 

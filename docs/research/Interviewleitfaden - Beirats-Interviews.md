@@ -17,13 +17,13 @@ actors:
 
 | Kennung | Frage | Jobs |
 | --- | --- | --- |
-| FF-1 | Beschreiben andere Beiräte ihren Erfolg mit denselben Maßstäben (M1–M5)? | 0, M1–M5 |
-| FF-2 | Wo verlieren Beiräte Zeit oder Überblick zwischen Wochen und Versammlungen? | A1–A3, B1, E1 |
-| FF-3 | Wie überwachen Beiräte die Verwaltung, und woran scheitert es? | B1–B5 |
-| FF-4 | Wie prüfen Beiräte Wirtschaftsplan, Abrechnung und Konten, und wie sicher fühlen sie sich dabei? | C1–C5, D4 |
-| FF-5 | Welche Fristen, Unterlagen und Risiken sind schon einmal übersehen worden? | A2, D1–D5 |
-| FF-6 | Was gehört für Beiräte zum Amt und was nicht? | E4, F1–F4, G1–G2, EM-6 |
-| FF-7 | Was macht das Amt übergabefähig oder abhängig von einer Person? | H1–H3 |
+| FF-1 | Beschreiben andere Beiräte ihren Erfolg mit denselben Maßstäben (J-M1 bis J-M5)? | J-0, J-M1 bis J-M5 |
+| FF-2 | Wo verlieren Beiräte Zeit oder Überblick zwischen Wochen und Versammlungen? | J-A1–J-A3, J-B1, J-E1 |
+| FF-3 | Wie überwachen Beiräte die Verwaltung, und woran scheitert es? | J-B1–J-B5 |
+| FF-4 | Wie prüfen Beiräte Wirtschaftsplan, Abrechnung und Konten, und wie sicher fühlen sie sich dabei? | J-C1–J-C5, J-D4 |
+| FF-5 | Welche Fristen, Unterlagen und Risiken sind schon einmal übersehen worden? | J-A2, J-D1–J-D5 |
+| FF-6 | Was gehört für Beiräte zum Amt und was nicht? | J-E4, J-F1–J-F4, J-G1–J-G2, J-EM6 |
+| FF-7 | Was macht das Amt übergabefähig oder abhängig von einer Person? | J-H1–J-H3 |
 | FF-8 | Welche Jobs hat ein Beirat bei gemeinsamen Vorhaben mit Nachbargemeinschaften? | Beirat im Viertel |
 | FF-9 | Gibt es einen eigenen Job, einen Punkt nachweisbar abzuschließen? | Lücke aus der Job-Map-Prüfung |
 
@@ -39,10 +39,10 @@ actors:
 
 | Merkmal | Ausprägungen | Wahlmodul |
 | --- | --- | --- |
-| Besetzung | allein / im Gremium | H1 |
-| Gemeinschaften | eine / mehrere, etwa mit Tiefgarage | H2 |
-| Amtsdauer | unter einem Jahr / länger | H3 |
-| Verwalterwechsel | in den letzten zwei Jahren / nicht | B5 |
+| Besetzung | allein / im Gremium | J-H1 |
+| Gemeinschaften | eine / mehrere, etwa mit Tiefgarage | J-H2 |
+| Amtsdauer | unter einem Jahr / länger | J-H3 |
+| Verwalterwechsel | in den letzten zwei Jahren / nicht | J-B5 |
 | Vorhaben im Viertel | beteiligt / nicht | Viertel |
 | Amt fast abgegeben | ja / nein | Grenze |
 
@@ -61,8 +61,8 @@ actors:
 
 - Vor dem Interview eine schriftliche Einwilligung einholen: Zweck, Aufzeichnung ja oder nein, Speicherdauer, Widerrufsrecht.
 - Teilnehmende erhalten eine Kennung (INT-01, INT-02 …). Namen, Adressen, Beträge und Namen der Verwaltung kommen nicht in die Auswertung.
-- Am Anfang ausdrücklich bitten, keine Daten anderer Eigentümer zu nennen. Fällt doch eine, wird sie im Protokoll nicht festgehalten (RB-4, F3).
-- Bewertungen über die eigene Verwaltung bleiben vertraulich. Sie erscheinen nur zusammengefasst und ohne Bezug auf eine bestimmte Gemeinschaft (RB-6).
+- Am Anfang ausdrücklich bitten, keine Daten anderer Eigentümer zu nennen. Fällt doch eine, wird sie im Protokoll nicht festgehalten (J-RB4, J-F3).
+- Bewertungen über die eigene Verwaltung bleiben vertraulich. Sie erscheinen nur zusammengefasst und ohne Bezug auf eine bestimmte Gemeinschaft (J-RB6).
 - Aufnahmen werden nach der Auswertung gelöscht, spätestens nach drei Monaten.
 
 **Einwilligungstext (Vorschlag):**
@@ -97,7 +97,7 @@ Einwilligung bestätigen lassen, Aufnahme starten.
 3. Wie viel Zeit verbringen Sie in einer normalen Woche mit dem Amt? Und in der Woche vor einer Versammlung?
 4. Wer gehört sonst zum Beirat, und wie teilen Sie sich die Arbeit?
 
-*Ziel:* Merkmale des Ausführenden und Zeitbudget (RB-1). Zahlen notieren, nicht bewerten.
+*Ziel:* Merkmale des Ausführenden und Zeitbudget (J-RB1). Zahlen notieren, nicht bewerten.
 
 ## Teil 3 · Hauptjob in eigenen Worten
 
@@ -105,7 +105,7 @@ Einwilligung bestätigen lassen, Aufnahme starten.
 2. Und woran, dass etwas schiefläuft?
 3. Was wäre für Sie ein richtig gutes Jahr als Beirat?
 
-*Nicht vorlesen:* die Erfolgsmaße M1–M5. Notieren, welche spontan genannt werden und welche fehlen. Am Ende von Teil 3 darf nachgefragt werden: „Spielt das Verhältnis zur Verwaltung dabei eine Rolle? Und die Übersicht über die Finanzen?“
+*Nicht vorlesen:* die Erfolgsmaße J-M1 bis J-M5. Notieren, welche spontan genannt werden und welche fehlen. Am Ende von Teil 3 darf nachgefragt werden: „Spielt das Verhältnis zur Verwaltung dabei eine Rolle? Und die Übersicht über die Finanzen?“
 
 ## Teil 4 · Kernteil: zwei jüngste Fälle
 
@@ -119,12 +119,12 @@ Entlang der Zeitleiste fragen:
 
 | Schritt | Fragen | Jobs |
 | --- | --- | --- |
-| Auslöser | Wie fing es an? Woher wussten Sie davon? | B2, F1 |
-| Zusage | Was genau wurde zugesagt? Mit welchem Termin? Wo stand das? | B1 |
-| Warten | Wann haben Sie gemerkt, dass es hängt? Woran? | A1, B1 |
-| Nachhaken | Was haben Sie getan? Wie haben Sie den Ton gewählt? Was haben Sie bewusst nicht getan? | B3, A4 |
-| Wiedereinstieg | Wie haben Sie nach einer Pause wieder den Stand gefunden? Wie lange hat das gedauert? | A3 |
-| Ende | Wie ist es ausgegangen? Woran haben Sie gemerkt, dass es erledigt ist? Haben Sie das irgendwo festgehalten? | FF-9, B4 |
+| Auslöser | Wie fing es an? Woher wussten Sie davon? | J-B2, J-F1 |
+| Zusage | Was genau wurde zugesagt? Mit welchem Termin? Wo stand das? | J-B1 |
+| Warten | Wann haben Sie gemerkt, dass es hängt? Woran? | J-A1, J-B1 |
+| Nachhaken | Was haben Sie getan? Wie haben Sie den Ton gewählt? Was haben Sie bewusst nicht getan? | J-B3, J-A4 |
+| Wiedereinstieg | Wie haben Sie nach einer Pause wieder den Stand gefunden? Wie lange hat das gedauert? | J-A3 |
+| Ende | Wie ist es ausgegangen? Woran haben Sie gemerkt, dass es erledigt ist? Haben Sie das irgendwo festgehalten? | FF-9, J-B4 |
 
 ### Fall 2 · Die letzte Prüfung
 
@@ -132,12 +132,12 @@ Entlang der Zeitleiste fragen:
 
 | Schritt | Fragen | Jobs |
 | --- | --- | --- |
-| Auslöser | Wann wussten Sie, dass die Prüfung ansteht? Wie viel Zeit blieb bis zur Versammlung? | A2, E1 |
-| Unterlagen | Was haben Sie bekommen, was mussten Sie anfordern? Was fehlte? | D1, C2 |
-| Prüfen | Wie sind Sie vorgegangen? Was haben Sie sich genau angesehen? Haben Sie Kontoauszüge gesehen, für welche Konten? | C1, C2 |
-| Gemeinsame Kosten | Gab es Kosten, die mit einer anderen Gemeinschaft geteilt werden? Wie haben Sie den Anteil geprüft? | C3 |
-| Zweifel | An welcher Stelle waren Sie unsicher? Wen haben Sie gefragt? | D3, D4 |
-| Ergebnis | Was haben Sie den Eigentümern mitgeteilt, in welcher Form? | C1, F2 |
+| Auslöser | Wann wussten Sie, dass die Prüfung ansteht? Wie viel Zeit blieb bis zur Versammlung? | J-A2, J-E1 |
+| Unterlagen | Was haben Sie bekommen, was mussten Sie anfordern? Was fehlte? | J-D1, J-C2 |
+| Prüfen | Wie sind Sie vorgegangen? Was haben Sie sich genau angesehen? Haben Sie Kontoauszüge gesehen, für welche Konten? | J-C1, J-C2 |
+| Gemeinsame Kosten | Gab es Kosten, die mit einer anderen Gemeinschaft geteilt werden? Wie haben Sie den Anteil geprüft? | J-C3 |
+| Zweifel | An welcher Stelle waren Sie unsicher? Wen haben Sie gefragt? | J-D3, J-D4 |
+| Ergebnis | Was haben Sie den Eigentümern mitgeteilt, in welcher Form? | J-C1, J-F2 |
 | Rückblick | Was würden Sie beim nächsten Mal anders machen? | |
 
 ### Nachfragen für beide Fälle
@@ -152,26 +152,26 @@ Entlang der Zeitleiste fragen:
 
 Je nach Screening ein bis zwei Module wählen. Jedes Modul beginnt mit einem konkreten Fall, nicht mit einer allgemeinen Frage.
 
-### Modul Verwalterwechsel (B5, B4)
+### Modul Verwalterwechsel (J-B5, J-B4)
 
 1. Erzählen Sie, wie es zum Wechsel kam. Was war der Auslöser?
 2. Woher wussten Sie, was die alte Verwaltung leisten musste und was sie geleistet hat?
 3. Wie haben Sie Angebote verglichen? Was war schwer vergleichbar?
 4. Was hat die neue Verwaltung übernommen, was ging verloren?
 
-### Modul mehrere Gemeinschaften (H2, C3)
+### Modul mehrere Gemeinschaften (J-H2, J-C3)
 
 1. Erzählen Sie vom letzten Mal, als etwas in der falschen Gemeinschaft gelandet ist oder fast gelandet wäre.
 2. Wie halten Sie Schriftwechsel und Termine der Gemeinschaften auseinander?
 3. Welche Kosten teilen sich die Gemeinschaften, und wissen Sie, worauf die Teilung beruht?
 
-### Modul neu im Amt (H3, D1)
+### Modul neu im Amt (J-H3, J-D1)
 
 1. Was haben Sie in den ersten Wochen als Erstes gemacht?
 2. Was hätten Sie gern früher gewusst?
 3. Welche Altlasten sind erst später aufgetaucht? Wie?
 
-### Modul allein im Amt (H1)
+### Modul allein im Amt (J-H1)
 
 1. Was passiert, wenn Sie zwei Wochen ausfallen?
 2. Was müsste jemand wissen, um sofort einzuspringen? Wo steht das heute?
@@ -190,13 +190,13 @@ Dieses Modul erhebt neue Jobs. Hier darf länger gefragt werden.
 
 *Auswertung:* Jeden genannten Schritt als möglichen Job notieren (Verb + Objekt + Situation).
 
-### Modul Amt fast abgegeben (EM-6)
+### Modul Amt fast abgegeben (J-EM6)
 
 1. Gab es einen Moment, an dem Sie das Amt fast abgegeben hätten? Was war da los?
 2. Was hat Sie gehalten?
 3. Was dürfte auf keinen Fall noch dazukommen?
 
-### Modul Gebäude und Dienstleister (G1, G2, D2, D5)
+### Modul Gebäude und Dienstleister (J-G1, J-G2, J-D2, J-D5)
 
 1. Erzählen Sie vom letzten akuten Ereignis am Gebäude. Wer hat zuerst reagiert, und wann haben Sie davon erfahren?
 2. Woran merken Sie, ob Hausmeister, Reinigung oder Wartung ihre Arbeit machen?
@@ -204,11 +204,11 @@ Dieses Modul erhebt neue Jobs. Hier darf länger gefragt werden.
 
 ## Teil 6 · Gefühl, Ansehen, Grenzen
 
-1. Wann waren Sie im letzten Jahr als Beirat beunruhigt? Was war der Anlass? (EM-1)
-2. Wie möchten Sie von der Verwaltung gesehen werden? Und von den Eigentümern? (EM-3, EM-4)
-3. Mit wem teilen Sie die Last des Amts? (EM-5)
-4. Was gehört für Sie ausdrücklich nicht zum Amt? Was lassen Sie bewusst liegen? (EM-6, F4)
-5. Wo wurden Sie schon zum Schiedsrichter gemacht, obwohl das nicht Ihre Aufgabe war? (F4)
+1. Wann waren Sie im letzten Jahr als Beirat beunruhigt? Was war der Anlass? (J-EM1)
+2. Wie möchten Sie von der Verwaltung gesehen werden? Und von den Eigentümern? (J-EM3, J-EM4)
+3. Mit wem teilen Sie die Last des Amts? (J-EM5)
+4. Was gehört für Sie ausdrücklich nicht zum Amt? Was lassen Sie bewusst liegen? (J-EM6, J-F4)
+5. Wo wurden Sie schon zum Schiedsrichter gemacht, obwohl das nicht Ihre Aufgabe war? (J-F4)
 
 ## Teil 7 · Bewertungskarte
 
@@ -218,16 +218,16 @@ Am Ende bewertet die Person zehn Ergebnis-Sätze auf einer Karte. Die Werte dien
 
 | Kennung | Ergebnis | Wichtig 1–5 | Zufrieden 1–5 |
 | --- | --- | --- | --- |
-| A1 | Erkennen, welche Themen diese Woche meine Entscheidung brauchen | | |
-| A2 | Nur bei echtem Handlungsbedarf zwischendurch gestört werden | | |
-| A3 | Nach einer Pause schnell wieder wissen, wo ich stand | | |
-| B1 | Keine Zusage der Verwaltung ohne Termin | | |
-| B2 | Von wesentlichen Aufträgen und Zahlungen vorher erfahren | | |
-| C1 | Prüfung und Stellungnahme vor der Versammlung belegt schaffen | | |
-| C2 | Alle Konten der Gemeinschaft im Prüfzeitraum gesehen haben | | |
-| D2 | Keine Frist und keine Pflichtversicherung, die unbemerkt verfällt | | |
-| E2 | Für jeden Beschluss den Umsetzungsstand kennen | | |
-| H1 | Eine Vertretung findet sich schnell zurecht | | |
+| J-A1 | Erkennen, welche Themen diese Woche meine Entscheidung brauchen | | |
+| J-A2 | Nur bei echtem Handlungsbedarf zwischendurch gestört werden | | |
+| J-A3 | Nach einer Pause schnell wieder wissen, wo ich stand | | |
+| J-B1 | Keine Zusage der Verwaltung ohne Termin | | |
+| J-B2 | Von wesentlichen Aufträgen und Zahlungen vorher erfahren | | |
+| J-C1 | Prüfung und Stellungnahme vor der Versammlung belegt schaffen | | |
+| J-C2 | Alle Konten der Gemeinschaft im Prüfzeitraum gesehen haben | | |
+| J-D2 | Keine Frist und keine Pflichtversicherung, die unbemerkt verfällt | | |
+| J-E2b | Für jeden Beschluss den Umsetzungsstand kennen | | |
+| J-H1 | Eine Vertretung findet sich schnell zurecht | | |
 
 Die Auswahl deckt die Gruppen ab, in denen der Pilot den meisten Schmerz sah. Nach der ersten Runde wird sie überprüft.
 
@@ -245,7 +245,7 @@ Danken, Aufnahme beenden, den nächsten Schritt nennen.
 - **Keine Lösungen:** keine Ideen, Skizzen oder Produktnamen zeigen, auch nicht auf Nachfrage. Bei der Frage „Was bauen Sie?“: „Das erzählen wir gern am Ende, jetzt geht es nur um Ihre Erfahrung.“
 - **Keine hypothetischen Fragen:** nicht „Würden Sie …?“ oder „Hätten Sie gern …?“
 - **Schweigen aushalten:** nach einer Antwort drei Sekunden warten.
-- **Nicht korrigieren:** auch rechtlich falsche Annahmen nicht richtigstellen, sondern notieren. Sie sind ein Befund zu D4.
+- **Nicht korrigieren:** auch rechtlich falsche Annahmen nicht richtigstellen, sondern notieren. Sie sind ein Befund zu J-D4.
 - **Zu zweit:** eine Person fragt, eine schreibt mit. Direkt nach dem Interview zehn Minuten Nachbesprechung.
 
 ## Protokollvorlage

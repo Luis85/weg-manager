@@ -19,6 +19,8 @@ Der Beirat kann seine wesentlichen wiederkehrenden Anliegen mit dem vorgesehenen
 
 Der Pilot beschreibt Beiratsarbeit gegenüber einer externen Verwaltung. Dies stützt die Richtung, bestätigt aber noch nicht die ausreichende Abdeckung durch das neue Plugin.
 
+**Hinweis aus dem Jobkatalog (21.11.2026):** Laut [[JTBD - Verwaltungsbeirat]] schmerzen im Pilot gemeinsame Vorhaben im Viertel und eigene Vorhaben als Eigentümer am meisten; beide liegen außerhalb der Beiratsrolle im engen Sinn. Das ist ein erster möglicher Gegenbeleg aus einem einzelnen Pilot. Der Status bleibt unverändert, bis die Beirats-Interviews vorliegen.
+
 ## Vorgeschlagene Prüfung
 
 Vor Entwicklungsfreigabe typische Anliegen mit dem Piloten fachlich gegen den Scope prüfen; nach Veröffentlichung tatsächliche Wochenarbeit beobachten und nicht abgedeckte Kernanliegen protokollieren.
@@ -37,7 +39,7 @@ Bei Gegenbelegen den ersten Scope neu zuschneiden; nicht alle späteren Module a
 
 ## Bezüge
 
-[[K-01 - Beirat als erster Produkteinstieg]], [[F-03 - Einzelne Punkte bearbeiten]], [[F-16 - Operative Handwerkersteuerung]], [[F-17 - Rechnungen und Zahlungen führen]].
+[[K-01 - Beirat als erster Produkteinstieg]], [[F-03 - Einzelne Punkte bearbeiten]], [[F-16 - Operative Handwerkersteuerung]], [[F-17 - Rechnungen und Zahlungen führen]], [[JTBD - Verwaltungsbeirat]].
 
 [Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`).
 

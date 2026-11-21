@@ -8,6 +8,9 @@ date: 2026-11-15
 
 # WEG-Abläufe und rechtliche Rahmenbedingungen
 
+> [!note] Geltung
+> Die Abschnitte zu Ablauf, Angeboten, Rechnung und Zahlung (§ 1, § 4, § 5) sind Grundlage für den Ausbau [[F-16 - Operative Handwerkersteuerung]] und [[F-17 - Rechnungen und Zahlungen führen]]. Die Rolle des Beirats und die Rechtsgrundlagen seiner Jobs stehen aktueller und ausführlicher in [[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]], Abschnitt 2.
+
 **Recherche- und Quellenstand: 15. November 2026.** Dieses Dokument übersetzt fachliche Quellen in Produktentscheidungen für den MVP. Rechtliche Aussagen und daraus abgeleitete Gestaltungsvorschläge sind zu unterscheiden. Es ersetzt keine individuelle Rechtsberatung und begründet keine pauschale Zusicherung von Rechtskonformität.
 
 Die verbindliche Reihenfolge lautet: **MVP entwickeln → interne technische und fachliche Qualitätssicherung → Veröffentlichung im Obsidian Community-Verzeichnis → Validierung mit dem einen bereits vorhandenen Pilotnutzer.** Er verwaltet seine eigene WEG; eine förmliche Bestellung zum Verwalter oder bestimmte Vertretungsmacht ist damit noch nicht nachgewiesen. Vorabinterviews oder zusätzliche Pilotkunden sind keine Veröffentlichungsvoraussetzung.
@@ -28,7 +31,7 @@ Der folgende Ablauf ist ein Produktmodell für typische Erhaltungsmaßnahmen. Dr
 | Rechnung bearbeiten | Original, Rechnungsbasis, Prüfung, Zahlungsdaten | Rechnung prüfen, Zahlung extern vorbereiten |
 | Zahlung und Abschluss dokumentieren | Tatsächliche Zahlung, Nachweis, Restarbeiten | Getrennte Statusfelder, Wiedervorlage, Abschlussübersicht |
 
-Durchgängig braucht der Manager eine Antwort auf drei Fragen: Was fehlt? Wer muss handeln? Wann fasse ich nach? Das begründet die Ansichten **Heute**, **Vorgänge** und **Vorgangsakte**. Allgemeine WEG-Aufgaben dürfen auch ohne Handwerkervorgang bestehen.
+Durchgängig braucht der Manager eine Antwort auf drei Fragen: Was fehlt? Wer muss handeln? Wann fasse ich nach? Das begründete im früheren Handwerker-Entwurf drei Hauptansichten; der Beirats-MVP nutzt die Ansichten aus [[00 - Sitemap]]. Allgemeine WEG-Aufgaben dürfen auch ohne Handwerkervorgang bestehen.
 
 ## 2. Beteiligte und tatsächliche Handlungskompetenz
 

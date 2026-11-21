@@ -104,6 +104,40 @@ export const settingsTabContent = () =>
     return { names, inputs };
   }, PLUGIN_ID);
 
+/**
+ * The log level dropdown of the plugin's real settings tab: its value and whether it is disabled.
+ * With `choose`, it first picks that value as a user does (a `change` event). The settings window
+ * is closed again afterwards.
+ */
+export const logLevelControl = (choose?: string) =>
+  browser.executeObsidian(
+    async ({ app }, id, value) => {
+      const setting = (
+        app as unknown as {
+          setting: {
+            open(): void;
+            close(): void;
+            openTabById(tab: string): void;
+            activeTab?: { containerEl: HTMLElement };
+          };
+        }
+      ).setting;
+      setting.open();
+      setting.openTabById(id);
+      const select = setting.activeTab?.containerEl.querySelector("select");
+      if (select && value !== null) {
+        select.value = value;
+        select.dispatchEvent(new Event("change"));
+        await new Promise((resolve) => setTimeout(resolve, 200));
+      }
+      const state = { value: select?.value ?? null, disabled: select?.disabled ?? null };
+      setting.close();
+      return state;
+    },
+    PLUGIN_ID,
+    choose ?? null,
+  );
+
 /** Disables and re-enables the plugin, as a user does in Settings → Community plugins. */
 export const reloadPlugin = async () => {
   await obsidianPage.disablePlugin(PLUGIN_ID);

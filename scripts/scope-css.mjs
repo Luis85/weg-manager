@@ -73,6 +73,10 @@ const stripRootCompounds = (selector, scopeClass) => {
  * @param {string} scopeClass
  */
 const scopeSelector = (selector, scopeClass) => {
+  // Unminified CSS keeps the line break before each selector of a list on its first node; left
+  // there, it would sit between the root and a theme class and read as a descendant combinator.
+  const first = selector.first;
+  if (first !== undefined) first.rawSpaceBefore = "";
   const onRoot = stripRootCompounds(selector, scopeClass);
   const compound = firstCompound(selector);
   const themed = compound.some((node) => node.type === "class" && THEME_CLASSES.has(node.value));

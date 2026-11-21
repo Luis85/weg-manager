@@ -68,3 +68,8 @@ Das Plugin hat die technischen Grundlagen (Notizspeicher, Codec, Index, Navigati
 ## Kommentare
 
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
+- 21.11.2026: Weitere Entscheidungen des Produktverantwortlichen.
+  - **Farbe:** Die Notiz speichert den englischen Namen einer Farbe aus der festen Palette des Prototyps mit acht Farben (`teal`, `violet`, `blue`, `rust`, `slate`, `cyan`, `pink`, `olive`), z. B. `color: teal`. Die genauen Farbwerte je Theme legt das Plugin fest und kann sie ändern, ohne Notizen anzufassen. Das präzisiert Kriterium 4.
+  - **Dateivertrag:** Der Vertrag der Gemeinschaftsnotiz (`weg-manager.community/v1`) wird mit dem Durchstich als deutsche Seite unter `docs/` geschrieben: deutscher Text um die englischen Schlüssel und Codes. Je Notiztyp und Version eine Seite.
+  - **Keine Auswahl:** Ist keine Gemeinschaft gespeichert ausgewählt (erster Start, neues Gerät, ausgewählte Gemeinschaft gelöscht), wird bei genau einer Gemeinschaft diese gewählt. Bei zwei oder mehr ist nichts ausgewählt, und der Rahmen fordert zur Auswahl auf, bevor bearbeitet werden kann.
+  - **Vorabversion:** Nach dem Durchstich entsteht eine Vorabversion (0.2.0) für die manuellen Prüfungen im eigenen Vault, mit einer kurzen Prüfliste.

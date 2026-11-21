@@ -14,4 +14,6 @@ When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the 
 
 The label is the value of the `triage` frontmatter property of the backlog note (see `issue-tracker.md`). Never write it to `tags`.
 
+A finished note has no triage state: when you set `finished`, set `triage: ""` in the same edit (owner decision, 2026-11-21). The label says what should happen next, and for finished work nothing should.
+
 Edit the "Label in our tracker" column to match whatever vocabulary you actually use.

@@ -6,7 +6,7 @@ actors:
   - "[[ACT-01-Beirat]]"
   - "[[ACT-05-Obsidian]]"
   - "[[ACT-06-Kommunikationswerkzeug]]"
-release: "[[MVP - Beirat Support]]"
+release: ""
 status: ""
 started: ""
 finished: ""
@@ -71,7 +71,7 @@ user-flows:
 
 # PBI-33 · Wochenarbeit auf dem Handy abschließen
 
-**Planungsstand:** Konzeptentwurf · **Umfang:** MVP
+**Planungsstand:** Konzeptentwurf · **Umfang:** Später (nach dem MVP); keine Releasezuordnung
 
 ## User Story
 
@@ -95,3 +95,7 @@ P NFR-5; P FR-A3; US-15. Quellkürzel: 01-Quellabdeckung (historische Quelle: Gi
 ## Refinementgrenze
 
 Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe sind offen. Anwendbare Qualitätsanforderungen und offene Entscheidungen im [[02-MVP-PRD]] gehören zur Abnahme.
+
+## Kommentare
+
+- 21.11.2026: Entscheidung des Produktverantwortlichen: Mobile folgt nach dem MVP. Die Story gehört nicht mehr zum MVP-Umfang, die Releasezuordnung ist entfernt. Für den MVP ist kein Referenz-Handy nötig. Die Kriterien bleiben als Vorlage für den späteren Ausbau stehen. Siehe [[K-09 - Vollständige mobile Wochenarbeit unterstützen]].

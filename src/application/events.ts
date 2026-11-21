@@ -7,7 +7,7 @@ import { Data } from "effect";
  * **Host events** are mapped from Obsidian at the edge (`src/infrastructure/obsidian/events.ts`).
  * File events concern files only; folders are not published. Every path is vault-relative.
  *
- * **Adding an event** (host or domain, e.g. a future `PunktErstellt { punktId }`): add one member
+ * **Adding an event** (host or domain, e.g. a future `CommunityCreated { communityId }`): add one member
  * to the record below with plain readonly fields, then publish it with `AppEvent.<Tag>({...})`
  * through `EventBus.publish`. Domain events go into this same union; there is no second bus. A
  * consumer that switches exhaustively on `_tag` stops compiling until it handles the new member.

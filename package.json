@@ -1,0 +1,11 @@
+{
+  "name": "weg-manager",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Obsidian plugin for WEG advisory boards.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  }
+}

@@ -1,17 +1,14 @@
 import { Schema } from "effect";
-
-/** Every record's `schema` starts with this: `weg-manager.<type>/v<n>` (ADR 0007). */
-export const RECORD_SCHEMA_PREFIX = "weg-manager.";
+import { parseSchemaMarker } from "./schema-marker";
 
 /**
  * True when a note's frontmatter makes it a record: its `schema` is a string that starts with
- * `weg-manager.`. Where the note lies does not matter. Whether the rest of `schema` is a known type
- * and version is the codec's question, not this one.
+ * `weg-manager.` (`parseSchemaMarker` says anything but `none`). Where the note lies does not
+ * matter. A malformed marker counts, so the note is shown with its issue; whether the type and
+ * version are known is the codec's question, not this one.
  */
-export const isRecordFrontmatter = (frontmatter: Readonly<Record<string, unknown>>): boolean => {
-  const schema = frontmatter["schema"];
-  return typeof schema === "string" && schema.startsWith(RECORD_SCHEMA_PREFIX);
-};
+export const isRecordFrontmatter = (frontmatter: Readonly<Record<string, unknown>>): boolean =>
+  parseSchemaMarker(frontmatter["schema"]).kind !== "none";
 
 /** Why a note name cannot become a file name. The message catalog words each code. */
 export const NoteNameIssue = Schema.Literals(["empty", "forbidden-character", "leading-dot"]);

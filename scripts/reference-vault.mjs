@@ -21,7 +21,7 @@ export const REFERENCE_PROFILE = Object.freeze({
 /** @type {readonly Community[]} */
 const COMMUNITIES = [
   { name: "Ahornweg 12", shortCode: "AW", color: "teal" },
-  { name: "Birkenallee 3", shortCode: "BA", color: "amber" },
+  { name: "Birkenallee 3", shortCode: "BA", color: "violet" },
 ];
 
 const TOPICS = [

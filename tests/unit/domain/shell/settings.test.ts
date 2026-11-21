@@ -2,11 +2,9 @@ import { anything, assert, property } from "fast-check";
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_SETTINGS,
-  GREETING_MAX_LENGTH,
   LOG_LEVELS,
   SETTINGS_VERSION,
   decodeSettings,
-  LEGACY_DEFAULT_GREETING,
   encodeSettings,
   validatePatch,
   type Settings,
@@ -14,10 +12,11 @@ import {
 
 const valid: Settings = {
   schemaVersion: 1,
-  greeting: "Moin",
   logLevel: "debug",
   rootFolder: "Beirat/WEG",
 };
+
+const ROOT_FOLDER_ISSUE = { code: "rootFolder.invalid", max: 100 };
 
 describe("decodeSettings", () => {
   it.each([undefined, null])("treats %s as a first run", (raw) => {
@@ -36,29 +35,11 @@ describe("decodeSettings", () => {
   });
 
   it("falls back per field and names the invalid field", () => {
-    const result = decodeSettings({ schemaVersion: 1, greeting: 7, logLevel: "debug" });
-    expect(result.settings.greeting).toBe(DEFAULT_SETTINGS.greeting);
+    const result = decodeSettings({ schemaVersion: 1, rootFolder: 7, logLevel: "debug" });
+    expect(result.settings.rootFolder).toBe(DEFAULT_SETTINGS.rootFolder);
     expect(result.settings.logLevel).toBe("debug");
-    expect(result.issues).toEqual([{ code: "greeting.length", max: GREETING_MAX_LENGTH }]);
+    expect(result.issues).toEqual([ROOT_FOLDER_ISSUE]);
     expect(result.writable).toBe(true);
-  });
-
-  it.each(["", "   ", "x".repeat(GREETING_MAX_LENGTH + 1)])(
-    "rejects the greeting %j with one issue",
-    (greeting) => {
-      const result = decodeSettings({ ...valid, greeting });
-      expect(result.settings.greeting).toBe(DEFAULT_SETTINGS.greeting);
-      expect(result.issues).toEqual([{ code: "greeting.length", max: GREETING_MAX_LENGTH }]);
-    },
-  );
-
-  it("accepts a greeting of exactly the maximum length", () => {
-    const greeting = "x".repeat(GREETING_MAX_LENGTH);
-    expect(decodeSettings({ ...valid, greeting }).settings.greeting).toBe(greeting);
-  });
-
-  it("stores a valid greeting trimmed", () => {
-    expect(decodeSettings({ ...valid, greeting: "  Moin  " }).settings.greeting).toBe("Moin");
   });
 
   it("drops unknown keys", () => {
@@ -127,31 +108,17 @@ describe("validatePatch", () => {
     expect(validatePatch(valid, {})).toEqual({ ok: true, settings: valid });
   });
 
-  it("applies a valid patch and trims the greeting", () => {
-    expect(validatePatch(valid, { greeting: "  Hallo ", logLevel: "info" })).toEqual({
+  it("applies a valid patch and normalises the root folder", () => {
+    expect(validatePatch(valid, { rootFolder: " /Archiv/ ", logLevel: "info" })).toEqual({
       ok: true,
-      settings: { ...valid, greeting: "Hallo", logLevel: "info" },
+      settings: { ...valid, rootFolder: "Archiv", logLevel: "info" },
     });
   });
 
-  it.each(["", "x".repeat(GREETING_MAX_LENGTH + 1)])("rejects the greeting %j", (greeting) => {
-    expect(validatePatch(valid, { greeting })).toEqual({
+  it.each(["", "a/../b"])("rejects the root folder %j", (rootFolder) => {
+    expect(validatePatch(valid, { rootFolder })).toEqual({
       ok: false,
-      issues: [{ code: "greeting.length", max: GREETING_MAX_LENGTH }],
-    });
-  });
-
-  it("resets the greeting to the language's default with null", () => {
-    expect(validatePatch(valid, { greeting: null })).toEqual({
-      ok: true,
-      settings: { ...valid, greeting: null },
-    });
-  });
-
-  it("treats the old English default as not customised", () => {
-    expect(validatePatch(valid, { greeting: ` ${LEGACY_DEFAULT_GREETING} ` })).toEqual({
-      ok: true,
-      settings: { ...valid, greeting: null },
+      issues: [ROOT_FOLDER_ISSUE],
     });
   });
 
@@ -161,24 +128,22 @@ describe("validatePatch", () => {
   });
 
   it("always keeps schemaVersion 1", () => {
-    const patch = { schemaVersion: 7, greeting: "Hi" } as unknown as Parameters<
+    const patch = { schemaVersion: 7, logLevel: "info" } as unknown as Parameters<
       typeof validatePatch
     >[1];
     const result = validatePatch(valid, patch);
-    expect(result).toEqual({ ok: true, settings: { ...valid, greeting: "Hi" } });
+    expect(result).toEqual({ ok: true, settings: { ...valid, logLevel: "info" } });
   });
 });
 
 /** Defaults are product decisions; pin them exactly. Issue texts live in the message catalog. */
 describe("settings defaults and issues", () => {
-  it("has the documented defaults: no greeting stored, so it follows the UI language", () => {
+  it("has the documented defaults", () => {
     expect(DEFAULT_SETTINGS).toEqual({
       schemaVersion: 1,
-      greeting: null,
       logLevel: "warn",
       rootFolder: "WEG Manager",
     });
-    expect(LEGACY_DEFAULT_GREETING).toBe("Hello from WEG Manager");
   });
 
   it("names the issue for a non-object file and an unknown log level as codes", () => {
@@ -187,40 +152,32 @@ describe("settings defaults and issues", () => {
       { code: "logLevel.unknown", allowed: ["error", "warn", "info", "debug"] },
     ]);
   });
+
+  it("writes the version and the log level, and the root folder only when it is not the default", () => {
+    expect(encodeSettings(DEFAULT_SETTINGS)).toEqual({ schemaVersion: 1, logLevel: "warn" });
+    expect(Object.keys(encodeSettings(valid))).toEqual(["schemaVersion", "logLevel", "rootFolder"]);
+  });
 });
 
-/** Files written before 0.2 stored the English default greeting; it is not a customisation. */
-describe("default greeting", () => {
-  it("reads a file without a greeting as not customised", () => {
-    expect(decodeSettings({ schemaVersion: 1, logLevel: "info" }).settings.greeting).toBeNull();
-  });
+/**
+ * The demo greeting of versions before 0.2 is gone (PBI-56). An old file still holds the key; it
+ * is an unknown key now: dropped on decode without an issue, and never written again.
+ */
+describe("the retired greeting", () => {
+  it.each(["Hello from WEG Manager", "Moin", "", 7, null])(
+    "drops a greeting %j without an issue",
+    (greeting) => {
+      expect(decodeSettings({ ...valid, greeting })).toEqual({
+        settings: valid,
+        issues: [],
+        writable: true,
+      });
+    },
+  );
 
-  it("reads the old stored default as not customised, without an issue", () => {
-    const old = { schemaVersion: 1, greeting: "Hello from WEG Manager", logLevel: "warn" };
-    expect(decodeSettings(old)).toEqual({ settings: DEFAULT_SETTINGS, issues: [], writable: true });
-  });
-
-  it("reads an explicit null as not customised", () => {
-    expect(decodeSettings({ ...valid, greeting: null })).toEqual({
-      settings: { ...valid, greeting: null },
-      issues: [],
-      writable: true,
-    });
-  });
-
-  it("keeps a typed greeting, also one that merely contains the old default", () => {
-    const greeting = "Hello from WEG Manager!";
-    expect(decodeSettings({ ...valid, greeting }).settings.greeting).toBe(greeting);
-  });
-
-  it("writes no greeting key while the greeting is not customised", () => {
-    expect(encodeSettings(DEFAULT_SETTINGS)).toEqual({ schemaVersion: 1, logLevel: "warn" });
-    expect(encodeSettings(valid)).toEqual(valid);
-    expect(Object.keys(encodeSettings(valid))).toEqual([
-      "schemaVersion",
-      "greeting",
-      "logLevel",
-      "rootFolder",
-    ]);
+  it("writes no greeting key after a file that held one is decoded", () => {
+    const old = { schemaVersion: 1, greeting: "Moin", logLevel: "warn" };
+    const { settings } = decodeSettings(old);
+    expect(encodeSettings(settings)).toEqual({ schemaVersion: 1, logLevel: "warn" });
   });
 });

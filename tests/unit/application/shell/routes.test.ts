@@ -1,7 +1,7 @@
 import { anything, assert as fcAssert, property } from "fast-check";
 import { Schema } from "effect";
 import { describe, expect, it } from "vitest";
-import { ShellRoute, routesOf } from "../../../../src/application/shell/routes";
+import { routesOf } from "../../../../src/application/shell/routes";
 
 /** Two routes, one with a parameter, as a feature module would contribute them. */
 const TestRoute = Schema.Union([
@@ -59,14 +59,5 @@ describe("routesOf", () => {
     expect(routes.equals({ name: "list" }, { name: "list" })).toBe(true);
     expect(routes.equals({ name: "record", id: "a" }, { name: "record", id: "b" })).toBe(false);
     expect(routes.equals({ name: "list" }, { name: "record", id: "a" })).toBe(false);
-  });
-});
-
-describe("ShellRoute", () => {
-  it("is the welcome screen and nothing else", () => {
-    expect(Schema.decodeUnknownSync(ShellRoute)({ name: "welcome" })).toStrictEqual({
-      name: "welcome",
-    });
-    expect(Schema.is(ShellRoute)({ name: "settings" })).toBe(false);
   });
 });

@@ -1,4 +1,4 @@
-import { Schema, SchemaGetter } from "effect";
+import { Schema } from "effect";
 import { DEFAULT_ROOT_FOLDER, ROOT_FOLDER_MAX_LENGTH, RootFolder } from "./root-folder";
 import {
   StructuralIssue,
@@ -12,21 +12,12 @@ import {
 export { DEFAULT_ROOT_FOLDER, ROOT_FOLDER_MAX_LENGTH };
 
 export const SETTINGS_VERSION = 1;
-export const GREETING_MAX_LENGTH = 200;
 export const LOG_LEVELS = ["error", "warn", "info", "debug"] as const;
-
-/**
- * The default greeting that versions before 0.2 wrote into `data.json`. Read as "not customised",
- * so those files show the greeting of the current UI language too (ADR 0005).
- */
-export const LEGACY_DEFAULT_GREETING = "Hello from WEG Manager";
 
 export type LogLevel = (typeof LOG_LEVELS)[number];
 
 export type Settings = {
   readonly schemaVersion: 1;
-  /** `null`: not customised, the view shows the default greeting of the UI language. */
-  readonly greeting: string | null;
   readonly logLevel: LogLevel;
   /** Vault-relative folder of the plugin's notes. No interface edits it yet (ADR 0007). */
   readonly rootFolder: string;
@@ -40,7 +31,6 @@ export type EditableSettings = Omit<Settings, "schemaVersion">;
  */
 export const SettingsIssue = Schema.Union([
   StructuralIssue,
-  Schema.Struct({ code: Schema.Literal("greeting.length"), max: Schema.Number }),
   Schema.Struct({
     code: Schema.Literal("logLevel.unknown"),
     allowed: Schema.Array(Schema.Literals(LOG_LEVELS)),
@@ -55,29 +45,14 @@ type FieldIssue = Exclude<SettingsIssue, StructuralIssue>;
 export type DecodedSettings = Decoded<Settings, FieldIssue>;
 export type PatchResult = PatchOutcome<Settings, FieldIssue>;
 
-/** Trimmed, 1 to 200 characters; the legacy default and `null` both mean "not customised". */
-const Greeting = Schema.NullOr(
-  Schema.Trim.check(Schema.isNonEmpty(), Schema.isMaxLength(GREETING_MAX_LENGTH)),
-).pipe(
-  Schema.decodeTo(Schema.NullOr(Schema.String), {
-    decode: SchemaGetter.transform((value) => (value === LEGACY_DEFAULT_GREETING ? null : value)),
-    encode: SchemaGetter.passthrough(),
-  }),
-);
-
 /**
  * One declaration per setting: its schema, its default, the issue a bad value produces and whether
  * a default stays out of the file. Decode, patch validation and encode all follow from this.
- * A greeting or root folder that is still the default is left out of the file, so it reads the same
- * in every plugin version: older ones fall back to their own default without an issue.
+ * A root folder that is still the default is left out of the file, so it reads the same in every
+ * plugin version: older ones fall back to their own default without an issue. A key no field
+ * declares, such as the `greeting` of versions before 0.2, is dropped on decode and never written.
  */
 const FIELDS: SettingsFields<EditableSettings, FieldIssue> = {
-  greeting: {
-    schema: Greeting,
-    default: null,
-    issue: { code: "greeting.length", max: GREETING_MAX_LENGTH },
-    omitWhenDefault: true,
-  },
   logLevel: {
     schema: Schema.Literals(LOG_LEVELS),
     default: "warn",

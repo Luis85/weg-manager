@@ -43,7 +43,7 @@ const lineOfText = (max: number) =>
 
 /**
  * The community note, `weg-manager.community/v1` (ADR 0007, PBI-56; contract page
- * `docs/contracts/Dateivertrag - Gemeinschaft v1.md`). Every field is required: a community has a
+ * `docs/contracts/DV-01 - Gemeinschaft v1.md`). Every field is required: a community has a
  * name, a short code, a colour, a kind and a unit label. Each broken value reports its own code.
  */
 export const communityType = defineNoteType({

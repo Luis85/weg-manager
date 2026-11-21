@@ -245,17 +245,16 @@ describe("the app frame", () => {
     expect(without.querySelector("[data-testid=frame-context]")).toBeNull();
   });
 
-  it("shows the app's routes as entries, with the demo panel at the start", async () => {
-    const { runtime } = make({ store: { initial: { greeting: "Moin" } } });
+  it("starts on the community settings, its one entry, with the switch in the context area", async () => {
+    const { runtime } = make();
     const root = newRoot();
     closes.push(mountApp(root, runtime));
     await settle();
-    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual([
-      "Gemeinschaften",
-      "Start",
-    ]);
-    expect(navButtons(root)[1]?.getAttribute("aria-current")).toBe("page");
-    expect(root.querySelector("section [data-testid=greeting]")?.textContent).toContain("Moin");
+    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Gemeinschaften"]);
+    expect(navButtons(root)[0]?.getAttribute("aria-current")).toBe("page");
+    await vi.waitFor(() =>
+      expect(root.querySelector("section [data-testid=communities-screen]")).not.toBeNull(),
+    );
     await vi.waitFor(() =>
       expect(root.querySelector("nav [data-testid=community-switch]")).not.toBeNull(),
     );

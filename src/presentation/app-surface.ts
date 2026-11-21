@@ -8,7 +8,6 @@ import type { ScreenLoader, SurfaceDefinition } from "./shell/host";
  * at plugin load without loading Vue.
  */
 const screens: { readonly [Name in Route["name"]]: ScreenLoader } = {
-  welcome: () => import("./shell").then(({ shellScreens }) => shellScreens.welcome),
   settings: () =>
     import("./communities").then(({ communitiesScreens }) => communitiesScreens.settings),
 };
@@ -27,11 +26,6 @@ export const appSurface: SurfaceDefinition<Route> = {
       label: (catalog) => catalog.communities.route,
       icon: "i-lucide-building-2",
     },
-    {
-      route: { name: "welcome" },
-      label: (catalog) => catalog.shell.routes.welcome,
-      icon: "i-lucide-layout-dashboard",
-    },
   ],
-  context: () => import("./communities").then(({ CommunitySwitch }) => CommunitySwitch),
+  context: () => import("./communities").then(({ communitiesFrame }) => communitiesFrame.context),
 };

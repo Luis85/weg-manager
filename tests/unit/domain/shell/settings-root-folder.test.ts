@@ -82,16 +82,15 @@ describe("the root folder setting", () => {
     ["an object", { path: "WEG" }],
     ["a boolean", true],
   ])("rejects %s and falls back alone: %j", (_label, raw) => {
-    const result = decodeSettings({ schemaVersion: 1, greeting: "Moin", rootFolder: raw });
-    expect(result.settings).toEqual({ ...DEFAULT_SETTINGS, greeting: "Moin" });
+    const result = decodeSettings({ schemaVersion: 1, logLevel: "info", rootFolder: raw });
+    expect(result.settings).toEqual({ ...DEFAULT_SETTINGS, logLevel: "info" });
     expect(result.issues).toEqual([issue]);
     expect(result.writable).toBe(true);
   });
 
   it("falls back to the default, not to a value kept from before, with other issues in field order", () => {
-    const result = decodeSettings({ greeting: "", logLevel: "loud", rootFolder: "a/../b" });
+    const result = decodeSettings({ logLevel: "loud", rootFolder: "a/../b" });
     expect(result.issues).toEqual([
-      { code: "greeting.length", max: 200 },
       { code: "logLevel.unknown", allowed: ["error", "warn", "info", "debug"] },
       issue,
     ]);
@@ -108,18 +107,11 @@ describe("the root folder in encode and validatePatch", () => {
 
   it("is written only when it differs from the default, after the other fields", () => {
     expect(encodeSettings(DEFAULT_SETTINGS)).toEqual({ schemaVersion: 1, logLevel: "warn" });
-    expect(encodeSettings({ ...custom, greeting: "Moin", logLevel: "info" })).toEqual({
+    expect(encodeSettings({ ...custom, logLevel: "info" })).toEqual({
       schemaVersion: 1,
-      greeting: "Moin",
       logLevel: "info",
       rootFolder: "Beirat/WEG",
     });
-    expect(Object.keys(encodeSettings({ ...custom, greeting: "Moin" }))).toEqual([
-      "schemaVersion",
-      "greeting",
-      "logLevel",
-      "rootFolder",
-    ]);
     expect(Object.keys(encodeSettings(custom))).toEqual([
       "schemaVersion",
       "logLevel",

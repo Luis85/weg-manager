@@ -14,7 +14,7 @@ import type { DeviceValue } from "../../src/application/shell";
 import { SettingsService, SettingsServiceLive } from "../../src/application/shell/settings-service";
 import type { SettingsIssue } from "../../src/domain/shell/settings";
 import {
-  controllableVault,
+  controllableRead,
   inMemoryStore,
   recordingClipboard,
   recordingEventBus,
@@ -27,7 +27,8 @@ import {
 
 export type TestRuntimeOptions = {
   readonly store?: StoreOptions;
-  readonly vault?: number | "fail";
+  /** What `source.read` gives: a number or a `VaultReadError`; 3 by default. */
+  readonly source?: number | "fail";
   /** Every settings update fails with these issues, as if the service rejected the value. */
   readonly rejectUpdates?: readonly SettingsIssue[];
   /** The UI language; German by default, so the exact-text tests pin the product's language. */
@@ -53,7 +54,7 @@ const rejecting = (issues: readonly SettingsIssue[]) =>
 export const testRuntime = (options: TestRuntimeOptions = {}) => {
   const store = inMemoryStore(options.store);
   const notifier = recordingNotifier();
-  const vault = controllableVault(options.vault ?? 3);
+  const source = controllableRead(options.source ?? 3);
   const logger = recordingLogger();
   const clipboard = recordingClipboard();
   const events = recordingEventBus();
@@ -69,7 +70,6 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
   const services = Layer.mergeAll(
     settings,
     notifier.layer,
-    vault.layer,
     logger.layer,
     sequentialIncidents(),
     clipboard.layer,
@@ -92,5 +92,5 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
         Effect.andThen(bus.publish(AppEvent.LayoutReady()), bus.publish(AppEvent.VaultReady())),
       ),
     );
-  return { runtime, store, notifier, vault, logger, clipboard, events, notes, vaultReady };
+  return { runtime, store, notifier, source, logger, clipboard, events, notes, vaultReady };
 };

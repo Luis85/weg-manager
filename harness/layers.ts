@@ -1,9 +1,9 @@
 import { Effect, Layer } from "effect";
 import type { AppServices } from "../src/application/app-services";
+import { communitySelectionLayer } from "../src/application/communities";
 import { AppEvent } from "../src/application/events";
 import { appNoteTypes } from "../src/application/note-types";
-import { communitySelectionLayer } from "../src/application/communities";
-import { noteIndexLayer } from "../src/application/notes";
+import { NoteStore, noteIndexLayer } from "../src/application/notes";
 import { messagesLayer } from "../src/application/messages";
 import {
   Clipboard,
@@ -15,9 +15,7 @@ import {
   Notifier,
   SettingsServiceLive,
   SettingsStore,
-  StorageError,
   VaultReadError,
-  VaultReader,
   type Language,
   type UserMessage,
 } from "../src/application/shell";
@@ -26,15 +24,16 @@ import { deviceStoreInMemory } from "../src/infrastructure/memory/shell";
 import { consoleSinkLayer } from "../src/infrastructure/logging/console-sink";
 import { incidentsLayer } from "../src/infrastructure/logging/incidents";
 
-export const SCENARIOS = ["default", "empty", "error", "slow", "readonly"] as const;
+/**
+ * The states the harness can show (`?scenario=`): two communities, none, notes that break the
+ * file contract, a note of a newer schema version, and the note index failing until a retry.
+ */
+export const SCENARIOS = ["loaded", "empty", "invalid", "readonly", "failure"] as const;
 export type Scenario = (typeof SCENARIOS)[number];
 
-export const SLOW_MS = 1500;
-export const HARNESS_FILE_COUNT = 42;
-
-/** `?scenario=` value → scenario; anything unknown is `default`. */
+/** `?scenario=` value → scenario; anything unknown is `loaded`. */
 export const parseScenario = (value: string | null | undefined): Scenario =>
-  SCENARIOS.find((scenario) => scenario === value) ?? "default";
+  SCENARIOS.find((scenario) => scenario === value) ?? "loaded";
 
 export type HarnessOptions = {
   /** Where notices go (the harness page renders them). */
@@ -45,30 +44,94 @@ export type HarnessOptions = {
   readonly language?: Language;
 };
 
-const vaultFor = (scenario: Scenario) => {
+const HARNESS_FOLDER = "WEG Manager/Gemeinschaften";
+
+/** A community note as the harness seeds it; `n` picks its id. */
+const community = (n: number, values: Readonly<Record<string, unknown>>) => ({
+  schema: "weg-manager.community/v1",
+  id: `community-00000000-0000-4000-8000-${n.toString(16).padStart(12, "0")}`,
+  ...values,
+});
+
+const AHORNWEG_VALUES = {
+  name: "Ahornweg 12",
+  short_code: "AW",
+  color: "teal",
+  kind: "WEG",
+  unit_label: "Einheiten",
+};
+const TIEFGARAGE_VALUES = {
+  name: "Tiefgarage Ahornweg",
+  short_code: "TG",
+  color: "violet",
+  kind: "Tiefgarage",
+  unit_label: "Stellplätze",
+};
+const AHORNWEG = community(101, AHORNWEG_VALUES);
+const TIEFGARAGE = community(102, TIEFGARAGE_VALUES);
+
+type Memory = ReturnType<typeof memoryNoteStore>;
+
+/** The notes each scenario starts with, as Sync or a person put them into the vault. */
+const seedFor = (scenario: Scenario, notes: Memory) => {
+  const seed = (name: string, frontmatter: Parameters<Memory["seed"]>[1]) =>
+    notes.seed(`${HARNESS_FOLDER}/${name}.md`, frontmatter);
   switch (scenario) {
     case "empty":
-      return Effect.succeed(0);
-    case "error":
-      return Effect.fail(new VaultReadError({ cause: new Error("harness: vault unavailable") }));
-    case "slow":
-      return Effect.as(Effect.sleep(SLOW_MS), HARNESS_FILE_COUNT);
+      return;
+    case "invalid":
+      seed("Ahornweg 12", AHORNWEG);
+      seed(
+        "Birkenallee",
+        community(103, {
+          ...AHORNWEG_VALUES,
+          name: "Birkenallee",
+          short_code: "BA",
+          color: "amber",
+        }),
+      );
+      seed("Doppelt", community(104, { ...TIEFGARAGE_VALUES, name: "Doppelt", short_code: "AW" }));
+      seed("Kaputt", "broken");
+      notes.seed("Notizen/Fremd.md", { schema: "weg-manager.punkt" });
+      return;
+    case "readonly":
+      seed("Ahornweg 12", AHORNWEG);
+      seed("Aus der Zukunft", { ...TIEFGARAGE, schema: "weg-manager.community/v2" });
+      return;
     default:
-      return Effect.succeed(HARNESS_FILE_COUNT);
+      seed("Ahornweg 12", AHORNWEG);
+      seed("Tiefgarage Ahornweg", TIEFGARAGE);
   }
 };
 
-/** Settings kept in memory; `readonly` starts from a file written by a newer plugin version. */
-const storeFor = (scenario: Scenario) => {
-  let data: unknown = scenario === "readonly" ? { schemaVersion: 99 } : undefined;
+/** In `failure`, the store's first `list` fails, so the index's first build fails until a retry. */
+const failingOnce = (scenario: Scenario) =>
+  Layer.effect(
+    NoteStore,
+    NoteStore.useSync((store) => {
+      let failures = scenario === "failure" ? 1 : 0;
+      return NoteStore.of({
+        ...store,
+        list: Effect.suspend(() => {
+          if (failures === 0) return store.list;
+          failures -= 1;
+          return Effect.fail(
+            new VaultReadError({ cause: new Error("harness: vault unavailable") }),
+          );
+        }),
+      });
+    }),
+  );
+
+/** Settings kept in memory, starting from the defaults. */
+const settingsStore = () => {
+  let data: unknown;
   return Layer.succeed(SettingsStore)({
     load: Effect.sync(() => data),
     save: (next: unknown) =>
-      scenario === "readonly"
-        ? Effect.fail(new StorageError({ cause: new Error("harness: read-only") }))
-        : Effect.sync(() => {
-            data = next;
-          }),
+      Effect.sync(() => {
+        data = next;
+      }),
   });
 };
 
@@ -86,9 +149,8 @@ export const harnessLayer = (
   const write =
     options.writeClipboard ?? (() => Promise.reject(new Error("harness: no clipboard")));
   const adapters = Layer.mergeAll(
-    storeFor(scenario),
+    settingsStore(),
     notifier,
-    Layer.succeed(VaultReader)({ markdownFileCount: vaultFor(scenario) }),
     Layer.succeed(Clipboard)({
       write: (text: string) =>
         Effect.tryPromise({
@@ -107,16 +169,17 @@ export const harnessLayer = (
     incidentsLayer,
     EventBusLive,
   );
+  const memory = memoryNoteStore();
+  seedFor(scenario, memory);
+  const store = failingOnce(scenario).pipe(Layer.provideMerge(memory.layer));
   const notes = noteIndexLayer(appNoteTypes).pipe(
     Layer.provideMerge(
-      Layer.merge(memoryNoteStore().layer, sequentialIdGenerator().layer).pipe(
-        Layer.provideMerge(shell),
-      ),
+      Layer.merge(store, sequentialIdGenerator().layer).pipe(Layer.provideMerge(shell)),
     ),
   );
+  const communities = communitySelectionLayer.pipe(Layer.provideMerge(notes));
   // Built last, as the host event adapter is in the plugin: the browser has no metadata cache to
   // wait for, so the vault is ready at once and the index builds from the in-memory notes.
-  const communities = communitySelectionLayer.pipe(Layer.provideMerge(notes));
   return vaultReadyAtOnce.pipe(Layer.provideMerge(communities));
 };
 

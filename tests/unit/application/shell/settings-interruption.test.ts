@@ -39,7 +39,7 @@ describe("SettingsService under interruption", () => {
       store.holdSaves();
       const controller = new AbortController();
       const running = runtime.runPromiseExit(
-        SettingsService.use((service) => service.update({ greeting: "Moin" })),
+        SettingsService.use((service) => service.update({ rootFolder: "Moin" })),
         { signal: controller.signal },
       );
       await until(() => store.heldSaves() === 1);
@@ -51,12 +51,12 @@ describe("SettingsService under interruption", () => {
       assert.isTrue(Exit.isFailure(exit));
       assert.deepStrictEqual(store.stored(), {
         schemaVersion: 1,
-        greeting: "Moin",
+        rootFolder: "Moin",
         logLevel: "warn",
       });
       assert.deepStrictEqual(
         await runtime.runPromise(SettingsService.use((service) => service.current)),
-        { ...DEFAULT_SETTINGS, greeting: "Moin" },
+        { ...DEFAULT_SETTINGS, rootFolder: "Moin" },
       );
     } finally {
       await runtime.dispose();
@@ -68,8 +68,8 @@ describe("SettingsService under interruption", () => {
     return Effect.gen(function* () {
       const service = yield* SettingsService;
       store.holdSaves();
-      const first = yield* Effect.forkChild(service.update({ greeting: "Erste" }));
-      const second = yield* Effect.forkChild(service.update({ greeting: "Zweite" }));
+      const first = yield* Effect.forkChild(service.update({ rootFolder: "Erste" }));
+      const second = yield* Effect.forkChild(service.update({ rootFolder: "Zweite" }));
       yield* Effect.promise(() => until(() => store.heldSaves() === 1));
       const interrupting = yield* Effect.forkChild(Fiber.interrupt(second));
       yield* Effect.promise(settle);
@@ -78,9 +78,9 @@ describe("SettingsService under interruption", () => {
       yield* Effect.promise(settle);
       yield* Fiber.join(interrupting);
       assert.deepStrictEqual(store.saved(), [
-        { schemaVersion: 1, greeting: "Erste", logLevel: "warn" },
+        { schemaVersion: 1, rootFolder: "Erste", logLevel: "warn" },
       ]);
-      assert.strictEqual((yield* service.current).greeting, "Erste");
+      assert.strictEqual((yield* service.current).rootFolder, "Erste");
     }).pipe(Effect.provide(layer));
   });
 
@@ -88,7 +88,7 @@ describe("SettingsService under interruption", () => {
     const { store, notifier, layer } = setup();
     return Effect.gen(function* () {
       const service = yield* SettingsService;
-      store.writeExternally({ greeting: "", logLevel: "debug" });
+      store.writeExternally({ rootFolder: "", logLevel: "debug" });
       notifier.hold();
       const reloading = yield* Effect.forkChild(service.reload);
       yield* Effect.promise(() => until(() => notifier.held() === 1));

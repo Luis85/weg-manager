@@ -4,14 +4,12 @@ import { messagesLayer } from "../../../application/messages";
 import {
   ClipboardError,
   StorageError,
-  VaultReadError,
   type Language,
   type UserMessage,
   Clipboard,
   HostInfo,
   Notifier,
   SettingsStore,
-  VaultReader,
 } from "../../../application/shell";
 import { deviceStoreLayer } from "./device-store";
 import { showMessage } from "./notices";
@@ -44,14 +42,6 @@ const notifierLayer = Layer.succeed(Notifier)({
   notify: (message: UserMessage) => Effect.asVoid(Effect.sync(() => showMessage(message))),
 });
 
-const vaultLayer = (plugin: Plugin) =>
-  Layer.succeed(VaultReader)({
-    markdownFileCount: Effect.try({
-      try: () => plugin.app.vault.getMarkdownFiles().length,
-      catch: (cause) => new VaultReadError({ cause }),
-    }),
-  });
-
 const clipboardLayer = Layer.succeed(Clipboard)({
   write: (text: string) =>
     Effect.tryPromise({
@@ -75,7 +65,6 @@ export const obsidianLayer = (plugin: Plugin, language: Language) =>
   Layer.mergeAll(
     storeLayer(plugin),
     notifierLayer,
-    vaultLayer(plugin),
     clipboardLayer,
     hostLayer(plugin),
     messagesLayer(language),

@@ -2,7 +2,7 @@ import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { defineComponent, h, onMounted, ref } from "vue";
 import { SCOPE_CLASS as SCRIPT_SCOPE_CLASS } from "../../../../scripts/scope-css.mjs";
-import { updateGreeting } from "../../../../src/application/shell/use-cases";
+import { SettingsService } from "../../../../src/application/shell";
 import { mountApp } from "../../../support/surface";
 import { PORTAL_CLASS, SCOPE_CLASS } from "../../../../src/presentation/shell/scope";
 import { testRuntime } from "../../../support/runtime";
@@ -21,6 +21,12 @@ const settle = async () => {
   await flushPromises();
 };
 
+/** Waits until the start route's screen, a lazily loaded component, shows `text`. */
+const showing = (root: ParentNode, text: string) =>
+  vi.waitFor(() => {
+    expect(root.querySelector("[data-testid=communities-screen]")?.textContent).toContain(text);
+  });
+
 const buttonNamed = (root: ParentNode, label: string): HTMLButtonElement => {
   const button = [...root.querySelectorAll("button")].find((el) => el.textContent.includes(label));
   if (button === undefined) throw new Error(`no button "${label}"`);
@@ -38,14 +44,14 @@ describe("mountSurface", () => {
     expect(SCOPE_CLASS).toBe(SCRIPT_SCOPE_CLASS);
   });
 
-  it("renders the panel inside a scoped root", async () => {
-    const { runtime } = testRuntime({ store: { initial: { greeting: "Moin" } } });
+  it("renders the start screen inside a scoped root", async () => {
+    const { runtime } = testRuntime({ store: { initial: { rootFolder: "Beirat" } } });
     const root = newRoot();
     const close = mountApp(root, runtime);
     await settle();
     expect(root.classList.contains(SCOPE_CLASS)).toBe(true);
     expect(root.querySelector(`:scope > .${PORTAL_CLASS}`)).not.toBeNull();
-    expect(root.querySelector("[data-testid=greeting]")?.textContent).toContain("Moin");
+    await showing(root, "„Beirat/Gemeinschaften“");
     close();
     await runtime.dispose();
   });
@@ -109,17 +115,19 @@ describe("mountSurface", () => {
     await runtime.dispose();
   });
 
-  it("adds nothing to document.head, also when the modal opens", async () => {
-    const { runtime } = testRuntime();
+  it("adds nothing to document.head, also when a sheet opens", async () => {
+    const { runtime, vaultReady } = testRuntime();
     document.head.replaceChildren();
     const before = document.head.childElementCount;
     const root = newRoot();
     const close = mountApp(root, runtime);
+    await vaultReady();
+    await showing(root, "Gemeinschaft anlegen");
     await settle();
     expect(document.head.childElementCount).toBe(before);
-    buttonNamed(root, "Über").click();
+    buttonNamed(root, "Gemeinschaft anlegen").click();
     await settle();
-    expect(root.querySelector("[data-testid=about-body]")).not.toBeNull();
+    expect(root.querySelector("[data-testid=community-form]")).not.toBeNull();
     expect(document.head.childElementCount).toBe(before);
     close();
     await runtime.dispose();
@@ -132,25 +140,30 @@ describe("mountSurface", () => {
     const closeFirst = mountApp(first, runtime);
     const closeSecond = mountApp(second, runtime);
     await settle();
+    await showing(second, "„WEG Manager/Gemeinschaften“");
     closeFirst();
-    await runtime.runPromise(updateGreeting("Neu"));
+    await runtime.runPromise(
+      SettingsService.use((service) => service.update({ rootFolder: "Neu" })),
+    );
     await settle();
     expect(first.children).toHaveLength(0);
-    expect(second.querySelector("[data-testid=greeting]")?.textContent).toContain("Neu");
+    await showing(second, "„Neu/Gemeinschaften“");
     closeSecond();
     await runtime.dispose();
   });
 
   it("keeps modal content inside a root in another document (Review Focus 4)", async () => {
-    const { runtime } = testRuntime();
+    const { runtime, vaultReady } = testRuntime();
     const popout = document.implementation.createHTMLDocument("pop-out");
     const root = newRoot(popout);
     const mainChildren = document.body.childElementCount;
     const close = mountApp(root, runtime);
+    await vaultReady();
+    await showing(root, "Gemeinschaft anlegen");
     await settle();
-    buttonNamed(root, "Über").click();
+    buttonNamed(root, "Gemeinschaft anlegen").click();
     await settle();
-    const body = popout.querySelector("[data-testid=about-body]");
+    const body = popout.querySelector("[data-testid=community-form]");
     expect(body).not.toBeNull();
     expect(root.contains(body)).toBe(true);
     expect(document.body.childElementCount).toBe(mainChildren);

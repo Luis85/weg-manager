@@ -18,7 +18,7 @@ const settle = async () => {
 };
 
 const loaded = async () => {
-  const created = createTestPlugin(WegManagerPlugin, { data: { greeting: "Moin" } });
+  const created = createTestPlugin(WegManagerPlugin, { data: { rootFolder: "Beirat" } });
   await created.registry.load();
   return created;
 };
@@ -75,7 +75,7 @@ describe("ShellView", () => {
     const leaf = app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)[0];
     const view = leaf?.view as InstanceType<typeof ShellView> | undefined;
     expect(view?.contentEl.classList.contains(SCOPE_CLASS)).toBe(true);
-    await vi.waitFor(() => expect(view?.contentEl.textContent).toContain("Moin"));
+    await vi.waitFor(() => expect(view?.contentEl.textContent).toContain("Beirat/Gemeinschaften"));
     const children = view?.contentEl.children.length;
     await view?.onOpen();
     expect(view?.contentEl.children.length).toBe(children);
@@ -129,12 +129,12 @@ describe("ShellView", () => {
   });
 
   it("empties the content element before it mounts", async () => {
-    const { runtime } = testRuntime({ store: { initial: { greeting: "Moin" } } });
+    const { runtime } = testRuntime({ store: { initial: { rootFolder: "Beirat" } } });
     const view = new ShellView(newLeaf(), runtime, new Set(), appSurface);
     view.contentEl.append(document.createElement("p"));
     await view.onOpen();
     expect(view.contentEl.querySelector("p")).toBeNull();
-    await vi.waitFor(() => expect(view.contentEl.textContent).toContain("Moin"));
+    await vi.waitFor(() => expect(view.contentEl.textContent).toContain("Beirat/Gemeinschaften"));
     await view.onClose();
     await runtime.dispose();
   });

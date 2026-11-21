@@ -6,12 +6,6 @@ import { Option, Schema } from "effect";
  */
 export type RouteLike = { readonly name: string };
 
-/**
- * The shell's routes. The demo panel (greeting and file count) is the only screen and the start
- * route until the first feature slice adds its own.
- */
-export const ShellRoute = Schema.Struct({ name: Schema.Literal("welcome") });
-
 /** What a view needs to keep a route: the start route, a decoder that never fails, equality. */
 export type Routes<R extends RouteLike> = {
   readonly start: R;

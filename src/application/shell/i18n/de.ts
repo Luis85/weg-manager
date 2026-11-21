@@ -3,7 +3,6 @@ import { PRODUCT_NAME, type ShellCatalog } from "./catalog";
 /** German, du-form: first the cause, then the action (handoff HO-06). */
 export const shellDe: ShellCatalog = {
   language: "de",
-  defaultGreeting: `Hallo von ${PRODUCT_NAME}`,
   issues: {
     "file.invalid": () => "Die Einstellungsdatei enthält keine gültigen Einstellungen.",
     "schema.newer": ({ version }) =>
@@ -11,7 +10,6 @@ export const shellDe: ShellCatalog = {
     "schema.invalid": () => "Die Schemaversion muss eine positive ganze Zahl sein.",
     "migration.failed": ({ from }) =>
       `Die Einstellungen aus Schemaversion ${from} ließen sich nicht auf die aktuelle Version umstellen.`,
-    "greeting.length": ({ max }) => `Die Begrüßung muss 1 bis ${max} Zeichen lang sein.`,
     "logLevel.unknown": ({ allowed }) =>
       `Die Protokollstufe muss eine von ${allowed.join(", ")} sein.`,
     "rootFolder.invalid": ({ max }) =>
@@ -61,7 +59,6 @@ export const shellDe: ShellCatalog = {
   },
   commands: {
     openView: "Ansicht öffnen",
-    showGreeting: "Begrüßung anzeigen",
     copyDiagnostics: "Diagnose kopieren",
   },
   settingsTab: {
@@ -71,24 +68,11 @@ export const shellDe: ShellCatalog = {
       labels: { error: "Fehler", warn: "Warnungen", info: "Informationen", debug: "Details" },
     },
   },
-  panel: {
-    markdownFiles: (count) =>
-      count === 1 ? "1 Markdown-Datei im Vault" : `${count} Markdown-Dateien im Vault`,
-    counting: "Zähle Notizen …",
-  },
-  greetingForm: { label: "Begrüßung", save: "Speichern" },
   frame: { navigation: "Ansichten", content: "Inhalt", back: "Zurück", forward: "Vorwärts" },
-  routes: { welcome: "Start" },
   notFound: {
     title: "Nicht gefunden",
     detail:
       "Was du öffnen wolltest, gibt es nicht mehr. Vielleicht wurde es gelöscht oder umbenannt.",
     back: "Zur Startseite",
-  },
-  about: {
-    title: `Über ${PRODUCT_NAME}`,
-    description: "Werkzeuge für Verwaltungsbeiräte von Wohnungseigentümergemeinschaften.",
-    button: "Über",
-    body: "Version, Plattform und Protokoll kopierst du mit dem Befehl „Diagnose kopieren“.",
   },
 };

@@ -65,7 +65,9 @@ const none = computed(() => selection.value.ready && options.value.length === 0)
           @click="select.run(option.id)"
         >
           <CommunityBadge :short-code="option.values.short_code" :color="option.values.color" />
-          <span class="wm:truncate">{{ shownName(option) }}</span>
+          <span class="wm:truncate" data-testid="community-option-name">{{
+            shownName(option)
+          }}</span>
         </UButton>
       </li>
     </ul>

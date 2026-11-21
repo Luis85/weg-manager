@@ -13,8 +13,6 @@ import {
 } from "fast-check";
 import { describe, expect, it } from "vitest";
 import {
-  GREETING_MAX_LENGTH,
-  LEGACY_DEFAULT_GREETING,
   LOG_LEVELS,
   ROOT_FOLDER_MAX_LENGTH,
   decodeSettings,
@@ -44,11 +42,6 @@ const isNormalisedFolder = (value: string): boolean =>
 
 const isValid = (settings: Settings): boolean =>
   settings.schemaVersion === 1 &&
-  (settings.greeting === null ||
-    (settings.greeting.length >= 1 &&
-      settings.greeting.length <= GREETING_MAX_LENGTH &&
-      settings.greeting === settings.greeting.trim() &&
-      settings.greeting !== LEGACY_DEFAULT_GREETING)) &&
   LOG_LEVELS.includes(settings.logLevel) &&
   isNormalisedFolder(settings.rootFolder);
 
@@ -56,12 +49,6 @@ const segment = stringMatching(/^[A-Za-z0-9ÄÖÜäöüß_-][A-Za-z0-9ÄÖÜäö
 
 const validSettings: Arbitrary<Settings> = record({
   schemaVersion: constantFrom(1 as const),
-  greeting: oneof(
-    constantFrom(null),
-    stringMatching(/^[A-Za-zÄÖÜäöüß!?,.][A-Za-zÄÖÜäöüß !?,.]{0,60}[A-Za-zÄÖÜäöüß!?,.]$/).filter(
-      (text) => text !== LEGACY_DEFAULT_GREETING,
-    ),
-  ),
   logLevel: constantFrom(...LOG_LEVELS),
   rootFolder: array(segment, { minLength: 1, maxLength: 4 })
     .map((parts) => parts.join("/"))
@@ -73,6 +60,7 @@ const settingsLikeFile = record(
   {
     schemaVersion: oneof(constantFrom(1, 0, 2, -1, 1.5), anything()),
     greeting: oneof(string({ maxLength: 260 }), anything()),
+    extra: anything(),
     logLevel: oneof(constantFrom(...LOG_LEVELS), anything()),
     rootFolder: oneof(string({ maxLength: 130 }), anything()),
   },
@@ -117,7 +105,7 @@ describe("settings properties", () => {
         const keys = Object.keys(encodeSettings(settings));
         expect(keys).toContain("schemaVersion");
         expect(keys).toContain("logLevel");
-        expect(keys.includes("greeting")).toBe(settings.greeting !== null);
+        expect(keys).not.toContain("greeting");
         expect(keys.includes("rootFolder")).toBe(settings.rootFolder !== "WEG Manager");
       }),
     );

@@ -110,7 +110,7 @@ describe("referenceVault", () => {
           "id: community-f9ed0256-01c5-47fb-b552-2e53a50ae8da",
           "name: Birkenallee 3",
           "short_code: BA",
-          "color: amber",
+          "color: violet",
           "kind: WEG",
           "unit_label: Einheiten",
           "---",

@@ -40,19 +40,3 @@ export type ShellEvents = {
 /** True for an event about a Markdown file, with Obsidian's own test (`extension === "md"`). */
 export const isMarkdown = (event: AppEvent): boolean =>
   "extension" in event && event.extension === "md";
-
-/**
- * True when the set of Markdown files changed: one was created or deleted, or a rename moved a
- * file into or out of Markdown. Edits and metadata changes keep the set as it is.
- */
-export const changesMarkdownFiles = (event: AppEvent): boolean => {
-  switch (event._tag) {
-    case "FileCreated":
-    case "FileDeleted":
-      return event.extension === "md";
-    case "FileRenamed":
-      return (event.extension === "md") !== event.oldPath.endsWith(".md");
-    default:
-      return false;
-  }
-};

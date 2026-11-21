@@ -30,6 +30,7 @@ export {
 export { ItemView, View, WorkspaceLeaf, type ViewCreator } from "./views";
 export { Vault, type TFile } from "./vault";
 export { Workspace } from "./workspace";
+export { WorkspaceRibbon, type RibbonItem } from "./ribbon";
 export { installDomExtensions } from "./dom";
 
 export const apiVersion = "1.15.1";

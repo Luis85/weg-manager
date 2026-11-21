@@ -65,10 +65,10 @@ describe("buildDiagnostics", () => {
 
   it.effect("joins settings issues with spaces", () =>
     Effect.gen(function* () {
-      const text = yield* report({ initial: { showRibbonIcon: "ja", logLevel: "laut" } }, []);
+      const text = yield* report({ initial: { greeting: 7, logLevel: "laut" } }, []);
       assert.include(
         text,
-        "Hinweise zu Einstellungen: Das Menüband-Symbol muss ein- oder ausgeschaltet sein. Die Protokollstufe muss eine von error, warn, info, debug sein.",
+        "Hinweise zu Einstellungen: Die Begrüßung muss 1 bis 200 Zeichen lang sein. Die Protokollstufe muss eine von error, warn, info, debug sein.",
       );
     }),
   );

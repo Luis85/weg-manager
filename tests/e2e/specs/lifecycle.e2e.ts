@@ -13,10 +13,26 @@ import {
 
 const RIBBON = '.side-dock-ribbon-action[aria-label="WEG Manager öffnen"]';
 
+/**
+ * The plugin's live entries in Obsidian's ribbon list, which also feeds the ribbon's context menu.
+ * Obsidian keeps a released entry (for order and hidden state) but drops its button and callback.
+ */
+const ribbonEntries = () =>
+  browser.executeObsidian(({ app }, id) => {
+    type Item = { id: string; buttonEl?: HTMLElement; callback?: unknown };
+    const { items } = app.workspace.leftRibbon as unknown as { items: Item[] };
+    return items.filter(
+      (item) =>
+        item.id === `${id}:WEG Manager öffnen` &&
+        (item.buttonEl !== undefined || item.callback !== undefined),
+    ).length;
+  }, PLUGIN_ID);
+
 /** Gaps G1 and G6: real load/unload cycles and a clean console. */
 describe("plugin lifecycle in Obsidian", function () {
   it("opens the view with the greeting and the vault's file count", async function () {
     await installConsoleSpy();
+    expect(await ribbonEntries()).toBe(1);
     await openView();
     const root = browser.$(ROOT);
     await expect(root).toBeDisplayed();
@@ -46,6 +62,7 @@ describe("plugin lifecycle in Obsidian", function () {
       await obsidianPage.disablePlugin(PLUGIN_ID);
       await expect(browser.$$(ROOT)).toBeElementsArrayOfSize(0);
       await expect(browser.$$(RIBBON)).toBeElementsArrayOfSize(0);
+      expect(await ribbonEntries()).toBe(0);
       const commands = await browser.executeObsidian(
         ({ app }, id) =>
           Object.keys(
@@ -57,6 +74,12 @@ describe("plugin lifecycle in Obsidian", function () {
       expect(commands).toEqual([]);
 
       await obsidianPage.enablePlugin(PLUGIN_ID);
+      await expect(browser.$$(RIBBON)).toBeElementsArrayOfSize(1);
+      expect(await ribbonEntries()).toBe(1);
+      // A re-render of the ribbon keeps exactly one icon.
+      await browser.executeObsidian(({ app }) => {
+        (app.workspace.leftRibbon as unknown as { onChange(save: boolean): void }).onChange(false);
+      });
       await expect(browser.$$(RIBBON)).toBeElementsArrayOfSize(1);
       await openView();
       await expect(browser.$$(ROOT)).toBeElementsArrayOfSize(1);

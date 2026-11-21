@@ -7,7 +7,6 @@ import {
   copyDiagnostics,
   countMarkdownFiles,
   setLogLevel,
-  setRibbonIconVisible,
   showGreeting,
   updateGreeting,
 } from "../../../src/application/use-cases";
@@ -30,10 +29,9 @@ const settingsWith = (options: StoreOptions = {}) => {
 };
 
 describe("settings use cases", () => {
-  it.effect("updates the greeting, the ribbon flag and the log level", () =>
+  it.effect("updates the greeting and the log level", () =>
     Effect.gen(function* () {
       assert.strictEqual((yield* updateGreeting("Servus")).greeting, "Servus");
-      assert.strictEqual((yield* setRibbonIconVisible(false)).showRibbonIcon, false);
       assert.strictEqual((yield* setLogLevel("debug")).logLevel, "debug");
     }).pipe(Effect.provide(settingsWith().layer)),
   );

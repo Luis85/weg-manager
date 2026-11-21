@@ -59,12 +59,12 @@ sequenceDiagram
   O->>M: onunload
   M->>B: abort, then dispose()
   B->>V: close every open surface
-  B->>O: undo commands, ribbon, mirror
+  B->>O: stop mirror (Obsidian removes ribbon icon and commands)
   B->>R: runtime.dispose()
 ```
 
 - `dispose` undoes in reverse order. Closing every surface runs first, so no Vue app outlives the runtime.
-- If a registration throws, bootstrap undoes what it created, reports the defect and rethrows.
+- If a registration throws, bootstrap undoes what it created, reports the defect and rethrows. Only then does it remove its ribbon icon (through `leftRibbon.removeRibbonAction`, as Obsidian does on unload) and its commands; on a normal unload Obsidian removes them, and removing by id could hit those of a quick re-enable.
 - `registerView` and `addSettingTab` run last, because Obsidian cannot unregister them one by one.
 
 ## A surface

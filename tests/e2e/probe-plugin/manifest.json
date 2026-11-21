@@ -3,7 +3,7 @@
   "name": "Note store probe",
   "version": "0.0.0",
   "minAppVersion": "1.15.1",
-  "description": "Test-only: exposes the NoteStore adapter to the e2e suite.",
+  "description": "Test-only: exposes the NoteStore adapter and a startup recorder to the e2e suite.",
   "author": "WEG Manager tests",
   "isDesktopOnly": true
 }

@@ -42,15 +42,17 @@ const started = async (options: { readonly layoutReady?: boolean } = {}) => {
 };
 
 const ready = AppEvent.LayoutReady();
+/** What a runtime publishes first when the layout is ready and the (empty) vault is indexed. */
+const startup = [ready, AppEvent.VaultReady()];
 
 afterEach(() => {
   document.body.className = "";
 });
 
 describe("hostEventsLayer", () => {
-  it("publishes LayoutReady at once when the layout is already ready", async () => {
+  it("publishes LayoutReady at once when the layout is already ready, then VaultReady", async () => {
     const { bus, runtime } = await started();
-    expect(bus.published()).toEqual([ready]);
+    expect(bus.published()).toEqual(startup);
     await runtime.dispose();
   });
 
@@ -66,7 +68,7 @@ describe("hostEventsLayer", () => {
     }
     app.vault.trigger("rename", new TFolder("Birkenweg"), "Ahornweg");
     expect(bus.published()).toEqual([
-      ready,
+      ...startup,
       AppEvent.FileCreated({ path: "Ahornweg/Punkt.md", extension: "md" }),
       AppEvent.FileModified({ path: "Ahornweg/Punkt.md", extension: "md" }),
       AppEvent.FileRenamed({
@@ -86,7 +88,7 @@ describe("hostEventsLayer", () => {
     app.workspace.trigger("file-open", note);
     app.workspace.trigger("file-open", null);
     expect(bus.published()).toEqual([
-      ready,
+      ...startup,
       AppEvent.MetadataChanged({ path: "a.md", extension: "md" }),
       AppEvent.ActiveFileChanged({ path: "a.md" }),
       AppEvent.ActiveFileChanged({ path: null }),
@@ -104,7 +106,7 @@ describe("hostEventsLayer", () => {
     document.body.className = "theme-light";
     app.workspace.trigger("css-change");
     expect(bus.published()).toEqual([
-      ready,
+      ...startup,
       AppEvent.ColorSchemeChanged({ scheme: "dark" }),
       AppEvent.ColorSchemeChanged({ scheme: "light" }),
     ]);
@@ -123,7 +125,7 @@ describe("hostEventsLayer", () => {
     app.workspace.markLayoutReady();
     app.vault.trigger("create", new TFile("new.md"));
     expect(bus.published()).toEqual([
-      ready,
+      ...startup,
       AppEvent.FileCreated({ path: "new.md", extension: "md" }),
     ]);
     await runtime.dispose();
@@ -132,7 +134,9 @@ describe("hostEventsLayer", () => {
   it("removes every listener on dispose, even before the layout was ready", async () => {
     const { app, bus, runtime, listeners } = await started({ layoutReady: false });
     expect(app.vault.listenerCount()).toBe(4);
-    expect(app.metadataCache.listenerCount()).toBe(1);
+    expect(app.metadataCache.listenerCount("changed")).toBe(1);
+    expect(app.metadataCache.listenerCount("resolved")).toBe(1);
+    expect(app.metadataCache.listenerCount()).toBe(2);
     expect(app.workspace.listenerCount()).toBe(2);
     await runtime.dispose();
     expect(listeners()).toBe(0);

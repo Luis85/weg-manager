@@ -9,7 +9,7 @@ date: 2026-11-15
 # WEG-Abläufe und rechtliche Rahmenbedingungen
 
 > [!note] Geltung
-> Die Abschnitte zu Ablauf, Angeboten, Rechnung und Zahlung (§ 1, § 4, § 5) sind Grundlage für den Ausbau [[F-16 - Operative Handwerkersteuerung]] und [[F-17 - Rechnungen und Zahlungen führen]]. Die Rolle des Beirats und die Rechtsgrundlagen seiner Jobs stehen aktueller und ausführlicher in [[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]], Abschnitt 2.
+> Die Abschnitte zu Ablauf, Angeboten, Rechnung und Zahlung (Abschnitte 1, 4 und 5) sind Grundlage für den Ausbau [[F-16 - Operative Handwerkersteuerung]] und [[F-17 - Rechnungen und Zahlungen führen]]. Die Rolle des Beirats und die Rechtsgrundlagen seiner Jobs stehen aktueller und ausführlicher in [[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]], Abschnitt 2.
 
 **Recherche- und Quellenstand: 15. November 2026.** Dieses Dokument übersetzt fachliche Quellen in Produktentscheidungen für den MVP. Rechtliche Aussagen und daraus abgeleitete Gestaltungsvorschläge sind zu unterscheiden. Es ersetzt keine individuelle Rechtsberatung und begründet keine pauschale Zusicherung von Rechtskonformität.
 

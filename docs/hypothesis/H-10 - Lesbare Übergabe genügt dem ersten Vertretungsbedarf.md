@@ -37,11 +37,9 @@ Eigenen Umfang für aktive Übernahme klären; lesbare Ausgabe nicht mit vollst�
 
 ## Bezüge
 
-[[K-08 - Vertretung zunächst durch lesbare Übergabe unterstützen]], [[F-11 - Vertraulichkeit und gezielte Übergabe]].
+[[K-08 - Vertretung zunächst durch lesbare Übergabe unterstützen]], [[F-11 - Vertraulichkeit und gezielte Übergabe]], [[JTBD - Verwaltungsbeirat]] (Job J-H1 „Übergabefähig bleiben“ als Prüfmaßstab aus Nutzersicht).
 
 [Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`).
-
-**Bezug zum Jobkatalog:** Prüfmaßstab aus Nutzersicht ist der Job J-H1 „Übergabefähig bleiben“ in [[JTBD - Verwaltungsbeirat]].
 
 ## Prüfergebnis
 

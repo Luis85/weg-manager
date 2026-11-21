@@ -10,8 +10,8 @@ Die Produktkonzeption wird in Obsidian als verknüpfte Markdown-Notes bearbeitet
 | `docs/_intake/`         | Temporärer Eingang für Informationen und erste Auswertungen. Git-ignoriert und regelmäßig geleert; kein dauerhaftes Linkziel für Konzeptnotes.                                  |
 | `docs/requirements/`    | Epics, Features und User Stories als PBIs. Hierarchie durch `parent`, nicht durch Unterordner. Querschnittliche Fähigkeiten und nichtfunktionale Anforderungen gehören zu E-07. |
 | `docs/jobs-to-be-done/` | Jobkataloge je Nutzerrolle als lösungsneutrale Grundlage für User Research und späteres Design, derzeit für den Verwaltungsbeirat. `type: JobsToBeDone`; Job-Sätze nach „Als <Rolle> muss ich …, um …“ mit Kennung `J-…`, Ergebnis, Verbindlichkeit und Status; keine Produktvorgaben. |
-| `docs/research/` | Recherche, Quellen, Konzepte und Interviewleitfäden zur fachlichen und technischen Einordnung als Grundlage für späteres Design. Ergebnisse sind nicht automatisch Produktvorgaben. Notes aus einem früheren Zuschnitt tragen `status: historisch` und einen Geltungshinweis. |
-| `docs/design/`          | Fachliche Modellierung und vorbereitende Untersuchung; noch kein technisches Implementierungsschema.                                                                            |
+| `docs/research/` | Recherche, Quellen, Konzepte und Interviewleitfäden zur fachlichen und technischen Einordnung als Grundlage für späteres Design. Ergebnisse sind nicht automatisch Produktvorgaben. Notes aus einem früheren Zuschnitt tragen am Anfang einen Geltungshinweis; vollständig überholte zusätzlich `status: historisch`. |
+| `docs/design/`          | Fachliche Modellierung, Ansichten, Abläufe und Umsetzungspaket; noch kein technisches Implementierungsschema.                                                                            |
 | `docs/design/actors/`   | Beteiligte menschliche Rollen und externe Systeme. `type: Actor`, Unterscheidung über `kind: Human` oder `kind: System`.                                                        |
 | `docs/design/entities/` | Fachliche Informationsobjekte mit Angaben, Beziehungen und Regeln. `type: Entity`; `scope` unterscheidet MVP und späteren Ausbau.                                               |
 | `docs/design/sitemap/` | Benötigte MVP-Ansichten als `type: Page`, mit Navigation, Zuständen, NuxtUI-Zuordnung, vollständigen fachlichen Verweisen und eingebetteten Desktop-/Mobile-Mockups. |
@@ -67,7 +67,7 @@ Der `_intake`-Ordner ist eine vorübergehende Ablage und wird regelmäßig gelee
 
 Epic → Feature → PBI ist der Arbeitsschnitt. Ein fachliches Epic bündelt ein größeres Nutzerziel, ein Feature eine zusammenhängende Fähigkeit, ein PBI ein prüfbares Nutzerergebnis als User Story. E-07 „Cross Cutting Concerns“ ist die gewünschte Ausnahme für gemeinsame technische Fähigkeiten und nichtfunktionale Anforderungen. Es entsteht kein zusätzliches Unterfeature-Level.
 
-E-01 bis E-05, F-01 bis F-13 und PBI-01 bis PBI-33 bilden den ursprünglichen funktionalen Beiratskern. F-22 mit PBI-41/42 ergänzt die offene Dateigrundlage; PBI-47 ergänzt den nativen AI-Chat; der geplante funktionale MVP umfasst damit 36 User Stories. F-21 führt die bestehenden B-NFR-01 bis B-NFR-14 mit MVP-Geltung. Spätere Funktionen behalten ihre Ausbaukennzeichnung und erhalten nicht allein durch die Dokumentation eine Releasezusage. ENT-01 bis ENT-16 beschreiben MVP-Entitäten; ENT-17 bis ENT-20 gehören zum späteren Ausbau. Fachregeln gelten entsprechend ihrem `scope`, nicht aufgrund ihres Ordners.
+E-01 bis E-05, F-01 bis F-13 und PBI-01 bis PBI-33 bilden den ursprünglichen funktionalen Beiratskern. F-22 mit PBI-41/42 ergänzt die offene Dateigrundlage; PBI-47 ergänzt den nativen AI-Chat; der geplante funktionale MVP umfasst damit 36 User Stories. F-21 führt die bestehenden B-NFR-01 bis B-NFR-14 mit MVP-Geltung. Spätere Funktionen behalten ihre Ausbaukennzeichnung und erhalten nicht allein durch die Dokumentation eine Releasezusage. ENT-01 bis ENT-16 und ENT-22 beschreiben MVP-Entitäten; ENT-17 bis ENT-20 gehören zum späteren Ausbau. Fachregeln gelten entsprechend ihrem `scope`, nicht aufgrund ihres Ordners.
 
 Technische Lösung und Aufwand bleiben in dieser Konzeptphase offen. Fachliche Regeln und NFR gelten für alle betroffenen Stories, ohne dieselbe Story unter mehreren Eltern zu duplizieren. Neue Integrations- oder Ausbau-Stories werden erst mit konkretem Nutzerergebnis und prüfbaren Akzeptanzhinweisen geschnitten.
 
@@ -142,7 +142,7 @@ Aktuell ist Designstand v2: vier Navigationsziele plus Kontakte und Einstellunge
 
 ## Projekt-Skills für die Arbeit am Repository
 
-`.claude/skills/` enthält die Skills, mit denen am Repository gearbeitet wird; Claude Code lädt sie nach dem Auschecken ohne weitere Installation. Dazu gehören die Engineering- und Productivity-Skills aus mattpocock/skills (MIT, Version und Lizenz in `.claude/skills/THIRD_PARTY.md`), konfiguriert über `docs/agents/`. Sie sind Arbeitswerkzeuge für Konzeption und Umsetzung, keine verteilbaren Produkt-Skills wie unter `skills/`.
+`.claude/skills/` enthält die Skills, mit denen am Repository gearbeitet wird; Claude Code lädt sie nach dem Auschecken ohne weitere Installation. Dazu gehören die Engineering- und Productivity-Skills aus mattpocock/skills (MIT, Version und Lizenz in `.claude/skills/THIRD_PARTY.md`), konfiguriert über `docs/agents/`. Sie sind Arbeitswerkzeuge für Konzeption und Umsetzung, keine Bestandteile des Produkts.
 
 ## Nativer AI-Chat als zusätzlicher MVP-Umfang
 

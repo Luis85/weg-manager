@@ -14,7 +14,7 @@ Vorschlag: Alle Notes, die nicht über das Product Backlog geführt werden, folg
 
 ## Geltung
 
-Betrifft rund 130 Notes in `docs/design/`, `docs/research/`, `docs/jobs-to-be-done/`, `docs/decisions/`, `docs/business-rules/`, `docs/hypothesis/`, `docs/plans/` sowie Produktvision und PRD. Epics, Features, PBIs und Releases bleiben unverändert, weil das Backlog-Plugin ihre Struktur vorgibt. Die Note ist ein Vorschlag und ändert noch keine Konvention in [[README_DOCS]].
+Betrifft rund 140 Notes in `docs/design/`, `docs/research/`, `docs/jobs-to-be-done/`, `docs/decisions/`, `docs/business-rules/`, `docs/hypothesis/` sowie Produktvision und PRD. Epics, Features, PBIs und Releases bleiben unverändert, weil das Backlog-Plugin ihre Struktur vorgibt. `docs/plans/`, `docs/engineering/` und `docs/adr/` sind Entwickler- und Agentendokumentation ohne Frontmatter-Schema und bleiben außen vor. Die Note ist ein Vorschlag und ändert noch keine Konvention in [[README_DOCS]].
 
 ## Kontext und Begründung
 
@@ -22,14 +22,14 @@ Die Prüfung am 21.11.2026 hat gezeigt, dass die Notes außerhalb des Backlogs o
 
 | Befund | Beispiel |
 | --- | --- |
-| Zehn verschiedene Statuswerte, teils mit gleicher Bedeutung | `entwurf` und `im-entwurf`; dazu `research`, `arbeitsstand`, `pilot`, `geprueft-mit-synthetischen-daten` |
+| Zehn verschiedene Statuswerte, teils mit gleicher Bedeutung; sieben Akteure ganz ohne Status | `entwurf` und `im-entwurf`; dazu `research`, `umgesetzt`, `pilot` |
 | Typen in gemischter Sprache und Schreibweise | `Productvision`, `ProductRequirementsDocument`, `ResearchSynthese`, `Quellenverzeichnis`, `Entscheidungsregister`, `Prototyp`, `DesignSpec` |
 | Fehlende Kennungen | 16 von 18 Research-Notes, ACT-01 bis ACT-07, Vision und PRD haben kein `id` |
 | Uneinheitliche Dateinamen | `ACT-01-Beirat` neben `ACT-08 - Wohnungsverwalter`; `00-Research-Synthese` neben `UI-Research - …`; Handoff-Kennungen HO-xx nur im Frontmatter |
-| Lokale Kennungen kollidieren | A1–A7 und E1–E5 in [[Konzept - Vorbereitung ohne KI]], D1–D9 und M1–M5 als Bildschirmkennungen, H-01 bis H-08 in [[05-Annahmen-und-Entscheidungen]] mit anderem Inhalt als unter `docs/hypothesis` |
+| Lokale Kennungen kollidieren | A1–A7 und E1–E6 in [[Konzept - Vorbereitung ohne KI]], D1–D17 und M1–M13 als Bildschirmkennungen neben M01–M09 als Quellenkennungen in [[04-Quellenverzeichnis]], H-01 bis H-08 in [[05-Annahmen-und-Entscheidungen]] mit anderem Inhalt als unter `docs/hypothesis` |
 | Veraltete Notes ohne Kennzeichnung | Research vom 15.11.2026 beschreibt noch den Handwerker-Zuschnitt; inzwischen mit `status: historisch` und Geltungshinweisen behoben |
-| Verknüpfungen nur in eine Richtung | Neue Jobs und Interviews waren von keiner Produkt-Note aus erreichbar; Pages tragen kein `actors` |
-| Notes in keiner View | Produktvision, PRD, `docs/plans/`, `docs/engineering/`, `docs/adr/`; die View „Design Foundations“ zeigt zugleich PNG-, CSS- und HTML-Dateien |
+| Verknüpfungen nur in eine Richtung | Neue Jobs und Interviews waren von keiner Produkt-Note aus erreichbar (inzwischen über Akteure und Hypothesen verlinkt); Pages tragen kein `actors` |
+| Notes in keiner View | Produktvision und PRD; die View „Design Foundations“ zeigt zugleich PNG-, CSS- und HTML-Dateien |
 
 Für PBIs lösen Plugin und Konventionen diese Fragen bereits. Für die übrigen Notes fehlt eine solche Grundlage. Je mehr Research, Jobs und Interviews entstehen, desto teurer wird das.
 
@@ -78,6 +78,7 @@ Jede Fachnote bekommt eine Kennung, und der Dateiname folgt überall `<ID> - <Ti
 | `HO-` | Handoff | `J-` | einzelner Job, nur innerhalb eines Katalogs |
 | `UI-DESIGN-` | Design-Spezifikation | `R-` | Research-Note |
 | `INT-` | Interviewprotokoll | `FF-` | Forschungsfrage, nur innerhalb eines Leitfadens |
+| `PROTO-` | Prototyp-Stand | | |
 
 Kennungen, die nur innerhalb einer Note gelten, bekommen ein eigenes Präfix statt freier Buchstaben-Ziffern-Kombinationen (etwa `AN-1` statt A1 für Anlässe und `S-D1` statt D1 für Bildschirme). Die Liste der Präfixe gehört in [[README_DOCS]].
 
@@ -91,12 +92,12 @@ Kennungen, die nur innerhalb einer Note gelten, bekommen ein eigenes Präfix sta
 | Hypothesis | `ungeprueft` → `gestuetzt` oder `widerlegt` |
 | BusinessRule | `entwurf` → `festgelegt` |
 
-Besondere Prüfstände wie „mit synthetischen Daten geprüft“ stehen im Text, nicht im Status. Eine historische Note trägt `superseded-by` mit Verweis auf die maßgebliche Nachfolgerin und einen Geltungshinweis am Anfang. Historische Notes werden nicht gelöscht.
+Besondere Stände wie heute `umgesetzt` oder `pilot` stehen im Text, nicht im Status. Eine historische Note trägt `superseded-by` mit Verweis auf die maßgebliche Nachfolgerin und einen Geltungshinweis am Anfang. Historische Notes werden nicht gelöscht.
 
 ### 5. Ordnerschnitt
 
 - `docs/research/` enthält Erkenntnisse: Studien, Quellen, Evaluationen, Interviewleitfäden und anonymisierte Interviewprotokolle (`docs/research/interviews/`, erst mit dem ersten Protokoll anlegen).
-- Konzepte und Spezifikationen mit Produktvorgaben (heute `type: DesignSpec` in `docs/research/`: Datenkonzept, Integrationskonzept, Vorbereitung ohne KI, UI-Design-Leitlinien) ziehen nach `docs/design/konzepte/`. Damit bleibt `docs/research/` frei von Vorgaben, wie es [[README_DOCS]] beschreibt.
+- Konzepte und Spezifikationen mit Produktvorgaben (heute `type: DesignSpec` in `docs/research/`: Datenkonzept, Vorbereitung ohne KI, UI-Design-Leitlinien) ziehen nach `docs/design/konzepte/`. Damit enthält `docs/research/` nur Erkenntnisse ohne Produktvorgaben; die Ordnerbeschreibung in [[README_DOCS]] wird dann angepasst.
 - `docs/jobs-to-be-done/` bleibt für Jobkataloge je Rolle; ein weiterer Katalog entsteht als Erstes für „Beirat im Viertel“.
 - Rohnotizen aus Interviews mit möglichen personenbezogenen Daten bleiben in `docs/_intake/` und werden nicht versioniert.
 
@@ -120,7 +121,7 @@ Wie bei PBIs und Pages werden Verknüpfungen beidseitig gepflegt: Ein Job, der e
 
 ### 8. Prüfskript
 
-Ein Skript unter `scripts/` prüft bei jedem Commit:
+Ein Skript unter `scripts/` prüft:
 
 - Pflicht-Properties und erlaubte Werte je Typ,
 - eindeutige Kennungen und das Dateinamenmuster,
@@ -128,7 +129,7 @@ Ein Skript unter `scripts/` prüft bei jedem Commit:
 - keine Links in `docs/_intake/`,
 - `superseded-by` bei `status: historisch`.
 
-Es läuft lokal und in der CI, ändert keine Dateien und meldet nur. Ablage und Tests folgen den Konventionen unter `docs/engineering/`.
+Es läuft lokal und in der CI und ändert keine Dateien. Ob ein Befund blockiert oder nur warnt, klärt O-18b. Ablage und Tests folgen den Konventionen unter `docs/engineering/`.
 
 ## Abgrenzung und betrachtete Alternative
 

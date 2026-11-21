@@ -86,7 +86,7 @@ Für diese Dokumente gilt der Abrufstand 15.11.2026. Die aktuelle Dokumentation 
 | Auftrag des Produktverantwortlichen                              | Plugin zuerst, öffentliche Veröffentlichung vor dem Pilot, ein Pilot als Beirat zweier Gemeinschaften, später optionaler Webservice. |
 | [Produktvision 1.1](../01-Produktvision.md)                         | Aktuelles Nutzenversprechen und Produktprinzipien.                                                                               |
 | [MVP-PRD 1.1](../02-MVP-PRD.md)                                     | Verbindliche Umsetzungsgrundlage des Entwurfs und festgelegte Abnahmen.                                                          |
-| [Annahmen und Entscheidungen](05-Annahmen-und-Entscheidungen.md) | Trennung von Vorgaben, Defaults und offenen Nachweisen.                                                                          |
+| [Annahmen und Entscheidungen](05-Annahmen-und-Entscheidungen.md) | Trennung von Vorgaben, Defaults und offenen Nachweisen; inzwischen historisch.                                                   |
 
 
 Die Research ergänzt diese Quellen um Begründungen. Sie überschreibt weder den Nutzerauftrag noch stillschweigend die aktuelle Spezifikation.

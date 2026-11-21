@@ -37,11 +37,9 @@ Zeitfresser anhand der beobachteten Tätigkeiten priorisieren. Keine neue MVP-Re
 
 ## Bezüge
 
-[[K-04 - Wochenpaket beim Einstieg aktualisieren]], [[F-06 - Wochenpaket vorbereiten]], [[F-07 - Arbeitsentscheidungen treffen]], [[F-08 - Kommunikation vorbereiten und Versand erfassen]].
+[[K-04 - Wochenpaket beim Einstieg aktualisieren]], [[F-06 - Wochenpaket vorbereiten]], [[F-07 - Arbeitsentscheidungen treffen]], [[F-08 - Kommunikation vorbereiten und Versand erfassen]], [[JTBD - Verwaltungsbeirat]] (Randbedingung J-RB1).
 
 [Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`).
-
-**Bezug zum Jobkatalog:** Die Annahme entspricht der Randbedingung J-RB1 in [[JTBD - Verwaltungsbeirat]].
 
 ## Prüfergebnis
 

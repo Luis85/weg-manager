@@ -40,7 +40,7 @@ describe("view in a pop-out window", function () {
       return {
         otherDocument: doc !== undefined && doc !== document,
         rootInPopout: root !== null && root !== undefined,
-        portalInPopout: root?.querySelector(":scope > .weg-manager-portal") != null,
+        portalInPopout: (root?.querySelector(":scope > .weg-manager-portal") ?? null) !== null,
         rootInMain: document.querySelector(".weg-manager-root") !== null,
       };
     }, VIEW_TYPE);
@@ -62,7 +62,7 @@ describe("view in a pop-out window", function () {
       const form = doc?.querySelector("[data-testid=community-form]");
       return {
         inPopout: form !== null && form !== undefined,
-        inPortal: form?.closest(".weg-manager-portal") != null,
+        inPortal: (form?.closest(".weg-manager-portal") ?? null) !== null,
         inMain:
           app.workspace.containerEl.ownerDocument.querySelector("[data-testid=community-form]") !==
           null,

@@ -161,6 +161,12 @@ export default defineConfig(
       parserOptions: { project: TS_PROJECTS, tsconfigRootDir: import.meta.dirname },
     },
   },
+  {
+    // Needs type information, so oxlint cannot own it (oxlint owns eqeqeq and no-non-null-assertion).
+    files: ["**/*.ts", "**/*.mts", "**/*.vue"],
+    plugins: { "@typescript-eslint": tseslint.plugin },
+    rules: { "@typescript-eslint/switch-exhaustiveness-check": "error" },
+  },
   ...vueOnly,
   {
     // Prettier owns template layout; these eslint-plugin-vue presets would fight it.

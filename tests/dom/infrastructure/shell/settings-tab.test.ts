@@ -12,7 +12,8 @@ type External = { onExternalSettingsChange(): Promise<void> };
 const openTab = async (data?: unknown) => {
   const { registry, plugin } = createTestPlugin(WegManagerPlugin, { data });
   await registry.load();
-  const tab = registry.settingTabs[0]!;
+  const [tab] = registry.settingTabs;
+  if (tab === undefined) throw new Error("no settings tab registered");
   tab.display();
   await vi.waitFor(() => expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(1));
   return { registry, plugin, tab, rows: () => settingsIn(tab.containerEl) };

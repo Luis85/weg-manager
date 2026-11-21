@@ -37,7 +37,12 @@ const pathsToRead = (event: AppEvent): readonly string[] => {
       return event.extension === "md" ? [event.path] : [];
     case "FileRenamed":
       return [event.path, event.oldPath].filter(isMarkdownPath);
-    default:
+    case "ActiveFileChanged":
+    case "ColorSchemeChanged":
+    case "FileCreated":
+    case "FileModified":
+    case "LayoutReady":
+    case "VaultReady":
       return [];
   }
 };

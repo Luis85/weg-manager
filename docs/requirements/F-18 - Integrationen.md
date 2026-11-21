@@ -75,7 +75,7 @@ Im Beirats-MVP erfolgt der Versand weiterhin im vorhandenen externen Werkzeug un
 
 ## Bereits erstelltes Skillpaket
 
-[weg-gmail-to-vault](../../skills/weg-gmail-to-vault/SKILL.md) steht bereit; das ZIP 0.1.0 wird mit `python3 skills/package_claude_skills.py` gebaut und nicht eingecheckt; [Manifest](../../skills/manifest.json) enthält Version und Prüfsumme für die spätere Pluginbereitstellung. [[Integrationskonzept - Gmail-Eingang mit Claude Skill]] beschreibt Installation und Laufzeitgrenzen. [[Skill-Evaluation - Gmail-Import]] dokumentiert lokale Tests; der Live-Connector-/Plugininstaller-Nachweis ist offen. Das Feature als Ganzes erhält wegen seines gemischten Umfangs keine pauschale MVP-Releasezuordnung.
+[weg-gmail-to-vault](../../skills/weg-gmail-to-vault/SKILL.md) steht bereit; das ZIP 0.2.0 wird mit `npm run skills:package` gebaut und nicht eingecheckt; [Manifest](../../skills/manifest.json) enthält Version und Prüfsumme für die spätere Pluginbereitstellung. [[Integrationskonzept - Gmail-Eingang mit Claude Skill]] beschreibt Installation und Laufzeitgrenzen. [[Skill-Evaluation - Gmail-Import]] dokumentiert lokale Tests; der Live-Connector-/Plugininstaller-Nachweis ist offen. Das Feature als Ganzes erhält wegen seines gemischten Umfangs keine pauschale MVP-Releasezuordnung.
 
 ## Verhältnis zum nativen AI-Chat
 

@@ -2,7 +2,7 @@
 
 ## Tatsächliche Voraussetzungen
 
-Der Skill ist ein portables Agent-Skills-Paket, kein Gmail-Connector und kein Plugin. Die verwendete Claude-Sitzung muss gleichzeitig Zugang zum bereits eingerichteten Gmail-Connector, zum ausdrücklich freigegebenen Zielordner und zu Python 3.10 oder neuer haben. Ein Skill-Upload richtet weder Connector noch Dateifreigabe ein.
+Der Skill ist ein portables Agent-Skills-Paket, kein Gmail-Connector und kein Plugin. Die verwendete Claude-Sitzung muss gleichzeitig Zugang zum bereits eingerichteten Gmail-Connector, zum ausdrücklich freigegebenen Zielordner und zu Node.js 20 oder neuer haben. Der Writer `scripts/import-messages.mjs` ist eine einzelne Datei ohne weitere Abhängigkeiten. Ein Skill-Upload richtet weder Connector noch Dateifreigabe ein.
 
 Ein Claude-Chat oder eine Cloud-Laufzeit mit ausschließlich eigenen Artefakten kann nicht allein durch ein Skill-Paket in einen beliebigen lokalen Obsidian-Vault schreiben. Prüfe den tatsächlichen Mount-/Ordnerzugriff. Fehlt er, ist ein angebotener Download ausdrücklich ein manueller Übergabeweg, kein abgeschlossener direkter Vault-Import.
 
@@ -16,7 +16,7 @@ Es wird kein eigener WEG-Manager-MCP-Server benötigt. Der vorhandene Claude-Gma
 
 ## Unterstützte Version und Updategrenze
 
-Skillversion 0.1.0, E-Mail-Schema `weg-manager.gmail-message/v1`. Ein Paketupdate migriert keine vorhandenen Mailnotizen. Die spätere Plugininstallation prüft Version/Integrität und legt Installation, bewusste Aktualisierung oder Abbruch offen. Geheimnisse und konkrete Konten gehören nicht in das Paket.
+Skillversion 0.2.0, E-Mail-Schema `weg-manager.gmail-message/v1`. Ein Paketupdate migriert keine vorhandenen Mailnotizen. Die spätere Plugininstallation prüft Version/Integrität und legt Installation, bewusste Aktualisierung oder Abbruch offen. Geheimnisse und konkrete Konten gehören nicht in das Paket.
 
 ## Verifizierte öffentliche Grundlagen
 

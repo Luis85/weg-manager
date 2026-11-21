@@ -1,7 +1,9 @@
 # not plugin code
 docs/
 .claude/
-skills/
+skills/weg-gmail-to-vault/
+skills/manifest.json
+skills/dist/
 *.md
 *.base
 .obsidian/

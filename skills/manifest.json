@@ -3,18 +3,18 @@
   "skills": [
     {
       "id": "weg-gmail-to-vault",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "title": "Gmail-Nachrichten in den WEG-Vault übernehmen",
       "source": "weg-gmail-to-vault/",
       "entrypoint": "SKILL.md",
-      "archive": "dist/weg-gmail-to-vault-0.1.0.zip",
-      "sha256": "e6d1b822c9a0b399d3317b2dfae11b1c7215cde26392bc665869338994d9105f",
-      "size_bytes": 34573,
+      "archive": "dist/weg-gmail-to-vault-0.2.0.zip",
+      "sha256": "cbb35290ffad7ea12126998b45f157446ef5a5d29c99ce4c7e612c936aba7161",
+      "size_bytes": 45589,
       "license": "MIT",
       "capabilities_required": [
         "existing-gmail-search-and-read-connector",
         "user-granted-vault-write-access",
-        "python-3.10-or-newer"
+        "node-20-or-newer"
       ],
       "mailbox_access": "read-only-workflow",
       "installation_modes": [

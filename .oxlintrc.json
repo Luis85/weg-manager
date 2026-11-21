@@ -9,13 +9,14 @@
   "ignorePatterns": [
     "docs/**",
     ".claude/**",
-    "skills/**",
     "dist/**",
     "release/**",
     "reports/**",
     ".stryker-tmp/**",
     ".superpowers/**",
-    ".obsidian-cache/**"
+    ".obsidian-cache/**",
+    "skills/weg-gmail-to-vault/**",
+    "skills/dist/**"
   ],
   "rules": {
     "no-console": "error",

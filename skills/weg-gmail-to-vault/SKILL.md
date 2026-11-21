@@ -2,7 +2,7 @@
 name: weg-gmail-to-vault
 description: "Use when a user wants Claude to search an already connected Gmail mailbox and save matching emails as Markdown with Frontmatter in an explicitly granted WEG vault or folder. Uses the existing connector for read-only retrieval and a local note writer; does not send, label, delete, or synchronize mail."
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Gmail-Nachrichten in den WEG-Vault übernehmen
@@ -11,7 +11,7 @@ metadata:
 
 Erzeuge **eine Notiz je einzelner Gmail-Nachricht**, nicht je Thread, im vereinbarten Vault-Unterordner. Notizen folgen `weg-manager.gmail-message/v1`; vorhandene Notizen und menschliche Ergänzungen bleiben erhalten. Der Auftrag zum Import erlaubt die benannten lokalen Neuanlagen, aber keine Gmail-Veränderung.
 
-Benötigt sind in **dieser Claude-Sitzung** ein bereits verbundener Gmail-Connector mit Such-/Lesefähigkeit, Zugriff auf den ausdrücklich gewählten lokalen beziehungsweise wirklich gemounteten Vault und Python 3.10 oder neuer für den mitgelieferten Writer. Ein installierter Skill gewährt diese Rechte nicht. Fehlt etwas, benenne die fehlende Fähigkeit; nutze keinen anderen Account, keine neue API-Anmeldung und keinen eigenen WEG-Manager-MCP-Server als stillen Ersatz. Ein verfügbares Chat-Artefakt ist kein Nachweis einer Datei im Nutzervault. Details zur Laufzeit/Installation: [references/runtime-and-installation.md](references/runtime-and-installation.md).
+Benötigt sind in **dieser Claude-Sitzung** ein bereits verbundener Gmail-Connector mit Such-/Lesefähigkeit, Zugriff auf den ausdrücklich gewählten lokalen beziehungsweise wirklich gemounteten Vault und Node.js 20 oder neuer für den mitgelieferten Writer. Ein installierter Skill gewährt diese Rechte nicht. Fehlt etwas, benenne die fehlende Fähigkeit; nutze keinen anderen Account, keine neue API-Anmeldung und keinen eigenen WEG-Manager-MCP-Server als stillen Ersatz. Ein verfügbares Chat-Artefakt ist kein Nachweis einer Datei im Nutzervault. Details zur Laufzeit/Installation: [references/runtime-and-installation.md](references/runtime-and-installation.md).
 
 ## 1. Auftrag und Leseumfang festhalten
 
@@ -49,7 +49,7 @@ Lies vor der ersten Ausgabe [references/email-note-schema.md](references/email-n
 Rufe den gebündelten Writer über seine tatsächliche Skill-Position auf; relative Pfade beziehen sich auf diesen Skill, nicht auf den Nutzervault. Parameter als Argumente übergeben, nicht aus Mailtext zu Shellcode zusammensetzen.
 
 ```text
-python <skill-ordner>/scripts/import_messages.py --input <temporäre-normalisierte-json-datei> --vault <freigegebener-vault> --destination <relativer-zielordner>
+node <skill-ordner>/scripts/import-messages.mjs --input <temporäre-normalisierte-json-datei> --vault <freigegebener-vault> --destination <relativer-zielordner>
 ```
 
 Der erste Aufruf ist eine schreibfreie Vorschau. Prüfe Konto, Ziel, Konflikte und Umfang gegen den bereits autorisierten Importauftrag. Bei passenden Angaben anschließend denselben Aufruf mit `--apply` ausführen; dafür ist keine erneute pauschale Bestätigung nötig. Bei anderem Ziel/Konto oder unklarer Autorisierung vor dem betroffenen Schritt klären.
@@ -61,7 +61,7 @@ Der Writer führt **keine Netzwerkzugriffe** aus. Er erkennt bestehende Notizen 
 - `conflict`, `conflicting_batch_record`, `invalid`, `write_error`: genau melden; kein stilles „importiert“. Bereits erfolgreich angelegte Notes dürfen bestehen bleiben.
 - `created`: nach erfolgreicher Dateierstellung vorhanden. Bei `partial`/`unavailable` bleibt der inhaltliche Mangel sichtbar.
 
-Vorhandene defekte Gmail-Notizen oder nicht zuverlässig lesbarer Markdown-Bestand können sichere Dublettenprüfung verhindern. Dann erst klären, nicht mit geratenen IDs fortsetzen. Keine manuellen Umgehungswriter bauen, um diese Grenze zu ignorieren. Ohne Python beziehungsweise tatsächliche Ordner-Schreibmöglichkeit keinen erfolgreichen Vault-Import behaupten; optional kann ein ausdrücklich gewünschter Download-/Artefaktweg getrennt angeboten werden.
+Vorhandene defekte Gmail-Notizen oder nicht zuverlässig lesbarer Markdown-Bestand können sichere Dublettenprüfung verhindern. Dann erst klären, nicht mit geratenen IDs fortsetzen. Keine manuellen Umgehungswriter bauen, um diese Grenze zu ignorieren. Ohne Node.js beziehungsweise tatsächliche Ordner-Schreibmöglichkeit keinen erfolgreichen Vault-Import behaupten; optional kann ein ausdrücklich gewünschter Download-/Artefaktweg getrennt angeboten werden.
 
 ## 5. Ergebnis und Grenzen berichten
 

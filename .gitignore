@@ -1,8 +1,6 @@
 .obsidian
 
 docs/_intake
-__pycache__/
-*.py[cod]
 
 # plugin build and tooling
 node_modules/

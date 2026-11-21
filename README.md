@@ -122,7 +122,7 @@ Entwicklerdokumentation (englisch): [Architektur](docs/engineering/architecture.
 | `src/` | Plugin-Quellcode: `domain`, `application`, `infrastructure`, `presentation` |
 | `harness/` | Browser-Harness für UI-Arbeit ohne Obsidian |
 | `docs/` | Produktkonzept, Anforderungen, Design, Prototyp, Entwicklerdokumentation |
-| `skills/` | Claude Skill `weg-gmail-to-vault` (0.1.0): übernimmt ausgewählte Gmail-Nachrichten lesend als Notizen in den Vault; mit Paketskript `package_claude_skills.py` (`--output-dir`) und Tests unter `skills/tests/` (`python3 -m unittest discover -s skills/tests`) |
+| `skills/` | Claude Skill `weg-gmail-to-vault` (0.2.0): übernimmt ausgewählte Gmail-Nachrichten lesend als Notizen in den Vault. TypeScript-Quellen unter `skills/src/`, Tests unter `skills/tests/` (Teil von `npm test`); `npm run skills:package` erzeugt den Writer `scripts/import-messages.mjs`, das ZIP und das Manifest |
 | `scripts/` | Build-, Prüf- und Release-Skripte des Plugins |
 | `configs/` | Konfiguration von Vite, Vitest, Stryker, fallow und TypeScript (Begründung in `docs/engineering/architecture.md`) |
 | `tests/` | Plugin-Tests (`unit`, `dom`, `e2e`, Obsidian-Testdouble) |

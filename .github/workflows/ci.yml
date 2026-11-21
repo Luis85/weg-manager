@@ -105,18 +105,21 @@ jobs:
           path: reports/e2e/
           if-no-files-found: ignore
 
-  # Claude skill weg-gmail-to-vault: unit tests, then the distributable ZIP (not committed; see
-  # docs/decisions/K-16). Independent of the plugin jobs.
+  # Claude skill weg-gmail-to-vault: the distributable ZIP (not committed; see docs/decisions/K-16).
+  # Its tests run in `verify` (Vitest project "skills"); this job only builds and uploads the package
+  # and fails if the committed writer or manifest no longer match the TypeScript source.
   skills:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: "3.12"
-      - run: python3 -m unittest discover -s skills/tests
-      - run: python3 skills/package_claude_skills.py
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run skills:package
+      - run: git diff --exit-code -- skills/manifest.json skills/weg-gmail-to-vault/scripts
       - name: Upload skill package
         uses: actions/upload-artifact@v4
         with:

@@ -7,6 +7,9 @@ date: 2026-11-15
 
 # Skill-Evaluation · Gmail-Import
 
+> [!note] Stand
+> Diese Evaluation betrifft Version 0.1.0 mit dem Python-Writer. Seit Version 0.2.0 ist der Writer TypeScript ([ADR 0006](../adr/0006-skill-tooling-in-typescript.md) beschreibt die Umstellung). Die Tests sind nach Vitest portiert und erweitert ([Writer](../../skills/tests/import-messages.test.ts), [Validierung](../../skills/tests/import-validation.test.ts), [Kommandozeile und Paket](../../skills/tests/cli-and-package.test.ts)); ein Vergleichslauf ergab für dieselbe Eingabe identische Berichte, Dateinamen, Kennungen und Quell-Hashes. Die Anwendung mit einem Agenten unten wurde mit 0.2.0 nicht wiederholt.
+
 Geprüft ist [weg-gmail-to-vault](../../skills/weg-gmail-to-vault/SKILL.md) Version 0.1.0. **Kein Live-Claude-/Gmail-Test, kein Zugriff auf echte Konten, keine echten Mails importiert.** Die Anwendungssimulation wurde durch einen Codex-Subagenten mit synthetischen Connector-Fixtures in einem isolierten OS-Tempvault durchgeführt.
 
 ## Baseline vor dem Skill
@@ -17,7 +20,7 @@ Sein vorgeschlagener Output hatte jedoch kein gemeinsames `type`-/Schemaversions
 
 ## Deterministische Tests
 
-[Testdateien](../../skills/tests/test_gmail_to_vault.py) prüfen den lokalen Writer; [Pakettests](../../skills/tests/test_skill_package.py) prüfen Struktur, Prüfsumme und Reproduzierbarkeit. Die Tests wurden zuerst ohne Implementierung ausgeführt und scheiterten am fehlenden Modul. Die folgenden Implementierungs- und Regressionstests decken beobachtete Format-/Dateisystemfälle ab.
+Die damaligen Python-Tests prüften den lokalen Writer sowie Struktur, Prüfsumme und Reproduzierbarkeit des Pakets. Die Tests wurden zuerst ohne Implementierung ausgeführt und scheiterten am fehlenden Modul. Die folgenden Implementierungs- und Regressionstests decken beobachtete Format-/Dateisystemfälle ab.
 
 **26 Tests bestanden:** 24 Writer-Tests und zwei Pakettests. Ein zusätzlicher Symlink-Test wurde auf diesem System übersprungen, weil das Anlegen eines Symlinks nicht erlaubt war; daraus wird kein bestandener Plattformtest abgeleitet. Geprüft wurden unter anderem Vorschau ohne Schreibzugriff, Ausgabeformat, Konto-/Nachrichtenidentität, gleiche Threads, wiederholte Suchseiten, umbenannte vorhandene Notes, alte Identitätsfelder, YAML-Kommentare/quotierte Feldnamen, fehlende Daten, Teiltext, abweichender neuer Quellinhalt, untrusted Text, Pfadgrenzen, vorhandene Zielkollision, beschädigtes Frontmatter, unabhängige Behandlung fehlerhafter Datensätze und keine Anhangsdownloadbehauptung.
 

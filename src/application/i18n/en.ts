@@ -1,11 +1,9 @@
-import type { Catalog } from "./catalog";
-
-const PLUGIN_NAME = "WEG Manager";
+import { PRODUCT_NAME, type Catalog } from "./catalog";
 
 /** English, sentence case as in Obsidian: first the cause, then the action. */
 export const en: Catalog = {
   language: "en",
-  defaultGreeting: `Hello from ${PLUGIN_NAME}`,
+  defaultGreeting: `Hello from ${PRODUCT_NAME}`,
   issues: {
     "file.invalid": () => "The settings file contains no valid settings.",
     "schema.newer": ({ version }) =>
@@ -22,7 +20,7 @@ export const en: Catalog = {
     readOnly: {
       title: "Settings are read-only",
       detail: {
-        "newer-version": `The settings come from a newer version of ${PLUGIN_NAME}. Update the plugin to change them.`,
+        "newer-version": `The settings come from a newer version of ${PRODUCT_NAME}. Update the plugin to change them.`,
         unreadable:
           "The settings file can't be read. Default values apply and the file stays unchanged. Copy the diagnostics for support.",
       },
@@ -38,7 +36,7 @@ export const en: Catalog = {
     },
   },
   defect: {
-    title: `Unexpected error in ${PLUGIN_NAME}`,
+    title: `Unexpected error in ${PRODUCT_NAME}`,
     detail: (incidentId) =>
       `The action was stopped (error code ${incidentId}). Copy the diagnostics and send them to support with the error code.`,
   },
@@ -60,7 +58,6 @@ export const en: Catalog = {
     showGreeting: "Show greeting",
     copyDiagnostics: "Copy diagnostics",
   },
-  ribbonTitle: `Open ${PLUGIN_NAME}`,
   settingsTab: {
     greeting: { name: "Greeting", desc: "Text that the “Show greeting” command shows." },
     logLevel: {
@@ -76,7 +73,7 @@ export const en: Catalog = {
   },
   greetingForm: { label: "Greeting", save: "Save" },
   about: {
-    title: `About ${PLUGIN_NAME}`,
+    title: `About ${PRODUCT_NAME}`,
     description: "Tools for the advisory boards of condominium owners' associations.",
     button: "About",
     body: "Copy the version, platform and log with the “Copy diagnostics” command.",

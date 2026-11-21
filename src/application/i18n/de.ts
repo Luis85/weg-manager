@@ -1,11 +1,9 @@
-import type { Catalog } from "./catalog";
-
-const PLUGIN_NAME = "WEG Manager";
+import { PRODUCT_NAME, type Catalog } from "./catalog";
 
 /** German, du-form: first the cause, then the action (handoff HO-06). */
 export const de: Catalog = {
   language: "de",
-  defaultGreeting: `Hallo von ${PLUGIN_NAME}`,
+  defaultGreeting: `Hallo von ${PRODUCT_NAME}`,
   issues: {
     "file.invalid": () => "Die Einstellungsdatei enthält keine gültigen Einstellungen.",
     "schema.newer": ({ version }) =>
@@ -24,7 +22,7 @@ export const de: Catalog = {
     readOnly: {
       title: "Einstellungen schreibgeschützt",
       detail: {
-        "newer-version": `Die Einstellungen stammen aus einer neueren Version von ${PLUGIN_NAME}. Aktualisiere das Plugin, um sie zu ändern.`,
+        "newer-version": `Die Einstellungen stammen aus einer neueren Version von ${PRODUCT_NAME}. Aktualisiere das Plugin, um sie zu ändern.`,
         unreadable:
           "Die Einstellungsdatei ist nicht lesbar. Es gelten Standardwerte, die Datei bleibt unverändert. Kopiere die Diagnose für den Support.",
       },
@@ -40,7 +38,7 @@ export const de: Catalog = {
     },
   },
   defect: {
-    title: `Unerwarteter Fehler in ${PLUGIN_NAME}`,
+    title: `Unerwarteter Fehler in ${PRODUCT_NAME}`,
     detail: (incidentId) =>
       `Die Aktion wurde abgebrochen (Fehlercode ${incidentId}). Kopiere die Diagnose und schicke sie mit dem Fehlercode an den Support.`,
   },
@@ -62,7 +60,6 @@ export const de: Catalog = {
     showGreeting: "Begrüßung anzeigen",
     copyDiagnostics: "Diagnose kopieren",
   },
-  ribbonTitle: `${PLUGIN_NAME} öffnen`,
   settingsTab: {
     greeting: { name: "Begrüßung", desc: "Text, den der Befehl „Begrüßung anzeigen“ zeigt." },
     logLevel: {
@@ -78,7 +75,7 @@ export const de: Catalog = {
   },
   greetingForm: { label: "Begrüßung", save: "Speichern" },
   about: {
-    title: `Über ${PLUGIN_NAME}`,
+    title: `Über ${PRODUCT_NAME}`,
     description: "Werkzeuge für Verwaltungsbeiräte von Wohnungseigentümergemeinschaften.",
     button: "Über",
     body: "Version, Plattform und Protokoll kopierst du mit dem Befehl „Diagnose kopieren“.",

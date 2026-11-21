@@ -44,7 +44,7 @@ One `ManagedRuntime` exists per plugin load (`makeRuntime(appLayer(plugin))`). E
 Decision record: [ADR 0005](../adr/0005-ui-language.md).
 
 - `hostLanguage()` (`src/infrastructure/obsidian/language.ts`) reads Obsidian's `getLanguage()` once per load: `de` and `de-*` give German, everything else English.
-- `obsidianLayer(plugin, language)` provides the `Messages` service, the catalog of that language. Use cases take it with `yield* Messages`, bootstrap for ribbon, commands and settings tab, components with `useMessages()`. Nuxt UI's locale follows it.
+- `obsidianLayer(plugin, language)` provides the `Messages` service, the catalog of that language. Use cases take it with `yield* Messages`, bootstrap for commands and settings tab, components with `useMessages()`. Nuxt UI's locale follows it.
 - The domain returns issue codes; `describeIssue` words them. The greeting is `null` while not customised and then shows the language's default.
 
 ## Events
@@ -71,7 +71,7 @@ sequenceDiagram
   B->>R: makeRuntime(appLayer)
   B->>R: mirrorSettings (loads data.json)
   Note over B: aborted? dispose and return an inert handle
-  B->>O: ribbon, commands, settings tab, registerView
+  B->>O: commands, ribbon, settings tab, registerView
   O->>V: onOpen
   V->>V: contentEl.empty(), import("presentation/mount")
   Note over V: closed meanwhile? do not mount
@@ -88,7 +88,8 @@ sequenceDiagram
 ```
 
 - `dispose` undoes in reverse order. Closing every surface runs first, so no Vue app outlives the runtime.
-- If a registration throws, bootstrap undoes what it created, reports the defect and rethrows. Only then does it remove its ribbon icon (through `leftRibbon.removeRibbonAction`, as Obsidian does on unload) and its commands; on a normal unload Obsidian removes them, and removing by id could hit those of a quick re-enable.
+- If a registration throws, bootstrap undoes what it created, reports the defect and rethrows. Only then does it remove its commands; on a normal unload Obsidian removes them, and removing by id could hit those of a quick re-enable.
+- The ribbon icon comes after the commands, right before `addSettingTab` and `registerView`. Obsidian removes it on a normal unload but not after a failed `onload`, and there is no public API to remove it, so a bootstrap that fails earlier must not have added it. Its title is the product name in every language, because Obsidian keys the entry by `<plugin id>:<title>`.
 - `registerView` and `addSettingTab` run last, because Obsidian cannot unregister them one by one.
 - `onExternalSettingsChange` waits for a load still in progress, then reloads; after an unload or a failed load it does nothing. Obsidian calls it itself: its file watcher reports `data.json`, and Obsidian compares the file's modification time with the plugin's last `loadData`/`saveData` before it calls the method and then the tab's `update()`.
 

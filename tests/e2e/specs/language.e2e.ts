@@ -85,8 +85,9 @@ describe("UI language in Obsidian", function () {
     await expect(root.$("[data-testid=greeting]")).toHaveText("Hello from WEG Manager");
     await expect(root.$("[data-testid=file-count]")).toHaveText("3 Markdown files in the vault");
     await expect(root.$("button[type=submit]")).toHaveText("Save");
+    // The product name in every language, so the ribbon entry keeps its id.
     await expect(
-      browser.$$('.side-dock-ribbon-action[aria-label="Open WEG Manager"]'),
+      browser.$$('.side-dock-ribbon-action[aria-label="WEG Manager"]'),
     ).toBeElementsArrayOfSize(1);
     // Obsidian puts the plugin's name in front of each command name.
     expect(await commandNames()).toEqual([

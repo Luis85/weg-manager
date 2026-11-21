@@ -18,7 +18,7 @@ Für ein Update die drei Dateien ersetzen und das Plugin neu laden. Später ist 
 
 ## Benutzung
 
-- **Ansicht öffnen:** über das Symbol *WEG Manager öffnen* in der linken Seitenleiste oder den Befehl **WEG Manager: Ansicht öffnen** in der Befehlspalette.
+- **Ansicht öffnen:** über das Symbol *WEG Manager* in der linken Seitenleiste oder den Befehl **WEG Manager: Ansicht öffnen** in der Befehlspalette.
 - **Einstellungen:** unter *Einstellungen → WEG Manager* (Abschnitt Community-Plugins) lassen sich der Begrüßungstext (für den Befehl **WEG Manager: Begrüßung anzeigen**) und die Protokollstufe für die Entwicklerkonsole einstellen.
 - **Diagnose:** der Befehl **WEG Manager: Diagnose kopieren** legt einen Bericht mit Plugin-Version, Obsidian-API, Einstellungen und den letzten Protokolleinträgen in die Zwischenablage, zum Einfügen in eine Support-Anfrage. Notizinhalte und Dateinamen werden darin unkenntlich gemacht.
 

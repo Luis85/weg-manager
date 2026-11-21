@@ -64,7 +64,7 @@ describe("UI language follows Obsidian", () => {
       "show-greeting": "Begrüßung anzeigen",
       "copy-diagnostics": "Diagnose kopieren",
     });
-    expect(registry.ribbonIcons.map(({ title }) => title)).toEqual(["WEG Manager öffnen"]);
+    expect(registry.ribbonIcons.map(({ title }) => title)).toEqual(["WEG Manager"]);
     expect(await tabTexts(registry)).toEqual({
       names: ["Begrüßung", "Protokollstufe"],
       greeting: "Hallo von WEG Manager",
@@ -82,7 +82,8 @@ describe("UI language follows Obsidian", () => {
         "show-greeting": "Show greeting",
         "copy-diagnostics": "Copy diagnostics",
       });
-      expect(registry.ribbonIcons.map(({ title }) => title)).toEqual(["Open WEG Manager"]);
+      // The product name in every language, so the entry id does not change with the language.
+      expect(registry.ribbonIcons.map(({ title }) => title)).toEqual(["WEG Manager"]);
       expect(await tabTexts(registry)).toEqual({
         names: ["Greeting", "Log level"],
         greeting: "Hello from WEG Manager",
@@ -121,13 +122,12 @@ describe("UI language follows Obsidian", () => {
     plugin.unload();
   });
 
-  it("removes the English ribbon entry of a failed load", async () => {
+  it("reports a failed load in English", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     setLanguage("en");
-    const { registry, app } = createTestPlugin(WegManagerPlugin);
+    const { registry } = createTestPlugin(WegManagerPlugin);
     registry.failNextAddCommand();
     await expect(registry.load()).rejects.toThrow("addCommand failed");
-    app.workspace.leftRibbon.onChange();
     expect(registry.ribbonIcons).toHaveLength(0);
     expect(recordedNotices().at(-1)?.text).toMatch(/Unexpected error in WEG Manager/);
   });

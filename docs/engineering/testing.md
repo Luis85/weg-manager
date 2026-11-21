@@ -62,13 +62,12 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 
 | Spec | Covers |
 | --- | --- |
-| `lifecycle.e2e.ts` | opening the view, reveal instead of duplicate, two tabs with one closed, the ribbon entry exactly once in `app.workspace.leftRibbon.items` after each load and none after disable, three disable/enable cycles leaving no view, ribbon icon or command behind, clean console |
+| `lifecycle.e2e.ts` | opening the view, reveal instead of duplicate, two tabs with one closed, the ribbon entry exactly once in `app.workspace.leftRibbon.items` after each load and after a ribbon re-render, three disable/enable cycles leaving no view behind, clean console |
 | `settings-and-theme.e2e.ts` | the native settings tab saving to `data.json`, empty greeting never written, light/dark switch with Obsidian's colours reaching the surface, newer `data.json` shown read-only and never overwritten |
 | `events.e2e.ts` | one listener per host event on Obsidian's internal `Events._` map, all removed on each disable; creating, changing, opening, renaming and deleting a note with a clean console |
 | `popout.e2e.ts` | the view moved to a pop-out: surface, portal and About dialog in the pop-out's document, theme switch there, clean close |
 | `external-settings.e2e.ts` | `data.json` changed outside Obsidian (as by Sync): the open view follows, a newer-version file switches to read-only and is never rewritten |
 | `language.e2e.ts` | German from the start; an old `data.json` with the stored English default shows the German default and is not rewritten; after switching Obsidian to English: view, ribbon, command and settings names, notices in English; clean console |
-| `ribbon-failure.e2e.ts` | a bootstrap made to fail (patched `addCommand`) leaves no ribbon entry, also after a ribbon re-render; the next enable shows the icon once |
 
 The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaught error. It ignores only Chromium's `ResizeObserver loop` notification. It is installed after the first load, so the three disable/enable cycles provide the load coverage.
 

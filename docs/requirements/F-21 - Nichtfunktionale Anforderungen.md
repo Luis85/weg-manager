@@ -61,7 +61,7 @@ Dieses Feature führt Qualitätsbedingungen, keine zusätzlichen Funktionsstorie
 - Fachkorrektheit: die anwendbaren Regeln in [[Product Backlog.base#Business Rules]] und die jeweiligen PBI-Akzeptanzkriterien.
 - Reaktions- und Speicherzeiten: Messungen am hier beschriebenen Referenzbestand über die betroffenen Ansichten und Bearbeitungsschritte.
 
-Der interne Abnahmeplan AT-B01 bis AT-B13 sowie AT-B15/16 steht im [[02-MVP-PRD]]; AT-B14 bestätigt erst die öffentliche Installierbarkeit. Die Prüfziele sind Anforderungen, keine bereits gemessenen Ergebnisse. Eigene zusätzliche PBIs werden erst angelegt, wenn ein eigenständiges Nutzerergebnis vorliegt; ein Mess- oder Technikschritt allein wird nicht künstlich zur User Story gemacht.
+Der interne Abnahmeplan AT-B01 bis AT-B13, AT-B15/16 und AT-B18 steht im [[02-MVP-PRD]]; AT-B14 bestätigt erst die öffentliche Installierbarkeit. Die Prüfziele sind Anforderungen, keine bereits gemessenen Ergebnisse. Eigene zusätzliche PBIs werden erst angelegt, wenn ein eigenständiges Nutzerergebnis vorliegt; ein Mess- oder Technikschritt allein wird nicht künstlich zur User Story gemacht.
 
 ## Herkunft und Pflege
 

@@ -37,7 +37,7 @@ Making `CI / e2e` a required check is a repository setting. It is yours to set, 
 2. **Protect `main`.** *Settings → Rules → Rulesets → New branch ruleset* for `main`:
    - require a pull request before merging, with at least one approval;
    - require status checks to pass, and add **`CI / verify`** (it appears after the workflow has run once);
-   - add **`CI / e2e`** too, once they have run without a flake for about two weeks; until then they report but do not block;
+   - add **`CI / e2e`** too, once it has run without a flake for about two weeks; until then it reports but does not block;
    - block force pushes;
    - allow only squash merges (*Settings → General → Pull Requests*).
 3. **Prove the rule.** Open a pull request containing a planted type error (for example `const x: number = "a";` in `src/domain/shell/settings.ts`). The `verify` check must fail and the merge button must stay blocked. Close the PR without merging.

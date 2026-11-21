@@ -57,7 +57,7 @@ Der lokale Kern benötigt kein Konto, Netzwerk oder KI. Installation, gewählte 
 
 ## Funktionale Anforderungen
 
-Alle B-FR-01 bis B-FR-16 sind MUSS im vorgeschlagenen MVP; B-FR-15 (Gmail-Eingang über einen Claude Skill) ist entfallen und wird nicht neu vergeben. B-FR-14 konkretisiert die ausdrücklich festgelegte offene Dateigrundlage. Die verlinkten PBIs enthalten die detaillierten Akzeptanzkriterien; die gemeinsamen [[Product Backlog.base#Business Rules]] gelten zusätzlich. Kein PBI gilt allein durch seine Existenz als abgenommen.
+Alle B-FR-01 bis B-FR-16 außer dem entfallenen B-FR-15 sind MUSS im vorgeschlagenen MVP; die Nummer B-FR-15 wird nicht neu vergeben. B-FR-14 konkretisiert die ausdrücklich festgelegte offene Dateigrundlage. Die verlinkten PBIs enthalten die detaillierten Akzeptanzkriterien; die gemeinsamen [[Product Backlog.base#Business Rules]] gelten zusätzlich. Kein PBI gilt allein durch seine Existenz als abgenommen.
 
 | ID | Fachliche Verpflichtung | Backlog / geplante Abnahme |
 | --- | --- | --- |
@@ -81,7 +81,7 @@ Die vorbereitete Wochenarbeit darf nicht auf leere Formulare reduziert werden. V
 
 ## Fachliches Modell und Zustände
 
-ENT-01 bis ENT-16 beschreiben den MVP. Die ergänzten Entitäten [[ENT-17 - Produktfeedback]], [[ENT-18 - Angebot]], [[ENT-19 - Rechnung]] und [[ENT-20 - Zahlungseintrag]] gelten ausdrücklich nur für spätere Ausbaustufen. Die View [[Product Backlog.base#Business Rules]] zeigt die einzeln gepflegten fachlichen Regeln; deren Geltungsbereich trennt MVP und Ausbau.
+ENT-01 bis ENT-16 und [[ENT-22 - AI-Gespräch]] (nativer AI-Chat) beschreiben den MVP. Die ergänzten Entitäten [[ENT-17 - Produktfeedback]], [[ENT-18 - Angebot]], [[ENT-19 - Rechnung]] und [[ENT-20 - Zahlungseintrag]] gelten ausdrücklich nur für spätere Ausbaustufen. Die View [[Product Backlog.base#Business Rules]] zeigt die einzeln gepflegten fachlichen Regeln; deren Geltungsbereich trennt MVP und Ausbau.
 
 Die [[Product Backlog.base#Design Foundations|Entitätsnotes]] beschreiben die folgenden Begriffe als einzelne Notes mit Angaben, Beziehungen, Regeln und offenen Modellierungsfragen. Sie konkretisieren die fachliche Bedeutung, ohne ein technisches Schema festzulegen.
 
@@ -132,7 +132,7 @@ Alle B-NFR bleiben geplante **MVP-Releasekriterien** für die jeweils betroffene
 | AT-B16 | Freigegebener Agent liest und ändert dieselben Notizen einmal bei geschlossenem Plugin und einmal während offener eigener Bearbeitung; anschließend ungültiges YAML beziehungsweise neuere Schemafassung prüfen. | Zulässige Änderungen werden berücksichtigt; Konflikte, fehlerhafte Dateien und Wiederaufnahme bleiben sichtbar und ohne stilles Überschreiben; unbekannte Properties, Originale und eigene Eingaben bleiben erhalten. |
 | AT-B18 | In unterstützter offizieller Desktop-Runtime Abo-Modus, native Chatrunde, Kontextwahl, Toolbestätigung, Dateischritt, Abbruch/Limit und aufbewahrten Verlauf mit synthetischen Daten prüfen; API-Konfiguration separat als Abweichung testen. | Tatsächlicher berechtigter Abo-Weg nachgewiesen, keine Tokenübernahme oder stille API-Abrechnung; Vorschlag und ausgeführte Änderung getrennt; Teilergebnisse und offene Eingaben bleiben erkennbar. Mobile Chatverfügbarkeit wird nicht ohne eigene Prüfung behauptet. |
 
-AT-B01–13, AT-B15, AT-B16 und AT-B18 erfolgen vor Veröffentlichung (AT-B17 ist mit B-FR-15 entfallen) mit synthetischen oder ausdrücklich freigegebenen anonymisierten Daten. Dabei werden die zugehörigen Qualitätskriterien mitgeprüft. Ein Fehler mit Datenverlust, unbeabsichtigter Offenlegung, falschem Frist-/Versandstatus oder blockierter Kernreise verhindert die interne Freigabe. Noch nicht festgelegte Geräte und offene Scopefragen müssen vorher konkret entschieden werden.
+AT-B01–13, AT-B15, AT-B16 und AT-B18 erfolgen vor Veröffentlichung mit synthetischen oder ausdrücklich freigegebenen anonymisierten Daten; AT-B17 ist mit B-FR-15 entfallen. Dabei werden die zugehörigen Qualitätskriterien mitgeprüft. Ein Fehler mit Datenverlust, unbeabsichtigter Offenlegung, falschem Frist-/Versandstatus oder blockierter Kernreise verhindert die interne Freigabe. Noch nicht festgelegte Geräte und offene Scopefragen müssen vorher konkret entschieden werden.
 
 ## Veröffentlichung und Pilot
 

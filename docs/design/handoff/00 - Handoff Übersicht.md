@@ -33,7 +33,7 @@ Bei Abweichung zwischen Prototyp und älteren Mockups gilt der Prototyp. Mockups
 | [[05 - Datenbindung und Ableitungen]] | Welche Felder welcher Entität angezeigt werden und wie Kennzahlen, Fälligkeiten und Auswahl berechnet werden |
 | [[06 - Texte und Begriffe]] | Begriffe DE/EN, Schreibregeln, Datumsformate, Button-Texte |
 | [[07 - Responsive, Barrierefreiheit und Plattform]] | Breakpoints, mobile Host-Navigation, Tastatur, Fokus, Theme, Obsidian-Richtlinien |
-| [[08 - Abnahme und Testszenarien]] | AT-B01–14 auf Ansichten und Prototyp-Szenarien abgebildet |
+| [[08 - Abnahme und Testszenarien]] | AT-B01–16 und AT-B18 auf Ansichten und Prototyp-Szenarien abgebildet |
 | [[09 - Offene Punkte vor Implementierung]] | Was vor Entwicklungsstart entschieden sein muss |
 
 Fachlicher Hintergrund: [[Konzept - Vorbereitung ohne KI]] (Anlass-Regeln, Entscheidungsarten, Textbausteine), [[UI-Design - Leitlinien und Reviewumfang]], [[00 - Sitemap]], [[FLOW-01 - Gesamtfluss des Beirats-MVP]].

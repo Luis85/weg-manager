@@ -4,10 +4,12 @@ import type { AppError } from "../../../../src/application/errors";
 import { de, en } from "../../../../src/application/messages";
 import {
   InvalidNoteNameError,
+  NoteEditConflictError,
   NoteNotFoundError,
   NotePathTakenError,
   NoteUnreadableError,
   NoteWriteError,
+  NoteWriteRefusedError,
 } from "../../../../src/application/notes/errors";
 import { isNotesError } from "../../../../src/application/notes/user-messages";
 import { StorageError, VaultReadError } from "../../../../src/application/shell/errors";
@@ -25,6 +27,9 @@ const expectPlain = (message: UserMessage, rawCause?: string) => {
   }
 };
 
+/** Note content that no catalog text can hold by chance. */
+const content = string().map((text) => `⟦${text}⟧`);
+
 const ALL: readonly AppError[] = [
   new NoteNotFoundError(),
   new NotePathTakenError(),
@@ -33,6 +38,13 @@ const ALL: readonly AppError[] = [
   new InvalidNoteNameError({ issue: "leading-dot" }),
   new NoteUnreadableError({ cause: null }),
   new NoteWriteError({ cause: null }),
+  new NoteEditConflictError({
+    conflicts: [{ key: "title", base: "a", edited: "b", current: "c" }],
+  }),
+  new NoteWriteRefusedError({ reason: "other-type" }),
+  new NoteWriteRefusedError({ reason: "newer-version" }),
+  new NoteWriteRefusedError({ reason: "identity" }),
+  new NoteWriteRefusedError({ reason: "migration-failed" }),
 ];
 
 describe("isNotesError", () => {
@@ -56,6 +68,30 @@ describe.each([de, en])("describeError for notes ($shell.language)", (messages) 
       ),
     );
     expect(details.size).toBe(3);
+  });
+
+  it("explains each write refusal differently", () => {
+    const details = new Set(
+      (["other-type", "newer-version", "identity", "migration-failed"] as const).map(
+        (reason) => describeError(new NoteWriteRefusedError({ reason }), messages).detail,
+      ),
+    );
+    expect(details.size).toBe(4);
+  });
+
+  it("never words the values of a conflict, nor puts them into the error message", () => {
+    expect.hasAssertions();
+    fcAssert(
+      property(content, content, content, (base, edited, current) => {
+        const error = new NoteEditConflictError({
+          conflicts: [{ key: "title", base, edited, current }],
+        });
+        for (const text of [base, edited, current]) {
+          expectPlain(describeError(error, messages), text);
+          expect(error.message).not.toContain(text);
+        }
+      }),
+    );
   });
 
   it("never leaks the cause text", () => {
@@ -116,6 +152,36 @@ describe("notes message texts", () => {
         detail: "Obsidian konnte die Notiz nicht schreiben. Versuche es erneut.",
         action: "retry",
       },
+      {
+        severity: "warning",
+        title: "Notiz inzwischen geändert",
+        detail:
+          "Die Notiz wurde außerhalb des Formulars geändert, auch in Feldern, die du bearbeitet hast. Wähle für jedes dieser Felder den Wert, der gelten soll, und speichere erneut.",
+      },
+      {
+        severity: "warning",
+        title: "Speichern nicht möglich",
+        detail:
+          "Die Notiz ist inzwischen kein Datensatz dieses Typs mehr. Prüfe ihre Eigenschaft „schema“ in Obsidian.",
+      },
+      {
+        severity: "warning",
+        title: "Speichern nicht möglich",
+        detail:
+          "Eine neuere Plugin-Version hat die Notiz inzwischen gespeichert. Aktualisiere WEG Manager und öffne sie dann erneut.",
+      },
+      {
+        severity: "warning",
+        title: "Speichern nicht möglich",
+        detail:
+          "Die „id“ der Notiz hat sich inzwischen geändert, sie ist also nicht mehr derselbe Datensatz. Öffne die Notiz erneut.",
+      },
+      {
+        severity: "warning",
+        title: "Speichern nicht möglich",
+        detail:
+          "Die Notiz ließ sich nicht auf die aktuelle Schemaversion umstellen. Prüfe ihre Eigenschaften in Obsidian.",
+      },
     ]);
   });
 
@@ -157,6 +223,36 @@ describe("notes message texts", () => {
         title: "Note not saved",
         detail: "Obsidian couldn't write the note. Try again.",
         action: "retry",
+      },
+      {
+        severity: "warning",
+        title: "Note changed meanwhile",
+        detail:
+          "The note was changed outside the form, also in fields you edited. Choose the value to keep for each of those fields, then save again.",
+      },
+      {
+        severity: "warning",
+        title: "Can't save the note",
+        detail:
+          "The note is no longer a record of this type. Check its schema property in Obsidian.",
+      },
+      {
+        severity: "warning",
+        title: "Can't save the note",
+        detail:
+          "A newer plugin version saved the note meanwhile. Update WEG Manager, then open the note again.",
+      },
+      {
+        severity: "warning",
+        title: "Can't save the note",
+        detail:
+          "The note's id changed meanwhile, so it's no longer the same record. Open the note again.",
+      },
+      {
+        severity: "warning",
+        title: "Can't save the note",
+        detail:
+          "The note couldn't be converted to the current schema version. Check its properties in Obsidian.",
       },
     ]);
   });

@@ -37,6 +37,28 @@ export type SettingsFields<F extends object, Issue extends IssueLike> = {
  */
 export type Migrations = Readonly<Record<number, (raw: Record<string, unknown>) => unknown>>;
 
+/**
+ * Runs the steps of `migrations` from version `from` up to `to`, in memory, in order. A version
+ * without an entry needs no change. A step that throws or returns no object fails with its version.
+ * The settings and the note codec (`src/domain/notes`) share it.
+ */
+export const runMigrations = (
+  migrations: Migrations,
+  raw: Record<string, unknown>,
+  from: number,
+  to: number,
+): Result.Result<Record<string, unknown>, number> => {
+  let current = raw;
+  for (let step = from; step < to; step++) {
+    const migration = migrations[step];
+    if (migration === undefined) continue;
+    const next = Result.try(() => migration(current));
+    if (Result.isFailure(next) || !Predicate.isObject(next.success)) return Result.fail(step);
+    current = next.success;
+  }
+  return Result.succeed(current);
+};
+
 /** Why a file must not be written: it is from a newer version, or it could not be understood. */
 export type ReadOnlyReason = "newer-version" | "unreadable";
 
@@ -99,19 +121,11 @@ export const makeSettingsCodec = <
   const migrate = (
     raw: Record<string, unknown>,
     from: number,
-  ): Result.Result<Record<string, unknown>, StructuralIssue> => {
-    let current = raw;
-    for (let step = from; step < version; step++) {
-      const migration = migrations[step];
-      if (migration === undefined) continue;
-      const next = Result.try(() => migration(current));
-      if (Result.isFailure(next) || !Predicate.isObject(next.success)) {
-        return Result.fail({ code: "migration.failed", from: step });
-      }
-      current = next.success;
-    }
-    return Result.succeed(current);
-  };
+  ): Result.Result<Record<string, unknown>, StructuralIssue> =>
+    Result.mapError(runMigrations(migrations, raw, from, version), (step) => ({
+      code: "migration.failed" as const,
+      from: step,
+    }));
 
   /** Decodes an object that is not newer than this plugin: migrates it, then reads the fields. */
   const decodeObject = (

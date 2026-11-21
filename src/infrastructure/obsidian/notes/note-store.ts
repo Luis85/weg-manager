@@ -13,8 +13,10 @@ import {
   type FrontmatterChange,
   type NewNote,
   type Note,
+  type NotesServices,
 } from "../../../application/notes";
 import { VaultReadError } from "../../../application/shell";
+import { randomIdGeneratorLayer } from "./id-generator";
 
 /** Obsidian's parser throws this when a note's YAML is broken. */
 const isYamlError = (cause: unknown): boolean =>
@@ -135,4 +137,5 @@ export const noteStoreLayer = (app: App): Layer.Layer<NoteStore> =>
   Layer.succeed(NoteStore)(obsidianNoteStore(app));
 
 /** The notes module's services for one plugin load. */
-export const notesLayer = (plugin: Plugin): Layer.Layer<NoteStore> => noteStoreLayer(plugin.app);
+export const notesLayer = (plugin: Plugin): Layer.Layer<NotesServices> =>
+  Layer.merge(noteStoreLayer(plugin.app), randomIdGeneratorLayer);

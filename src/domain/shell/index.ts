@@ -11,3 +11,4 @@ export {
   type LogLevel,
   type Settings,
 } from "./settings";
+export { runMigrations, type Migrations } from "./settings-codec";

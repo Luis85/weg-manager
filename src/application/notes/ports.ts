@@ -76,3 +76,12 @@ export class NoteStore extends Context.Service<
     >;
   }
 >()("weg-manager/application/NoteStore") {}
+
+/**
+ * Makes the UUID of a new record's `id` (`<type>-<uuid>`, ADR 0007): a fresh lower-case UUID per
+ * call. The plugin's adapter draws it at random; tests and the harness count up, so ids are known.
+ */
+export class IdGenerator extends Context.Service<
+  IdGenerator,
+  { readonly uuid: Effect.Effect<string> }
+>()("weg-manager/application/IdGenerator") {}

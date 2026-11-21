@@ -1,15 +1,10 @@
 import { Effect } from "effect";
+import { toLoggedError } from "./logged-error";
 import { Incidents, Logger, Messages, Notifier } from "./ports";
 import { describeDefect } from "./user-messages";
 
-const describeCause = (cause: unknown): string => {
-  if (cause instanceof Error)
-    return `${cause.name}: ${cause.message}${cause.stack ? `\n${cause.stack}` : ""}`;
-  return String(cause);
-};
-
 /**
- * The single exit for bugs: logs the cause with a fresh incident id and shows the user only that id.
+ * The single exit for bugs: logs the cause (name, message, frames) with a fresh incident id and shows the user only that id.
  * Every boundary (bootstrap, commands, Vue error handler, actions, unload) routes defects here.
  */
 export const reportDefect = (cause: unknown) =>
@@ -18,7 +13,7 @@ export const reportDefect = (cause: unknown) =>
     yield* (yield* Logger).log({
       level: "error",
       event: "defect.reported",
-      context: { cause: describeCause(cause) },
+      error: toLoggedError(cause),
       incidentId,
     });
     const message = describeDefect(incidentId, yield* Messages);

@@ -2,7 +2,7 @@
 
 - Date: 2026-11-21
 - Reviewed: PR #4 at `e10ce37` (branch `claude/upbeat-lovelace-v4rir1`), all of `src/`, `harness/`, `configs/`, `scripts/`, the workflows, `docs/engineering/`, ADR 0001–0005, the handoff, and the product backlog as the source of what features will demand.
-- Status: proposal. Nothing in here is implemented.
+- Status: PR #4 is merged. Phase 1 (steps 1.1 and 1.2) is implemented in PR #6. Phases 2 to 4 are open.
 
 ## Verdict
 
@@ -64,7 +64,7 @@ Ranked by how much feature code would have to be rewritten if the gap were close
 
 Sizes are relative: S is one focused change with its tests, M touches several layers, L is a design plus its implementation. Each step is one pull request against `main` and ends with `npm run verify` at exit 0; steps that touch lifecycle, view or vault behaviour also need a passing e2e run.
 
-**Merge first.** PR #4 is green and already 400 files. Recommended: merge it as it is and run this plan as small pull requests, rather than growing it.
+**Merge first.** Done: PR #4 was squash-merged on 2026-11-21; the plan runs as small pull requests against `main`.
 
 ### Phase 1: fix the defects (no decisions needed)
 

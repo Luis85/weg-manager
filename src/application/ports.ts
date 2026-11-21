@@ -25,11 +25,24 @@ export class VaultReader extends Context.Service<
   { readonly markdownFileCount: Effect.Effect<number, VaultReadError> }
 >()("weg-manager/application/VaultReader") {}
 
+/**
+ * What the log keeps of a thrown cause. `name` is a strict identifier and `frames` hold no path
+ * or file name beyond a last path segment, so both may appear in the diagnostics report. `message`
+ * is raw and reaches the console sink only.
+ */
+export type LoggedError = {
+  readonly name: string;
+  readonly message: string;
+  readonly frames: readonly string[];
+};
+
 export type LogEntry = {
   readonly level: LogLevel;
-  /** Stable dotted name, e.g. `settings.load.failed`. */
+  /** Stable dotted name, e.g. `settings.load.failed`. Anything categorical belongs here. */
   readonly event: string;
-  readonly context?: Readonly<Record<string, unknown>>;
+  /** Counts and flags only. No strings: the diagnostics report prints this as it is. */
+  readonly data?: Readonly<Record<string, number | boolean>>;
+  readonly error?: LoggedError;
   readonly incidentId?: string;
 };
 

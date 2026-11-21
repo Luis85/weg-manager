@@ -8,7 +8,7 @@ const PREFIX = "[weg-manager]";
  * Obsidian's guidelines allow only warn, error and debug, so info goes to debug as well.
  */
 const write = (entry: LogEntry): void => {
-  const details = { context: entry.context, incidentId: entry.incidentId };
+  const details = { data: entry.data, error: entry.error, incidentId: entry.incidentId };
   switch (entry.level) {
     case "error":
       console.error(PREFIX, entry.event, details);

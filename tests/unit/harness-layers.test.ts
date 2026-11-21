@@ -1,6 +1,7 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect, Exit, Fiber } from "effect";
 import { TestClock } from "effect/testing";
+import { NoteStore } from "../../src/application/notes";
 import { countMarkdownFiles, updateGreeting } from "../../src/application/shell/use-cases";
 import type { UserMessage } from "../../src/application/shell/user-messages";
 import {
@@ -80,6 +81,20 @@ describe("harnessLayer", () => {
       });
       yield* Clipboard.use((clipboard) => clipboard.write("y")).pipe(Effect.provide(ok));
       assert.deepStrictEqual(writes, ["y"]);
+    }),
+  );
+
+  it.effect("keeps notes in the in-memory NoteStore, starting empty", () =>
+    Effect.gen(function* () {
+      const notes = yield* NoteStore.use((store) =>
+        Effect.andThen(
+          store.create({ folder: "F", name: "A", frontmatter: { schema: "weg-manager.x/v1" } }),
+          store.list,
+        ),
+      ).pipe(Effect.provide(harnessLayer("default")));
+      assert.deepStrictEqual(notes, [
+        { path: "F/A.md", frontmatter: { schema: "weg-manager.x/v1" } },
+      ]);
     }),
   );
 });

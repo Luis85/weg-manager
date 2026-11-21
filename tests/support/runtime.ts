@@ -1,5 +1,6 @@
 import { Effect, Layer, ManagedRuntime } from "effect";
 import type { AppRuntime } from "../../src/application/app-services";
+import { memoryNoteStore } from "../../src/infrastructure/memory/notes";
 import { InvalidSettingsError } from "../../src/application/shell/errors";
 import { messagesLayer } from "../../src/application/messages";
 import type { Language } from "../../src/application/shell/i18n/catalog";
@@ -45,6 +46,7 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
   const logger = recordingLogger();
   const clipboard = recordingClipboard();
   const events = recordingEventBus();
+  const notes = memoryNoteStore();
   const messages = messagesLayer(options.language ?? "de");
   const live = SettingsServiceLive.pipe(
     Layer.provide(Layer.mergeAll(store.layer, notifier.layer, messages)),
@@ -63,7 +65,8 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
     testHostInfo,
     messages,
     events.layer,
+    notes.layer,
   );
   const runtime: AppRuntime = ManagedRuntime.make(layer);
-  return { runtime, store, notifier, vault, logger, clipboard, events };
+  return { runtime, store, notifier, vault, logger, clipboard, events, notes };
 };

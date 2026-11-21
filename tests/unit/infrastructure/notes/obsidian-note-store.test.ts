@@ -1,0 +1,129 @@
+import { assert, describe, expect, it } from "@effect/vitest";
+import { Effect, Result } from "effect";
+import { vi } from "vitest";
+import { NoteStore } from "../../../../src/application/notes";
+import { noteStoreLayer } from "../../../../src/infrastructure/obsidian/notes";
+import { App, TFile, normalizePath, stringifyYaml } from "../../../support/obsidian";
+import { splitFrontmatter } from "../../../support/obsidian/metadata-cache";
+import { noteStoreContract, type NoteStoreFixture } from "../../../support/notes/contract";
+import { NORMALIZE_CASES } from "../../../support/notes/fidelity";
+
+vi.mock("obsidian", () => import("@test/obsidian"));
+
+const parentOf = (path: string) => path.slice(0, Math.max(path.lastIndexOf("/"), 0));
+
+const textOf = (frontmatter: Parameters<NoteStoreFixture["seed"]>[1], body = ""): string => {
+  if (frontmatter === "none") return body;
+  if (frontmatter === "broken") return `---\nschema: [unclosed\n---\n${body}`;
+  return `---\n${stringifyYaml(frontmatter)}---\n${body}`;
+};
+
+/** The Obsidian adapter on the double, with handles that go through the double's public API. */
+const onDouble = (app = new App()): NoteStoreFixture => ({
+  layer: noteStoreLayer(app as never),
+  seed: async (path, frontmatter, body) => {
+    const folder = parentOf(path);
+    if (folder !== "" && app.vault.getFolderByPath(folder) === null) {
+      await app.vault.createFolder(folder);
+    }
+    const file = app.vault.getFileByPath(path);
+    const text = textOf(frontmatter, body);
+    if (file === null) await app.vault.create(path, text);
+    else await app.vault.process(file, () => text);
+  },
+  settle: () => app.metadataCache.whenIndexed(),
+  body: async (path) => {
+    const file = app.vault.getFileByPath(path);
+    if (file === null) return undefined;
+    const text = await app.vault.read(file);
+    return splitFrontmatter(text)?.body ?? text;
+  },
+  isFolder: (path) => app.vault.getFolderByPath(path) !== null,
+  setFailReads: (fail) => {
+    app.vault.failReads = fail;
+  },
+  setFailWrites: (fail) => {
+    app.vault.failWrites = fail;
+  },
+  holdWrites: () => app.vault.holdWrites(),
+  releaseWrites: () => app.vault.releaseWrites(),
+  heldWrites: () => app.vault.heldWrites(),
+});
+
+noteStoreContract("Obsidian adapter on the double", () => onDouble());
+
+const run = <A, E>(app: App, use: (store: NoteStore["Service"]) => Effect.Effect<A, E>) =>
+  NoteStore.use(use).pipe(Effect.provide(noteStoreLayer(app as never)));
+
+const textAt = (app: App, path: string) => {
+  const file = app.vault.getFileByPath(path);
+  if (file === null) throw new Error(`no file at ${path}`);
+  return app.vault.read(file);
+};
+
+describe("Obsidian NoteStore adapter", () => {
+  it.effect("writes a new note as one file: YAML frontmatter, then the body", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      yield* run(app, (notes) =>
+        notes.create({
+          folder: "F",
+          name: "A",
+          frontmatter: { schema: "weg-manager.community/v1", tags: ["a", "b"], none: null },
+          body: "# A\n",
+        }),
+      );
+      assert.strictEqual(
+        yield* Effect.promise(() => textAt(app, "F/A.md")),
+        "---\nschema: weg-manager.community/v1\ntags:\n  - a\n  - b\nnone:\n---\n# A\n",
+      );
+    }),
+  );
+
+  it.effect("writes a note without frontmatter as its body alone", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      yield* run(app, (notes) => notes.create({ folder: "", name: "A", frontmatter: {} }));
+      assert.strictEqual(yield* Effect.promise(() => textAt(app, "A.md")), "");
+    }),
+  );
+
+  it.effect("returns a written note before the metadata cache has caught up", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      const note = yield* run(app, (notes) =>
+        notes.create({ folder: "", name: "A", frontmatter: { schema: "weg-manager.x/v1" } }),
+      );
+      assert.deepStrictEqual(note.frontmatter, { schema: "weg-manager.x/v1" });
+      const file = app.vault.getFileByPath("A.md");
+      assert.isTrue(file instanceof TFile);
+      assert.isNull(app.metadataCache.getFileCache(file as TFile));
+    }),
+  );
+
+  it.effect("leaves the file alone when an update changes nothing", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      yield* Effect.promise(() => app.vault.create("A.md", "---\na: 1\n---\nbody\n"));
+      const modified = vi.fn<() => void>();
+      app.vault.on("modify", modified);
+      yield* run(app, (notes) => notes.update("A.md", () => Result.succeed({ set: { a: 1 } })));
+      assert.strictEqual(modified.mock.calls.length, 0);
+    }),
+  );
+
+  it.effect("treats a non-Markdown file as no note", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      yield* Effect.promise(() => app.vault.create("A.txt", "x"));
+      const error = yield* Effect.flip(run(app, (notes) => notes.read("A.txt")));
+      assert.strictEqual(error._tag, "NoteNotFoundError");
+    }),
+  );
+});
+
+describe("the double's normalizePath", () => {
+  it.each(NORMALIZE_CASES)("normalizes %j to %j as Obsidian does", (input, expected) => {
+    expect(normalizePath(input)).toBe(expected);
+  });
+});

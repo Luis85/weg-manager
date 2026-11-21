@@ -53,6 +53,8 @@ const obsidianmdForVue = [
  *   (`../shell`, never `../shell/ports`), also between layers of the same module.
  * - A core module imports no module listed after it: `shell` none, `notes` only `shell`. Feature
  *   modules may import each other's index.
+ * - Nothing in `src/` imports the in-memory adapters (`src/infrastructure/memory/`): they serve the
+ *   tests and the harness and must never reach `main.js`.
  */
 const CORE_MODULES = ["shell", "notes"];
 const FEATURE_MODULES = ["communities"];
@@ -61,10 +63,15 @@ const pastIndex = MODULES.map((module) => ({
   regex: `(^|/)${module}/(?!index$)`,
   message: `Import module ${module} only through its index.ts (ADR 0006).`,
 }));
+const testOnly = {
+  regex: "(^|/)memory(/|$)",
+  message: "The in-memory adapters are for tests and the harness only (ADR 0007).",
+};
 const moduleFolders = (/** @type {string} */ module) => [
   `src/domain/${module}/**`,
   `src/application/${module}/**`,
   `src/infrastructure/obsidian/${module}/**`,
+  `src/infrastructure/memory/${module}/**`,
   `src/presentation/${module}/**`,
 ];
 /** @returns {import("eslint").Linter.RulesRecord} */
@@ -73,11 +80,12 @@ const restrict = (/** @type {{ regex: string; message: string }[]} */ patterns) 
 });
 /** @type {import("eslint").Linter.Config[]} */
 const moduleBoundaries = [
-  { files: ["src/**/*.ts", "src/**/*.vue"], rules: restrict(pastIndex) },
+  { files: ["src/**/*.ts", "src/**/*.vue"], rules: restrict([...pastIndex, testOnly]) },
   ...CORE_MODULES.map((module, index) => ({
     files: moduleFolders(module),
     rules: restrict([
       ...pastIndex,
+      testOnly,
       ...MODULES.slice(index + 1).map((later) => ({
         regex: `(^|/)${later}(/|$)`,
         message: `Module ${module} never imports ${later}: feature → notes → shell (ADR 0006).`,
@@ -98,7 +106,7 @@ export default defineConfig(
       ".claude/**",
       "skills/**",
       "node_modules/**",
-      "dist/**",
+      "**/dist/**",
       "release/**",
       "reports/**",
       ".stryker-tmp/**",

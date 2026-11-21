@@ -10,6 +10,12 @@ export const EXPECTED_FILES = ["main.js", "manifest.json", "styles.css"];
 /** Size budgets in bytes; raising one needs an ADR. */
 export const BUDGETS = { "main.js": 1.5 * 1024 * 1024, "styles.css": 250 * 1024 };
 
+/**
+ * Every failure the in-memory adapters (`src/infrastructure/memory/`) make up carries this text,
+ * so a `main.js` that bundled one of them holds it.
+ */
+export const TEST_ONLY_MARKER = "weg-manager/test-only";
+
 const HOST_EXTERNALS = [/^obsidian$/, /^electron$/, /^@codemirror\//, /^@lezer\//];
 const BUILTINS = new Set(builtinModules);
 
@@ -32,6 +38,8 @@ const checkJs = (js) => {
     const name = match[1] ?? "";
     if (!isAllowedRequire(name)) found.push(`main.js: require("${name}") must be bundled`);
   }
+  if (js.includes(TEST_ONLY_MARKER))
+    found.push("main.js: holds test-only code (the in-memory adapters)");
   if (/(fetch\(\s*|\.open\(\s*["'`][A-Z]+["'`]\s*,\s*)["'`]https?:/i.test(js)) {
     found.push("main.js: network target in a string literal (no runtime network access)");
   }
@@ -75,7 +83,8 @@ const checkCss = (css, { id, prefix }) => {
 
 /**
  * Build-output invariants: exactly three files, manifest equal to the root one, a CommonJS default
- * export, everything but host externals bundled, no network targets, scoped CSS, size budgets.
+ * export, everything but host externals bundled, no network targets, no test-only code, scoped
+ * CSS, size budgets.
  * @param {string} dir
  * @param {object} rootManifest
  * @param {{ id: string; prefix: string }} options

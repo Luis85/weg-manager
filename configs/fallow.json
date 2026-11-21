@@ -48,6 +48,11 @@
         "publicFiles": ["index.ts"]
       },
       {
+        "name": "memory",
+        "autoDiscover": ["src/infrastructure/memory"],
+        "publicFiles": ["index.ts"]
+      },
+      {
         "name": "infrastructure",
         "patterns": ["src/infrastructure/**"]
       },
@@ -64,11 +69,11 @@
     "rules": [
       {
         "from": "domain",
-        "allow": ["domain/shell"]
+        "allow": ["domain/shell", "domain/notes"]
       },
       {
         "from": "application",
-        "allow": ["domain", "application/shell", "application-composition"]
+        "allow": ["domain", "application/shell", "application/notes", "application-composition"]
       },
       {
         "from": "application-composition",
@@ -78,6 +83,7 @@
         "from": "adapters",
         "allow": [
           "adapters/shell",
+          "adapters/notes",
           "infrastructure",
           "application",
           "application-composition",
@@ -88,6 +94,10 @@
       {
         "from": "infrastructure",
         "allow": ["adapters", "application", "application-composition", "domain"]
+      },
+      {
+        "from": "memory",
+        "allow": ["application", "application-composition", "domain"]
       },
       {
         "from": "presentation",

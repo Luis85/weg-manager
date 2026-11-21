@@ -8,6 +8,7 @@ type EventOf<Tag extends AppEventTag> = Extract<AppEvent, { readonly _tag: Tag }
  * Each subscriber has its own subscription, so a subscriber that fails or dies ends only its own
  * stream: the bus and every other subscriber keep running.
  */
+// Stryker disable StringLiteral: a service key only has to be unique; tests cannot observe its text.
 export class EventBus extends Context.Service<
   EventBus,
   {
@@ -23,8 +24,8 @@ export class EventBus extends Context.Service<
      */
     readonly subscribe: Effect.Effect<Stream.Stream<AppEvent>, never, Scope.Scope>;
   }
-  // Stryker disable next-line StringLiteral: a service key only has to be unique; tests cannot observe its text.
 >()("weg-manager/application/EventBus") {}
+// Stryker restore StringLiteral
 
 /**
  * An unbounded `PubSub`: an Obsidian callback is synchronous and cannot wait for back-pressure,

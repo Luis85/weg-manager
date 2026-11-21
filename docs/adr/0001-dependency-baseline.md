@@ -72,6 +72,18 @@ Runtime: Node 24 LTS (`.nvmrc`), npm 11.
 
 The `vue-demi` postinstall script is not run (npm 11 `allowScripts`); `vue-demi` defaults to Vue 3, which is what this repo uses.
 
+### Security overrides (2026-11-21)
+
+`npm audit` reported 25 moderate findings from three advisory sources deep in dev tooling; nothing reaches `dist/`. npm's suggested fixes were downgrades to old majors (for example `@wdio/cli` 9, `eslint-plugin-obsidianmd` 0.0.2), so the vulnerable copies are replaced through `overrides` in `package.json` instead. `npm audit` now reports 0.
+
+| Override | Advisory | Pulled in by | Why it is safe |
+| --- | --- | --- | --- |
+| `qs@<6.17.0` → 6.17.1 | GHSA-q8mj-m7cp-5q26, GHSA-x5fp-wj9c-mxmx, GHSA-4mjr-xmp4-gh2g, GHSA-6pq8-jhm2-2vcw (DoS) | `@stryker-mutator/core` → `typed-rest-client` (dashboard reporter, unused) | Minor update within 6.x |
+| `minimatch@>=7.0.0 <11.0.1` → 11.0.9 | GHSA-g3hv-75wg-m249 (ReDoS) | `eslint-plugin-n` (via `eslint-plugin-obsidianmd`), Stryker, `editorconfig` (via `@vue/test-utils`), `readdir-glob` (via WebdriverIO) | All four use only `Minimatch`, `minimatch()` and `escape`, which 11 keeps. 11 drops only the `AST` and `makeRe` exports. |
+| `glob@>=9.0.0 <14.0.2` → 14.0.6 | GHSA-3g3m-2fjr-6pw4 | `mocha` (e2e runner) | 14 has the same exports as 13 |
+
+Verified with `npm run verify`, `npm run test:e2e` and `npm run test:mutation:full`. Remove an override once the upstream packages require a patched version themselves (check with `npm ls <pkg>` after each update).
+
 ### Other choices
 
 - `isDesktopOnly: true` until the plugin is verified on Obsidian mobile.

@@ -19,6 +19,7 @@ export type SettingsStatus = {
   readonly readOnlyReason?: ReadOnlyReason;
 };
 
+// Stryker disable StringLiteral: a service key only has to be unique; tests cannot observe its text.
 export class SettingsService extends Context.Service<
   SettingsService,
   {
@@ -28,8 +29,8 @@ export class SettingsService extends Context.Service<
     /** Emits the current value first, then every change. */
     readonly changes: Stream.Stream<Settings>;
   }
-  // Stryker disable next-line StringLiteral: a service key only has to be unique; tests cannot observe its text.
 >()("weg-manager/application/SettingsService") {}
+// Stryker restore StringLiteral
 
 type Loaded = DecodedSettings & { readonly readOnlyReason?: ReadOnlyReason };
 

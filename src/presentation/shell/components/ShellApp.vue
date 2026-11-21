@@ -2,7 +2,7 @@
 import UApp from "@nuxt/ui/components/App.vue";
 import { de, en } from "@nuxt/ui/locale";
 import { computed, type Component } from "vue";
-import { useRouting, type FrameEntry } from "../navigation";
+import { useHistory, useRouting, type FrameEntry } from "../navigation";
 import { useMessages } from "../runtime/use-runtime";
 import AppFrame from "./AppFrame.vue";
 import RouteOutlet from "./RouteOutlet.vue";
@@ -17,6 +17,7 @@ defineProps<{ portal: HTMLElement; content?: Component }>();
 const catalog = useMessages();
 const locale = catalog.shell.language === "de" ? de : en;
 const routing = useRouting();
+const history = useHistory();
 
 const entries = computed<FrameEntry[]>(() =>
   routing.definition.menu.map((entry) => ({
@@ -31,7 +32,7 @@ const entries = computed<FrameEntry[]>(() =>
 <template>
   <UApp :locale="locale" :portal="portal" :toaster="null">
     <component :is="content" v-if="content" />
-    <AppFrame v-else :entries="entries">
+    <AppFrame v-else :entries="entries" :history="history">
       <template v-if="routing.context" #context>
         <component :is="routing.context" />
       </template>

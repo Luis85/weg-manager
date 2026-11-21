@@ -4,6 +4,7 @@
 export { releaseAll } from "./release";
 export {
   memoryNavigation,
+  type MemoryNavigation,
   type ScreenLoader,
   type SurfaceDefinition,
   type ViewNavigation,

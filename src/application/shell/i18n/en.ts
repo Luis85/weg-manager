@@ -75,7 +75,7 @@ export const shellEn: ShellCatalog = {
     counting: "Counting notes…",
   },
   greetingForm: { label: "Greeting", save: "Save" },
-  frame: { navigation: "Views", content: "Content" },
+  frame: { navigation: "Views", content: "Content", back: "Back", forward: "Forward" },
   routes: { welcome: "Home" },
   notFound: {
     title: "Not found",

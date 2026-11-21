@@ -36,7 +36,7 @@ const mounted = async (
 const shown = (root: ParentNode) => root.querySelector("[data-testid=screen] h2")?.textContent;
 const routeShown = (root: ParentNode) => root.querySelector("[data-testid=route]")?.textContent;
 const navButtons = (root: ParentNode) => [
-  ...root.querySelectorAll<HTMLButtonElement>("nav button"),
+  ...root.querySelectorAll<HTMLButtonElement>("nav li button"),
 ];
 const buttonNamed = (root: ParentNode, label: string): HTMLButtonElement => {
   const button = [...root.querySelectorAll("button")].find((el) => el.textContent.includes(label));
@@ -144,6 +144,68 @@ describe("navigation in a surface", () => {
     expect(navigation.listeners()).toBe(1);
     close();
     expect(navigation.listeners()).toBe(0);
+  });
+});
+
+/** One of the frame's history controls, found by its accessible name. */
+const control = (root: ParentNode, label: string) => {
+  const found = root.querySelector<HTMLButtonElement>(`nav button[aria-label="${label}"]`);
+  if (found === null) throw new Error(`no control "${label}"`);
+  return found;
+};
+const enabled = (root: ParentNode) => [
+  !control(root, "Zurück").disabled,
+  !control(root, "Vorwärts").disabled,
+];
+
+describe("history in a surface", () => {
+  it("goes back and forward with the frame's controls", async () => {
+    const { root, navigation } = await mounted();
+    expect(enabled(root)).toEqual([false, false]);
+    buttonNamed(root, "Second").click();
+    await settle();
+    buttonNamed(root, "open item").click();
+    await settle();
+    expect(enabled(root)).toEqual([true, false]);
+    control(root, "Zurück").click();
+    await settle();
+    expect(shown(root)).toBe("Second screen");
+    control(root, "Zurück").click();
+    await settle();
+    expect(shown(root)).toBe("First screen");
+    expect(enabled(root)).toEqual([false, true]);
+    control(root, "Vorwärts").click();
+    await settle();
+    expect(shown(root)).toBe("Second screen");
+    expect(navigation.history()).toStrictEqual({
+      back: [{ name: "first" }],
+      current: { name: "second" },
+      forward: [{ name: "item", id: "42" }],
+    });
+  });
+
+  it("records nothing when the current entry is chosen again", async () => {
+    const { root, navigation } = await mounted();
+    buttonNamed(root, "First").click();
+    await settle();
+    expect(enabled(root)).toEqual([false, false]);
+    expect(navigation.history().back).toEqual([]);
+  });
+
+  it("lets a screen go back through useHistory", async () => {
+    const { root } = await mounted();
+    expect(buttonNamed(root, "go back").disabled).toBe(true);
+    buttonNamed(root, "open item").click();
+    await settle();
+    buttonNamed(root, "go back").click();
+    await settle();
+    expect(shown(root)).toBe("First screen");
+  });
+
+  it("labels the controls in English", async () => {
+    const { root } = await mounted({ language: "en" });
+    expect(control(root, "Back").disabled).toBe(true);
+    expect(control(root, "Forward").disabled).toBe(true);
   });
 });
 

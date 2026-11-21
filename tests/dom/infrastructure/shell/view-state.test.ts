@@ -57,6 +57,13 @@ const button = (view: TestView, label: string): HTMLButtonElement => {
   return found;
 };
 
+/** One of the frame's history controls, found by its accessible name. */
+const control = (view: TestView, label: string): HTMLButtonElement => {
+  const found = view.contentEl.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`);
+  if (found === null) throw new Error(`no control "${label}"`);
+  return found;
+};
+
 afterEach(async () => {
   document.body.replaceChildren();
   await disposeAll();
@@ -98,60 +105,78 @@ describe("ShellView state", () => {
     expect(shown(view)).toBe("First screen");
   });
 
-  it("records a navigation from inside the surface in the leaf's history and saves the layout", async () => {
+  it("is a fixed tab, so a file opened while it is active goes to another tab", async () => {
+    const { open } = workspace();
+    const { view } = await open();
+    expect(view.navigation).toBe(false);
+  });
+
+  it("records a navigation from inside the surface in its own history and saves the layout", async () => {
     const { app, open } = workspace();
-    const { view, leaf } = await open();
+    const { view } = await open();
     const saves = app.workspace.layoutSaves;
+    expect(control(view, "Zurück").disabled).toBe(true);
     button(view, "open item").click();
     await settle();
     expect(view.getState()).toEqual({ route: { name: "item", id: "42" } });
-    expect(leaf.history.backHistory.map((entry) => entry.state.state)).toEqual([
-      { route: { name: "first" } },
-    ]);
+    expect(control(view, "Zurück").disabled).toBe(false);
     expect(app.workspace.layoutSaves).toBe(saves + 1);
   });
 
-  it("goes back and forward through Obsidian's leaf history", async () => {
-    const { open } = workspace();
-    const { view, leaf } = await open();
+  it("goes back and forward in its own history, and Obsidian keeps each route", async () => {
+    const { app, open } = workspace();
+    const { view } = await open();
     button(view, "Second").click();
     await settle();
     button(view, "open item").click();
     await settle();
-    await leaf.history.back();
+    const saves = app.workspace.layoutSaves;
+    control(view, "Zurück").click();
     await settle();
-    expect(shown(view)).toBe("Second screen");
-    await leaf.history.back();
+    expect(view.getState()).toEqual({ route: { name: "second" } });
+    control(view, "Zurück").click();
     await settle();
     expect(shown(view)).toBe("First screen");
     expect(view.getState()).toEqual({ route: { name: "first" } });
-    await leaf.history.forward();
+    control(view, "Vorwärts").click();
     await settle();
     expect(shown(view)).toBe("Second screen");
-    expect(leaf.history.backHistory).toHaveLength(1);
-    expect(leaf.history.forwardHistory).toHaveLength(1);
+    expect(app.workspace.layoutSaves).toBe(saves + 3);
+    expect([control(view, "Zurück").disabled, control(view, "Vorwärts").disabled]).toEqual([
+      false,
+      false,
+    ]);
   });
 
-  it("records nothing when the route does not change", async () => {
+  it("records nothing when the route does not change, and never asks Obsidian to", async () => {
     const { app, open } = workspace();
-    const { view, leaf } = await open();
+    const { view } = await open();
     const saves = app.workspace.layoutSaves;
     button(view, "First").click();
     await settle();
-    const result = { history: false };
-    await view.setState({ route: { name: "first" } }, result);
-    expect(result.history).toBe(false);
-    expect(leaf.history.backHistory).toEqual([]);
+    const same = { history: false };
+    await view.setState({ route: { name: "first" } }, same);
     expect(app.workspace.layoutSaves).toBe(saves);
+    expect(control(view, "Zurück").disabled).toBe(true);
+    const changed = { history: false };
+    await view.setState({ route: { name: "second" } }, changed);
+    expect([same.history, changed.history]).toEqual([false, false]);
   });
 
-  it("reports a navigation that Obsidian rejects once and stays on the route", async () => {
-    const { open, logger } = workspace();
-    const { view, leaf } = await open();
-    vi.spyOn(leaf, "setViewState").mockRejectedValueOnce(new Error("layout broke"));
-    button(view, "open item").click();
+  it("starts the history at the state a new view is opened with", async () => {
+    const { open } = workspace();
+    const { view } = await open({ route: { name: "second" } });
+    expect(shown(view)).toBe("Second screen");
+    expect(control(view, "Zurück").disabled).toBe(true);
+  });
+
+  it("treats a state set on an open view as a navigation", async () => {
+    const { open } = workspace();
+    const { view } = await open();
+    await view.setState({ route: { name: "second" } }, { history: false });
     await settle();
-    expect(logger.entries().filter((entry) => entry.event === "defect.reported")).toHaveLength(1);
+    control(view, "Zurück").click();
+    await settle();
     expect(shown(view)).toBe("First screen");
   });
 
@@ -214,7 +239,7 @@ describe("openRoute", () => {
     expect(app.workspace.revealed).toEqual(leaves);
   });
 
-  it("reveals the open view and sets its route, recorded in its history", async () => {
+  it("reveals the open view and sets its route, as a step in the view's history", async () => {
     const { app, open } = workspace();
     const { leaf, view } = await open();
     await openRoute(app.workspace as never, { name: "item", id: "3" });
@@ -222,7 +247,18 @@ describe("openRoute", () => {
     expect(app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)).toEqual([leaf]);
     expect(app.workspace.revealed).toEqual([leaf]);
     expect(routeShown(view)).toBe('{"name":"item","id":"3"}');
-    expect(leaf.history.backHistory).toHaveLength(1);
+    control(view, "Zurück").click();
+    await settle();
+    expect(shown(view)).toBe("First screen");
+  });
+
+  it("starts a view it opens on the route, with nothing to go back to", async () => {
+    const { app } = workspace();
+    await openRoute(app.workspace as never, { name: "second" });
+    await settle();
+    const view = app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)[0]?.view as unknown as TestView;
+    expect(shown(view)).toBe("Second screen");
+    expect(control(view, "Zurück").disabled).toBe(true);
   });
 
   it("without a route, opens a view on the start route or reveals the open one as it is", async () => {

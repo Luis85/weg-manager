@@ -11,16 +11,11 @@ export type ViewState = {
   readonly type: string;
   readonly state?: Record<string, unknown>;
   readonly active?: boolean;
-  /** Set by the leaf's history when it goes back or forward; nothing is recorded then. */
-  readonly popstate?: boolean;
 };
-
-/** What the leaf's history keeps of one step. */
-export type HistoryState = { readonly state: ViewState };
 
 export abstract class View extends Component {
   readonly containerEl: HTMLElement;
-  /** Whether the view is navigable: only then does the leaf record its history (Obsidian 1.15.1). */
+  /** Whether the view is navigable: Obsidian then opens files into its tab. */
   navigation = false;
   constructor(readonly leaf: WorkspaceLeaf) {
     super();
@@ -54,42 +49,9 @@ export abstract class ItemView extends View {
   }
 }
 
-/**
- * The leaf's back and forward stacks, as Obsidian 1.15.1 keeps them (`leaf.history`, not in the
- * public API): a recorded step clears the forward stack; going back or forward sets the stored
- * view state again with `popstate`, so the step is not recorded twice.
- */
-export class LeafHistory {
-  backHistory: HistoryState[] = [];
-  forwardHistory: HistoryState[] = [];
-
-  constructor(private readonly leaf: WorkspaceLeaf) {}
-
-  pushState(entry: HistoryState): void {
-    this.backHistory.push(entry);
-    this.forwardHistory = [];
-  }
-
-  back(): Promise<void> {
-    return this.go(this.backHistory, this.forwardHistory);
-  }
-
-  forward(): Promise<void> {
-    return this.go(this.forwardHistory, this.backHistory);
-  }
-
-  private async go(from: HistoryState[], to: HistoryState[]): Promise<void> {
-    const target = from.pop();
-    if (target === undefined) return;
-    to.push(this.leaf.getHistoryState());
-    await this.leaf.setViewState({ ...target.state, popstate: true });
-  }
-}
-
 export class WorkspaceLeaf {
   view: View | null = null;
   readonly containerEl: HTMLElement;
-  readonly history = new LeafHistory(this);
   private viewType: string | null = null;
   /** Like Obsidian, a `setViewState` while another one runs does nothing. */
   private working = false;
@@ -117,29 +79,20 @@ export class WorkspaceLeaf {
       : { type: this.viewType, state: this.view.getState() };
   }
 
-  getHistoryState(): HistoryState {
-    const { type, state } = this.getViewState();
-    return { state: { type: type ?? "empty", ...(state === undefined ? {} : { state }) } };
-  }
-
   /**
    * As Obsidian 1.15.1: a new view type creates and opens the view; then the view gets the state.
-   * A step is recorded when the view asks for it (`result.history`), is navigable, and the step
-   * did not come from the history itself.
+   * An open view of the same type is kept and only gets the new state.
    */
   async setViewState(state: ViewState): Promise<void> {
     if (this.working) return;
     this.working = true;
     try {
-      const previous = this.view === null ? undefined : this.getHistoryState();
       const result: ViewStateResult = { history: false };
       if (this.view === null || state.type !== this.viewType) {
         await this.openView(state.type);
         result.history = true;
       }
       await this.view?.setState(state.state ?? {}, result);
-      if (state.popstate === true) result.history = false;
-      if (result.history && previous !== undefined) this.record(previous);
     } finally {
       this.working = false;
     }
@@ -149,14 +102,6 @@ export class WorkspaceLeaf {
     await this.closeView();
     this.containerEl.remove();
     this.workspace.removeLeaf(this);
-  }
-
-  /** Only a navigable view is recorded, and never the same state twice in a row. */
-  private record(previous: HistoryState): void {
-    if (this.view?.navigation !== true) return;
-    const last = this.history.backHistory.at(-1);
-    if (last !== undefined && JSON.stringify(last.state) === JSON.stringify(previous.state)) return;
-    this.history.pushState(previous);
   }
 
   private async openView(type: string): Promise<void> {

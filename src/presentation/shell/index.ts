@@ -4,6 +4,6 @@ export { default as ErrorNotice } from "./components/ErrorNotice.vue";
 export { default as NotFoundState } from "./components/NotFoundState.vue";
 export { shellScreens } from "./screens";
 export { mountSurface } from "./mount";
-export { useNavigate, useRoute } from "./navigation";
+export { useHistory, useNavigate, useRoute } from "./navigation";
 export { useCommand, useMessages, useQuery } from "./runtime/use-runtime";
 export { useAppEvents, useSettings, useSettingsStatus, useStream } from "./runtime/use-stream";

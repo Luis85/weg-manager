@@ -153,7 +153,7 @@ describe("surface texts", () => {
 
   it("words the app frame, its routes and the not-found state", () => {
     expect([de.shell.frame, de.shell.routes, de.shell.notFound]).toEqual([
-      { navigation: "Ansichten", content: "Inhalt" },
+      { navigation: "Ansichten", content: "Inhalt", back: "Zurück", forward: "Vorwärts" },
       { welcome: "Start" },
       {
         title: "Nicht gefunden",
@@ -163,7 +163,7 @@ describe("surface texts", () => {
       },
     ]);
     expect([en.shell.frame, en.shell.routes, en.shell.notFound]).toEqual([
-      { navigation: "Views", content: "Content" },
+      { navigation: "Views", content: "Content", back: "Back", forward: "Forward" },
       { welcome: "Home" },
       {
         title: "Not found",

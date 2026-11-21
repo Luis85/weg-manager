@@ -1,13 +1,13 @@
 import { ItemView, type ViewStateResult, type WorkspaceLeaf } from "obsidian";
 import type { AppRuntime } from "../../../application/app-services";
-import { reportDefect, type RouteLike } from "../../../application/shell";
+import type { RouteLike } from "../../../application/shell";
 import {
   loadSurface as importSurface,
+  memoryNavigation,
+  type MemoryNavigation,
   type SurfaceDefinition,
   type SurfaceLoader,
-  type ViewNavigation,
 } from "../../../presentation/shell/host";
-import { runSafely } from "./run";
 
 export const SHELL_VIEW_TYPE = "weg-manager-view";
 
@@ -16,22 +16,29 @@ const routeIn = (state: unknown): unknown =>
   typeof state === "object" && state !== null ? (state as { route?: unknown }).route : undefined;
 
 /**
- * One Vue surface per open view, showing the view's own route (ADR 0008).
+ * One Vue surface per open view, showing the view's own route (ADR 0008 and its amendment).
  *
  * - Obsidian keeps the route: `getState()` returns it, so it is in the saved workspace layout, and
  *   `setState()` decodes it; an unknown or broken state gives the start route and never throws.
- * - A navigation from inside the surface goes through `leaf.setViewState`, so Obsidian records it
- *   in the leaf's history and its back and forward buttons work. Obsidian records only views that
- *   are `navigation` views. A changed route also asks Obsidian to save the layout.
+ *   Every change of the route asks Obsidian to save the layout.
+ * - The history is the view's own, in memory, and not saved. The first state Obsidian sets (a
+ *   restored layout, `openRoute` on a new view) is where it starts; a state set later on the open
+ *   view (`openRoute` on it) is a navigation like one from inside the surface.
  * - `surfaces` holds the close of every open view, so bootstrap can close them all before it
  *   disposes the runtime. The close is registered before the surface module has loaded: a view
  *   closed or released while it loads never mounts.
  */
 export class ShellView<R extends RouteLike> extends ItemView {
-  override navigation = true;
+  /**
+   * A fixed tab, not a navigable one: with `true`, Obsidian opens a file into this tab when it is
+   * the active one (a click in the file explorer, `getLeaf(false)`), and the view would vanish.
+   * The view keeps its own history instead of Obsidian's leaf history, which records only
+   * navigable views.
+   */
+  override navigation = false;
   private close: (() => void) | undefined;
-  private route: R;
-  private readonly listeners = new Set<(route: R) => void>();
+  private readonly routes: MemoryNavigation<R>;
+  private started = false;
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -41,7 +48,8 @@ export class ShellView<R extends RouteLike> extends ItemView {
     private readonly loadSurface: SurfaceLoader = importSurface,
   ) {
     super(leaf);
-    this.route = definition.start;
+    this.routes = memoryNavigation(definition);
+    this.routes.onChange(() => this.app.workspace.requestSaveLayout());
   }
 
   getViewType(): string {
@@ -57,35 +65,16 @@ export class ShellView<R extends RouteLike> extends ItemView {
   }
 
   override getState(): Record<string, unknown> {
-    return { ...super.getState(), route: this.route };
+    return { ...super.getState(), route: this.routes.current() };
   }
 
   override async setState(state: unknown, result: ViewStateResult): Promise<void> {
     const route = this.definition.decode(routeIn(state));
-    if (!this.definition.equals(route, this.route)) {
-      this.route = route;
-      result.history = true;
-      for (const listener of this.listeners) listener(route);
-      this.app.workspace.requestSaveLayout();
-    }
+    if (this.started) this.routes.navigate(route);
+    else this.routes.reset(route);
+    this.started = true;
     await super.setState(state, result);
   }
-
-  /** What the surface sees of this view: the route, and the way to change it through Obsidian. */
-  private readonly navigationOfView: ViewNavigation<R> = {
-    current: () => this.route,
-    navigate: (route) => {
-      void this.leaf
-        .setViewState({ type: SHELL_VIEW_TYPE, state: { route } })
-        .catch((cause: unknown) => runSafely(this.runtime, reportDefect(cause)));
-    },
-    onChange: (listener) => {
-      this.listeners.add(listener);
-      return () => {
-        this.listeners.delete(listener);
-      };
-    },
-  };
 
   override async onOpen(): Promise<void> {
     if (this.close !== undefined) return;
@@ -102,7 +91,7 @@ export class ShellView<R extends RouteLike> extends ItemView {
     if (closed) return;
     release = mountSurface(this.contentEl, this.runtime, {
       surface: this.definition,
-      navigation: this.navigationOfView,
+      navigation: this.routes,
     });
   }
 

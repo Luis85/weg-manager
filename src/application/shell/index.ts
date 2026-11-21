@@ -32,6 +32,7 @@ export {
   type DeviceValue,
   type LogEntry,
 } from "./ports";
+export { historyAt, stepBack, stepForward, visit, type RouteHistory } from "./history";
 export { ShellRoute, routesOf, type RouteLike, type Routes } from "./routes";
 export type { ShellServices } from "./services";
 export { SettingsService, SettingsServiceLive, type SettingsStatus } from "./settings-service";

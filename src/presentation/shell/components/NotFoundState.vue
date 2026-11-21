@@ -17,7 +17,7 @@ const { definition, navigate } = useRouting();
     <p class="wm:text-sm wm:text-muted">{{ notFound.detail }}</p>
     <UButton
       type="button"
-      icon="i-lucide-arrow-left"
+      icon="i-lucide-layout-dashboard"
       variant="outline"
       size="sm"
       :label="notFound.back"

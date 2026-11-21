@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import UButton from "@nuxt/ui/components/Button.vue";
-import type { FrameEntry } from "../navigation";
+import type { FrameEntry, ViewHistory } from "../navigation";
 import { useMessages } from "../runtime/use-runtime";
 
 /**
- * The app frame of one surface (ADR 0008): the navigation with the context area on top of it (the
- * `context` slot), and the route outlet (the default slot). It follows the width of its container,
+ * The app frame of one surface (ADR 0008): the view's back and forward controls, the context area
+ * (the `context` slot) and the navigation, and the route outlet (the default slot). It follows the width of its container,
  * not the window, because an Obsidian pane can be narrow on a wide screen (handoff 07): from
  * 860 px the navigation is a sidebar, below it a row above the content.
  */
-defineProps<{ entries: readonly FrameEntry[] }>();
+defineProps<{ entries: readonly FrameEntry[]; history: ViewHistory }>();
 
 const { frame } = useMessages().shell;
 </script>
@@ -21,6 +21,28 @@ const { frame } = useMessages().shell;
         :aria-label="frame.navigation"
         class="wm:flex wm:shrink-0 wm:flex-col wm:gap-2 wm:border-b wm:border-default wm:p-2 wm:@min-[860px]:w-56 wm:@min-[860px]:border-e wm:@min-[860px]:border-b-0"
       >
+        <div class="wm:flex wm:gap-1" data-testid="frame-history">
+          <UButton
+            type="button"
+            icon="i-lucide-arrow-left"
+            color="neutral"
+            variant="ghost"
+            square
+            :aria-label="frame.back"
+            :disabled="!history.canGoBack.value"
+            @click="history.back()"
+          />
+          <UButton
+            type="button"
+            icon="i-lucide-arrow-right"
+            color="neutral"
+            variant="ghost"
+            square
+            :aria-label="frame.forward"
+            :disabled="!history.canGoForward.value"
+            @click="history.forward()"
+          />
+        </div>
         <div v-if="$slots.context" data-testid="frame-context">
           <slot name="context" />
         </div>

@@ -3,6 +3,8 @@ import { describe, it } from "mocha";
 import { ROOT, VIEW_TYPE, installConsoleSpy, openView, pluginProblems } from "../support";
 
 const WORKSPACE_FILE = ".obsidian/workspace.json";
+/** The view the history test opens with a test-only route (see there). */
+const PROBE = "[data-e2e=probe]";
 
 /** The view state of the first plugin view, as Obsidian reads it for the layout. */
 const viewState = () =>
@@ -23,29 +25,18 @@ const setViewState = (state: unknown) =>
     state,
   );
 
-const historyLengths = () =>
+/** The route of the probe view. */
+const probeRoute = () =>
   browser.executeObsidian(({ app }, type) => {
-    const leaf = app.workspace.getLeavesOfType(type)[0] as unknown as {
-      history: { backHistory: unknown[]; forwardHistory: unknown[] };
-    };
-    return [leaf.history.backHistory.length, leaf.history.forwardHistory.length];
+    const leaf = app.workspace
+      .getLeavesOfType(type)
+      .find((candidate) => candidate.view.containerEl.dataset["e2e"] === "probe");
+    return leaf?.getViewState().state?.["route"];
   }, VIEW_TYPE);
 
-/** Clicks Obsidian's own back or forward button in the view header. */
-const clickHistoryButton = (direction: "back" | "forward") =>
-  browser.executeObsidian(
-    ({ app }, type, which) => {
-      const view = app.workspace.getLeavesOfType(type)[0]?.view as unknown as {
-        backButtonEl: HTMLElement;
-        forwardButtonEl: HTMLElement;
-      };
-      (which === "back" ? view.backButtonEl : view.forwardButtonEl).click();
-    },
-    VIEW_TYPE,
-    direction,
-  );
+const control = (label: string) => browser.$(`${PROBE} ${ROOT} nav button[aria-label="${label}"]`);
 
-/** ADR 0008: the route lives in Obsidian's view state, layout and leaf history. */
+/** ADR 0008 and its amendment: a fixed tab with its own history; Obsidian keeps the route. */
 describe("navigation and view state in Obsidian", function () {
   it("keeps the route in the leaf's view state", async function () {
     await installConsoleSpy();
@@ -55,7 +46,8 @@ describe("navigation and view state in Obsidian", function () {
       type: VIEW_TYPE,
       state: { route: { name: "welcome" } },
     });
-    await expect(browser.$(ROOT).$("nav button[aria-current=page]")).toHaveText("Start");
+    await expect(browser.$(ROOT).$("nav li button[aria-current=page]")).toHaveText("Start");
+    await expect(browser.$(ROOT).$('nav button[aria-label="Zurück"]')).toBeDisabled();
   });
 
   it("falls back to the start route for a broken or unknown state", async function () {
@@ -88,50 +80,95 @@ describe("navigation and view state in Obsidian", function () {
     expect(saved).toEqual([{ route: { name: "welcome" } }]);
   });
 
-  it("records a navigation in the leaf's history, so Obsidian's back and forward work", async function () {
-    // The app has one route so far. A second, test-only route goes into this view's route table:
-    // the view decodes it, the surface has no screen for it and shows not-found.
-    await browser.executeObsidian(({ app }, type) => {
+  it("stays in its tab when a note is opened while it is the active tab", async function () {
+    // A plain click in the file explorer runs `workspace.getLeaf(Keymap.isModEvent(event))
+    // .openFile(file)`, that is `getLeaf(false).openFile(file)` (Obsidian 1.15.1).
+    const tabs = await browser.executeObsidian(async ({ app }, type) => {
+      const plugin = app.workspace.getLeavesOfType(type)[0];
+      if (plugin === undefined) throw new Error("no plugin view");
+      app.workspace.setActiveLeaf(plugin, { focus: true });
+      const file = app.vault.getFileByPath("Willkommen.md");
+      if (file === null) throw new Error("no note");
+      const target = app.workspace.getLeaf(false);
+      await target.openFile(file);
+      const note = app.workspace
+        .getLeavesOfType("markdown")
+        .find((leaf) => leaf.getViewState().state?.["file"] === "Willkommen.md");
+      return {
+        pluginType: plugin.getViewState().type,
+        sameTab: target === plugin,
+        noteInOtherTab: note !== undefined && note !== plugin,
+      };
+    }, VIEW_TYPE);
+    expect(tabs).toEqual({ pluginType: VIEW_TYPE, sameTab: false, noteInOtherTab: true });
+    // The plugin tab is in the background now, so its surface is in the DOM but hidden.
+    await expect(browser.$(ROOT).$("[data-testid=greeting]")).toExist();
+  });
+
+  it("goes back and forward between routes with the frame's controls", async function () {
+    // The app has one route so far. This opens a second plugin view, built by the plugin's own
+    // view class, whose route table adds a test-only route "probe" with a navigation entry and no
+    // screen (it shows not-found).
+    await browser.executeObsidian(async ({ app }, type) => {
+      type Route = { name: string };
       type Definition = {
-        decode(value: unknown): unknown;
-        equals(a: unknown, b: unknown): boolean;
+        decode(value: unknown): Route;
+        equals(a: Route, b: Route): boolean;
+        screen(route: Route): unknown;
+        menu: readonly unknown[];
       };
-      const view = app.workspace.getLeavesOfType(type)[0]?.view as unknown as {
-        definition: Definition;
-        navigationOfView: { navigate(route: unknown): void };
-      };
-      const original = view.definition;
-      view.definition = {
-        ...original,
-        decode: (value: unknown) =>
+      type Internals = { runtime: unknown; surfaces: unknown; definition: Definition };
+      const existing = app.workspace.getLeavesOfType(type)[0]?.view;
+      if (existing === undefined) throw new Error("no plugin view");
+      const { runtime, surfaces, definition } = existing as unknown as Internals;
+      const probe: Definition = {
+        ...definition,
+        decode: (value) =>
           (value as { name?: unknown } | null)?.name === "probe"
             ? { name: "probe" }
-            : original.decode(value),
-        equals: (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b),
+            : definition.decode(value),
+        equals: (a, b) => JSON.stringify(a) === JSON.stringify(b),
+        screen: (route) => (route.name === "probe" ? undefined : definition.screen(route)),
+        menu: [
+          ...definition.menu,
+          { route: { name: "probe" }, label: () => "Probe", icon: "i-lucide-info" },
+        ],
       };
-      view.navigationOfView.navigate({ name: "probe" });
+      const View = existing.constructor as new (...args: unknown[]) => NonNullable<typeof existing>;
+      const leaf = app.workspace.getLeaf("tab");
+      const view = new View(leaf, runtime, surfaces, probe);
+      view.containerEl.dataset["e2e"] = "probe";
+      await leaf.open(view);
     }, VIEW_TYPE);
-    await expect(browser.$(ROOT).$("[data-testid=not-found]")).toBeDisplayed();
-    expect(await viewState()).toMatchObject({ state: { route: { name: "probe" } } });
-    expect(await historyLengths()).toEqual([1, 0]);
+    const root = browser.$(`${PROBE} ${ROOT}`);
+    await expect(root.$("[data-testid=greeting]")).toBeDisplayed();
+    await expect(control("Zurück")).toBeDisabled();
 
-    await clickHistoryButton("back");
-    await expect(browser.$(ROOT).$("[data-testid=greeting]")).toBeDisplayed();
-    expect(await viewState()).toMatchObject({ state: { route: { name: "welcome" } } });
-    expect(await historyLengths()).toEqual([0, 1]);
+    await root.$("nav").$("button=Probe").click();
+    await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
+    await root.$("[data-testid=not-found] button").click();
+    await expect(root.$("[data-testid=greeting]")).toBeDisplayed();
+    expect(await probeRoute()).toEqual({ name: "welcome" });
 
-    await clickHistoryButton("forward");
-    await expect(browser.$(ROOT).$("[data-testid=not-found]")).toBeDisplayed();
-    expect(await viewState()).toMatchObject({ state: { route: { name: "probe" } } });
+    await control("Zurück").click();
+    await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
+    expect(await probeRoute()).toEqual({ name: "probe" });
+    await control("Zurück").click();
+    await expect(root.$("[data-testid=greeting]")).toBeDisplayed();
+    await expect(control("Zurück")).toBeDisabled();
+    await control("Vorwärts").click();
+    await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
+    expect(await probeRoute()).toEqual({ name: "probe" });
 
-    // The way back from not-found is a navigation too.
-    await browser.$(ROOT).$("[data-testid=not-found] button").click();
-    await expect(browser.$(ROOT).$("[data-testid=greeting]")).toBeDisplayed();
-    expect(await historyLengths()).toEqual([2, 0]);
+    await browser.executeObsidian(({ app }, type) => {
+      for (const leaf of app.workspace.getLeavesOfType(type)) {
+        if (leaf.view.containerEl.dataset["e2e"] === "probe") leaf.detach();
+      }
+    }, VIEW_TYPE);
     expect(await pluginProblems()).toEqual([]);
   });
 
-  it("restores the view on its route after Obsidian restarts", async function () {
+  it("restores the view on its route after Obsidian restarts, with a fresh history", async function () {
     await browser.executeObsidian(async ({ app }) => {
       await (app.workspace as unknown as { saveLayout(): Promise<void> }).saveLayout();
     });
@@ -147,6 +184,7 @@ describe("navigation and view state in Obsidian", function () {
     await openView();
     await expect(browser.$(ROOT).$("[data-testid=greeting]")).toBeDisplayed();
     expect(await viewState()).toMatchObject({ state: { route: { name: "welcome" } } });
+    await expect(browser.$(ROOT).$('nav button[aria-label="Zurück"]')).toBeDisabled();
     expect(await pluginProblems()).toEqual([]);
   });
 });

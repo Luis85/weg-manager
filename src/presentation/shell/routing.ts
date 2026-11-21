@@ -1,8 +1,16 @@
 import type { Component } from "vue";
 import type { Catalog } from "../../application/messages";
-import type { RouteLike, Routes } from "../../application/shell";
+import {
+  historyAt,
+  stepBack,
+  stepForward,
+  visit,
+  type RouteHistory,
+  type RouteLike,
+  type Routes,
+} from "../../application/shell";
 
-// Vue-free on purpose (only type imports): `host.ts` exports these for code that runs at plugin load.
+// Vue-free on purpose (Vue only as types): `host.ts` exports these for code that runs at plugin load.
 
 /**
  * Loads a screen's component the first time its route is shown, so a screen's module is evaluated
@@ -35,41 +43,53 @@ export type SurfaceDefinition<R extends RouteLike> = Routes<R> & {
 };
 
 /**
- * How a surface follows its view's route (ADR 0008). The view owns the route, because Obsidian
- * keeps it in the view state and in the leaf's history; the surface asks to navigate and hears of
- * every change, including back and forward.
+ * A view's route and its own history (ADR 0008, amendment): the view keeps them, Obsidian keeps the
+ * route in the view state. The surface navigates through it and hears of every change.
  */
 export type ViewNavigation<R extends RouteLike> = {
   current(): R;
+  history(): RouteHistory<R>;
+  /** A navigation: pushes the current route onto the back stack, unless `route` is current. */
   navigate(route: R): void;
-  /** Calls `listener` with every new route; returns the unsubscribe. */
-  onChange(listener: (route: R) => void): () => void;
+  back(): void;
+  forward(): void;
+  /** Calls `listener` with the history after every change; returns the unsubscribe. */
+  onChange(listener: (history: RouteHistory<R>) => void): () => void;
 };
 
 export type MemoryNavigation<R extends RouteLike> = ViewNavigation<R> & {
+  /** Starts the history over at `route`, as a view does with the state it is opened with. */
+  reset(route: R): void;
   /** Every route shown so far, the first one included. */
   readonly visited: readonly R[];
   /** How many listeners follow it. */
   listeners(): number;
 };
 
-/** A navigation that keeps its route in memory: for the harness and tests, which have no view. */
+/**
+ * A route and its history in memory, per view: `ShellView` keeps one, the harness and tests use one
+ * without a view. Routes are decoded on the way in, so equal routes are equal by value.
+ */
 export const memoryNavigation = <R extends RouteLike>(
   routes: Routes<R>,
   initial: R = routes.start,
 ): MemoryNavigation<R> => {
-  let current = initial;
+  let history = historyAt(initial);
   const visited: R[] = [initial];
-  const listeners = new Set<(route: R) => void>();
+  const listeners = new Set<(history: RouteHistory<R>) => void>();
+  const move = (next: RouteHistory<R>) => {
+    if (next === history) return;
+    history = next;
+    visited.push(next.current);
+    for (const listener of listeners) listener(next);
+  };
   return {
-    current: () => current,
-    navigate: (route) => {
-      const next = routes.decode(route);
-      if (routes.equals(next, current)) return;
-      current = next;
-      visited.push(next);
-      for (const listener of listeners) listener(next);
-    },
+    current: () => history.current,
+    history: () => history,
+    navigate: (route) => move(visit(history, routes.decode(route), (a, b) => routes.equals(a, b))),
+    back: () => move(stepBack(history)),
+    forward: () => move(stepForward(history)),
+    reset: (route) => move(historyAt(routes.decode(route))),
     onChange: (listener) => {
       listeners.add(listener);
       return () => {

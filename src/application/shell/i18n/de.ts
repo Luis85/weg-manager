@@ -77,7 +77,7 @@ export const shellDe: ShellCatalog = {
     counting: "Zähle Notizen …",
   },
   greetingForm: { label: "Begrüßung", save: "Speichern" },
-  frame: { navigation: "Ansichten", content: "Inhalt" },
+  frame: { navigation: "Ansichten", content: "Inhalt", back: "Zurück", forward: "Vorwärts" },
   routes: { welcome: "Start" },
   notFound: {
     title: "Nicht gefunden",

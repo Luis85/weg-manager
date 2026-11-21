@@ -3,7 +3,13 @@ import { defineComponent, h } from "vue";
 import type { AppRuntime } from "../../src/application/app-services";
 import { routesOf } from "../../src/application/shell/routes";
 import { appSurface } from "../../src/presentation/app-surface";
-import { NotFoundState, mountSurface, useNavigate, useRoute } from "../../src/presentation/shell";
+import {
+  NotFoundState,
+  mountSurface,
+  useHistory,
+  useNavigate,
+  useRoute,
+} from "../../src/presentation/shell";
 import {
   memoryNavigation,
   type SurfaceDefinition,
@@ -46,6 +52,7 @@ const screen = (title: string) =>
     setup() {
       const route = useRoute<TestRoute>();
       const navigate = useNavigate<TestRoute>();
+      const history = useHistory();
       const gone = () => route.value.name === "item" && route.value.id === "gone";
       return () =>
         gone()
@@ -57,6 +64,11 @@ const screen = (title: string) =>
                 "button",
                 { type: "button", onClick: () => navigate({ name: "item", id: "42" }) },
                 "open item",
+              ),
+              h(
+                "button",
+                { type: "button", disabled: !history.canGoBack.value, onClick: history.back },
+                "go back",
               ),
             ]);
     },

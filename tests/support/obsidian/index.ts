@@ -29,10 +29,8 @@ export {
 } from "./settings";
 export {
   ItemView,
-  LeafHistory,
   View,
   WorkspaceLeaf,
-  type HistoryState,
   type ViewCreator,
   type ViewState,
   type ViewStateResult,

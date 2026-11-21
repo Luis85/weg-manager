@@ -30,18 +30,16 @@ The walking skeleton (greeting and markdown file count) in module `shell` is the
 
 ## Writing to the vault
 
-The shell only reads the vault so far. The first feature that writes notes adds a `VaultWriter` port in its module's `ports.ts` (`src/application/<module>/`) and its adapter in `src/infrastructure/obsidian/<module>/`. That adapter is the only code that changes vault files, and it uses only these Obsidian APIs (DevDocs *Plugin guidelines* §Vault and the self-critique checklist):
+Every feature reads and writes notes through the `NoteStore` port of module `notes` (`src/application/notes/`, ADR 0007); see [Architecture → Vault notes](architecture.md#vault-notes). Import it from the module's index. The Obsidian adapter (`src/infrastructure/obsidian/notes/`) is the only code that changes vault files; a feature adds no vault adapter of its own.
 
-- **Change a note's body** with `app.vault.process(file, fn)`. It reads and writes atomically, so a concurrent edit is not lost. Never `read` and then `modify`.
-- **Change frontmatter** with `app.fileManager.processFrontMatter(file, fn)`. It keeps the YAML format and the rest of the note intact. Never edit the YAML as text. Frontmatter notes are the product's data model, so this is the common path.
-- **Create a note** with `app.vault.create(path, data)`, and a folder with `app.vault.createFolder(path)`.
-- **Delete a note** with `app.fileManager.trashFile(file)`. It respects the user's *Deleted files* setting. Never `vault.delete`.
-- **Rename or move** with `app.fileManager.renameFile(file, newPath)`, so links are updated.
-- **Build every path** with `normalizePath()`, including ones from settings or user input.
-- **Use the Vault API, not `vault.adapter`.** The adapter skips Obsidian's cache and its safety checks. `data.json` stays with `loadData`/`saveData`.
-- **Find files without scanning.** Do not call `getFiles()` or `getMarkdownFiles()` in a hot path (an event handler, a render, a loop). Use `getFileByPath`/`getAbstractFileByPath` for a known path and `metadataCache` for frontmatter. Keep any full scan behind `LayoutReady` and a debounce, as the file count does.
-
-The port speaks in domain terms (a point, a contact, a draft), not in `TFile`. Each write that can fail (missing file, read-only vault) becomes a tagged `AppError` with a `describeError` text in both catalogs. Test the adapter against the Obsidian double, and extend the double with these methods when you need them.
+- **Create a record** with `create({ folder, name, frontmatter, body })`. Folders come from settings and are created when missing; a taken name gets ` (2)`.
+- **Change frontmatter** with `update(path, change)`. `change` runs inside Obsidian's atomic `processFrontMatter` on the frontmatter just read from the file and returns `Result.succeed({ set, remove })` or `Result.fail(yourError)` to write nothing. Write only the keys your type knows; the store keeps every other key, the key order and the body.
+- **Delete** with `trash(path)`, **rename** with `rename(path, newName)`.
+- **Read** with `list` (every record, by `schema`) and `read(path)`. Both come from the metadata cache, which catches up with a write a moment later: use the note a write returns, not a read right after it.
+- **Never** call `vault.modify`, `vault.adapter`, or `read` followed by a write. A body change needs a contract section first (ADR 0007) and then a `NoteStore` call for it.
+- **Find files without scanning.** Do not call `getFiles()` or `getMarkdownFiles()` in a hot path (an event handler, a render, a loop). `list` scans once; keep it behind `LayoutReady` and a debounce, as the file count does.
+- **Errors.** The store's failures are tagged `AppError`s with texts in both catalogs. A failure your `change` decides on (a conflict) is your module's error and needs its own text.
+- **Tests.** Use the in-memory adapter (`memoryNoteStore()` from `src/infrastructure/memory/notes`, also in `testRuntime().notes`) to seed notes, switch failures on and look behind the port.
 
 ## Checklist for a new view
 

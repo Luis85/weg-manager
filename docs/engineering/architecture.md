@@ -27,9 +27,10 @@ flowchart LR
 
 | Layer | Imports | Owns |
 | --- | --- | --- |
-| `src/domain` | `effect` | Pure rules: `decodeSettings`, `validatePatch`, `encodeSettings`, defaults (`shell/settings.ts`, built by `shell/settings-codec.ts`) |
-| `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`, `Messages`), `SettingsService`, `EventBus` and the `AppEvent` vocabulary, use cases, tagged errors, the German and English message catalogs (`shell/i18n/`, composed in `messages.ts`) |
-| `src/infrastructure/obsidian` | `obsidian`, application, presentation | Adapter Layers (including `hostEventsLayer`), commands, ribbon, settings tab, `ShellView` (`shell/`), `appLayer` |
+| `src/domain` | `effect` | Pure rules: `decodeSettings`, `validatePatch`, `encodeSettings`, defaults (`shell/settings.ts`, built by `shell/settings-codec.ts`); what makes a note a record and a usable note name (`notes/`) |
+| `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`, `Messages`, `NoteStore`), `SettingsService`, `EventBus` and the `AppEvent` vocabulary, use cases, tagged errors, the German and English message catalogs (`<module>/i18n/`, composed in `messages.ts`) |
+| `src/infrastructure/obsidian` | `obsidian`, application, presentation | Adapter Layers (including `hostEventsLayer` and the `NoteStore` adapter), commands, ribbon, settings tab, `ShellView` (`shell/`), `appLayer` |
+| `src/infrastructure/memory` | application, domain | In-memory adapters for tests and the harness (`notes/`). Nothing in `src/` imports them, so they never reach `main.js` |
 | `src/presentation` | `vue`, `@nuxt/ui`, `@tanstack/vue-form`, application, domain | Vue surfaces. Components never see an Effect value. They run reads through `useQuery` and state changes through `useCommand` |
 | `harness/` | everything except `obsidian` | Browser stand-in for Obsidian with scenario Layers |
 
@@ -37,19 +38,19 @@ flowchart LR
 
 ## Modules
 
-Decision record: [ADR 0006](../adr/0006-module-structure.md). Each layer is sliced into module folders; today the only module is `shell`.
+Decision record: [ADR 0006](../adr/0006-module-structure.md). Each layer is sliced into module folders. The modules are `shell` and `notes` (vault data access, see [Vault notes](#vault-notes)).
 
 | Layer | Module folders | Files at the layer root (composition only) |
 | --- | --- | --- |
 | domain | `src/domain/<module>/` | none |
 | application | `src/application/<module>/` | `errors.ts` (`AppError`), `events.ts` (`AppEvent`), `app-services.ts` (`AppServices`, `AppRuntime`), `messages.ts` (`Catalog`, `de`, `en`, `catalogFor`, `languageFromCode`, `messagesLayer`), `user-messages.ts` (`describeError`) |
-| infrastructure | `src/infrastructure/obsidian/<module>/` | `obsidian/app-layer.ts` (`appLayer`), plus `logging/` and `runtime.ts`, which are not Obsidian adapters and stay where they were |
+| infrastructure | `src/infrastructure/obsidian/<module>/`, `src/infrastructure/memory/<module>/` | `obsidian/app-layer.ts` (`appLayer`), plus `logging/` and `runtime.ts`, which are not Obsidian adapters and stay where they were |
 | presentation | `src/presentation/<module>/` | none |
 
 - **Public face.** Each module folder has an `index.ts`. Code outside the folder imports only that, also the same module from another layer (`../../../application/shell`, never `…/shell/ports`). Tests may import a module's files directly.
 - **Direction.** feature → `notes` → `shell`. `shell` imports no other module; `notes` imports only `shell`; feature modules may import each other's index, acyclically.
-- **Composition.** A root file composes module parts and holds no rule of its own: `AppError = ShellError`, `AppEvent = Data.TaggedEnum<ShellEvents>`, `AppServices = ShellServices`, `Catalog = { shell: ShellCatalog }`, `appLayer` = `shellLayer`. A new module adds its part to each (`ShellError | NotesError`, `ShellEvents & NotesEvents`, …).
-- **`describeError`** hands an error to its module's describer with that module's part of the catalog: `describeShellError(error, messages.shell)`. A second module narrows first (`isNotesError(error) ? describeNotesError(error, messages.notes) : …`). An error union added to `AppError` without its describer does not compile.
+- **Composition.** A root file composes module parts and holds no rule of its own: `AppError = ShellError | NotesError`, `AppEvent = Data.TaggedEnum<ShellEvents>`, `AppServices = ShellServices | NotesServices`, `Catalog = { shell: ShellCatalog; notes: NotesCatalog }`, `appLayer` = `shellLayer` merged with `notesLayer`. A new module adds its part to each. `notes` has no events yet.
+- **`describeError`** hands an error to its module's describer with that module's part of the catalog: `isNotesError(error) ? describeNotesError(error, messages.notes) : describeShellError(error, messages.shell)`. An error union added to `AppError` without its describer does not compile.
 - **`Messages`** stays one service holding the whole `Catalog`; module code reads its own part (`(yield* Messages).shell`). The shell's catalog part carries `language`.
 - **Type-only edges to the root.** `EventBus` and `Messages` live in the shell but carry the composed types, so `src/application/shell/` imports `AppEvent` and `Catalog` from the root as types only. Runtime imports go the other way only, so there is no runtime cycle.
 - **Presentation entry.** `src/presentation/shell/index.ts` stays free of Vue: it offers `releaseAll` and `loadSurface`, the lazy `import("./mount")` that `ShellView` calls.
@@ -64,9 +65,31 @@ Decision record: [ADR 0006](../adr/0006-module-structure.md). Each layer is slic
 | Every `src/` file belongs to a zone | fallow `boundaries.coverage.requireAllFiles` |
 
 - The module rules live in ESLint, not oxlint: an oxlint override replaces the `no-restricted-imports` options of an earlier matching override instead of adding to them, so a module rule there would switch off the layer rule for the same files. The ESLint block comes after `oxlint.buildFromOxlintConfigFile`, which turns the rule off in ESLint.
-- fallow discovers one zone per module and layer (`autoDiscover`): `domain/<module>`, `application/<module>`, `adapters/<module>` (`src/infrastructure/obsidian/<module>/`), `presentation/<module>`. The application root files are the zone `application-composition`; `logging/`, `runtime.ts` and `app-layer.ts` the zone `infrastructure`. A discovered zone may not import a sibling zone unless a rule names it, so the layer rules name `<layer>/shell`.
-- **Adding a module:** add its name to `CORE_MODULES` or `FEATURE_MODULES` in `eslint.config.mjs`. Its folders become fallow zones by themselves and may import `shell`. A module that other modules import (`notes`) is also added to the `allow` lists of the layer rules in `configs/fallow.json`, next to `<layer>/shell`; fallow refuses a rule that names a zone with no folder yet.
+- fallow discovers one zone per module and layer (`autoDiscover`): `domain/<module>`, `application/<module>`, `adapters/<module>` (`src/infrastructure/obsidian/<module>/`), `memory/<module>` (`src/infrastructure/memory/<module>/`), `presentation/<module>`. The application root files are the zone `application-composition`; `logging/`, `runtime.ts` and `app-layer.ts` the zone `infrastructure`. A discovered zone may not import a sibling zone unless a rule names it, so the layer rules name `<layer>/shell` and `<layer>/notes`.
+- **In-memory adapters stay out of the plugin.** No fallow rule allows a `src/` zone to import `memory`, ESLint rejects a `memory/` import anywhere in `src/`, and `npm run check:dist` rejects a `main.js` that holds the marker every made-up failure of those adapters carries (`TEST_ONLY_MARKER`). Only `tests/` and `harness/` import them.
+- **Adding a module:** add its name to `CORE_MODULES` or `FEATURE_MODULES` in `eslint.config.mjs`. Its folders become fallow zones by themselves and may import `shell`. A module that other modules import (`notes`) is also added to the `allow` lists of the layer rules in `configs/fallow.json`, next to `<layer>/shell`; fallow refuses a rule that names a zone with no folder yet, so `presentation/notes` is added with the first notes component.
 - Proved on 2026-11-21 with planted violations (each failed, then was removed): an import of `../shell/ports` from a throwaway module folder (ESLint and fallow), `obsidian` in `src/application/shell/` (oxlint), `effect` in a component (oxlint), presentation → infrastructure (oxlint and fallow), `shell` → `notes` (ESLint and fallow), and one plant per oxlint override.
+- Proved again when `notes` was added (each failed, then was removed): `shell` → `notes` in application and in the adapters, `notes` → `../shell/services` past the index (ESLint and fallow each); `notes` → `../shell` through the index passes both. `src/infrastructure/obsidian/app-layer.ts` and `src/application/notes/` importing the in-memory adapter fail ESLint and fallow, and with the import in `appLayer` the built `main.js` fails `check:dist`.
+
+## Vault notes
+
+Decision record: [ADR 0007](../adr/0007-vault-data-access.md). Module `notes` gives every feature one way to the vault: the `NoteStore` port (`src/application/notes/ports.ts`). It speaks plain data, never `TFile`.
+
+| Call | Does |
+| --- | --- |
+| `list` | Every record: a Markdown note whose frontmatter `schema` starts with `weg-manager.`, anywhere in the vault, sorted by path. Read from the metadata cache, no file contents. |
+| `read(path)` | One note; `{}` for a note without frontmatter or with broken YAML. |
+| `create({ folder, name, frontmatter, body? })` | Creates missing folders and the note in one `vault.create`; a taken name gets ` (2)`, ` (3)`, … up to 100 tries. |
+| `update(path, change)` | `change` gets the current frontmatter inside `fileManager.processFrontMatter` and returns a patch (`set`, `remove`) or a typed failure that aborts the write. Untouched keys, unknown keys, key order and the body stay. A patch that changes nothing writes nothing. |
+| `trash(path)` | `fileManager.trashFile`, so the user's *Deleted files* setting applies. |
+| `rename(path, newName)` | `fileManager.renameFile` in the same folder, so Obsidian updates links. |
+
+- **A note is `{ path, frontmatter }`.** The frontmatter is also how a caller detects a change: the per-field merge of ADR 0007 compares values, and a body edit or a sync that only touches the file's time is no change to the record. An mtime or revision was not added: it changes on body edits and needs a clock in the in-memory adapter.
+- **The metadata cache lags.** Obsidian indexes a write a moment after it (a few milliseconds), then fires `changed`. Right after `create`, `getFileCache` is `null`; right after an update it still holds the old frontmatter. So every write returns the note as written, and `list`/`read` show what the cache holds. The index of a later step follows `MetadataChanged`.
+- **Writes are commands.** `writeCommand` (`src/application/notes/command.ts`) runs the vault calls in `Effect.uninterruptible`: once started they complete, also when the caller is interrupted, as `SettingsService` does for `saveData`. Checks that write nothing (name, free path, note exists) run before it.
+- **Errors** (`src/application/notes/errors.ts`): `NoteNotFoundError`, `NotePathTakenError`, `InvalidNoteNameError` (issue `empty`, `forbidden-character`, `leading-dot`), `NoteUnreadableError` (broken YAML on update), `NoteWriteError`; reads fail with the shell's `VaultReadError`. None carries a path; texts are in `notes/i18n/`.
+- **Adapters.** `src/infrastructure/obsidian/notes/note-store.ts` is the only code that changes vault files: `vault.create`, `vault.createFolder`, `fileManager.processFrontMatter`, `fileManager.trashFile`, `fileManager.renameFile`, every path through `normalizePath`. `src/infrastructure/memory/notes/` keeps notes in memory for tests and the harness; both pass the same contract suite (see [Testing](testing.md)).
+- **Body changes** (`vault.process`) are not offered yet: ADR 0007 lets the plugin change a body only where a type's contract defines a section, and no type does so far.
 
 ## Runtime
 

@@ -21,7 +21,7 @@ Obsidian ist die festgelegte Plattform und mobile Arbeit ein belegter Nutzungswu
 
 ## Vorgeschlagene Prüfung
 
-Vor Entwicklungsfreigabe O-02 klären. Intern Kernaktionen einschließlich Notiz, Quellenprüfung, Entwurf und Übergabe auf dem Referenz-Handy prüfen. Nach Veröffentlichung tatsächliche mobile Nutzung und nötige Desktopausweichschritte beobachten.
+Stand 21.11.2026: Die Hypothese wird erst nach dem MVP geprüft; O-02 blockiert die Entwicklungsfreigabe des MVP nicht mehr ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]). Vor dem mobilen Ausbau O-02 klären. Dann intern Kernaktionen einschließlich Notiz, Quellenprüfung, Entwurf und Übergabe auf dem Referenz-Handy prüfen. Nach Veröffentlichung tatsächliche mobile Nutzung und nötige Desktopausweichschritte beobachten.
 
 ## Hinweise auf Unterstützung
 

@@ -18,7 +18,7 @@ Die gewählte Basis liefert eine einheitliche Sprache für Navigation, Tabellen,
 
 ## Grenzen
 
-Die Entscheidung führt weder Nuxt-SSR noch einen Server, ein eigenes Konto oder eine Pflichtintegration ein. Das bestehende lokale Obsidian-Produkt und die vollständige mobile Kernreise bleiben maßgeblich. Paketversion, technische Einbettung, CSS-Isolation, lokale Assets, Host-Themes, mobile Dateiabläufe und tatsächliche Accessibility sind vor Implementierung beziehungsweise Release gesondert zu klären.
+Die Entscheidung führt weder Nuxt-SSR noch einen Server, ein eigenes Konto oder eine Pflichtintegration ein. Das bestehende lokale Obsidian-Produkt bleibt maßgeblich; die vollständige mobile Kernreise bleibt Produktziel und folgt nach dem MVP (Stand 21.11.2026, [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]). Paketversion, technische Einbettung, CSS-Isolation, lokale Assets, Host-Themes, mobile Dateiabläufe (erst für den Ausbau nach dem MVP) und tatsächliche Accessibility sind vor Implementierung beziehungsweise Release gesondert zu klären.
 
 ## Bezüge
 

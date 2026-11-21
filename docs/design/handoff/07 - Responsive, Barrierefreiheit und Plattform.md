@@ -21,6 +21,8 @@ Die View-Breite (Container Query / ResizeObserver) entscheidet, nicht der Gerät
 
 ## Obsidian Mobil
 
+Stand 21.11.2026: Dieser Abschnitt beschreibt den mobilen Ausbau nach dem MVP, nicht den MVP-Umfang. Das Plugin bleibt bis dahin `isDesktopOnly: true` ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]). Die Breakpoints oben gelten weiter, weil auch Desktop-Panes schmal sein können.
+
 - Keine eigene Tabbar unten: Die Obsidian-Navigation schwebt dort und blendet sich aus.
 - Aktionsleisten und FAB mit Abstand `bottom ≥ 80px + env(safe-area-inset-bottom)`; Inhalte mit `padding-bottom` ≥ 140 px, damit nichts dauerhaft verdeckt ist.
 - Sheets von unten (max. 92 % Höhe) mit Griff und Schließen-Button; Zurück-Geste schließt.

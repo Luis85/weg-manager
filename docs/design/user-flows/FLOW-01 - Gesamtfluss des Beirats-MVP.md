@@ -65,6 +65,8 @@ requirements:
 
 **Designstand:** 15.11.2026
 
+**Stand 21.11.2026:** Die mobile Bedienung dieser Abläufe ([[PBI-33 - Wochenarbeit auf dem Handy abschließen]], FLOW-03 am Handy) folgt nach dem MVP, siehe [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]. Im MVP laufen sie auf dem Desktop.
+
 Drei Rhythmen tragen das Produkt: **einmal pro Woche** geführt arbeiten, **zwischendurch** kurz die Lage prüfen, **jederzeit** etwas erfassen. Alles andere ist Kontext.
 
 ![[v2-Flows.png]]

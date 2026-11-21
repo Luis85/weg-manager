@@ -1,6 +1,8 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
+import { defineComponent, h, type ComponentInternalInstance } from "vue";
 import { SettingsService } from "../../../src/application/settings-service";
+import GreetingForm from "../../../src/presentation/components/GreetingForm.vue";
 import { mountSurface } from "../../../src/presentation/mount";
 import { testRuntime, type TestRuntimeOptions } from "../../support/runtime";
 
@@ -92,5 +94,55 @@ describe("GreetingForm follows the setting", () => {
     await form.save();
     await form.syncExternally({ greeting: "Neu" });
     expect(form.input().value).toBe("Neu");
+  });
+});
+
+/** The form's `save` command as `<script setup>` holds it (dev builds expose `setupState`). */
+type SaveRefs = Readonly<Record<"pending" | "value" | "error" | "message", { value: unknown }>>;
+
+describe("GreetingForm closed during a save", () => {
+  it("finishes the save, keeps file and settings equal and leaves the closed form alone", async () => {
+    let instance: ComponentInternalInstance | null = null;
+    const content = defineComponent({
+      render: () =>
+        h(GreetingForm, {
+          onVnodeMounted: (vnode) => {
+            instance = vnode.component;
+          },
+        }),
+    });
+    const test = testRuntime({ store: { uncancellableSaves: true } });
+    const root = document.createElement("div");
+    document.body.append(root);
+    const close = mountSurface(root, test.runtime, { content });
+    opened.push({ close, dispose: () => test.runtime.dispose() });
+    await settle();
+    const input = root.querySelector("[data-testid=greeting-input]") as HTMLInputElement;
+    input.value = "Moin";
+    input.dispatchEvent(new Event("input"));
+    await settle();
+    test.store.holdSaves();
+    root.querySelector("form")?.dispatchEvent(new Event("submit", { cancelable: true }));
+    await settle();
+    expect(test.store.heldSaves()).toBe(1);
+    const { save } = (instance as unknown as { setupState: { save: SaveRefs } }).setupState;
+
+    close();
+    test.store.releaseSaves();
+    await settle();
+
+    expect(test.store.stored()).toEqual(expect.objectContaining({ greeting: "Moin" }));
+    const current = await test.runtime.runPromise(
+      SettingsService.use((service) => service.current),
+    );
+    expect(current).toEqual(test.store.stored());
+    expect({
+      pending: save.pending.value,
+      value: save.value.value,
+      error: save.error.value,
+      message: save.message.value,
+    }).toEqual({ pending: true, value: undefined, error: undefined, message: undefined });
+    expect(test.notifier.messages()).toEqual([]);
+    expect(root.childElementCount).toBe(0);
   });
 });

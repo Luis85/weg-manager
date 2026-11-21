@@ -16,7 +16,7 @@ The user never sees a stack trace, a path, a raw `error.message` or note content
 1. Add a `Schema.TaggedError` class to `src/application/errors.ts` and add it to `AppError`.
 2. `describeError` is exhaustive over `_tag`, so typecheck now fails until you add the new case to `src/application/user-messages.ts`. Its title and detail go into `Catalog` (`src/application/i18n/catalog.ts`) and into both `de.ts` and `en.ts`; typecheck fails until both have them.
 3. Add a test in `tests/unit/application/user-messages.test.ts` for the exact German text (and the English one where it matters), and run the property test against leaks, which runs for both catalogs.
-4. Return the error from the port or service that can fail. Components get it in `useEffectAction(...).error` and `.message`.
+4. Return the error from the port or service that can fail. Components get it in `.error` and `.message` of `useQuery(...)` or `useCommand(...)`. A command that fails after its view closed shows the message as a notice.
 
 ## Writing a message
 
@@ -36,7 +36,7 @@ Every boundary catches defects and calls `reportDefect`, once:
 
 - bootstrap;
 - command callbacks (`runSafely`);
-- `useEffectAction`;
+- `useQuery` and `useCommand`;
 - the Vue `errorHandler` of each surface;
 - unload (`reportUnloadFailure`, used when the runtime itself is gone).
 

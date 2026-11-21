@@ -13,7 +13,10 @@ The walking skeleton (greeting and markdown file count) is the worked example. E
    - Test: `tests/unit/application/*.test.ts` with the in-memory Layers from `tests/support/layers.ts`; `recordingEventBus()` records what was published.
 3. **Adapter** (`src/infrastructure/obsidian/layers.ts`). This is the only place that touches the `obsidian` API. Add the Layer to `appLayer`. Test: `tests/dom/infrastructure/*.test.ts` against the Obsidian double. Extend the double in `tests/support/obsidian/` when the API you need is missing.
 4. **Component** (`src/presentation/components/`).
-   - Call the use case through `useEffectAction(useCase)`, read state through `useSettings()` and texts through `useMessages()`.
+   - Run a read through `useQuery(useCase)` and a state change through `useCommand(useCase)`. Read state through `useSettings()` and texts through `useMessages()`.
+     - `useQuery`: the latest call wins. A second `run` interrupts the first, and closing the view interrupts a pending run.
+     - `useCommand`: nothing in the view interrupts it. A `run` while one is pending returns the pending run's promise and starts nothing, so disable the control on `pending`. After the view closed, the command still finishes; a typed failure then becomes a notice.
+     - A use case that writes must make its write atomic with respect to interruption: once a write that cannot be cancelled has started, setting the in-memory state runs uninterruptibly with it (see `SettingsService.update`). Plugin unload can still interrupt a command.
    - Render failures with `ErrorNotice.vue`.
    - Every form uses TanStack Form (`useForm`), and its validators call the domain rule (see `GreetingForm.vue`). Never duplicate a rule in a component.
    - Each setting has exactly one edit location: plugin-wide technical settings (the log level) in Obsidian's settings tab (`src/infrastructure/obsidian/settings-tab.ts`), feature data (the greeting) in the plugin's views. The other place shows the value read-only at most (PBI-49).

@@ -1,4 +1,5 @@
-import { Effect, Layer, Result } from "effect";
+import { Effect, Layer, Option, Result } from "effect";
+import { AppEvent } from "../../../application/events";
 import {
   NoteNotFoundError,
   NoteStore,
@@ -15,7 +16,7 @@ import {
   type NewNote,
   type Note,
 } from "../../../application/notes";
-import { VaultReadError } from "../../../application/shell";
+import { EventBus, VaultReadError } from "../../../application/shell";
 import { normalizePath } from "./normalize-path";
 
 /**
@@ -42,6 +43,23 @@ const ancestors = (folder: string): string[] =>
 
 const madeUp = (what: string) => new Error(`${TEST_ONLY_MARKER}: ${what}`);
 
+/** Without an event bus, a write publishes nothing. */
+const unpublished = (): void => undefined;
+
+/** The extension as Obsidian's `TFile` has it: after the last dot of the name, else empty. */
+const extensionOf = (path: string): string => {
+  const name = path.slice(path.lastIndexOf("/") + 1);
+  const dot = name.lastIndexOf(".");
+  return dot === -1 ? "" : name.slice(dot + 1);
+};
+
+const file = (path: string) => ({ path, extension: extensionOf(path) });
+
+/** Frontmatter written in another order or with other values: Obsidian would write the file. */
+const differs = (before: Frontmatter | undefined, after: Frontmatter): boolean =>
+  JSON.stringify(before === undefined ? null : Object.entries(before)) !==
+  JSON.stringify(Object.entries(after));
+
 /**
  * The `NoteStore` for tests and the browser harness: a vault in memory that keeps what the
  * Obsidian adapter keeps (frontmatter key order, unknown keys, the body) and fails as it fails. It
@@ -51,6 +69,10 @@ const madeUp = (what: string) => new Error(`${TEST_ONLY_MARKER}: ${what}`);
  * Its handles seed notes as an outside editor would, look behind the port, and switch failures
  * on: `setFailReads`, `setFailWrites`, and `holdWrites` to keep every write waiting, as a slow disk
  * would, until `releaseWrites`.
+ *
+ * Built where an `EventBus` is, it publishes for every write and every seed the file events that
+ * the host event adapter publishes for the Obsidian adapter (`tests/support/notes/store-events.ts`),
+ * so the note index follows it as it follows Obsidian. Folders are not published.
  */
 export const memoryNoteStore = () => {
   const notes = new Map<string, Stored>();
@@ -59,6 +81,16 @@ export const memoryNoteStore = () => {
   let failWrites = false;
   let open = true;
   let waiting: (() => void)[] = [];
+  let publish: (event: AppEvent) => void = unpublished;
+
+  const created = (path: string) => {
+    publish(AppEvent.FileCreated(file(path)));
+    publish(AppEvent.MetadataChanged(file(path)));
+  };
+  const modified = (path: string) => {
+    publish(AppEvent.FileModified(file(path)));
+    publish(AppEvent.MetadataChanged(file(path)));
+  };
 
   const siblingsOf = (folder: string) =>
     [...notes.keys(), ...folders].filter((path) => folderOf(path) === folder);
@@ -102,6 +134,7 @@ export const memoryNoteStore = () => {
       await disk();
       addFolders(folder);
       notes.set(path, { frontmatter, body });
+      created(path);
     });
 
   const update = <E>(path: string, change: FrontmatterChange<E>) =>
@@ -116,6 +149,7 @@ export const memoryNoteStore = () => {
         const next = { ...copyFrontmatter(current.frontmatter) };
         applyPatch(next, decided.success);
         notes.set(found.path, { frontmatter: next, body: current.body });
+        if (differs(current.frontmatter, next)) modified(found.path);
         return Result.succeed<Note>({ path: found.path, frontmatter: copyFrontmatter(next) });
       }),
     );
@@ -124,6 +158,7 @@ export const memoryNoteStore = () => {
     Effect.flatMap(find(path), (found) =>
       write(() => {
         notes.delete(found.path);
+        publish(AppEvent.FileDeleted(file(found.path)));
         return Result.succeed(undefined);
       }),
     );
@@ -137,35 +172,46 @@ export const memoryNoteStore = () => {
       return yield* write(() => {
         notes.delete(found.path);
         notes.set(target, found.stored);
+        publish(AppEvent.FileRenamed({ ...file(target), oldPath: found.path }));
         return Result.succeed<Note>(note);
       });
     });
 
-  const layer = Layer.succeed(NoteStore)(
-    NoteStore.of({
-      list: read(() =>
-        recordNotes([...notes].map(([path, { frontmatter }]) => ({ path, frontmatter }))),
-      ),
-      unreadable: (folder) =>
-        read(() =>
-          pathsInFolder(
-            [...notes].flatMap(([path, { frontmatter }]) =>
-              frontmatter === undefined ? [path] : [],
-            ),
-            normalizePath(folder),
+  const service = NoteStore.of({
+    list: read(() =>
+      recordNotes([...notes].map(([path, { frontmatter }]) => ({ path, frontmatter }))),
+    ),
+    unreadable: (folder) =>
+      read(() =>
+        pathsInFolder(
+          [...notes].flatMap(([path, { frontmatter }]) =>
+            frontmatter === undefined ? [path] : [],
           ),
+          normalizePath(folder),
         ),
-      read: (path) =>
-        Effect.flatMap(find(path), (found) =>
-          read(() => ({
-            path: found.path,
-            frontmatter: copyFrontmatter(found.stored.frontmatter),
-          })),
-        ),
-      create,
-      update,
-      trash,
-      rename,
+      ),
+    read: (path) =>
+      Effect.flatMap(find(path), (found) =>
+        read(() => ({
+          path: found.path,
+          frontmatter: copyFrontmatter(found.stored.frontmatter),
+        })),
+      ),
+    create,
+    update,
+    trash,
+    rename,
+  });
+  const layer = Layer.effect(
+    NoteStore,
+    Effect.map(Effect.serviceOption(EventBus), (bus) => {
+      if (Option.isSome(bus)) {
+        publish = (event) => {
+          // After the runtime's dispose the bus is shut down; an outside edit then reaches no one.
+          Effect.runSyncExit(bus.value.publish(event));
+        };
+      }
+      return service;
     }),
   );
 
@@ -174,6 +220,7 @@ export const memoryNoteStore = () => {
     /** Writes a note as a person, Sync or an agent would: no checks, no waiting. */
     seed: (path: string, frontmatter: SeedFrontmatter, body = ""): void => {
       addFolders(folderOf(path));
+      const existed = notes.has(path);
       notes.set(path, {
         frontmatter:
           frontmatter === "broken"
@@ -181,6 +228,8 @@ export const memoryNoteStore = () => {
             : copyFrontmatter(frontmatter === "none" ? {} : frontmatter),
         body,
       });
+      if (existed) modified(path);
+      else created(path);
     },
     body: (path: string): string | undefined => notes.get(path)?.body,
     isFolder: (path: string): boolean => folders.has(path),

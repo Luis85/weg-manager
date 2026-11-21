@@ -6,6 +6,7 @@ import {
   applyPatch,
   copyFrontmatter,
   createNote,
+  pathsInFolder,
   recordNotes,
   planRename,
   writeCommand,
@@ -145,6 +146,15 @@ export const memoryNoteStore = () => {
       list: read(() =>
         recordNotes([...notes].map(([path, { frontmatter }]) => ({ path, frontmatter }))),
       ),
+      unreadable: (folder) =>
+        read(() =>
+          pathsInFolder(
+            [...notes].flatMap(([path, { frontmatter }]) =>
+              frontmatter === undefined ? [path] : [],
+            ),
+            normalizePath(folder),
+          ),
+        ),
       read: (path) =>
         Effect.flatMap(find(path), (found) =>
           read(() => ({

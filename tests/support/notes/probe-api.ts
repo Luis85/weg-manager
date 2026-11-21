@@ -36,6 +36,7 @@ export const probeApi = (app: App) => {
   return {
     list: () => run((store) => store.list),
     read: (path: string) => run((store) => store.read(path)),
+    unreadable: (folder: string) => run((store) => store.unreadable(folder)),
     create: (note: NewNote) => run((store) => store.create(note)),
     update: (path: string, change: ProbeChange) =>
       run((store) =>

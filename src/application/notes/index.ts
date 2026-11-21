@@ -13,7 +13,7 @@ export { describeNoteIssue } from "./i18n/describe";
 export { notesDe } from "./i18n/de";
 export { notesEn } from "./i18n/en";
 export { createNote, writeCommand } from "./command";
-export { planRename } from "./paths";
+export { isInFolder, pathsInFolder, planRename } from "./paths";
 export { editChange, newRecordFrontmatter } from "./records";
 export {
   IdGenerator,

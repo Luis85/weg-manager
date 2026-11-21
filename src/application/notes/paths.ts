@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Array as Arr, Effect, Order } from "effect";
 import { clashKey, clashName, noteNameIssue } from "../../domain/notes";
 import { InvalidNoteNameError, NotePathTakenError } from "./errors";
 import { copyFrontmatter } from "./frontmatter";
@@ -24,6 +24,20 @@ const folderOf = (path: string, normalize: Normalize): string =>
 
 const notePath = (folder: string, name: string, normalize: Normalize): string =>
   normalize(`${folder}/${name}.md`);
+
+/**
+ * True when `path` lies in the normalized `folder` or in a folder below it; every path lies in the
+ * vault root `/`. `WEG Manager Alt/A.md` does not lie in `WEG Manager`.
+ */
+export const isInFolder = (path: string, folder: string): boolean =>
+  folder === "/" || path.startsWith(`${folder}/`);
+
+/** The paths of `paths` that lie in `folder` or below, sorted by code unit as `list` sorts. */
+export const pathsInFolder = (paths: Iterable<string>, folder: string): string[] =>
+  Arr.sort(
+    Arr.filter(Arr.fromIterable(paths), (path) => isInFolder(path, folder)),
+    Order.String,
+  );
 
 /** Fails with `InvalidNoteNameError` when `name` cannot become a file name. */
 export const checkNoteName = (name: string): Effect.Effect<void, InvalidNoteNameError> => {

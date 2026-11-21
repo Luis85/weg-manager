@@ -6,15 +6,15 @@ The repository's CI runs on GitHub Actions (decided 2026-11-21, replacing the bl
 
 | File | Trigger | What it does |
 | --- | --- | --- |
-| `.github/workflows/ci.yml` | push to `main`, every pull request | job `verify`: `npm ci`, `npm run verify`; uploads `reports` (JUnit, Cobertura) even on failure and `plugin` (`dist/`) on success. Job `e2e`: `npm run test:e2e` in the latest real Obsidian under Xvfb, with Obsidian kept in the Actions cache |
+| `.github/workflows/ci.yml` | push to `main`, every pull request | job `verify`: `npm ci`, `npm run verify`; uploads `reports` (JUnit, Cobertura) even on failure and `plugin` (`dist/`) on success. Job `e2e`: `npm run test:e2e` in the latest real Obsidian under Xvfb, with Obsidian kept in the Actions cache. Job `skills`: the Python tests in `skills/tests/` and `python3 skills/package_claude_skills.py`; uploads `claude-skills` (the skill ZIP) |
 | `.github/workflows/nightly-mutation.yml` | nightly 02:17 UTC on the default branch, or by hand | `npm run test:mutation:full`; uploads `reports/mutation/` |
-| `.github/workflows/release.yml` | a pushed tag `x.y.z` (no `v`) | `npm run verify`, `npm run release:package -- --tag x.y.z`, then a GitHub release with `main.js`, `manifest.json` and `styles.css` |
+| `.github/workflows/release.yml` | a pushed tag `x.y.z` (no `v`) | `npm run verify`, `npm run release:package -- --tag x.y.z`, a build-provenance attestation of the three assets (`actions/attest@v4`), then a GitHub release with `main.js`, `manifest.json` and `styles.css` |
 
 All logic lives in npm scripts. The YAML only installs Node from `.nvmrc` and calls them, so a local `npm run verify` and CI run the same gate.
 
 ## Steps for you
 
-1. **Allow Actions.** *Settings → Actions → General*: allow actions and reusable workflows (at least the `actions/*` ones). Under *Workflow permissions*, the default read-only token is enough; `release.yml` asks for `contents: write` itself.
+1. **Allow Actions.** *Settings → Actions → General*: allow actions and reusable workflows (at least the `actions/*` ones). Under *Workflow permissions*, the default read-only token is enough; `release.yml` asks for `contents: write`, `id-token: write` and `attestations: write` itself. Artifact attestations need a public repository, or GitHub Enterprise Cloud for a private one.
 2. **Protect `main`.** *Settings → Rules → Rulesets → New branch ruleset* for `main`:
    - require a pull request before merging, with at least one approval;
    - require status checks to pass, and add **`CI / verify`** (it appears after the workflow has run once);
@@ -26,4 +26,4 @@ All logic lives in npm scripts. The YAML only installs Node from `.nvmrc` and ca
 
 ## Distribution
 
-The GitHub release carries the three files Obsidian installs. Listing in Obsidian's community plugin directory is a separate submission and out of scope. Until then, install by copying the release files to `<vault>/.obsidian/plugins/weg-manager/`.
+The GitHub release carries the three files Obsidian installs. Listing in Obsidian's community plugin directory is a separate submission and out of scope. Until then, install by copying the release files to `<vault>/.obsidian/plugins/weg-manager/`, or through BRAT (see [releasing.md](releasing.md#beta-testing-with-brat)).

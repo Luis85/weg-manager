@@ -262,6 +262,8 @@ A fresh-eyes code review of the shell produced the fixes below. Each has a test 
 | e2e | Runs `latest/latest` only (owner's decision). `events.e2e.ts` proves one listener per host event and none after disable, and that the count follows note changes. | `f67d043`, `4d6509c`, `a95f363` |
 | Skills | `obsidianmd/obsidian-skills` (7 skills) and `archify` 3.2.0 are in `.claude/skills/` (without Archify's 13 MB of demo HTML). Both are recorded in `THIRD_PARTY.md`. | `5586f98`, `e6f1545` |
 | Diagrams | Archify writes to `docs/archify/<type>-<slug>-<ts>/` (rule in `AGENTS.md`; receipts git-ignored). There is a plugin architecture diagram and an event-flow sequence diagram, both source-linked. | `10a8dab` … `7dadb7d` |
+| Dependencies | `npm audit`: 25 moderate findings → 0 via `overrides` for `qs`, `minimatch`, `glob` (dev tooling only; see ADR 0001). | `93fd9a6` |
+| Layout | Tool configs moved to `configs/`; `.oxlintrc.json`, `eslint.config.mjs`, `tsconfig.json`, the Prettier files and the dotfiles stay at the root (reasons in `architecture.md`). Stryker's sandbox excludes `.obsidian-cache` and `.claude`. | `8c2f340`, `1f88d79` |
 | Backlog | PBI-48 (external settings changes), PBI-49 (one edit location per setting), PBI-50 (vault events; the event part is done, indexing is still open). | `f770ff6`, `a95f363` |
 
 ### Check results (2026-11-21, after run 3)
@@ -270,7 +272,7 @@ A fresh-eyes code review of the shell produced the fixes below. Each has a test 
 | --- | --- |
 | `npm run verify` | passed (coverage: lines 97.96, statements 96.61, functions 95.15, branches 93.91) |
 | `npm run test:e2e` (real Obsidian 1.15.1, 4 specs, 15 tests) | passed, locally and in CI |
-| `npm run test:mutation:full` | pending: re-run after the Stryker sandbox fix (`ignorePatterns`) |
+| `npm run test:mutation:full` | passed: 97.7 % (application 99.2, domain 94.6); 4 equivalent survivors. Run after the Stryker sandbox fix and the dependency overrides. |
 | GitHub Actions on PR #4 (`verify`, `e2e`, GitGuardian) | passed |
 
 ### Rulings from run 3
@@ -280,6 +282,8 @@ A fresh-eyes code review of the shell produced the fixes below. Each has a test 
 53. Event bus: an unbounded `PubSub`, because Obsidian callbacks are synchronous and dropping file events during a bulk sync is not acceptable. `ActiveFileChanged` comes from `file-open`; folders are not published.
 54. Agent worktrees for parallel subagents live in `.claude/worktrees/` (git-ignored). Symlinking `node_modules` there breaks the Tailwind `@source not` excludes, so use a real directory with per-package links and real copies of `@nuxt/ui` and `.nuxt-ui`.
 55. Archify's demo HTML is not vendored, and its diagrams go to `docs/archify/` rather than `.archify/`.
+56. Vulnerable transitive dev dependencies are fixed with `overrides`, not npm's suggested major downgrades. Each override is removed once upstream requires a patched version.
+57. Tool configs live in `configs/` only where the tool takes an explicit path and keeps resolving from the repository root. oxlint's config stays at the root, because from `configs/` its overrides silently stopped applying.
 
 ### Still open
 
@@ -294,6 +298,5 @@ A fresh-eyes code review of the shell produced the fixes below. Each has a test 
   - the English default greeting (i18n);
   - card and dialog spacing, and the card header divider;
   - the 1.5 MB bundle budget against the actual ~540 KB;
-  - 25 moderate dev-only `npm audit` findings;
   - mobile (`isDesktopOnly`, K-09);
   - upgrading to the 1.15.x types once they are published.

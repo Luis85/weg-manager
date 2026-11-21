@@ -1,10 +1,12 @@
+import type { SettingsIssue } from "../domain/settings";
 import type { AppError } from "./errors";
+import { describeIssues, type Catalog } from "./i18n";
 
 export type UserMessageAction = "retry" | "open-settings" | "copy-diagnostics";
 
 /**
- * What the user sees for any outcome. German, du-form, cause then action (handoff HO-06).
- * Never a stack trace, path, raw error message or note content.
+ * What the user sees for any outcome, in the UI language (`messages`): cause, then action
+ * (handoff HO-06). Never a stack trace, path, raw error message or note content.
  */
 export type UserMessage = {
   readonly severity: "info" | "warning" | "error";
@@ -13,60 +15,44 @@ export type UserMessage = {
   readonly action?: UserMessageAction;
 };
 
-const PLUGIN_NAME = "WEG Manager";
-
-const readOnlyDetail = {
-  "newer-version": `Die Einstellungen stammen aus einer neueren Version von ${PLUGIN_NAME}. Aktualisiere das Plugin, um sie zu ändern.`,
-  unreadable:
-    "Die Einstellungsdatei ist nicht lesbar. Es gelten Standardwerte, die Datei bleibt unverändert. Kopiere die Diagnose für den Support.",
-} as const;
-
-export const describeError = (error: AppError): UserMessage => {
+export const describeError = (error: AppError, messages: Catalog): UserMessage => {
+  const { errors } = messages;
   switch (error._tag) {
     case "StorageError":
-      return {
-        severity: "error",
-        title: "Einstellungen nicht gespeichert",
-        detail:
-          "Die Einstellungsdatei konnte nicht geschrieben werden. Deine Eingabe ist erhalten. Speichere erneut.",
-        action: "retry",
-      };
+      return { severity: "error", ...errors.storage, action: "retry" };
     case "ReadOnlySettingsError":
       return {
         severity: "warning",
-        title: "Einstellungen schreibgeschützt",
-        detail: readOnlyDetail[error.reason],
+        title: errors.readOnly.title,
+        detail: errors.readOnly.detail[error.reason],
         action: "copy-diagnostics",
       };
     case "InvalidSettingsError":
-      return { severity: "warning", title: "Eingabe ungültig", detail: error.issues.join(" ") };
+      return {
+        severity: "warning",
+        title: errors.invalidSettings.title,
+        detail: describeIssues(error.issues, messages),
+      };
     case "VaultReadError":
-      return {
-        severity: "error",
-        title: "Notizen nicht lesbar",
-        detail: "Die Dateien im Vault konnten nicht gelesen werden. Versuche es erneut.",
-        action: "retry",
-      };
+      return { severity: "error", ...errors.vaultRead, action: "retry" };
     case "ClipboardError":
-      return {
-        severity: "error",
-        title: "Diagnose nicht kopiert",
-        detail: "Die Zwischenablage ist nicht verfügbar. Versuche es erneut.",
-        action: "retry",
-      };
+      return { severity: "error", ...errors.clipboard, action: "retry" };
   }
 };
 
-export const describeDefect = (incidentId: string): UserMessage => ({
+export const describeDefect = (incidentId: string, messages: Catalog): UserMessage => ({
   severity: "error",
-  title: `Unerwarteter Fehler in ${PLUGIN_NAME}`,
-  detail: `Die Aktion wurde abgebrochen (Fehlercode ${incidentId}). Kopiere die Diagnose und schicke sie mit dem Fehlercode an den Support.`,
+  title: messages.defect.title,
+  detail: messages.defect.detail(incidentId),
   action: "copy-diagnostics",
 });
 
-export const describeSettingsIssues = (issues: readonly string[]): UserMessage => ({
+export const describeSettingsIssues = (
+  issues: readonly SettingsIssue[],
+  messages: Catalog,
+): UserMessage => ({
   severity: "warning",
-  title: "Einstellungen teilweise zurückgesetzt",
-  detail: `${issues.join(" ")} Für diese Werte gelten Standardwerte. Prüfe die Einstellungen.`,
+  title: messages.settingsReset.title,
+  detail: messages.settingsReset.detail(describeIssues(issues, messages)),
   action: "open-settings",
 });

@@ -3,7 +3,12 @@ import { Effect, Layer } from "effect";
 import { LoggerLive } from "../../../src/application/logger";
 import { Logger } from "../../../src/application/ports";
 import { SettingsService, SettingsServiceLive } from "../../../src/application/settings-service";
-import { inMemoryStore, recordingNotifier, recordingSink } from "../../support/layers";
+import {
+  inMemoryStore,
+  recordingNotifier,
+  recordingSink,
+  testMessages,
+} from "../../support/layers";
 
 const setup = (
   options: { readonly developmentMode?: boolean; readonly logLevel?: string } = {},
@@ -15,6 +20,7 @@ const setup = (
         inMemoryStore({ initial: options.logLevel ? { logLevel: options.logLevel } : undefined })
           .layer,
         recordingNotifier().layer,
+        testMessages,
       ),
     ),
   );

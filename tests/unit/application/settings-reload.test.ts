@@ -6,13 +6,18 @@ import {
   type SettingsStatus,
 } from "../../../src/application/settings-service";
 import { DEFAULT_SETTINGS, type Settings } from "../../../src/domain/settings";
-import { inMemoryStore, recordingNotifier, type StoreOptions } from "../../support/layers";
+import {
+  inMemoryStore,
+  recordingNotifier,
+  testMessages,
+  type StoreOptions,
+} from "../../support/layers";
 
 const setup = (options: StoreOptions = {}) => {
   const store = inMemoryStore(options);
   const notifier = recordingNotifier();
   const layer = SettingsServiceLive.pipe(
-    Layer.provide(Layer.mergeAll(store.layer, notifier.layer)),
+    Layer.provide(Layer.mergeAll(store.layer, notifier.layer, testMessages)),
   );
   return { store, notifier, layer };
 };

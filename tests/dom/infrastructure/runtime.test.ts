@@ -12,7 +12,9 @@ class Bare extends Plugin {}
 describe("makeRuntime(appLayer(plugin))", () => {
   it("runs a use case against the Obsidian adapters", async () => {
     const { plugin } = createTestPlugin(Bare, { data: { greeting: "Moin" } });
-    const runtime = makeRuntime(appLayer(plugin as never, { developmentMode: false }));
+    const runtime = makeRuntime(
+      appLayer(plugin as never, { developmentMode: false, language: "de" }),
+    );
     await runtime.runPromise(showGreeting);
     expect(recordedNotices().map((notice) => notice.text)).toEqual([
       expect.stringContaining("Moin"),
@@ -22,7 +24,9 @@ describe("makeRuntime(appLayer(plugin))", () => {
 
   it("rejects effects after dispose", async () => {
     const { plugin } = createTestPlugin(Bare);
-    const runtime = makeRuntime(appLayer(plugin as never, { developmentMode: false }));
+    const runtime = makeRuntime(
+      appLayer(plugin as never, { developmentMode: false, language: "de" }),
+    );
     await runtime.runPromise(showGreeting);
     await runtime.dispose();
     await expect(runtime.runPromise(showGreeting)).rejects.toThrow(/dispos/i);

@@ -2,6 +2,7 @@ import { Effect, Layer } from "effect";
 import type { AppServices } from "../src/application/app-services";
 import { ClipboardError, StorageError, VaultReadError } from "../src/application/errors";
 import { EventBusLive } from "../src/application/event-bus";
+import { messagesLayer, type Language } from "../src/application/i18n";
 import { LoggerLive } from "../src/application/logger";
 import {
   Clipboard,
@@ -30,6 +31,8 @@ export type HarnessOptions = {
   readonly notify?: (message: UserMessage) => void;
   /** Clipboard writer; defaults to one that fails, as outside a secure context. */
   readonly writeClipboard?: (text: string) => Promise<void>;
+  /** UI language (`?lang=`); German by default. */
+  readonly language?: Language;
 };
 
 const vaultFor = (scenario: Scenario) => {
@@ -84,6 +87,7 @@ export const harnessLayer = (
         }),
     }),
     Layer.succeed(HostInfo)({ pluginVersion: "harness", apiVersion: "none", platform: "browser" }),
+    messagesLayer(options.language ?? "de"),
   );
   const settings = SettingsServiceLive.pipe(Layer.provideMerge(adapters));
   const logger = LoggerLive({ developmentMode: true }).pipe(Layer.provide(consoleSinkLayer));

@@ -135,7 +135,7 @@ describe("useSettings and useRuntime", () => {
   it("follows settings changes until the scope ends", async () => {
     const { runtime } = make();
     const { wrapper, exposed } = host(runtime, () => useSettings());
-    expect(exposed.value.greeting).toBe("Hello from WEG Manager");
+    expect(exposed.value.greeting).toBeNull();
     await runtime.runPromise(updateGreeting("Moin"));
     await flushPromises();
     expect(exposed.value.greeting).toBe("Moin");

@@ -2,6 +2,7 @@
 import { Context, type Effect } from "effect";
 import type { LogLevel } from "../domain/settings";
 import type { ClipboardError, StorageError, VaultReadError } from "./errors";
+import type { Catalog } from "./i18n";
 import type { UserMessage } from "./user-messages";
 
 /** Raw persistence of `data.json`. */
@@ -61,3 +62,11 @@ export class HostInfo extends Context.Service<
   HostInfo,
   { readonly pluginVersion: string; readonly apiVersion: string; readonly platform: string }
 >()("weg-manager/application/HostInfo") {}
+
+/**
+ * The message catalog of the UI language. The host picks it once per plugin load (Obsidian
+ * restarts when its language changes), so it is a value, not a stream.
+ */
+export class Messages extends Context.Service<Messages, Catalog>()(
+  "weg-manager/application/Messages",
+) {}

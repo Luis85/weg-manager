@@ -1,5 +1,6 @@
 import { Effect } from "effect";
-import { HostInfo, Logger, type RecordedLogEntry } from "./ports";
+import { de, describeIssues } from "./i18n";
+import { HostInfo, Logger, Messages, type RecordedLogEntry } from "./ports";
 import { RECENT_LOG_LIMIT } from "./logger";
 import { SettingsService } from "./settings-service";
 
@@ -27,9 +28,13 @@ const formatEntry = (entry: RecordedLogEntry): string => {
   return parts.join(" ");
 };
 
-/** A plain-text report the user can paste into a support request. */
+/**
+ * A plain-text report the user can paste into a support request. It stays German in every UI
+ * language, so support reads one format (ADR 0005); `Sprache` names the UI language.
+ */
 export const buildDiagnostics = Effect.gen(function* () {
   const host = yield* HostInfo;
+  const { language } = yield* Messages;
   const settings = yield* SettingsService;
   const status = yield* settings.status;
   const current = yield* settings.current;
@@ -39,8 +44,9 @@ export const buildDiagnostics = Effect.gen(function* () {
     `Plugin-Version: ${host.pluginVersion}`,
     `Obsidian-API: ${host.apiVersion}`,
     `Plattform: ${host.platform}`,
+    `Sprache: ${language}`,
     `Einstellungen beschreibbar: ${status.writable ? "ja" : "nein"}${status.readOnlyReason ? ` (${status.readOnlyReason})` : ""}`,
-    `Hinweise zu Einstellungen: ${status.issues.length > 0 ? status.issues.join(" ") : "keine"}`,
+    `Hinweise zu Einstellungen: ${status.issues.length > 0 ? describeIssues(status.issues, de) : "keine"}`,
     `Protokollstufe: ${current.logLevel}`,
     `Letzte Protokolleinträge (${entries.length}):`,
     ...entries.map(formatEntry),

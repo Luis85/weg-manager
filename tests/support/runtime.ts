@@ -1,7 +1,9 @@
 import { Effect, Layer, ManagedRuntime } from "effect";
 import type { AppRuntime } from "../../src/application/app-services";
 import { InvalidSettingsError } from "../../src/application/errors";
+import { messagesLayer, type Language } from "../../src/application/i18n";
 import { SettingsService, SettingsServiceLive } from "../../src/application/settings-service";
+import type { SettingsIssue } from "../../src/domain/settings";
 import {
   controllableVault,
   inMemoryStore,
@@ -18,10 +20,12 @@ export type TestRuntimeOptions = {
   readonly store?: StoreOptions;
   readonly vault?: number | "fail";
   /** Every settings update fails with these issues, as if the service rejected the value. */
-  readonly rejectUpdates?: readonly string[];
+  readonly rejectUpdates?: readonly SettingsIssue[];
+  /** The UI language; German by default, so the exact-text tests pin the product's language. */
+  readonly language?: Language;
 };
 
-const rejecting = (issues: readonly string[]) =>
+const rejecting = (issues: readonly SettingsIssue[]) =>
   Layer.effect(
     SettingsService,
     SettingsService.useSync((base) =>
@@ -40,7 +44,10 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
   const logger = recordingLogger();
   const clipboard = recordingClipboard();
   const events = recordingEventBus();
-  const live = SettingsServiceLive.pipe(Layer.provide(Layer.merge(store.layer, notifier.layer)));
+  const messages = messagesLayer(options.language ?? "de");
+  const live = SettingsServiceLive.pipe(
+    Layer.provide(Layer.mergeAll(store.layer, notifier.layer, messages)),
+  );
   const settings =
     options.rejectUpdates === undefined
       ? live
@@ -53,6 +60,7 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
     sequentialIncidents(),
     clipboard.layer,
     testHostInfo,
+    messages,
     events.layer,
   );
   const runtime: AppRuntime = ManagedRuntime.make(layer);

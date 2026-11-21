@@ -1,27 +1,36 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { REDACTED, buildDiagnostics, redact } from "../../../src/application/diagnostics";
+import { messagesLayer, type Language } from "../../../src/application/i18n";
 import { Logger, type RecordedLogEntry } from "../../../src/application/ports";
 import { SettingsServiceLive } from "../../../src/application/settings-service";
 import {
   inMemoryStore,
   recordingNotifier,
   testHostInfo,
+  testMessages,
   type StoreOptions,
 } from "../../support/layers";
 
 const loggerWith = (entries: readonly RecordedLogEntry[]) =>
   Layer.succeed(Logger)({ log: () => Effect.void, recent: Effect.succeed(entries) });
 
-const report = (store: StoreOptions, entries: readonly RecordedLogEntry[]) =>
+const report = (
+  store: StoreOptions,
+  entries: readonly RecordedLogEntry[],
+  language: Language = "de",
+) =>
   buildDiagnostics.pipe(
     Effect.provide(
       Layer.mergeAll(
         SettingsServiceLive.pipe(
-          Layer.provide(Layer.merge(inMemoryStore(store).layer, recordingNotifier().layer)),
+          Layer.provide(
+            Layer.mergeAll(inMemoryStore(store).layer, recordingNotifier().layer, testMessages),
+          ),
         ),
         loggerWith(entries),
         testHostInfo,
+        messagesLayer(language),
       ),
     ),
   );
@@ -36,6 +45,7 @@ describe("buildDiagnostics", () => {
           "Plugin-Version: 0.1.0",
           "Obsidian-API: 1.15.1",
           "Plattform: test",
+          "Sprache: de",
           "Einstellungen beschreibbar: ja",
           "Hinweise zu Einstellungen: keine",
           "Protokollstufe: warn",
@@ -69,6 +79,18 @@ describe("buildDiagnostics", () => {
       assert.include(
         text,
         "Hinweise zu Einstellungen: Die Begrüßung muss 1 bis 200 Zeichen lang sein. Die Protokollstufe muss eine von error, warn, info, debug sein.",
+      );
+    }),
+  );
+
+  it.effect("stays German for support in an English UI and names the UI language", () =>
+    Effect.gen(function* () {
+      const text = yield* report({ initial: { greeting: 7 } }, [], "en");
+      assert.include(text, "Sprache: en");
+      assert.include(text, "Einstellungen beschreibbar: ja");
+      assert.include(
+        text,
+        "Hinweise zu Einstellungen: Die Begrüßung muss 1 bis 200 Zeichen lang sein.",
       );
     }),
   );

@@ -4,7 +4,7 @@ import type { ButtonProps } from "@nuxt/ui";
 import { computed } from "vue";
 import { copyDiagnostics } from "../../application/use-cases";
 import type { UserMessage, UserMessageAction } from "../../application/user-messages";
-import { useEffectAction } from "../runtime/use-runtime";
+import { useEffectAction, useMessages } from "../runtime/use-runtime";
 
 /**
  * Renders any `UserMessage` the same way in every view. Its action becomes a button when a
@@ -15,11 +15,7 @@ const props = defineProps<{
   handlers?: Partial<Record<UserMessageAction, () => unknown>>;
 }>();
 
-const ACTION_LABELS: Record<UserMessageAction, string> = {
-  retry: "Erneut versuchen",
-  "open-settings": "Einstellungen öffnen",
-  "copy-diagnostics": "Diagnose kopieren",
-};
+const { actions: ACTION_LABELS } = useMessages();
 
 const COLORS = { info: "info", warning: "warning", error: "error" } as const;
 

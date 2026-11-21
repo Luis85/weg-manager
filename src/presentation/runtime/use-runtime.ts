@@ -14,13 +14,16 @@ import { reportDefect } from "../../application/defects";
 import type { AppError } from "../../application/errors";
 import { EventBus } from "../../application/event-bus";
 import type { AppEvent } from "../../application/events";
+import type { Catalog } from "../../application/i18n";
+import { Messages } from "../../application/ports";
 import { SettingsService, type SettingsStatus } from "../../application/settings-service";
 import { describeError, type UserMessage } from "../../application/user-messages";
 import type { Settings } from "../../domain/settings";
 
 /**
  * The only presentation module that imports `effect`. Components run use cases through
- * `useEffectAction` and read state through `useSettings`; they never see an Effect value.
+ * `useEffectAction`, read state through `useSettings` and texts through `useMessages`; they never
+ * see an Effect value.
  */
 
 const RUNTIME_KEY: InjectionKey<AppRuntime> = Symbol("weg-manager/runtime");
@@ -34,6 +37,13 @@ export const useRuntime = (): AppRuntime => {
   if (runtime === undefined) throw new Error("useRuntime() outside a mounted surface");
   return runtime;
 };
+
+/**
+ * The message catalog of the UI language. It is fixed for one plugin load (Obsidian restarts on a
+ * language change), so it is a plain value, not a ref.
+ */
+export const useMessages = (): Catalog =>
+  useRuntime().runSync(Messages.useSync((catalog) => catalog));
 
 /** Routes a defect to `reportDefect`; never rejects (the runtime may already be disposed). */
 export const reportVueError = (runtime: AppRuntime, cause: unknown): Promise<void> =>
@@ -59,6 +69,7 @@ export const useEffectAction = <Args extends unknown[], A, E extends AppError>(
   fn: (...args: Args) => Effect.Effect<A, E, AppServices>,
 ): EffectAction<Args, A, E> => {
   const runtime = useRuntime();
+  const messages = useMessages();
   const pending = shallowRef(false);
   const value = shallowRef<A | undefined>();
   const error = shallowRef<E | undefined>();
@@ -80,7 +91,7 @@ export const useEffectAction = <Args extends unknown[], A, E extends AppError>(
     const failure = Cause.findErrorOption(exit.cause);
     if (Option.isSome(failure)) {
       error.value = failure.value;
-      message.value = describeError(failure.value);
+      message.value = describeError(failure.value, messages);
       return undefined;
     }
     return reportVueError(runtime, Cause.squash(exit.cause));

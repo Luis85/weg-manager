@@ -1,6 +1,7 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { buildDiagnostics } from "../../../src/application/diagnostics";
+import { messagesLayer, type Language } from "../../../src/application/i18n";
 import { Logger } from "../../../src/application/ports";
 import { SettingsServiceLive } from "../../../src/application/settings-service";
 import {
@@ -20,12 +21,13 @@ import {
   type StoreOptions,
 } from "../../support/layers";
 
-const settingsWith = (options: StoreOptions = {}) => {
+const settingsWith = (options: StoreOptions = {}, language: Language = "de") => {
   const notifier = recordingNotifier();
+  const store = inMemoryStore(options);
   const layer = SettingsServiceLive.pipe(
-    Layer.provideMerge(Layer.mergeAll(inMemoryStore(options).layer, notifier.layer)),
+    Layer.provideMerge(Layer.mergeAll(store.layer, notifier.layer, messagesLayer(language))),
   );
-  return { notifier, layer };
+  return { notifier, store, layer };
 };
 
 describe("settings use cases", () => {
@@ -60,6 +62,50 @@ describe("settings use cases", () => {
   });
 });
 
+describe("default greeting", () => {
+  it.effect.each(["de", "en"] as const)(
+    "showGreeting shows the default of the UI language (%s) while none is typed",
+    (language) => {
+      const { notifier, layer } = settingsWith({}, language);
+      return Effect.gen(function* () {
+        yield* showGreeting;
+        assert.strictEqual(
+          notifier.messages()[0]?.detail,
+          language === "de" ? "Hallo von WEG Manager" : "Hello from WEG Manager",
+        );
+      }).pipe(Effect.provide(layer));
+    },
+  );
+
+  it.effect("shows the language's default for a file that stored the old default", () => {
+    const old = { schemaVersion: 1, greeting: "Hello from WEG Manager", logLevel: "warn" };
+    const { notifier, layer } = settingsWith({ initial: old }, "de");
+    return Effect.gen(function* () {
+      yield* showGreeting;
+      assert.strictEqual(notifier.messages()[0]?.detail, "Hallo von WEG Manager");
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("stores the language's default greeting as not customised", () => {
+    const { store, layer } = settingsWith({ initial: { greeting: "Moin" } }, "de");
+    return Effect.gen(function* () {
+      const saved = yield* updateGreeting(" Hallo von WEG Manager ");
+      assert.isNull(saved.greeting);
+      assert.deepStrictEqual(store.saved(), [{ schemaVersion: 1, logLevel: "warn" }]);
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("keeps a typed greeting that is the default of another language", () => {
+    const { layer } = settingsWith({}, "en");
+    return Effect.gen(function* () {
+      assert.strictEqual(
+        (yield* updateGreeting("Hallo von WEG Manager")).greeting,
+        "Hallo von WEG Manager",
+      );
+    }).pipe(Effect.provide(layer));
+  });
+});
+
 describe("countMarkdownFiles", () => {
   it.effect("returns the vault's count", () =>
     Effect.gen(function* () {
@@ -76,11 +122,15 @@ describe("countMarkdownFiles", () => {
 });
 
 const diagnosticsSetup = (
-  options: { readonly clipboardFails?: boolean; readonly initial?: unknown } = {},
+  options: {
+    readonly clipboardFails?: boolean;
+    readonly initial?: unknown;
+    readonly language?: Language;
+  } = {},
 ) => {
   const logger = recordingLogger();
   const clipboard = recordingClipboard({ fail: options.clipboardFails ?? false });
-  const settings = settingsWith({ initial: options.initial });
+  const settings = settingsWith({ initial: options.initial }, options.language);
   const layer = Layer.mergeAll(settings.layer, logger.layer, clipboard.layer, testHostInfo);
   return { logger, clipboard, notifier: settings.notifier, layer };
 };
@@ -156,6 +206,18 @@ describe("copyDiagnostics", () => {
         severity: "info",
         title: "Diagnose kopiert",
         detail: "Füge den Bericht in deine Support-Anfrage ein.",
+      });
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("confirms in the UI language", () => {
+    const { notifier, layer } = diagnosticsSetup({ language: "en" });
+    return Effect.gen(function* () {
+      yield* copyDiagnostics;
+      assert.deepStrictEqual(notifier.messages().at(-1), {
+        severity: "info",
+        title: "Diagnostics copied",
+        detail: "Paste the report into your support request.",
       });
     }).pipe(Effect.provide(layer));
   });

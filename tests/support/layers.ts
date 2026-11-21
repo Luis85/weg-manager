@@ -2,6 +2,7 @@ import { Effect, Layer } from "effect";
 import { ClipboardError, StorageError, VaultReadError } from "../../src/application/errors";
 import { EventBus, EventBusLive } from "../../src/application/event-bus";
 import type { AppEvent } from "../../src/application/events";
+import { messagesLayer } from "../../src/application/i18n";
 import {
   Clipboard,
   HostInfo,
@@ -178,6 +179,9 @@ export const recordingClipboard = (options: { readonly fail?: boolean } = {}) =>
   });
   return { layer, writes: () => [...writes] };
 };
+
+/** The German catalog: the product's primary language, so the exact-text tests pin German. */
+export const testMessages = messagesLayer("de");
 
 export const testHostInfo = Layer.succeed(HostInfo)({
   pluginVersion: "0.1.0",

@@ -1,4 +1,5 @@
 import { Schema } from "effect";
+import { SettingsIssue } from "../domain/settings";
 
 /** Reading or writing `data.json` failed. */
 export class StorageError extends Schema.TaggedError<StorageError>()("StorageError", {
@@ -11,10 +12,10 @@ export class ReadOnlySettingsError extends Schema.TaggedError<ReadOnlySettingsEr
   { reason: Schema.Literals(["newer-version", "unreadable"]) },
 ) {}
 
-/** A settings patch broke a domain rule; `issues` are user-facing German sentences. */
+/** A settings patch broke a domain rule; the message catalog words each issue. */
 export class InvalidSettingsError extends Schema.TaggedError<InvalidSettingsError>()(
   "InvalidSettingsError",
-  { issues: Schema.Array(Schema.String) },
+  { issues: Schema.Array(SettingsIssue) },
 ) {}
 
 /** The vault could not be read. */

@@ -2,13 +2,18 @@ import { assert, describe, it } from "@effect/vitest";
 import { Effect, Fiber, Layer, Stream } from "effect";
 import { SettingsService, SettingsServiceLive } from "../../../src/application/settings-service";
 import { DEFAULT_SETTINGS } from "../../../src/domain/settings";
-import { inMemoryStore, recordingNotifier, type StoreOptions } from "../../support/layers";
+import {
+  inMemoryStore,
+  recordingNotifier,
+  testMessages,
+  type StoreOptions,
+} from "../../support/layers";
 
 const setup = (options: StoreOptions = {}) => {
   const store = inMemoryStore(options);
   const notifier = recordingNotifier();
   const layer = SettingsServiceLive.pipe(
-    Layer.provide(Layer.mergeAll(store.layer, notifier.layer)),
+    Layer.provide(Layer.mergeAll(store.layer, notifier.layer, testMessages)),
   );
   return { store, notifier, layer };
 };
@@ -57,6 +62,22 @@ describe("SettingsService", () => {
       );
     }).pipe(Effect.provide(layer));
   });
+
+  it.effect(
+    "loads an old file with the stored default as not customised and drops it on save",
+    () => {
+      const old = { schemaVersion: 1, greeting: "Hello from WEG Manager", logLevel: "warn" };
+      const { store, notifier, layer } = setup({ initial: old });
+      return Effect.gen(function* () {
+        const service = yield* SettingsService;
+        assert.isNull((yield* service.current).greeting);
+        assert.deepStrictEqual(notifier.messages(), []);
+        assert.deepStrictEqual(store.saved(), []);
+        yield* service.update({ logLevel: "info" });
+        assert.deepStrictEqual(store.saved(), [{ schemaVersion: 1, logLevel: "info" }]);
+      }).pipe(Effect.provide(layer));
+    },
+  );
 
   it.effect("rejects an invalid patch without touching the store", () => {
     const { store, layer } = setup();

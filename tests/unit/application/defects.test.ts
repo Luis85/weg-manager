@@ -1,13 +1,18 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { reportDefect } from "../../../src/application/defects";
-import { recordingLogger, recordingNotifier, sequentialIncidents } from "../../support/layers";
+import {
+  recordingLogger,
+  recordingNotifier,
+  sequentialIncidents,
+  testMessages,
+} from "../../support/layers";
 
 describe("reportDefect", () => {
   it.effect("logs the cause once, shows only the incident id and returns the message", () => {
     const logger = recordingLogger();
     const notifier = recordingNotifier();
-    const layer = Layer.mergeAll(logger.layer, notifier.layer, sequentialIncidents());
+    const layer = Layer.mergeAll(logger.layer, notifier.layer, sequentialIncidents(), testMessages);
     const cause = new Error("secret /vault/a.md");
     return Effect.gen(function* () {
       const message = yield* reportDefect(cause);
@@ -28,7 +33,12 @@ describe("reportDefect", () => {
 
   it.effect("gives every report its own incident id", () => {
     const logger = recordingLogger();
-    const layer = Layer.mergeAll(logger.layer, recordingNotifier().layer, sequentialIncidents());
+    const layer = Layer.mergeAll(
+      logger.layer,
+      recordingNotifier().layer,
+      sequentialIncidents(),
+      testMessages,
+    );
     return Effect.gen(function* () {
       yield* reportDefect("first");
       yield* reportDefect("second");
@@ -41,7 +51,12 @@ describe("reportDefect", () => {
 
   it.effect("logs name, message and stack of an Error and the text of anything else", () => {
     const logger = recordingLogger();
-    const layer = Layer.mergeAll(logger.layer, recordingNotifier().layer, sequentialIncidents());
+    const layer = Layer.mergeAll(
+      logger.layer,
+      recordingNotifier().layer,
+      sequentialIncidents(),
+      testMessages,
+    );
     const withStack = new TypeError("bad");
     withStack.stack = "at here";
     const withoutStack = new RangeError("far");

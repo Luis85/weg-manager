@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { Incidents, Logger, Notifier } from "./ports";
+import { Incidents, Logger, Messages, Notifier } from "./ports";
 import { describeDefect } from "./user-messages";
 
 const describeCause = (cause: unknown): string => {
@@ -21,7 +21,7 @@ export const reportDefect = (cause: unknown) =>
       context: { cause: describeCause(cause) },
       incidentId,
     });
-    const message = describeDefect(incidentId);
+    const message = describeDefect(incidentId, yield* Messages);
     yield* (yield* Notifier).notify(message);
     return message;
   });

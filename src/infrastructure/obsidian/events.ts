@@ -3,7 +3,7 @@ import { TFile, type EventRef, type Events, type Plugin, type TAbstractFile } fr
 import { reportDefect } from "../../application/defects";
 import { EventBus } from "../../application/event-bus";
 import { AppEvent } from "../../application/events";
-import type { Incidents, Logger, Notifier } from "../../application/ports";
+import type { Incidents, Logger, Messages, Notifier } from "../../application/ports";
 
 type ColorScheme = "light" | "dark";
 
@@ -35,7 +35,7 @@ export const hostEventsLayer = (plugin: Plugin) =>
   Layer.effectDiscard(
     Effect.gen(function* () {
       const bus = yield* EventBus;
-      const context = yield* Effect.context<Logger | Incidents | Notifier>();
+      const context = yield* Effect.context<Logger | Incidents | Notifier | Messages>();
       const { vault, metadataCache, workspace } = plugin.app;
       let ready = false;
       let active = true;

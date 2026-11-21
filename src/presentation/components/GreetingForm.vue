@@ -6,36 +6,45 @@ import { useForm } from "@tanstack/vue-form";
 import { computed } from "vue";
 import { ReadOnlySettingsError } from "../../application/errors";
 import { updateGreeting } from "../../application/use-cases";
+import { describeIssues, greetingOf } from "../../application/i18n";
 import { describeError } from "../../application/user-messages";
 import { validatePatch } from "../../domain/settings";
 import ErrorNotice from "./ErrorNotice.vue";
-import { useEffectAction, useSettings, useSettingsStatus } from "../runtime/use-runtime";
+import {
+  useEffectAction,
+  useMessages,
+  useSettings,
+  useSettingsStatus,
+} from "../runtime/use-runtime";
 
 /** The greeting form: domain rules validate on change, the service has the final word. */
 const settings = useSettings();
 const status = useSettingsStatus();
+const messages = useMessages();
 const readOnly = computed(() => !status.value.writable);
 /** Why the settings are read-only and what to do, from the shared message catalog. */
 const readOnlyMessage = computed(() => {
   const reason = status.value.readOnlyReason;
-  return reason === undefined ? undefined : describeError(new ReadOnlySettingsError({ reason }));
+  return reason === undefined
+    ? undefined
+    : describeError(new ReadOnlySettingsError({ reason }), messages);
 });
 const save = useEffectAction(updateGreeting);
 
 const greetingIssue = (greeting: string): string | undefined => {
   const result = validatePatch(settings.value, { greeting });
-  return result.ok ? undefined : result.issues[0];
+  return result.ok ? undefined : describeIssues(result.issues.slice(0, 1), messages);
 };
 
 const form = useForm({
-  defaultValues: { greeting: settings.value.greeting },
+  defaultValues: { greeting: greetingOf(settings.value, messages) },
   onSubmit: async ({ value }) => {
     await save.run(value.greeting);
     const error = save.error.value;
     if (error?._tag !== "InvalidSettingsError") return;
     form.setFieldMeta("greeting", (meta) => ({
       ...meta,
-      errorMap: { ...meta.errorMap, onSubmit: error.issues.join(" ") },
+      errorMap: { ...meta.errorMap, onSubmit: describeIssues(error.issues, messages) },
     }));
   },
 });
@@ -61,7 +70,7 @@ const submit = () => form.handleSubmit();
     <form.Field name="greeting" :validators="{ onChange: ({ value }) => greetingIssue(value) }">
       <template #default="{ field }">
         <UFormField
-          label="Begrüßung"
+          :label="messages.greetingForm.label"
           :name="field.name"
           :error="firstError(field.state.meta.errors)"
         >
@@ -78,7 +87,12 @@ const submit = () => form.handleSubmit();
     <ErrorNotice v-if="readOnlyMessage" :message="readOnlyMessage" data-testid="read-only-hint" />
     <ErrorNotice v-if="notice" :message="notice" :handlers="{ retry: submit }" />
     <div>
-      <UButton type="submit" label="Speichern" :loading="isSubmitting" :disabled="disabled" />
+      <UButton
+        type="submit"
+        :label="messages.greetingForm.save"
+        :loading="isSubmitting"
+        :disabled="disabled"
+      />
     </div>
   </form>
 </template>

@@ -19,7 +19,7 @@ class Bare extends Plugin {}
 
 const setup = (options: { data?: unknown; failLoadData?: boolean } = {}) => {
   const { plugin, registry, app } = createTestPlugin(Bare, options);
-  return { plugin, registry, app, layer: obsidianLayer(plugin as never) };
+  return { plugin, registry, app, layer: obsidianLayer(plugin as never, "de") };
 };
 
 afterEach(() => {

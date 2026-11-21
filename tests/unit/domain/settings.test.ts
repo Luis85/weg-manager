@@ -6,6 +6,8 @@ import {
   LOG_LEVELS,
   SETTINGS_VERSION,
   decodeSettings,
+  LEGACY_DEFAULT_GREETING,
+  encodeSettings,
   validatePatch,
   type Settings,
 } from "../../../src/domain/settings";
@@ -36,8 +38,7 @@ describe("decodeSettings", () => {
     const result = decodeSettings({ schemaVersion: 1, greeting: 7, logLevel: "debug" });
     expect(result.settings.greeting).toBe(DEFAULT_SETTINGS.greeting);
     expect(result.settings.logLevel).toBe("debug");
-    expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain("Begrüßung");
+    expect(result.issues).toEqual([{ code: "greeting.length", max: GREETING_MAX_LENGTH }]);
     expect(result.writable).toBe(true);
   });
 
@@ -46,8 +47,7 @@ describe("decodeSettings", () => {
     (greeting) => {
       const result = decodeSettings({ ...valid, greeting });
       expect(result.settings.greeting).toBe(DEFAULT_SETTINGS.greeting);
-      expect(result.issues).toHaveLength(1);
-      expect(result.issues[0]).toContain("Begrüßung");
+      expect(result.issues).toEqual([{ code: "greeting.length", max: GREETING_MAX_LENGTH }]);
     },
   );
 
@@ -70,8 +70,7 @@ describe("decodeSettings", () => {
   it("falls back for an unknown log level and keeps the other fields", () => {
     const result = decodeSettings({ ...valid, logLevel: "verbose" });
     expect(result.settings).toEqual({ ...valid, logLevel: "warn" });
-    expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain("Protokollstufe");
+    expect(result.issues).toEqual([{ code: "logLevel.unknown", allowed: LOG_LEVELS }]);
   });
 
   it.each([true, false, "yes"])(
@@ -94,27 +93,23 @@ describe("decodeSettings", () => {
     const result = decodeSettings({ ...valid, schemaVersion: 2 });
     expect(result.settings).toEqual(DEFAULT_SETTINGS);
     expect(result.writable).toBe(false);
-    expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain("2");
+    expect(result.issues).toEqual([{ code: "schema.newer", version: 2 }]);
   });
 
   it("rejects a schemaVersion that is not a positive integer", () => {
     const result = decodeSettings({ ...valid, schemaVersion: "1" });
     expect(result.settings).toEqual(valid);
     expect(result.writable).toBe(true);
-    expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain("Schemaversion");
+    expect(result.issues).toEqual([{ code: "schema.invalid" }]);
   });
 
-  it("never throws and is idempotent on its own output", () => {
+  it("never throws and is idempotent on its own output, also once encoded", () => {
     assert(
       property(anything(), (raw) => {
         const first = decodeSettings(raw);
-        expect(decodeSettings(first.settings)).toEqual({
-          settings: first.settings,
-          issues: [],
-          writable: true,
-        });
+        const again = { settings: first.settings, issues: [], writable: true };
+        expect(decodeSettings(first.settings)).toEqual(again);
+        expect(decodeSettings(encodeSettings(first.settings))).toEqual(again);
       }),
     );
   });
@@ -140,7 +135,21 @@ describe("validatePatch", () => {
   it.each(["", "x".repeat(GREETING_MAX_LENGTH + 1)])("rejects the greeting %j", (greeting) => {
     expect(validatePatch(valid, { greeting })).toEqual({
       ok: false,
-      issues: [expect.stringContaining("Begrüßung")],
+      issues: [{ code: "greeting.length", max: GREETING_MAX_LENGTH }],
+    });
+  });
+
+  it("resets the greeting to the language's default with null", () => {
+    expect(validatePatch(valid, { greeting: null })).toEqual({
+      ok: true,
+      settings: { ...valid, greeting: null },
+    });
+  });
+
+  it("treats the old English default as not customised", () => {
+    expect(validatePatch(valid, { greeting: ` ${LEGACY_DEFAULT_GREETING} ` })).toEqual({
+      ok: true,
+      settings: { ...valid, greeting: null },
     });
   });
 
@@ -158,22 +167,48 @@ describe("validatePatch", () => {
   });
 });
 
-/** Defaults and issue texts are product decisions; pin them exactly. */
-describe("settings copy and defaults", () => {
-  it("has the documented defaults", () => {
-    expect(DEFAULT_SETTINGS).toEqual({
-      schemaVersion: 1,
-      greeting: "Hello from WEG Manager",
-      logLevel: "warn",
+/** Defaults are product decisions; pin them exactly. Issue texts live in the message catalog. */
+describe("settings defaults and issues", () => {
+  it("has the documented defaults: no greeting stored, so it follows the UI language", () => {
+    expect(DEFAULT_SETTINGS).toEqual({ schemaVersion: 1, greeting: null, logLevel: "warn" });
+    expect(LEGACY_DEFAULT_GREETING).toBe("Hello from WEG Manager");
+  });
+
+  it("names the issue for a non-object file and an unknown log level as codes", () => {
+    expect(decodeSettings("x").issues).toEqual([{ code: "file.invalid" }]);
+    expect(decodeSettings({ logLevel: "laut" }).issues).toEqual([
+      { code: "logLevel.unknown", allowed: ["error", "warn", "info", "debug"] },
+    ]);
+  });
+});
+
+/** Files written before 0.2 stored the English default greeting; it is not a customisation. */
+describe("default greeting", () => {
+  it("reads a file without a greeting as not customised", () => {
+    expect(decodeSettings({ schemaVersion: 1, logLevel: "info" }).settings.greeting).toBeNull();
+  });
+
+  it("reads the old stored default as not customised, without an issue", () => {
+    const old = { schemaVersion: 1, greeting: "Hello from WEG Manager", logLevel: "warn" };
+    expect(decodeSettings(old)).toEqual({ settings: DEFAULT_SETTINGS, issues: [], writable: true });
+  });
+
+  it("reads an explicit null as not customised", () => {
+    expect(decodeSettings({ ...valid, greeting: null })).toEqual({
+      settings: { ...valid, greeting: null },
+      issues: [],
+      writable: true,
     });
   });
 
-  it("names the issue for a non-object file and an unknown log level exactly", () => {
-    expect(decodeSettings("x").issues).toEqual([
-      "Die Einstellungsdatei enthält keine gültigen Einstellungen.",
-    ]);
-    expect(decodeSettings({ logLevel: "laut" }).issues).toEqual([
-      "Die Protokollstufe muss eine von error, warn, info, debug sein.",
-    ]);
+  it("keeps a typed greeting, also one that merely contains the old default", () => {
+    const greeting = "Hello from WEG Manager!";
+    expect(decodeSettings({ ...valid, greeting }).settings.greeting).toBe(greeting);
+  });
+
+  it("writes no greeting key while the greeting is not customised", () => {
+    expect(encodeSettings(DEFAULT_SETTINGS)).toEqual({ schemaVersion: 1, logLevel: "warn" });
+    expect(encodeSettings(valid)).toEqual(valid);
+    expect(Object.keys(encodeSettings(valid))).toEqual(["schemaVersion", "greeting", "logLevel"]);
   });
 });

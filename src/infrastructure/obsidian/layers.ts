@@ -1,6 +1,7 @@
 import { Effect, Layer } from "effect";
 import { Platform, apiVersion, type Plugin } from "obsidian";
 import { ClipboardError, StorageError, VaultReadError } from "../../application/errors";
+import { messagesLayer, type Language } from "../../application/i18n";
 import { Clipboard, HostInfo, Notifier, SettingsStore, VaultReader } from "../../application/ports";
 import type { UserMessage } from "../../application/user-messages";
 import { showMessage } from "./notices";
@@ -56,12 +57,16 @@ const hostLayer = (plugin: Plugin) =>
     platform: platformName(),
   });
 
-/** The Obsidian adapters for every port that touches the host. */
-export const obsidianLayer = (plugin: Plugin) =>
+/**
+ * The Obsidian adapters for every port that touches the host. `language` is the UI language of
+ * this plugin load (`hostLanguage()`); it picks the `Messages` catalog.
+ */
+export const obsidianLayer = (plugin: Plugin, language: Language) =>
   Layer.mergeAll(
     storeLayer(plugin),
     notifierLayer,
     vaultLayer(plugin),
     clipboardLayer,
     hostLayer(plugin),
+    messagesLayer(language),
   );

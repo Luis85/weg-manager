@@ -6,6 +6,7 @@ import {
   recordingLogger,
   recordingNotifier,
   sequentialIncidents,
+  testMessages,
 } from "../../support/layers";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
@@ -30,7 +31,7 @@ const started = async (options: { readonly layoutReady?: boolean } = {}) => {
   const notifier = recordingNotifier();
   const layer = hostEventsLayer(plugin as never).pipe(
     Layer.provideMerge(
-      Layer.mergeAll(bus.layer, logger.layer, notifier.layer, sequentialIncidents()),
+      Layer.mergeAll(bus.layer, logger.layer, notifier.layer, sequentialIncidents(), testMessages),
     ),
   );
   const runtime = ManagedRuntime.make(layer);

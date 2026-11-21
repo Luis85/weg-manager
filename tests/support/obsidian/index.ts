@@ -54,3 +54,4 @@ export const Platform = {
 export const setIcon = (el: HTMLElement, icon: string): void => {
   el.dataset["icon"] = icon;
 };
+export { DEFAULT_TEST_LANGUAGE, getLanguage, setLanguage } from "./language";

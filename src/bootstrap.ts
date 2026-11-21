@@ -2,14 +2,16 @@ import { Effect } from "effect";
 import type { Plugin } from "obsidian";
 import type { AppRuntime } from "./application/app-services";
 import { reportDefect } from "./application/defects";
-import { Logger } from "./application/ports";
+import { catalogFor } from "./application/i18n";
+import { Logger, Messages } from "./application/ports";
 import { SettingsService } from "./application/settings-service";
 import { describeDefect } from "./application/user-messages";
 import { consoleSink } from "./infrastructure/logging/console-sink";
 import { appLayer } from "./infrastructure/obsidian/app-layer";
 import { registerCommands } from "./infrastructure/obsidian/commands";
 import { showMessage } from "./infrastructure/obsidian/notices";
-import { RIBBON_ICON, RIBBON_TITLE, releaseRibbonIcon } from "./infrastructure/obsidian/ribbon";
+import { hostLanguage } from "./infrastructure/obsidian/language";
+import { RIBBON_ICON, releaseRibbonIcon } from "./infrastructure/obsidian/ribbon";
 import { runSafely } from "./infrastructure/obsidian/run";
 import { mirrorSettings } from "./infrastructure/obsidian/settings-mirror";
 import { ShellSettingTab } from "./infrastructure/obsidian/settings-tab";
@@ -55,7 +57,10 @@ export const bootstrap = async (
   options: BootstrapOptions = {},
 ): Promise<BootstrapHandle> => {
   const runtime = makeRuntime(
-    appLayer(plugin, { developmentMode: import.meta.env.MODE === "development" }),
+    appLayer(plugin, {
+      developmentMode: import.meta.env.MODE === "development",
+      language: hostLanguage(),
+    }),
   );
   // A function, not a value: the signal can flip while bootstrap awaits.
   const aborted = () => options.signal?.aborted === true;
@@ -92,6 +97,7 @@ export const bootstrap = async (
     const mirror = await mirrorSettings(runtime);
     undo.push(() => mirror.stop());
     if (aborted()) return await inert();
+    const messages = await runtime.runPromise(Messages.useSync((catalog) => catalog));
     const open = () =>
       runSafely(
         runtime,
@@ -100,15 +106,17 @@ export const bootstrap = async (
     // Added once; the user can hide it from the ribbon's context menu. Only a failed bootstrap
     // removes its ribbon icon and commands. On a normal unload Obsidian removes them itself, and
     // removing by id here could hit those of a quick re-enable.
-    const ribbon = plugin.addRibbonIcon(RIBBON_ICON, RIBBON_TITLE, () => open());
+    const ribbon = plugin.addRibbonIcon(RIBBON_ICON, messages.ribbonTitle, () => open());
     undo.push(() => {
-      if (!started) releaseRibbonIcon(plugin, ribbon);
+      if (!started) releaseRibbonIcon(plugin, ribbon, messages.ribbonTitle);
     });
-    const removeCommands = registerCommands(plugin, runtime, () => open().then(() => undefined));
+    const removeCommands = registerCommands(plugin, runtime, messages, () =>
+      open().then(() => undefined),
+    );
     undo.push(() => {
       if (!started) removeCommands();
     });
-    const tab = new ShellSettingTab(plugin.app, plugin, runtime, mirror);
+    const tab = new ShellSettingTab(plugin.app, plugin, runtime, mirror, messages);
     plugin.addSettingTab(tab);
     const surfaces = new Set<() => void>();
     plugin.registerView(SHELL_VIEW_TYPE, (leaf) => new ShellView(leaf, runtime, surfaces));
@@ -137,7 +145,10 @@ export const bootstrap = async (
   }
 };
 
-/** Last resort when the runtime itself is unusable: show the defect message directly. */
+/**
+ * Last resort when the runtime itself is unusable: show the defect message directly, in the
+ * language Obsidian uses now.
+ */
 export const reportUnloadFailure = (cause: unknown): void => {
   const incidentId = Math.random().toString(36).slice(2, 8).toUpperCase().padEnd(6, "0");
   consoleSink.write({
@@ -146,5 +157,5 @@ export const reportUnloadFailure = (cause: unknown): void => {
     context: { cause: String(cause) },
     incidentId,
   });
-  showMessage(describeDefect(incidentId));
+  showMessage(describeDefect(incidentId, catalogFor(hostLanguage())));
 };

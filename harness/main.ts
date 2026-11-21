@@ -1,4 +1,5 @@
 import { ManagedRuntime } from "effect";
+import { languageFromCode } from "../src/application/i18n";
 import type { UserMessage } from "../src/application/user-messages";
 import { mountSurface } from "../src/presentation/mount";
 import "../src/styles/app.css";
@@ -8,6 +9,8 @@ import { SCENARIOS, harnessLayer, parseScenario } from "./layers";
 /** Two surfaces on one runtime, like two open views, with a theme switch and visible notices. */
 const params = new URLSearchParams(window.location.search);
 const scenario = parseScenario(params.get("scenario"));
+/** `?lang=en` shows the English texts; anything else that is not German too. */
+const language = languageFromCode(params.get("lang") ?? "de");
 const element = (id: string): HTMLElement => {
   const found = document.getElementById(id);
   if (found === null) throw new Error(`harness: #${id} missing`);
@@ -25,7 +28,11 @@ const notify = (message: UserMessage): void => {
 };
 
 const runtime = ManagedRuntime.make(
-  harnessLayer(scenario, { notify, writeClipboard: (text) => navigator.clipboard.writeText(text) }),
+  harnessLayer(scenario, {
+    notify,
+    writeClipboard: (text) => navigator.clipboard.writeText(text),
+    language,
+  }),
 );
 mountSurface(element("surface-wide"), runtime);
 mountSurface(element("surface-narrow"), runtime);

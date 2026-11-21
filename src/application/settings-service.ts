@@ -2,20 +2,23 @@ import { Context, Effect, Equal, Layer, Option, SubscriptionRef, type Stream } f
 import {
   DEFAULT_SETTINGS,
   decodeSettings,
+  encodeSettings,
   validatePatch,
   type DecodedSettings,
   type EditableSettings,
   type Settings,
+  type SettingsIssue,
 } from "../domain/settings";
 import { InvalidSettingsError, ReadOnlySettingsError, type UpdateSettingsError } from "./errors";
-import { Notifier, SettingsStore } from "./ports";
+import type { Catalog } from "./i18n";
+import { Messages, Notifier, SettingsStore } from "./ports";
 import { describeError, describeSettingsIssues, type UserMessage } from "./user-messages";
 
 export type ReadOnlyReason = ReadOnlySettingsError["reason"];
 
 export type SettingsStatus = {
   readonly writable: boolean;
-  readonly issues: readonly string[];
+  readonly issues: readonly SettingsIssue[];
   readonly readOnlyReason?: ReadOnlyReason;
 };
 
@@ -52,11 +55,11 @@ const unreadable: Loaded = {
 const toLoaded = (decoded: DecodedSettings): Loaded =>
   decoded.writable ? decoded : { ...decoded, readOnlyReason: "newer-version" };
 
-const loadMessage = (loaded: Loaded): UserMessage | undefined => {
+const loadMessage = (loaded: Loaded, messages: Catalog): UserMessage | undefined => {
   if (loaded.readOnlyReason !== undefined) {
-    return describeError(new ReadOnlySettingsError({ reason: loaded.readOnlyReason }));
+    return describeError(new ReadOnlySettingsError({ reason: loaded.readOnlyReason }), messages);
   }
-  return loaded.issues.length > 0 ? describeSettingsIssues(loaded.issues) : undefined;
+  return loaded.issues.length > 0 ? describeSettingsIssues(loaded.issues, messages) : undefined;
 };
 
 const toStatus = (loaded: Loaded): SettingsStatus =>
@@ -74,12 +77,13 @@ export const SettingsServiceLive = Layer.effect(
   Effect.gen(function* () {
     const store = yield* SettingsStore;
     const notifier = yield* Notifier;
+    const messages = yield* Messages;
     const read = store.load.pipe(
       Effect.map((raw) => toLoaded(decodeSettings(raw))),
       Effect.catchTag("StorageError", () => Effect.succeed(unreadable)),
     );
     const announce = (loaded: Loaded) => {
-      const message = loadMessage(loaded);
+      const message = loadMessage(loaded, messages);
       return message === undefined ? Effect.void : notifier.notify(message);
     };
     const loaded = yield* read;
@@ -97,7 +101,7 @@ export const SettingsServiceLive = Layer.effect(
           }
           const result = validatePatch(current, patch);
           if (!result.ok) return yield* new InvalidSettingsError({ issues: result.issues });
-          yield* store.save(result.settings);
+          yield* store.save(encodeSettings(result.settings));
           return [result.settings, result.settings] as const;
         }),
       );

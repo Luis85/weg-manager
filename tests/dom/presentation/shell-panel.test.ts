@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { GREETING_MAX_LENGTH } from "../../../src/domain/settings";
 import { validatePatch, DEFAULT_SETTINGS } from "../../../src/domain/settings";
 import { ReadOnlySettingsError } from "../../../src/application/errors";
+import { de, describeIssue } from "../../../src/application/i18n";
 import { describeError } from "../../../src/application/user-messages";
 import { mountSurface } from "../../../src/presentation/mount";
 import { testRuntime, type TestRuntimeOptions } from "../../support/runtime";
@@ -47,8 +48,9 @@ afterEach(async () => {
 
 const issueFor = (greeting: string) => {
   const result = validatePatch(DEFAULT_SETTINGS, { greeting });
-  if (result.ok) throw new Error("expected an issue");
-  return result.issues[0] ?? "";
+  const issue = result.ok ? undefined : result.issues[0];
+  if (issue === undefined) throw new Error("expected an issue");
+  return describeIssue(issue, de);
 };
 
 describe("ShellPanel", () => {
@@ -129,11 +131,11 @@ describe("ShellPanel", () => {
   });
 
   it("puts a service-side rejection under the field", async () => {
-    const panel = await open({ rejectUpdates: ["Der Dienst lehnt diese Begrüßung ab."] });
+    const panel = await open({ rejectUpdates: [{ code: "greeting.length", max: 3 }] });
     await panel.type("Moin");
     await panel.save();
     expect(panel.root.querySelector("form")?.textContent).toContain(
-      "Der Dienst lehnt diese Begrüßung ab.",
+      "Die Begrüßung muss 1 bis 3 Zeichen lang sein.",
     );
     expect(panel.root.querySelector("form [role=alert]")).toBeNull();
   });
@@ -175,7 +177,7 @@ describe("ShellPanel", () => {
     async (_, store, reason) => {
       const panel = await open({ store });
       const hint = panel.q("read-only-hint");
-      const expected = describeError(new ReadOnlySettingsError({ reason }));
+      const expected = describeError(new ReadOnlySettingsError({ reason }), de);
       expect(hint?.getAttribute("role")).toBe("alert");
       expect(hint?.textContent).toContain(expected.title);
       expect(hint?.textContent).toContain(expected.detail);

@@ -8,14 +8,20 @@ import {
   VaultReadError,
   type AppError,
 } from "../../../src/application/errors";
+import { de, describeIssue, en } from "../../../src/application/i18n";
 import {
   describeDefect,
   describeSettingsIssues,
   describeError,
   type UserMessage,
 } from "../../../src/application/user-messages";
+import type { SettingsIssue } from "../../../src/domain/settings";
 
 const FORBIDDEN = ["Error", "stack", "/", "\\"];
+const CATALOGS = [de, en] as const;
+
+const GREETING: SettingsIssue = { code: "greeting.length", max: 200 };
+const LOG_LEVEL: SettingsIssue = { code: "logLevel.unknown", allowed: ["error", "warn"] };
 
 const expectPlain = (message: UserMessage, rawCause?: string) => {
   expect(message.title.trim()).not.toBe("");
@@ -26,15 +32,16 @@ const expectPlain = (message: UserMessage, rawCause?: string) => {
   }
 };
 
-describe("describeError", () => {
+describe.each(CATALOGS)("describeError ($language)", (messages) => {
   it("asks to retry when the vault cannot be read", () => {
-    const message = describeError(new VaultReadError({ cause: new Error("EACCES /vault") }));
+    const error = new VaultReadError({ cause: new Error("EACCES /vault") });
+    const message = describeError(error, messages);
     expectPlain(message, "EACCES /vault");
     expect(message).toMatchObject({ severity: "error", action: "retry" });
   });
 
   it("asks to retry when saving fails", () => {
-    const message = describeError(new StorageError({ cause: new Error("disk full") }));
+    const message = describeError(new StorageError({ cause: new Error("disk full") }), messages);
     expectPlain(message, "disk full");
     expect(message).toMatchObject({ severity: "error", action: "retry" });
   });
@@ -42,31 +49,31 @@ describe("describeError", () => {
   it.each(["newer-version", "unreadable"] as const)(
     "offers diagnostics for read-only settings (%s)",
     (reason) => {
-      const message = describeError(new ReadOnlySettingsError({ reason }));
+      const message = describeError(new ReadOnlySettingsError({ reason }), messages);
       expectPlain(message);
       expect(message).toMatchObject({ severity: "warning", action: "copy-diagnostics" });
     },
   );
 
   it("explains the two read-only reasons differently", () => {
-    const newer = describeError(new ReadOnlySettingsError({ reason: "newer-version" }));
-    const unreadable = describeError(new ReadOnlySettingsError({ reason: "unreadable" }));
+    const newer = describeError(new ReadOnlySettingsError({ reason: "newer-version" }), messages);
+    const unreadable = describeError(new ReadOnlySettingsError({ reason: "unreadable" }), messages);
     expect(newer.detail).not.toBe(unreadable.detail);
   });
 
   it("lists every issue of invalid settings and offers no action", () => {
-    const message = describeError(
-      new InvalidSettingsError({ issues: ["Die Begrüßung fehlt.", "Die Stufe fehlt."] }),
-    );
+    const error = new InvalidSettingsError({ issues: [GREETING, LOG_LEVEL] });
+    const message = describeError(error, messages);
     expectPlain(message);
-    expect(message.detail).toContain("Die Begrüßung fehlt.");
-    expect(message.detail).toContain("Die Stufe fehlt.");
+    expect(message.detail).toBe(
+      `${describeIssue(GREETING, messages)} ${describeIssue(LOG_LEVEL, messages)}`,
+    );
     expect(message.action).toBeUndefined();
     expect(message.severity).toBe("warning");
   });
 
   it("asks to retry when the clipboard fails", () => {
-    const message = describeError(new ClipboardError({ cause: new Error("denied") }));
+    const message = describeError(new ClipboardError({ cause: new Error("denied") }), messages);
     expectPlain(message, "denied");
     expect(message.action).toBe("retry");
   });
@@ -80,15 +87,13 @@ describe("describeError", () => {
           new VaultReadError({ cause: new Error(text) }),
           new ClipboardError({ cause: text }),
         ];
-        for (const error of errors) expectPlain(describeError(error), text);
+        for (const error of errors) expectPlain(describeError(error, messages), text);
       }),
     );
   });
-});
 
-describe("describeDefect", () => {
-  it("names the plugin and the incident id and offers diagnostics", () => {
-    const message = describeDefect("K7Q2");
+  it("names the plugin and the incident id of a defect and offers diagnostics", () => {
+    const message = describeDefect("K7Q2", messages);
     expectPlain(message);
     expect(message.title).toContain("WEG Manager");
     expect(message.detail).toContain("K7Q2");
@@ -98,32 +103,93 @@ describe("describeDefect", () => {
 
 /** The catalog is product copy: a change here is a deliberate wording change. */
 describe("message catalog texts", () => {
-  it("has exact texts for every expected failure", () => {
-    expect(describeError(new InvalidSettingsError({ issues: ["Eins.", "Zwei."] }))).toEqual({
+  it("has exact German texts for every expected failure", () => {
+    expect(describeError(new InvalidSettingsError({ issues: [GREETING, LOG_LEVEL] }), de)).toEqual({
       severity: "warning",
       title: "Eingabe ungültig",
-      detail: "Eins. Zwei.",
+      detail:
+        "Die Begrüßung muss 1 bis 200 Zeichen lang sein. Die Protokollstufe muss eine von error, warn sein.",
     });
-    expect(describeError(new VaultReadError({ cause: null }))).toEqual({
+    expect(describeError(new VaultReadError({ cause: null }), de)).toEqual({
       severity: "error",
       title: "Notizen nicht lesbar",
       detail: "Die Dateien im Vault konnten nicht gelesen werden. Versuche es erneut.",
       action: "retry",
     });
-    expect(describeError(new ClipboardError({ cause: null }))).toEqual({
+    expect(describeError(new ClipboardError({ cause: null }), de)).toEqual({
       severity: "error",
       title: "Diagnose nicht kopiert",
       detail: "Die Zwischenablage ist nicht verfügbar. Versuche es erneut.",
       action: "retry",
     });
+    expect(describeError(new StorageError({ cause: null }), de)).toEqual({
+      severity: "error",
+      title: "Einstellungen nicht gespeichert",
+      detail:
+        "Die Einstellungsdatei konnte nicht geschrieben werden. Deine Eingabe ist erhalten. Speichere erneut.",
+      action: "retry",
+    });
+    expect(describeError(new ReadOnlySettingsError({ reason: "newer-version" }), de)).toEqual({
+      severity: "warning",
+      title: "Einstellungen schreibgeschützt",
+      detail:
+        "Die Einstellungen stammen aus einer neueren Version von WEG Manager. Aktualisiere das Plugin, um sie zu ändern.",
+      action: "copy-diagnostics",
+    });
+  });
+
+  it("has exact English texts for a sample of failures", () => {
+    expect(describeError(new VaultReadError({ cause: null }), en)).toEqual({
+      severity: "error",
+      title: "Can't read notes",
+      detail: "The files in the vault couldn't be read. Try again.",
+      action: "retry",
+    });
+    expect(describeError(new ReadOnlySettingsError({ reason: "unreadable" }), en)).toEqual({
+      severity: "warning",
+      title: "Settings are read-only",
+      detail:
+        "The settings file can't be read. Default values apply and the file stays unchanged. Copy the diagnostics for support.",
+      action: "copy-diagnostics",
+    });
+    expect(describeError(new InvalidSettingsError({ issues: [GREETING] }), en)).toEqual({
+      severity: "warning",
+      title: "Invalid input",
+      detail: "The greeting must be 1 to 200 characters long.",
+    });
   });
 
   it("explains partially reset settings with every issue", () => {
-    expect(describeSettingsIssues(["Eins.", "Zwei."])).toEqual({
+    expect(describeSettingsIssues([GREETING, { code: "file.invalid" }], de)).toEqual({
       severity: "warning",
       title: "Einstellungen teilweise zurückgesetzt",
-      detail: "Eins. Zwei. Für diese Werte gelten Standardwerte. Prüfe die Einstellungen.",
+      detail:
+        "Die Begrüßung muss 1 bis 200 Zeichen lang sein. Die Einstellungsdatei enthält keine gültigen Einstellungen. Für diese Werte gelten Standardwerte. Prüfe die Einstellungen.",
       action: "open-settings",
+    });
+    expect(describeSettingsIssues([{ code: "schema.invalid" }], en)).toEqual({
+      severity: "warning",
+      title: "Settings partly reset",
+      detail:
+        "The schema version must be a positive whole number. Default values apply to these settings. Check the settings.",
+      action: "open-settings",
+    });
+  });
+
+  it("words a defect exactly", () => {
+    expect(describeDefect("K7Q2", de)).toEqual({
+      severity: "error",
+      title: "Unerwarteter Fehler in WEG Manager",
+      detail:
+        "Die Aktion wurde abgebrochen (Fehlercode K7Q2). Kopiere die Diagnose und schicke sie mit dem Fehlercode an den Support.",
+      action: "copy-diagnostics",
+    });
+    expect(describeDefect("K7Q2", en)).toEqual({
+      severity: "error",
+      title: "Unexpected error in WEG Manager",
+      detail:
+        "The action was stopped (error code K7Q2). Copy the diagnostics and send them to support with the error code.",
+      action: "copy-diagnostics",
     });
   });
 });

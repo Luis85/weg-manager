@@ -14,7 +14,6 @@ export const CSS_PREFIX = "wm";
 export const SHELL_ICONS = [
   "lucide:layout-dashboard",
   "lucide:info",
-  "lucide:refresh-cw",
   "lucide:arrow-left",
   "lucide:arrow-right",
   "lucide:building-2",

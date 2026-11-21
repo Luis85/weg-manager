@@ -50,7 +50,12 @@ export default defineConfig({
       {
         plugins: [obsidianGuard()],
         resolve: { alias: testAlias },
-        test: { name: "dom", include: ["tests/dom/**/*.test.ts"], environment: "happy-dom" },
+        test: {
+          name: "dom",
+          include: ["tests/dom/**/*.test.ts"],
+          environment: "happy-dom",
+          setupFiles: ["tests/support/dom-setup.ts"],
+        },
       },
     ],
   },

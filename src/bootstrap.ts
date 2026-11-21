@@ -11,7 +11,7 @@ import { appLayer } from "./infrastructure/obsidian/app-layer";
 import { registerCommands } from "./infrastructure/obsidian/commands";
 import { showMessage } from "./infrastructure/obsidian/notices";
 import { hostLanguage } from "./infrastructure/obsidian/language";
-import { RIBBON_ICON, releaseRibbonIcon } from "./infrastructure/obsidian/ribbon";
+import { addRibbonIcon } from "./infrastructure/obsidian/ribbon";
 import { runSafely } from "./infrastructure/obsidian/run";
 import { mirrorSettings } from "./infrastructure/obsidian/settings-mirror";
 import { ShellSettingTab } from "./infrastructure/obsidian/settings-tab";
@@ -48,7 +48,7 @@ const openView = async (plugin: Plugin): Promise<void> => {
 };
 
 /**
- * Wires one plugin load: runtime, ribbon, commands, settings tab, view. If the plugin is unloaded
+ * Wires one plugin load: runtime, commands, ribbon, settings tab, view. If the plugin is unloaded
  * while settings are still loading (`signal` aborted), it registers nothing. If a registration
  * throws, everything created so far is released, a defect message is shown and the error rethrown.
  */
@@ -103,13 +103,6 @@ export const bootstrap = async (
         runtime,
         Effect.promise(() => openView(plugin)),
       );
-    // Added once; the user can hide it from the ribbon's context menu. Only a failed bootstrap
-    // removes its ribbon icon and commands. On a normal unload Obsidian removes them itself, and
-    // removing by id here could hit those of a quick re-enable.
-    const ribbon = plugin.addRibbonIcon(RIBBON_ICON, messages.ribbonTitle, () => open());
-    undo.push(() => {
-      if (!started) releaseRibbonIcon(plugin, ribbon, messages.ribbonTitle);
-    });
     const removeCommands = registerCommands(plugin, runtime, messages, () =>
       open().then(() => undefined),
     );
@@ -117,6 +110,10 @@ export const bootstrap = async (
       if (!started) removeCommands();
     });
     const tab = new ShellSettingTab(plugin.app, plugin, runtime, mirror, messages);
+    // Added after everything that can fail, right before the final registrations: Obsidian
+    // removes it on a normal unload, but not after a failed onload. The user can hide it from the
+    // ribbon's context menu.
+    addRibbonIcon(plugin, open);
     plugin.addSettingTab(tab);
     const surfaces = new Set<() => void>();
     plugin.registerView(SHELL_VIEW_TYPE, (leaf) => new ShellView(leaf, runtime, surfaces));

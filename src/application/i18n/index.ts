@@ -5,7 +5,7 @@ import { de } from "./de";
 import { en } from "./en";
 import { Messages } from "../ports";
 
-export { LANGUAGES, type Catalog, type Language } from "./catalog";
+export { LANGUAGES, PRODUCT_NAME, type Catalog, type Language } from "./catalog";
 export { de } from "./de";
 export { en } from "./en";
 

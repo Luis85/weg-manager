@@ -1,5 +1,5 @@
 import { browser, expect } from "@wdio/globals";
-import { afterEach, describe, it } from "mocha";
+import { describe, it } from "mocha";
 import {
   ROOT,
   installConsoleSpy,
@@ -8,43 +8,15 @@ import {
   readData,
   reloadPlugin,
   setColorScheme,
+  settingsTabContent,
   writeData,
 } from "../support";
 
-const openPluginSettings = () =>
-  browser.executeObsidian(({ app }) => {
-    const setting = (app as unknown as { setting: { open(): void; openTabById(id: string): void } })
-      .setting;
-    setting.open();
-    setting.openTabById("weg-manager");
-  });
+/** WebDriver key codes; `Key` from `@wdio/globals` has no type the e2e lint can resolve. */
+const KEY = { ctrl: "", backspace: "", enter: "" } as const;
 
-const closeSettings = () =>
-  browser.executeObsidian(({ app }) => {
-    (app as unknown as { setting: { close(): void } }).setting.close();
-  });
-
-/**
- * Edits the greeting in the real declarative settings tab. Obsidian 1.15 renders settings
- * outside the main document, so the field is reached through the tab's own element and edited
- * with the events a keyboard edit fires.
- */
-const typeGreeting = (value: string) =>
-  browser.executeObsidian(async ({ app }, next) => {
-    const tab = (app as unknown as { setting: { activeTab?: { containerEl: HTMLElement } } })
-      .setting.activeTab;
-    const item = [...(tab?.containerEl.querySelectorAll(".setting-item") ?? [])].find(
-      (el) => el.querySelector(".setting-item-name")?.textContent === "Begrüßung",
-    );
-    const input = item?.querySelector("input");
-    if (!input) throw new Error("greeting field not found in the settings tab");
-    input.focus();
-    input.value = next;
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    input.dispatchEvent(new Event("change", { bubbles: true }));
-    input.blur();
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }, value);
+/** The greeting field of the open view's form, edited from the keyboard. */
+const greetingInput = () => browser.$(ROOT).$("[data-testid=greeting-input]");
 
 /** The text of every notice Obsidian currently shows, in any of its documents. */
 const noticeTexts = () =>
@@ -75,25 +47,33 @@ const sample = () =>
     };
   }, ROOT);
 
-/** Gaps G2, G3 and G5: the real settings tab, theme switching and Obsidian's CSS. */
+/** Gaps G2, G3 and G5: the real settings tab, the greeting form, theme switching and CSS. */
 describe("settings and theme in Obsidian", function () {
-  afterEach(closeSettings);
-
-  it("saves a greeting from the native settings tab and shows it in the open view", async function () {
+  it("keeps only the plugin settings in the native settings tab (PBI-49)", async function () {
     await installConsoleSpy();
+    expect(await settingsTabContent()).toEqual({ names: ["Protokollstufe"], inputs: 0 });
+  });
+
+  it("saves a greeting from the view's form and shows it", async function () {
     await openView();
-    await openPluginSettings();
-    await typeGreeting("Moin aus dem Test");
+    await greetingInput().setValue("Moin aus dem Test");
+    await browser.$(ROOT).$("button[type=submit]").click();
     await browser.waitUntil(async () => (await readData())?.["greeting"] === "Moin aus dem Test", {
       timeoutMsg: "data.json never received the new greeting",
     });
-    await closeSettings();
     await expect(browser.$(ROOT).$("[data-testid=greeting]")).toHaveText("Moin aus dem Test");
   });
 
   it("never writes an empty greeting", async function () {
-    await openPluginSettings();
-    await typeGreeting("");
+    const input = greetingInput();
+    await input.click();
+    await browser.keys([KEY.ctrl, "a"]);
+    await browser.keys(KEY.backspace);
+    await expect(input).toHaveValue("");
+    await expect(browser.$(ROOT)).toHaveText(
+      expect.stringContaining("Die Begrüßung muss 1 bis 200 Zeichen lang sein."),
+    );
+    await browser.keys(KEY.enter);
     await browser.pause(500);
     expect((await readData())?.["greeting"]).toBe("Moin aus dem Test");
   });

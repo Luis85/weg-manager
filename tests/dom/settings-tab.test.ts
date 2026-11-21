@@ -5,7 +5,7 @@ vi.mock("obsidian", () => import("@test/obsidian"));
 const { createTestPlugin, settingsIn } = await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../src/main");
 
-type Text = { simulateInput(value: string): unknown; getValue(): string; disabled: boolean };
+type Select = { selectEl: HTMLSelectElement };
 type Control = { disabled: boolean };
 type External = { onExternalSettingsChange(): Promise<void> };
 
@@ -14,7 +14,7 @@ const openTab = async (data?: unknown) => {
   await registry.load();
   const tab = registry.settingTabs[0]!;
   tab.display();
-  await vi.waitFor(() => expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(2));
+  await vi.waitFor(() => expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(1));
   return { registry, plugin, tab, rows: () => settingsIn(tab.containerEl) };
 };
 
@@ -29,33 +29,16 @@ afterEach(() => {
 });
 
 describe("settings tab", () => {
-  it("renders greeting and log level", async () => {
-    const { rows, plugin } = await openTab({ greeting: "Moin" });
-    expect(rows().map((row) => row.nameEl.textContent)).toEqual(["Begrüßung", "Protokollstufe"]);
-    expect(control<Text>(rows(), 0).getValue()).toBe("Moin");
-    plugin.unload();
-  });
-
-  it("saves an edited greeting", async () => {
-    const { rows, registry, plugin } = await openTab();
-    control<Text>(rows(), 0).simulateInput("Servus");
-    await vi.waitFor(() => expect(registry.saved.at(-1)).toMatchObject({ greeting: "Servus" }));
-    plugin.unload();
-  });
-
-  it("shows the issue under the greeting and saves nothing for an invalid value", async () => {
-    const { rows, registry, plugin } = await openTab();
-    control<Text>(rows(), 0).simulateInput("   ");
-    await vi.waitFor(() =>
-      expect(rows()[0]?.validationEl.textContent).toContain("Die Begrüßung muss 1 bis 200 Zeichen"),
-    );
-    expect(registry.saved).toEqual([]);
+  it("renders only the plugin settings: the greeting is edited in the view (PBI-49)", async () => {
+    const { rows, tab, plugin } = await openTab({ greeting: "Moin" });
+    expect(rows().map((row) => row.nameEl.textContent)).toEqual(["Protokollstufe"]);
+    expect(tab.containerEl.querySelector("input")).toBeNull();
     plugin.unload();
   });
 
   it("labels the log levels in German and keeps the stored values", async () => {
     const { rows, plugin } = await openTab({ logLevel: "info" });
-    const { selectEl } = control<{ selectEl: HTMLSelectElement }>(rows(), 1);
+    const { selectEl } = control<Select>(rows(), 0);
     expect([...selectEl.options].map((option) => [option.value, option.text])).toEqual([
       ["error", "Fehler"],
       ["warn", "Warnungen"],
@@ -68,25 +51,25 @@ describe("settings tab", () => {
 
   it("saves the log level", async () => {
     const { rows, registry, plugin } = await openTab();
-    control<{ simulateSelect(value: string): unknown }>(rows(), 1).simulateSelect("debug");
+    control<{ simulateSelect(value: string): unknown }>(rows(), 0).simulateSelect("debug");
     await vi.waitFor(() => expect(registry.saved.at(-1)).toMatchObject({ logLevel: "debug" }));
     plugin.unload();
   });
 
   it("disables every control and explains why when settings are read-only", async () => {
     const { rows, tab, plugin } = await openTab({ schemaVersion: 2 });
-    for (const row of rows().slice(0, 2)) {
+    for (const row of rows().slice(0, 1)) {
       expect(row.components.every((component: Control) => component.disabled)).toBe(true);
     }
     expect(tab.containerEl.textContent).toContain("neueren Version");
     plugin.unload();
   });
 
-  it("shows a greeting that arrives from outside while it is open", async () => {
-    const { rows, registry, plugin } = await openTab({ greeting: "Moin" });
-    registry.writeExternally({ greeting: "Von außen" });
+  it("shows a log level that arrives from outside while it is open", async () => {
+    const { rows, registry, plugin } = await openTab({ logLevel: "warn" });
+    registry.writeExternally({ logLevel: "debug" });
     await (plugin as unknown as External).onExternalSettingsChange();
-    expect(control<Text>(rows(), 0).getValue()).toBe("Von außen");
+    expect(control<Select>(rows(), 0).selectEl.value).toBe("debug");
     expect(registry.saved).toEqual([]);
     plugin.unload();
   });
@@ -95,7 +78,7 @@ describe("settings tab", () => {
     const { rows, tab, registry, plugin } = await openTab({ greeting: "Moin" });
     registry.writeExternally({ schemaVersion: 2, greeting: "Zukunft" });
     await (plugin as unknown as External).onExternalSettingsChange();
-    for (const row of rows().slice(0, 2)) {
+    for (const row of rows().slice(0, 1)) {
       expect(row.components.every((component: Control) => component.disabled)).toBe(true);
     }
     expect(tab.containerEl.textContent).toContain("neueren Version");
@@ -108,7 +91,7 @@ describe("settings tab", () => {
     tab.hide();
     tab.display();
     tab.display();
-    expect(rows()).toHaveLength(2);
+    expect(rows()).toHaveLength(1);
     plugin.unload();
   });
 });

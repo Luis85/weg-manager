@@ -86,15 +86,12 @@ describe("plugin lifecycle", () => {
   it("adds the ribbon icon once, also for an old data.json that still has showRibbonIcon", async () => {
     const { registry, plugin, app } = await loaded({ data: { showRibbonIcon: false } });
     expect(registry.ribbonIcons.map(({ icon, title }) => ({ icon, title }))).toEqual([
-      { icon: "layout-dashboard", title: "WEG Manager öffnen" },
+      { icon: "layout-dashboard", title: "WEG Manager" },
     ]);
     app.workspace.leftRibbon.onChange();
-    expect(document.querySelectorAll('[aria-label="WEG Manager öffnen"]')).toHaveLength(1);
+    expect(document.querySelectorAll('[aria-label="WEG Manager"]')).toHaveLength(1);
     expect(noticeTexts()).toEqual([]);
     plugin.unload();
-    app.workspace.leftRibbon.onChange();
-    expect(registry.ribbonIcons).toEqual([]);
-    expect(document.querySelectorAll('[aria-label="WEG Manager öffnen"]')).toHaveLength(0);
   });
 
   it("releases everything on unload", async () => {
@@ -139,8 +136,10 @@ describe("plugin lifecycle", () => {
     const { registry, app } = createTestPlugin(WegManagerPlugin);
     registry.failNextAddCommand();
     await expect(registry.load()).rejects.toThrow("addCommand failed");
-    // A re-render of the ribbon must not bring the icon of the failed load back.
+    // The ribbon icon comes after the commands, so a failure there never adds one; Obsidian
+    // would not remove it after a failed onload. A re-render of the ribbon shows none either.
     app.workspace.leftRibbon.onChange();
+    expect(app.workspace.leftRibbon.items).toEqual([]);
     expect(counts(registry)).toEqual(EMPTY);
     expect(document.body.children).toHaveLength(0);
     expect(noticeTexts()).toEqual([

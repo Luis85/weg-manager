@@ -8,6 +8,7 @@ import {
   pluginProblems,
   readData,
   reloadPlugin,
+  settingsTabContent,
   writeData,
 } from "../support";
 
@@ -37,28 +38,6 @@ const commandNames = () =>
       .toSorted();
   }, PLUGIN_ID);
 
-/** The names of the plugin's rows in the real settings tab, closed again afterwards. */
-const settingNames = () =>
-  browser.executeObsidian(({ app }, id) => {
-    const setting = (
-      app as unknown as {
-        setting: {
-          open(): void;
-          close(): void;
-          openTabById(tab: string): void;
-          activeTab?: { containerEl: HTMLElement };
-        };
-      }
-    ).setting;
-    setting.open();
-    setting.openTabById(id);
-    const names = [
-      ...(setting.activeTab?.containerEl.querySelectorAll(".setting-item-name") ?? []),
-    ].map((el) => el.textContent ?? "");
-    setting.close();
-    return names;
-  }, PLUGIN_ID);
-
 const noticeTexts = () =>
   browser.executeObsidian(() =>
     [...document.querySelectorAll(".notice")].map((el) => el.textContent ?? ""),
@@ -85,8 +64,9 @@ describe("UI language in Obsidian", function () {
     await expect(root.$("[data-testid=greeting]")).toHaveText("Hello from WEG Manager");
     await expect(root.$("[data-testid=file-count]")).toHaveText("3 Markdown files in the vault");
     await expect(root.$("button[type=submit]")).toHaveText("Save");
+    // The product name in every language, so the ribbon entry keeps its id.
     await expect(
-      browser.$$('.side-dock-ribbon-action[aria-label="Open WEG Manager"]'),
+      browser.$$('.side-dock-ribbon-action[aria-label="WEG Manager"]'),
     ).toBeElementsArrayOfSize(1);
     // Obsidian puts the plugin's name in front of each command name.
     expect(await commandNames()).toEqual([
@@ -94,7 +74,7 @@ describe("UI language in Obsidian", function () {
       "WEG Manager: Open view",
       "WEG Manager: Show greeting",
     ]);
-    expect(await settingNames()).toEqual(["Greeting", "Log level"]);
+    expect((await settingsTabContent()).names).toEqual(["Log level"]);
   });
 
   it("shows notices in English", async function () {

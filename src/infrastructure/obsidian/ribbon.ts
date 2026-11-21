@@ -1,18 +1,13 @@
 import type { Plugin } from "obsidian";
+import { PRODUCT_NAME } from "../../application/i18n";
 
-export const RIBBON_ICON = "layout-dashboard";
-
-/** The part of Obsidian's left ribbon the public typings leave out (`WorkspaceRibbon` is empty). */
-type RibbonInternals = { removeRibbonAction?: (id: string) => void };
+const RIBBON_ICON = "layout-dashboard";
 
 /**
- * Releases the ribbon icon the way Obsidian's own unload does. Only for a failed bootstrap: on a
- * normal unload Obsidian does this itself. `el.remove()` alone is not enough, because the entry
- * stays in `workspace.leftRibbon.items` and the next re-render of the ribbon brings it back.
+ * Adds the ribbon icon that opens the view. Its title is the product name in every language:
+ * Obsidian keys a ribbon entry by `<plugin id>:<title>`, so a translated title would make it forget
+ * the icon's position and hidden state on a language switch. Obsidian removes the icon on a normal
+ * unload, but not after a failed `onload`, so bootstrap adds it only after everything that can fail.
  */
-export const releaseRibbonIcon = (plugin: Plugin, el: HTMLElement, title: string): void => {
-  const ribbon = plugin.app.workspace.leftRibbon as unknown as RibbonInternals;
-  // Obsidian keys an entry by plugin id and title, so this is the title of this load's icon.
-  ribbon.removeRibbonAction?.(`${plugin.manifest.id}:${title}`);
-  el.remove();
-};
+export const addRibbonIcon = (plugin: Plugin, open: () => unknown): HTMLElement =>
+  plugin.addRibbonIcon(RIBBON_ICON, PRODUCT_NAME, () => open());

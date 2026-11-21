@@ -100,23 +100,21 @@ describe("greetingOf", () => {
 
 /** Product copy outside of messages, pinned for both languages. */
 describe("surface texts", () => {
-  it("names commands, ribbon, actions and the settings tab", () => {
-    expect([de.commands, de.ribbonTitle, de.actions]).toEqual([
+  it("names commands, actions and the settings tab", () => {
+    expect([de.commands, de.actions]).toEqual([
       {
         openView: "Ansicht öffnen",
         showGreeting: "Begrüßung anzeigen",
         copyDiagnostics: "Diagnose kopieren",
       },
-      "WEG Manager öffnen",
       {
         retry: "Erneut versuchen",
         "open-settings": "Einstellungen öffnen",
         "copy-diagnostics": "Diagnose kopieren",
       },
     ]);
-    expect([en.commands, en.ribbonTitle, en.actions]).toEqual([
+    expect([en.commands, en.actions]).toEqual([
       { openView: "Open view", showGreeting: "Show greeting", copyDiagnostics: "Copy diagnostics" },
-      "Open WEG Manager",
       {
         retry: "Try again",
         "open-settings": "Open settings",
@@ -124,7 +122,6 @@ describe("surface texts", () => {
       },
     ]);
     expect(en.settingsTab).toEqual({
-      greeting: { name: "Greeting", desc: "Text that the “Show greeting” command shows." },
       logLevel: {
         name: "Log level",
         desc: "How much the plugin writes to the developer console.",

@@ -6,6 +6,9 @@ import type { UserMessageAction } from "../user-messages";
 export const LANGUAGES = ["de", "en"] as const;
 export type Language = (typeof LANGUAGES)[number];
 
+/** The product name. It is not translated (ADR 0005); the ribbon icon's title is just this. */
+export const PRODUCT_NAME = "WEG Manager";
+
 type Text = { readonly title: string; readonly detail: string };
 
 /** One sentence per domain issue code; the issue's data fills the parameters. */
@@ -43,9 +46,7 @@ export type Catalog = {
     readonly showGreeting: string;
     readonly copyDiagnostics: string;
   };
-  readonly ribbonTitle: string;
   readonly settingsTab: {
-    readonly greeting: { readonly name: string; readonly desc: string };
     readonly logLevel: {
       readonly name: string;
       readonly desc: string;

@@ -1,10 +1,11 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SCOPE_CLASS } from "../../src/presentation/scope";
+import { testRuntime } from "../support/runtime";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
-const { createTestPlugin, WorkspaceLeaf } = await import("@test/obsidian");
+const { App, createTestPlugin, WorkspaceLeaf } = await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../src/main");
 const { bootstrap, SHELL_VIEW_TYPE } = await import("../../src/bootstrap");
 const { ShellView } = await import("../../src/infrastructure/obsidian/shell-view");
@@ -19,6 +20,32 @@ const loaded = async () => {
   const created = createTestPlugin(WegManagerPlugin, { data: { greeting: "Moin" } });
   await created.registry.load();
   return created;
+};
+
+const noop = (): void => undefined;
+/** A leaf of a fresh workspace, typed as the real one `ShellView` expects. */
+const newLeaf = () => new App().workspace.getLeaf(true) as never;
+
+/** A surface module whose loading the test finishes by hand, counting the mounts it performs. */
+const deferredSurface = () => {
+  let resolve: () => void = noop;
+  const ready = new Promise<void>((done) => {
+    resolve = done;
+  });
+  const surface = {
+    mounted: 0,
+    resolve: () => resolve(),
+    load: async () => {
+      await ready;
+      return {
+        mountSurface: () => {
+          surface.mounted += 1;
+          return () => undefined;
+        },
+      };
+    },
+  };
+  return surface;
 };
 
 const shellLeaves = (app: { workspace: { getLeavesOfType(type: string): unknown[] } }) =>
@@ -98,6 +125,60 @@ describe("ShellView", () => {
     await handle.dispose();
     expect(atDispose).toEqual([0, 0]);
     plugin.unload();
+  });
+
+  it("empties the content element before it mounts", async () => {
+    const { runtime } = testRuntime({ store: { initial: { greeting: "Moin" } } });
+    const view = new ShellView(newLeaf(), runtime, new Set());
+    view.contentEl.append(document.createElement("p"));
+    await view.onOpen();
+    expect(view.contentEl.querySelector("p")).toBeNull();
+    expect(view.contentEl.textContent).toContain("Moin");
+    await view.onClose();
+    await runtime.dispose();
+  });
+
+  it("mounts once the surface module has loaded", async () => {
+    const { runtime } = testRuntime();
+    const surface = deferredSurface();
+    const surfaces = new Set<() => void>();
+    const view = new ShellView(newLeaf(), runtime, surfaces, surface.load);
+    const opening = view.onOpen();
+    expect(surfaces.size).toBe(1);
+    surface.resolve();
+    await opening;
+    expect(surface.mounted).toBe(1);
+    await view.onClose();
+    expect(surfaces.size).toBe(0);
+    await runtime.dispose();
+  });
+
+  it("does not mount when it closes while the surface is still loading", async () => {
+    const { runtime } = testRuntime();
+    const surface = deferredSurface();
+    const surfaces = new Set<() => void>();
+    const view = new ShellView(newLeaf(), runtime, surfaces, surface.load);
+    const opening = view.onOpen();
+    await view.onClose();
+    surface.resolve();
+    await opening;
+    expect(surface.mounted).toBe(0);
+    expect(surfaces.size).toBe(0);
+    await runtime.dispose();
+  });
+
+  it("does not mount when bootstrap releases its surfaces while the surface is loading", async () => {
+    const { runtime } = testRuntime();
+    const surface = deferredSurface();
+    const surfaces = new Set<() => void>();
+    const view = new ShellView(newLeaf(), runtime, surfaces, surface.load);
+    const opening = view.onOpen();
+    for (const close of surfaces) close();
+    surface.resolve();
+    await opening;
+    expect(surface.mounted).toBe(0);
+    await view.onClose();
+    await runtime.dispose();
   });
 
   it("leaves nothing behind when the plugin unloads with a view open", async () => {

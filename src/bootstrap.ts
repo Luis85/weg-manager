@@ -14,7 +14,7 @@ import { mirrorSettings } from "./infrastructure/obsidian/settings-mirror";
 import { ShellSettingTab } from "./infrastructure/obsidian/settings-tab";
 import { SHELL_VIEW_TYPE, ShellView } from "./infrastructure/obsidian/shell-view";
 import { makeRuntime } from "./infrastructure/runtime";
-import { releaseAll } from "./presentation/mount";
+import { releaseAll } from "./presentation/release";
 
 export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell-view";
 

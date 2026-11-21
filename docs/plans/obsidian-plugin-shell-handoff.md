@@ -300,3 +300,42 @@ A fresh-eyes code review of the shell produced the fixes below. Each has a test 
   - the 1.5 MB bundle budget against the actual ~540 KB;
   - mobile (`isDesktopOnly`, K-09);
   - upgrading to the 1.15.x types once they are published.
+
+## 10. Run 4: best-practice items and owner decisions (2026-11-21)
+
+Source: `docs/design/research/Plugin research - Obsidian best practices.md`.
+
+**Owner decisions:**
+- **Agent tooling:** stays in the repo; the community scan is dealt with at submission time. Meanwhile an informational `lint:scanner` runs in CI.
+- **Gmail ZIP:** CI builds it and runs its tests; it is not committed.
+- **Listing text:** English manifest description; English summary in the README.
+- **UI language:** follows Obsidian's; English is the fallback. The default greeting follows the language.
+- **Mobile:** marked as planned only.
+
+| # | Item | Result |
+| --- | --- | --- |
+| 1 | Scanner lint | `npm run lint:scanner` (`configs/eslint.scanner.config.mjs`) and the CI job `scanner-lint`. It stays green and reports findings as a warning. The known finding is the Archify `reader.js`. |
+| 2 | Vue lint | All 40 obsidianmd rules apply to `.vue`, plus `vue/no-v-html` and `no-unsanitized`. |
+| 3 | Attestation | `actions/attest@v4` over the three release assets. |
+| 4 | Load time | `mount.ts` is loaded with `import()` in `ShellView.onOpen`; Vue no longer runs at `require`. In Node, median require time went from 43 to 38 ms (not measured in Obsidian). |
+| 5 | Listeners | `registerEvent` plus an `offref` finalizer: listeners detach synchronously on unload. |
+| 6 | Sync (PBI-48) | `onExternalSettingsChange` → `SettingsService.reload`; the status is observable; e2e `external-settings.e2e.ts`. |
+| 7–9 | README / manifest | English summary, Installation and Benutzung sections, Mobil marked as planned, English description. |
+| 10–11 | Styles | Text sizes use `--font-ui-*`; literal colours replaced; `styles.css` −1.2 KB. |
+| 12 | Ribbon removal | e2e `ribbon-failure.e2e.ts` covers a failed bootstrap in real Obsidian. |
+| 13 | UI language | ADR 0005. Catalogs in `src/application/i18n/`. The `Messages` service is resolved once per load from `getLanguage()`. An untouched greeting is stored as `null` and shows the language's default; the old "Hello from WEG Manager" counts as not customised. The diagnostics report stays German. e2e runs `--lang=de`, and `language.e2e.ts` checks English. |
+| 14, 16 | Docs | Dependency costs in ADR 0001; vault write paths in `adding-a-feature.md`. |
+| 15 | View | `contentEl.empty()` before mounting. |
+| — | Gmail skill | The `skills` CI job; dead ZIP links fixed. |
+
+**Results:**
+- `verify`: passed.
+- e2e: 7 specs passed.
+- Mutation (incremental): 98.9 %.
+- `main.js`: about 556 KB.
+
+**Open:**
+- PBI-49: criteria 1, 3 and 4.
+- The `skills/manifest.json` checksum does not match a fresh build. This was already the case before this work.
+- After a language switch, the ribbon icon forgets its position once, because its id contains the title.
+- A failed bootstrap leaves 7 harmless `registerEvent` closures until unload.

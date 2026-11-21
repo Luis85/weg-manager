@@ -1,6 +1,7 @@
 import type { EventBus } from "./event-bus";
 import type {
   Clipboard,
+  DeviceStore,
   HostInfo,
   Incidents,
   Logger,
@@ -20,4 +21,5 @@ export type ShellServices =
   | Clipboard
   | HostInfo
   | Messages
-  | EventBus;
+  | EventBus
+  | DeviceStore;

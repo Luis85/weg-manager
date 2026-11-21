@@ -1,6 +1,6 @@
 # ADR 0008 · One view, typed routes
 
-- Status: accepted
+- Status: accepted; history amended on 2026-11-21 (see the note at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -30,3 +30,16 @@ The design (`docs/design/handoff/03 - Ansichten, Navigation und Befehle.md`) des
 - Routes are not shareable links. Obsidian URIs for deep links would be a separate decision.
 - State that should survive a restart must be in the route or in a service. Form input is lost when a view closes; a draft store is decided with the first long form.
 - The view tests grow by state restore, and the Obsidian test double by `getState`/`setState` and local storage.
+
+## Amendment, 2026-11-21: fixed tab, own history
+
+The bullet "Obsidian owns the history" no longer holds. Obsidian 1.15.1 records a leaf's history only for a view whose `navigation` is `true` (`WorkspaceLeaf.recordHistory`); the first build set it, and the e2e spec proved that Obsidian's back and forward buttons then worked. But `navigation = true` also makes the tab navigable for files: a plain click in the file explorer runs `getLeaf(false).openFile(file)`, which opens the note in the active plugin tab and closes the plugin view. The owner decided that a work dashboard must not vanish because of one click.
+
+Decision:
+
+- The plugin view is a fixed tab: `ShellView.navigation` is `false`. A file opened while it is active goes to another tab.
+- Each view keeps its own history in memory, the fallback this ADR named: a navigation pushes the current route onto a back stack and clears the forward stack, back and forward move between them, a navigation to the current route pushes nothing, and at most 50 steps back are kept. The stack is plain data in the shell's application layer; components reach it through `useHistory()`, and the app frame shows a back and a forward control.
+- Obsidian still keeps the route: `getState()` returns it, `setState()` decodes it, and every change asks Obsidian to save the layout. The history is not saved; a restored view starts with an empty one.
+- The first state Obsidian sets on a view (a restored layout, `openRoute` on a new view) is where its history starts. A state set later on the open view (`openRoute` on it) is a navigation.
+
+Consequences: Obsidian's own back and forward buttons in the view header do nothing for in-plugin navigation; the frame's controls do. The e2e spec checks that a note opened like a file-explorer click lands in another tab (it fails with `navigation = true`) and that the frame's controls move between routes.

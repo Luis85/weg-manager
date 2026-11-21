@@ -108,6 +108,16 @@ describe("buildDiagnostics", () => {
     }),
   );
 
+  it.effect("words a root folder issue in the report", () =>
+    Effect.gen(function* () {
+      const text = yield* report({ initial: { rootFolder: "a:b" } }, []);
+      assert.include(
+        text,
+        'Hinweise zu Einstellungen: Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.',
+      );
+    }),
+  );
+
   it.effect("stays German for support in an English UI and names the UI language", () =>
     Effect.gen(function* () {
       const text = yield* report({ initial: { greeting: 7 } }, [], "en");

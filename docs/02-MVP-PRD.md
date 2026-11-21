@@ -10,7 +10,7 @@ date: 2026-11-15
 
 **Version 1.1 · 15. November 2026 · Beirats-MVP, Konzeptentwurf zur fachlichen Prüfung**
 
-WEG Manager ist ein lokales Obsidian-Plugin für einen Beirat gegenüber einer externen Verwaltung. Der erste Umfang unterstützt mindestens zwei getrennte Gemeinschaften, nachvollziehbare Punkte, Wochenarbeit, Nachfassen, kontrollierte Kommunikation und Nutzung ohne verpflichtende KI. Die mobile Nutzung folgt nach dem MVP ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]).
+WEG Manager ist ein lokales Obsidian-Plugin für einen Beirat gegenüber einer externen Verwaltung. Der erste Umfang unterstützt mindestens zwei getrennte Gemeinschaften, nachvollziehbare Punkte, Wochenarbeit, Nachfassen, kontrollierte Kommunikation ohne verpflichtende KI. Die mobile Nutzung folgt nach dem MVP (Stand 21.11.2026, [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]).
 
 ## Ziele und Nutzungskontext
 
@@ -20,7 +20,7 @@ WEG Manager ist ein lokales Obsidian-Plugin für einen Beirat gegenüber einer e
 | B-G02 | Offene Zusagen ohne Termin bleiben sichtbar und werden nachgefasst. | Termin-, Versand- und Nachfassfälle; tatsächliche Antworten separat beobachten. |
 | B-G03 | Sachstände aus Quellen und datierten Ereignissen erklären. | Verlauf, Import und lesbare Übergabe. |
 | B-G04 | Menschlich kontrollierte Kommunikation und getrennte Gemeinschaften. | Vorschau, DE/EN, tatsächlicher Versand, Ausschluss ungeeigneter Inhalte. |
-| B-G05 | Selbstständige lokale Kernarbeit ohne KI; die mobile Kernarbeit folgt nach dem MVP (K-09). | Offline-, Konflikt- und Wiederherstellungsprüfung; die Mobile-Prüfung folgt mit dem mobilen Ausbau. |
+| B-G05 | Selbstständige lokale Kernarbeit ohne KI. Die mobile Kernarbeit folgt nach dem MVP. | Offline-, Konflikt- und Wiederherstellungsprüfung; Mobile-Prüfung nach dem MVP. |
 | B-G06 | Öffentlich installierbares Produkt, anschließend belastbare Pilotbeobachtung. | Neuinstallation nach Veröffentlichung; dokumentierte Beobachtung. |
 
 Ein menschlicher Bearbeiter arbeitet für WEG und Tiefgarage. Er kann zusätzlich einem externen AI-Agent direkte Dateirechte geben; dies ist keine weitere angemeldete Pluginrolle und keine MCP-Pflicht. Die konkrete Organisationsform der Tiefgarage bleibt offen; das Produkt verwendet eine neutrale Gemeinschaftsbezeichnung. Eine Kontaktrolle erzeugt keine Befugnis. Eigentümer und Verwaltung sind externe Kommunikationspartner, keine angemeldeten Nutzer. Eine Vertretung erhält eine ausgewählte lesbare Übergabe; parallele aktive Übernahme gehört noch nicht zum MVP.
@@ -36,7 +36,7 @@ Ein menschlicher Bearbeiter arbeitet für WEG und Tiefgarage. Er kann zusätzlic
 | Menschliche Wahl und Notiz, Entwürfe je Gemeinschaft, DE/EN für Eigentümertexte. | Automatischer Versand, automatisch festgestellte Rechtsfolgen. |
 | Geprüfte Sachstandsausgabe, interne Übergabe, Sicherung und Wiederherstellung. | Ausgearbeitete Quartals-/ETV-Berichte, vollständige Beschluss-Sammlung. |
 | Mangel, Angebotsfrage, Rechnungsfrage oder Protokollkorrektur als Punkt mit Quelle. | Eigener RFQ-/Vergleichsprozess, Auftrag/Nachtrag, formelle Abnahme, Rechnungsrest und Zahlungsvorbereitung, Buchhaltung. |
-| Vollständige Wochenarbeit und Lagecheck auf dem Desktop; dieselbe Arbeit auf dem Referenz-Handy folgt nach dem MVP (K-09). | Eigener Synchronisationsdienst und gleichzeitiges Schreiben auf mehreren Geräten. |
+| Vollständige Wochenarbeit und Lagecheck auf dem Desktop. | Mobile Wochenarbeit und Lagecheck auf dem Handy (nach dem MVP, [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]); eigener Synchronisationsdienst und gleichzeitiges Schreiben auf mehreren Geräten. |
 | Optionaler nativer AI-Chat über offizielle Claude-Code-Laufzeit und berechtigte Nutzer-Subscription; erster Nachweis auf Desktop. | Ungeprüfte mobile Chat-Runtime, eigener Credential-Proxy oder stiller API-Fallback. |
 
 Der lokale Kern benötigt kein Konto, Netzwerk oder KI. Installation, gewählte externe Kommunikation und ein gegebenenfalls vom Nutzer verwendeter Dateitransport sind gesondert. Es wird nur der bekannte Eingangsstand verarbeitet. Ein Wochenpaket wird beim Einstieg aktualisiert; ein ausgeschaltetes Plugin hat keine Hintergrundprüfung ausgeführt. Ein vorhandener Beleg begründet kein vollständiges Rechnungs- oder Beschlussmodul.
@@ -57,7 +57,7 @@ Der lokale Kern benötigt kein Konto, Netzwerk oder KI. Installation, gewählte 
 
 ## Funktionale Anforderungen
 
-Alle B-FR-01 bis B-FR-16 sind MUSS im vorgeschlagenen MVP, außer B-FR-13 (mobile Wochenarbeit, nach dem MVP laut [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]) und dem entfallenen B-FR-15; die Nummer B-FR-15 wird nicht neu vergeben. B-FR-14 konkretisiert die ausdrücklich festgelegte offene Dateigrundlage. Die verlinkten PBIs enthalten die detaillierten Akzeptanzkriterien; die gemeinsamen [[Product Backlog.base#Business Rules]] gelten zusätzlich. Kein PBI gilt allein durch seine Existenz als abgenommen.
+Alle B-FR-01 bis B-FR-16 außer B-FR-13 sind MUSS im vorgeschlagenen MVP; B-FR-13 folgt nach dem MVP. B-FR-15 (Gmail-Eingang über einen Claude Skill) ist entfallen; die Nummer wird nicht neu vergeben. B-FR-14 konkretisiert die ausdrücklich festgelegte offene Dateigrundlage. Die verlinkten PBIs enthalten die detaillierten Akzeptanzkriterien; die gemeinsamen [[Product Backlog.base#Business Rules]] gelten zusätzlich. Kein PBI gilt allein durch seine Existenz als abgenommen.
 
 | ID | Fachliche Verpflichtung | Backlog / geplante Abnahme |
 | --- | --- | --- |
@@ -73,9 +73,9 @@ Alle B-FR-01 bis B-FR-16 sind MUSS im vorgeschlagenen MVP, außer B-FR-13 (mobil
 | B-FR-10 | Lagecheck seit letzter Übergabe und bis nächster Wochenarbeit ermöglichen; bis drei Schwerpunkte für Wiedereinstieg erhalten. | F-10, PBI-24–25; AT-B10 |
 | B-FR-11 | Inhalte einstufen, kontrolliert berichtigen/entfernen und empfängerbezogen mit Vorschau lesbar übergeben. | F-11, PBI-26–29; AT-B11 |
 | B-FR-12 | Daten sichern/wiederherstellen, Konflikte behandeln und einen selbstständigen Einstieg ohne KI anbieten. | F-12, PBI-30–32; AT-B12 |
-| B-FR-13 | **Nach dem MVP (K-09):** Vollständige Wochenarbeit einschließlich Schreiben und Prüfen sowie Lagecheck mobil ermöglichen. | F-13, PBI-33; AT-B13 |
+| B-FR-13 | Nach dem MVP: Vollständige Wochenarbeit einschließlich Schreiben und Prüfen sowie Lagecheck mobil ermöglichen. | F-13, PBI-33; AT-B13 |
 | B-FR-14 | Vorgänge direkt aus Markdown-/Frontmatter-Notizen ohne Plugin, Obsidian und MCP lesen und bearbeiten; einen freigegebenen AI-Agent auf denselben Dateien arbeiten lassen und externe Änderungen sicher berücksichtigen. | F-22, PBI-41–42; AT-B15/16 |
-| B-FR-16 | Nativen AI-Chat im Plugin mit offizieller Claude-Code-Laufzeit und berechtigter Nutzer-Subscription ermöglichen; Kontext, tatsächliche Aktionen, Abrechnungsmodus und Abbruch transparent halten. Erster zu prüfender Betriebsweg Desktop; mobile Kernreise unabhängig nutzbar. | F-23, PBI-47; AT-B18 |
+| B-FR-16 | Nativen AI-Chat im Plugin mit offizieller Claude-Code-Laufzeit und berechtigter Nutzer-Subscription ermöglichen; Kontext, tatsächliche Aktionen, Abrechnungsmodus und Abbruch transparent halten. Erster zu prüfender Betriebsweg Desktop; die lokale Kernreise bleibt unabhängig nutzbar. | F-23, PBI-47; AT-B18 |
 
 Die vorbereitete Wochenarbeit darf nicht auf leere Formulare reduziert werden. Vorhandene Daten müssen Kontext, Fristen und bearbeitbare Empfehlungen/Folgetexte tragen. Die konkrete regelbasierte oder manuelle Ergänzung wird im späteren Lösungsentwurf beschrieben; zusätzliche Vorbereitungszeit zählt zur Nutzenmessung. Können Inhalt und Aufwand den Anspruch nicht tragen, ist dies eine Scopeentscheidung vor Entwicklungsfreigabe, keine stille Abschwächung von B-FR-06/07.
 
@@ -108,7 +108,7 @@ Stabile Identitäten und Beziehungen müssen Umbenennung, Import und Wiederherst
 
 Die bestehenden **B-NFR-01 bis B-NFR-14** werden im Feature [[F-21 - Nichtfunktionale Anforderungen]] unter [[E-07 - Cross Cutting Concerns]] gepflegt. Dort stehen die vollständigen Prüfziele und das Referenzprofil: Offlinearbeit/KI-Unabhängigkeit, Datenerhalt, Fachkorrektheit, Reaktionszeit, Speichern, Bedienbarkeit, Vertraulichkeit, sichere Darstellung, Plattformen, Portabilität, Laufzeit, verständliche Fehler, offener Notizvertrag und externe Agentenbearbeitung.
 
-Alle B-NFR bleiben geplante **MVP-Releasekriterien** für die jeweils betroffenen Features und PBIs. Ihre Zuordnung zum Querschnitts-Epic ändert weder den Funktionsumfang noch ihre Geltung. Die Desktop-Referenz und die unterstützten Versionen sind vor Entwicklungsfreigabe zu klären (O-02); Referenz-Handy und mobile Messziele erst mit dem mobilen Ausbau. Der folgende Abnahmeplan prüft die zugehörigen Qualitätsanforderungen mit.
+Alle B-NFR bleiben geplante **MVP-Releasekriterien** für die jeweils betroffenen Features und PBIs; ihre mobilen Teile (B-NFR-05, B-NFR-06, B-NFR-09) gelten erst nach dem MVP. Ihre Zuordnung zum Querschnitts-Epic ändert weder den Funktionsumfang noch ihre Geltung. Obsidian-Version und Desktop-Messziele sind weiterhin vor Entwicklungsfreigabe zu klären (O-02). Der mobile Teil von O-02 (Referenz-Handy, mobile Messziele) entfällt für den MVP und gilt für den Ausbau nach dem MVP. Der folgende Abnahmeplan prüft die zugehörigen Qualitätsanforderungen mit.
 
 ## Geplante interne Abnahmen
 
@@ -126,13 +126,13 @@ Alle B-NFR bleiben geplante **MVP-Releasekriterien** für die jeweils betroffene
 | AT-B10 | Übergabe mit drei Schwerpunkten; später akutes Problem vor dem nächsten Wochenzeitpunkt. | Wiedereinstieg zeigt Übergabe und neue Dringlichkeit; Rückstand bleibt erhalten. |
 | AT-B11 | Interne Bewertung, privates Original, ungeprüfte Anlage und ausgewählter Sachstand; danach kontrollierte Entfernung. | Vorschau/Ausgabe nur geeignete Auswahl; keine transitive Mitnahme; Entfernung ohne Wiederholung privater Inhalte. |
 | AT-B12 | Kernreise offline, externe Dateiänderung, doppelte ID, Speichern abbrechen, sichern/wiederherstellen und Plugin deaktivieren. | Kein stiller Verlust, verständliche Fehler, Akten weiter lesbar und Beziehungen erhalten. |
-| AT-B13 | **Nach dem MVP (K-09):** Vollständige Wochenreise und Lagecheck auf Referenz-Handy mit Unterbrechung. | Lesen und Schreiben einschließlich Notiz, Entwurfsprüfung, Quellen und Übergabe möglich; Eingaben bleiben erhalten. |
+| AT-B13 | Nach dem MVP: Vollständige Wochenreise und Lagecheck auf Referenz-Handy mit Unterbrechung. | Lesen und Schreiben einschließlich Notiz, Entwurfsprüfung, Quellen und Übergabe möglich; Eingaben bleiben erhalten. |
 | AT-B14 | Nach Veröffentlichung öffentlich in frischem Vault installieren. | Dokumentierte Version und Kernablauf ohne Entwicklerwerkzeuge nutzbar; erst danach Produktpilot. |
 | AT-B15 | Synthetischen vollständigen Vorgang speichern; Plugin und Obsidian schließen. Nur Notizordner, Originale und lokalen Dateivertrag mit gewöhnlichem Editor öffnen und ändern; ohne MCP fortführen. | Kontext und Beziehungen verständlich; kein Export erforderlich; gültige externe Änderung wird beim späteren Pluginstart übernommen, ein Cache enthält keine exklusiven Fachinformationen. |
 | AT-B16 | Freigegebener Agent liest und ändert dieselben Notizen einmal bei geschlossenem Plugin und einmal während offener eigener Bearbeitung; anschließend ungültiges YAML beziehungsweise neuere Schemafassung prüfen. | Zulässige Änderungen werden berücksichtigt; Konflikte, fehlerhafte Dateien und Wiederaufnahme bleiben sichtbar und ohne stilles Überschreiben; unbekannte Properties, Originale und eigene Eingaben bleiben erhalten. |
 | AT-B18 | In unterstützter offizieller Desktop-Runtime Abo-Modus, native Chatrunde, Kontextwahl, Toolbestätigung, Dateischritt, Abbruch/Limit und aufbewahrten Verlauf mit synthetischen Daten prüfen; API-Konfiguration separat als Abweichung testen. | Tatsächlicher berechtigter Abo-Weg nachgewiesen, keine Tokenübernahme oder stille API-Abrechnung; Vorschlag und ausgeführte Änderung getrennt; Teilergebnisse und offene Eingaben bleiben erkennbar. Mobile Chatverfügbarkeit wird nicht ohne eigene Prüfung behauptet. |
 
-AT-B01–12, AT-B15, AT-B16 und AT-B18 erfolgen vor Veröffentlichung mit synthetischen oder ausdrücklich freigegebenen anonymisierten Daten; AT-B13 folgt mit der mobilen Wochenarbeit nach dem MVP, AT-B17 ist mit B-FR-15 entfallen. Dabei werden die zugehörigen Qualitätskriterien mitgeprüft. Ein Fehler mit Datenverlust, unbeabsichtigter Offenlegung, falschem Frist-/Versandstatus oder blockierter Kernreise verhindert die interne Freigabe. Noch nicht festgelegte Geräte und offene Scopefragen müssen vorher konkret entschieden werden.
+AT-B01–12, AT-B15, AT-B16 und AT-B18 erfolgen vor Veröffentlichung mit synthetischen oder ausdrücklich freigegebenen anonymisierten Daten; AT-B13 folgt mit der mobilen Wochenarbeit nach dem MVP, AT-B17 ist mit B-FR-15 entfallen. Dabei werden die zugehörigen Qualitätskriterien mitgeprüft. Ein Fehler mit Datenverlust, unbeabsichtigter Offenlegung, falschem Frist-/Versandstatus oder blockierter Kernreise verhindert die interne Freigabe. AT-B13 gehört zum mobilen Ausbau nach dem MVP. Noch nicht festgelegte Desktop-Ziele und offene Scopefragen müssen vorher konkret entschieden werden.
 
 ## Veröffentlichung und Pilot
 
@@ -152,11 +152,11 @@ Nach Veröffentlichung installiert der vorhandene Pilot öffentlich. Für zunäc
 | Übergabe | Bewusst einbezogene zweite Person kann Sachstand, Quellen und nächsten Schritt aus der Ausgabe erklären. |
 | Vertraulichkeit | Menschlicher Versand und kontrollierte Ausgabe prüfen; keine bekannten Vorfälle ist kein Beweis perfekter Erkennung. |
 
-Die berichteten WCS-Zahlen und die Zeiträume bis 145 Tage sind keine gemessene Pluginwirkung. Bei hoher Doppelpflege werden Eingangsübernahme und Textvorbereitung neu priorisiert; bei fehlender mobiler Nutzbarkeit die Clientlösung. Gemeinsame Bearbeitung oder Dienste folgen erst mit eigenem Scope. Produktfeedback kann zunächst außerhalb des Plugins über einen vereinbarten Kanal erfolgen; F-15 erweitert dies später.
+Die berichteten WCS-Zahlen und die Zeiträume bis 145 Tage sind keine gemessene Pluginwirkung. Bei hoher Doppelpflege werden Eingangsübernahme und Textvorbereitung neu priorisiert; bei fehlender mobiler Nutzbarkeit die Clientlösung, die erst nach dem MVP beobachtet wird. Gemeinsame Bearbeitung oder Dienste folgen erst mit eigenem Scope. Produktfeedback kann zunächst außerhalb des Plugins über einen vereinbarten Kanal erfolgen; F-15 erweitert dies später.
 
 ## Offene Entscheidungen und nächster fachlicher Schritt
 
-O-01–08 im Intake-Abgleich sind der Klärungsbestand: Scopefreigabe, Referenzgerät/Leistungsziele, anonymisierter Export, Vorbereitungsaufwand, Gemeinschaftsangaben, Vertretungsumfang, spätere Berichtsfreigabe und Releaseangaben. Diese Punkte verhindern die Konzeptableitung nicht, aber es gibt noch keine vollständige technische Entwicklungsreife.
+O-01–08 im Intake-Abgleich sind der Klärungsbestand: Scopefreigabe, Referenzgerät/Leistungsziele (der mobile Teil folgt nach dem MVP), anonymisierter Export, Vorbereitungsaufwand, Gemeinschaftsangaben, Vertretungsumfang, spätere Berichtsfreigabe und Releaseangaben. Diese Punkte verhindern die Konzeptableitung nicht, aber es gibt noch keine vollständige technische Entwicklungsreife.
 
 Der Beiratskern bleibt in fünf Nutzerziel-Epics mit 13 Features und PBI-01 bis PBI-33 gegliedert; PBI-33 (mobile Wochenarbeit) folgt nach dem MVP ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]). Die offene Dateischnittstelle in F-22 ergänzt PBI-41/42 und der native AI-Chat in F-23 ergänzt PBI-47; damit umfasst der geplante funktionale MVP insgesamt 35 User Stories. E-06 bewahrt spätere fachliche Optionen einschließlich Zusammenarbeit und Onlinedienst (F-20). E-07 „Cross Cutting Concerns“ bündelt Integrationen (F-18, einschließlich Google Workspace), MCP Server (F-19), die nichtfunktionalen MVP-Anforderungen (F-21) und die ausdrücklich festgelegte offene Dateigrundlage (F-22). Integrationen (F-18) und MCP bleiben später; F-21, F-22 und F-23 gehören zum geplanten MVP. Der neue Chat hat noch keinen technischen Integrationsnachweis. Der nächste Schritt ist die fachliche Prüfung dieses Entwurfs und gezieltes Refinement der offenen Punkte; keine Implementierung, Architekturfestlegung oder automatische Veröffentlichung von Issues.
 
@@ -178,4 +178,4 @@ Die nutzerseitig festgelegte Komponentenbasis ist Nuxt UI ([[K-13 - Nuxt UI als 
 
 ## Nativer Chat über das Nutzerabo
 
-[[K-17 - Nativer AI-Chat über das Nutzerabo]] ergänzt [[F-23 - Nativer AI-Chat]] und [[PBI-47 - AI-Chat über die eigene Claude-Subscription nutzen]]. Die Abonutzung ist ein ausdrückliches Produktziel, kein bereits durchgeführter Zahlungs-/Runtime-Test. [[Integrationsresearch - Nativer AI-Chat mit Claude Code]] dokumentiert die offiziellen Quellen und den vor Freigabe nötigen Nachweis. Der Chat ist zunächst als Desktop-Erweiterung konzipiert; die bisherige mobile und offline nutzbare Beirats-Kernreise bleibt ohne Chat möglich.
+[[K-17 - Nativer AI-Chat über das Nutzerabo]] ergänzt [[F-23 - Nativer AI-Chat]] und [[PBI-47 - AI-Chat über die eigene Claude-Subscription nutzen]]. Die Abonutzung ist ein ausdrückliches Produktziel, kein bereits durchgeführter Zahlungs-/Runtime-Test. [[Integrationsresearch - Nativer AI-Chat mit Claude Code]] dokumentiert die offiziellen Quellen und den vor Freigabe nötigen Nachweis. Der Chat ist zunächst als Desktop-Erweiterung konzipiert; die lokale und offline nutzbare Beirats-Kernreise bleibt ohne Chat möglich.

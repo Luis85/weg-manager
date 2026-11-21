@@ -14,8 +14,8 @@ date: 2026-11-15
 | ID | Thema | Auswirkung auf UI |
 | --- | --- | --- |
 | O-01 | Scopefreigabe Beiratsfokus | gesamte IA |
-| O-02 | Referenz-Handy, Obsidian-Version, mobile Messziele | Breakpoints, Sheets, Dateiauswahl, Tastatur-Overlay |
-| O-03 | anonymisierter Export für Tests | Testdaten für AT-B01–13 |
+| O-02 | Obsidian-Version, Desktop-Messziele; Referenz-Handy und mobile Messziele erst für den Ausbau nach dem MVP | Breakpoints; später Sheets, Dateiauswahl, Tastatur-Overlay |
+| O-03 | anonymisierter Export für Tests | Testdaten für AT-B01–12 |
 | O-04 | Vorbereitungsaufwand ohne KI | Vorschlag in [[Konzept - Vorbereitung ohne KI]], im Pilottest prüfen |
 | O-05 | Gemeinschaftsangaben (Organisationsform TG) | Einstellungen, Kürzel |
 | O-06 | Umfang Vertretung | Ausgabe für Vertretung |
@@ -50,7 +50,7 @@ Weitere Lücken: Erststart Schritt 2 (Kontakte) und 3 (Register, entspricht dem 
 
 ## Technische Spikes
 
-1. Nuxt UI (Vue) in einer Obsidian-`ItemView` inkl. CSS-Kapselung, Theme-Wechsel, Mobile.
+1. Nuxt UI (Vue) in einer Obsidian-`ItemView` inkl. CSS-Kapselung, Theme-Wechsel; Mobile erst nach dem MVP.
 2. Lokale Schriften und Icons ohne Netz.
-3. `visualViewport`-Verhalten der Aktionsleisten mit Obsidian-Mobile-Tastatur.
+3. Nach dem MVP: `visualViewport`-Verhalten der Aktionsleisten mit Obsidian-Mobile-Tastatur.
 4. Leistung: Lage mit 500 Punkten < 5 s Start, < 300 ms Filtern (B-NFR-04).

@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -27,7 +27,7 @@ pages: []
 user-flows: []
 dependsOn:
   - "[[PBI-52 - Notizspeicher für Vault-Notizen bereitstellen]]"
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-53 · Notizformat mit Schemaversion lesen und schreiben
@@ -60,3 +60,9 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Schritt 3.3; Entscheidungen d
 ## Kommentare
 
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
+- 21.11.2026: Abgeschlossen. Stand der Umsetzung:
+  - **Notiztyp als Deklaration:** `defineNoteType` (`src/domain/notes/`) leitet aus Typname, Version, Feldern und Migrationstabelle das Lesen, das Frontmatter einer neuen Notiz und das Zusammenführen ab. Feldarten: Text, Zahl, Kontrollkästchen, Datum (`YYYY-MM-DD`, echter Kalendertag), Textliste. Die Schlüssel im Code sind dieselben wie in der Datei (snake_case), ohne Umbenennung.
+  - **Ergebnisse des Lesens:** kein Datensatz dieses Typs; schreibgeschützt (neuere Version, fehlgeschlagene Migration, fehlende, fehlerhafte oder fremde `id`, doppelte `id`); bearbeitbar, auch mit einzelnen ungültigen Feldern, die als Problem je Feld gemeldet werden und sich im Formular reparieren lassen.
+  - **Zusammenführen je Feld:** ein vom Nutzer nicht geändertes Feld behält den aktuellen Wert der Notiz; ein geändertes wird geschrieben, solange die Notiz noch den geladenen Wert hat; ein auf beiden Seiten verschieden geändertes Feld ist ein Konflikt, dann wird nichts geschrieben. Unbekannte Schlüssel bleiben unberührt. Eine Notiz älterer Version wird beim Speichern in der aktuellen Version geschrieben.
+  - **Offen für [[PBI-54 - Index der Notizen aufbauen und aktuell halten]]:** einen fehlerhaften `schema`-Wert und einen gültigen `schema`-Wert unbekannten Typs als Problem melden; ungültiges YAML in den Plugin-Ordnern melden.
+  - **Offen für [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]:** eine Prüfung der Formularwerte gegen die Feldregeln vor dem Speichern.

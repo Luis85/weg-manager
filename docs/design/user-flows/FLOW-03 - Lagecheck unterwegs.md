@@ -18,6 +18,8 @@ requirements:
 
 # FLOW-03 · Lagecheck unterwegs
 
+**Stand 21.11.2026:** Der Auslöser am Handy gilt erst nach dem MVP ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]). Im MVP läuft derselbe Lagecheck auf dem Desktop.
+
 **Auslöser:** kurzer Blick am Handy zwischen zwei Wochenterminen. **Ziel:** in 2–5 Minuten wissen, ob etwas nicht bis zur nächsten Wochenarbeit warten kann.
 
 ```mermaid

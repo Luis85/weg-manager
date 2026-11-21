@@ -13,6 +13,7 @@ import {
   SettingsStore,
   VaultReader,
 } from "../../../application/shell";
+import { deviceStoreLayer } from "./device-store";
 import { showMessage } from "./notices";
 
 export { NOTICE_DURATION } from "./notices";
@@ -78,4 +79,5 @@ export const obsidianLayer = (plugin: Plugin, language: Language) =>
     clipboardLayer,
     hostLayer(plugin),
     messagesLayer(language),
+    deviceStoreLayer(plugin),
   );

@@ -59,3 +59,8 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Abschnitt 3 (Lücken B5 und B
 ## Kommentare
 
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
+- 21.11.2026: Erster Teil ausgeliefert: das Ereignis `VaultReady` und der Referenz-Vault.
+  - **Kriterium 1 präzisiert:** Obsidians Ereignis `resolved` taugt allein nicht als Signal. Gemessen in Obsidian 1.15.1 am Referenz-Vault: Beim Kaltstart ist das Layout bereit, wenn erst 1 von 2.200 Notizen im Cache steht, und `resolved` feuert je indexierter Notiz, zum ersten Mal vor dem Layout. Beim Warmstart und in der laufenden App ist der Cache sofort vollständig, `resolved` kommt einmal oder gar nicht. `VaultReady` wird deshalb veröffentlicht, sobald das Layout bereit ist und jede Markdown-Datei einen Eintrag im Metadaten-Cache hat; ein e2e-Spec belegt das für Kaltstart und Wiedereinschalten des Plugins.
+  - **Referenz-Vault:** `npm run vault:reference` erzeugt ihn deterministisch nach `tests/e2e/vaults/reference/` (nicht eingecheckt): zwei Gemeinschaften, 200 Punkte, 2.000 Notizen mit Frontmatter, 200 ohne.
+  - **Messwerte in diesem Container** (nicht die Referenzmaschine, noch keine Schwelle): `VaultReady` beim Kaltstart nach 2,4 bis 3,3 s, beim Warmstart nach rund 0,25 s; `NoteStore.list` danach 9 bis 20 ms für 2.000 Datensätze.
+  - **Offen:** der Index selbst mit Zeitprüfung gegen B-NFR-04.

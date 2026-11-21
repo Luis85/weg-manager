@@ -16,6 +16,7 @@ const valid: Settings = {
   schemaVersion: 1,
   greeting: "Moin",
   logLevel: "debug",
+  rootFolder: "Beirat/WEG",
 };
 
 describe("decodeSettings", () => {
@@ -93,6 +94,7 @@ describe("decodeSettings", () => {
     const result = decodeSettings({ ...valid, schemaVersion: 2 });
     expect(result.settings).toEqual(DEFAULT_SETTINGS);
     expect(result.writable).toBe(false);
+    expect(result.readOnlyReason).toBe("newer-version");
     expect(result.issues).toEqual([{ code: "schema.newer", version: 2 }]);
   });
 
@@ -170,7 +172,12 @@ describe("validatePatch", () => {
 /** Defaults are product decisions; pin them exactly. Issue texts live in the message catalog. */
 describe("settings defaults and issues", () => {
   it("has the documented defaults: no greeting stored, so it follows the UI language", () => {
-    expect(DEFAULT_SETTINGS).toEqual({ schemaVersion: 1, greeting: null, logLevel: "warn" });
+    expect(DEFAULT_SETTINGS).toEqual({
+      schemaVersion: 1,
+      greeting: null,
+      logLevel: "warn",
+      rootFolder: "WEG Manager",
+    });
     expect(LEGACY_DEFAULT_GREETING).toBe("Hello from WEG Manager");
   });
 
@@ -209,6 +216,11 @@ describe("default greeting", () => {
   it("writes no greeting key while the greeting is not customised", () => {
     expect(encodeSettings(DEFAULT_SETTINGS)).toEqual({ schemaVersion: 1, logLevel: "warn" });
     expect(encodeSettings(valid)).toEqual(valid);
-    expect(Object.keys(encodeSettings(valid))).toEqual(["schemaVersion", "greeting", "logLevel"]);
+    expect(Object.keys(encodeSettings(valid))).toEqual([
+      "schemaVersion",
+      "greeting",
+      "logLevel",
+      "rootFolder",
+    ]);
   });
 });

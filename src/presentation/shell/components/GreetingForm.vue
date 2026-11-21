@@ -13,7 +13,8 @@ import {
 import { describeError } from "../../../application/user-messages";
 import { validatePatch } from "../../../domain/shell";
 import ErrorNotice from "./ErrorNotice.vue";
-import { useCommand, useMessages, useSettings, useSettingsStatus } from "../runtime/use-runtime";
+import { useCommand, useMessages } from "../runtime/use-runtime";
+import { useSettings, useSettingsStatus } from "../runtime/use-stream";
 
 /** The greeting form: domain rules validate on change, the service has the final word. */
 const settings = useSettings();

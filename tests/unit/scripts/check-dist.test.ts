@@ -2,7 +2,8 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { BUDGETS, checkDist } from "../../../scripts/check-dist.mjs";
+import { BUDGETS, TEST_ONLY_MARKER, checkDist } from "../../../scripts/check-dist.mjs";
+import { TEST_ONLY_MARKER as MEMORY_MARKER } from "../../../src/infrastructure/memory/notes";
 
 const OPTIONS = { id: "weg-manager", prefix: "wm" };
 const MANIFEST = { id: "weg-manager", name: "WEG Manager", version: "0.1.0" };
@@ -52,6 +53,14 @@ describe("checkDist", () => {
   it("reports a manifest that differs from the root manifest", () => {
     const changed = JSON.stringify({ ...MANIFEST, version: "9.9.9" });
     expect(violations({ "manifest.json": changed }).join()).toMatch(/manifest/);
+  });
+
+  it("reports test-only code in main.js, marked as the in-memory adapters mark it", () => {
+    expect(MEMORY_MARKER).toBe(TEST_ONLY_MARKER);
+    const js = `${VALID_JS}new Error("${MEMORY_MARKER}: write failed");`;
+    expect(violations({ "main.js": js })).toEqual([
+      "main.js: holds test-only code (the in-memory adapters)",
+    ]);
   });
 
   it("reports main.js without a default CommonJS export", () => {

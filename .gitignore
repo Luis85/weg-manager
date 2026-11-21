@@ -9,7 +9,10 @@ release/
 reports/
 .stryker-tmp/
 .env.local
-.obsidian-cache/
+# a folder, or in a worktree a symlink to the main checkout's (docs/engineering/testing.md)
+.obsidian-cache
+# the F-21 reference vault, written by `npm run vault:reference`
+tests/e2e/vaults/reference/
 .claude/worktrees/
 # Archify delivery scratch files (locks, staging, recovery) next to its output
 docs/archify/**/.archify-*

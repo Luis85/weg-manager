@@ -35,8 +35,10 @@ const ISSUES: readonly SettingsIssue[] = [
   { code: "file.invalid" },
   { code: "schema.newer", version: 3 },
   { code: "schema.invalid" },
+  { code: "migration.failed", from: 1 },
   { code: "greeting.length", max: 200 },
   { code: "logLevel.unknown", allowed: ["error", "warn", "info", "debug"] },
+  { code: "rootFolder.invalid", max: 100 },
 ];
 
 describe("languageFromCode", () => {
@@ -73,15 +75,19 @@ describe("catalogs", () => {
       "Die Einstellungsdatei enthält keine gültigen Einstellungen.",
       "Die Einstellungen stammen aus einer neueren Plugin-Version (Schemaversion 3).",
       "Die Schemaversion muss eine positive ganze Zahl sein.",
+      "Die Einstellungen aus Schemaversion 1 ließen sich nicht auf die aktuelle Version umstellen.",
       "Die Begrüßung muss 1 bis 200 Zeichen lang sein.",
       "Die Protokollstufe muss eine von error, warn, info, debug sein.",
+      'Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.',
     ]);
     expect(ISSUES.map((issue) => describeIssue(issue, en.shell))).toEqual([
       "The settings file contains no valid settings.",
       "The settings come from a newer plugin version (schema version 3).",
       "The schema version must be a positive whole number.",
+      "The settings from schema version 1 couldn't be upgraded to the current version.",
       "The greeting must be 1 to 200 characters long.",
       "The log level must be one of error, warn, info, debug.",
+      'The root folder must be a vault folder path of at most 100 characters, with "/" between folder names, without "." or ".." as folder names and without the characters * " \\ < > : | ?.',
     ]);
     expect(describeIssues([], en.shell)).toBe("");
   });
@@ -142,6 +148,28 @@ describe("surface texts", () => {
       "0 Markdown files in the vault",
       "1 Markdown file in the vault",
       "2 Markdown files in the vault",
+    ]);
+  });
+
+  it("words the app frame, its routes and the not-found state", () => {
+    expect([de.shell.frame, de.shell.routes, de.shell.notFound]).toEqual([
+      { navigation: "Ansichten", content: "Inhalt", back: "Zurück", forward: "Vorwärts" },
+      { welcome: "Start" },
+      {
+        title: "Nicht gefunden",
+        detail:
+          "Was du öffnen wolltest, gibt es nicht mehr. Vielleicht wurde es gelöscht oder umbenannt.",
+        back: "Zur Startseite",
+      },
+    ]);
+    expect([en.shell.frame, en.shell.routes, en.shell.notFound]).toEqual([
+      { navigation: "Views", content: "Content", back: "Back", forward: "Forward" },
+      { welcome: "Home" },
+      {
+        title: "Not found",
+        detail: "What you wanted to open no longer exists. It may have been deleted or renamed.",
+        back: "Go to the start page",
+      },
     ]);
   });
 

@@ -20,6 +20,8 @@ const withOpenView = async (data: unknown = { greeting: "Moin" }) => {
   await created.registry.load();
   await created.registry.runCommand("open-view");
   await settle();
+  // The screen loads lazily, the first time a view shows it.
+  await vi.waitFor(() => expect(document.querySelector("[data-testid=greeting]")).not.toBeNull());
   const external = created.plugin as unknown as External;
   const arrive = async (next: unknown) => {
     created.registry.writeExternally(next);

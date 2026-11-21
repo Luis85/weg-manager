@@ -50,4 +50,4 @@ Fachlicher Hintergrund: [[Konzept - Vorbereitung ohne KI]] (Anlass-Regeln, Entsc
 - Datenvertrag der betroffenen Entitäten festgelegt (Frontmatter-Schema, Datei-Ablage, K-14)
 - Tokens und Komponenten aus diesem Paket vorhanden oder als Teil der Story geplant
 - Testszenarien aus [[08 - Abnahme und Testszenarien]] zugeordnet
-- Referenz-Handy und Obsidian-Mindestversion festgelegt (O-02)
+- Obsidian-Mindestversion festgelegt (O-02); das Referenz-Handy ist erst für den mobilen Ausbau nach dem MVP nötig (Stand 21.11.2026, [[K-09 - Vollständige mobile Wochenarbeit unterstützen]])

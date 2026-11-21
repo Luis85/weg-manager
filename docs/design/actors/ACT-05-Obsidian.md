@@ -9,7 +9,7 @@ kind: System
 
 ## Ziel
 
-Den lokalen WEG-Manager-Client auf Desktop und dem festzulegenden Referenz-Handy ausführen.
+Den lokalen WEG-Manager-Client auf dem Desktop ausführen. Die Ausführung auf dem festzulegenden Referenz-Handy folgt nach dem MVP ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]).
 
 ## Interaktion
 

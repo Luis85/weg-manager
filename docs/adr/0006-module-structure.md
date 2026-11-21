@@ -1,6 +1,6 @@
 # ADR 0006 · Modules inside the layers, English in code
 
-- Status: accepted
+- Status: accepted; public entries of `presentation/shell` amended on 2026-11-21 (see the note at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -38,3 +38,11 @@ The product's words are German (Gemeinschaft, Punkt, Kürzel). The one file cont
 - ADR 0004 named `PunktErstellt` as a future domain event. Domain events are English too; its example now reads `CommunityCreated`.
 - Readers move between German docs and English code. The glossary is the bridge and has to be kept.
 - `notes` is a module that features depend on, not a layer. If it grows a second consumer-facing concern, it is split rather than widened.
+
+## Amendment, 2026-11-21: two entries for `presentation/shell`
+
+`presentation/shell` serves two kinds of caller. Feature components need the composables and the shared components, which load Vue. `bootstrap` and the Obsidian adapters run at plugin load, where nothing may load Vue (architecture, *Lazy presentation*). One `index.ts` cannot serve both.
+
+Decision: `presentation/shell` has two public files. `index.ts` is the interface for feature components and may load Vue: `useQuery`, `useCommand`, `useStream`, `useMessages`, `useRoute`, `useNavigate` and shared components such as `ErrorNotice`. `host.ts` is Vue-free and holds what code at plugin load needs: `releaseAll`, `loadSurface` and the types of a surface. Every other module, and every other layer of the shell, keeps the single `index.ts`.
+
+Consequence: ESLint and fallow accept exactly these two files as entries of `presentation/shell`. ESLint also rejects a value import of the Vue-loading `index.ts` from `main.ts`, `bootstrap.ts`, `src/infrastructure/**` and the composition files in `src/presentation/`. A test fails if loading `host.ts` evaluates Vue.

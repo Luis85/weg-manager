@@ -4,6 +4,7 @@ import { messagesLayer } from "../src/application/messages";
 import {
   Clipboard,
   ClipboardError,
+  deviceStoreInMemory,
   EventBusLive,
   HostInfo,
   LoggerLive,
@@ -16,6 +17,7 @@ import {
   type Language,
   type UserMessage,
 } from "../src/application/shell";
+import { memoryNoteStore, sequentialIdGenerator } from "../src/infrastructure/memory/notes";
 import { consoleSinkLayer } from "../src/infrastructure/logging/console-sink";
 import { incidentsLayer } from "../src/infrastructure/logging/incidents";
 
@@ -91,8 +93,15 @@ export const harnessLayer = (
     }),
     Layer.succeed(HostInfo)({ pluginVersion: "harness", apiVersion: "none", platform: "browser" }),
     messagesLayer(options.language ?? "de"),
+    deviceStoreInMemory(),
   );
   const settings = SettingsServiceLive.pipe(Layer.provideMerge(adapters));
   const logger = LoggerLive({ developmentMode: true }).pipe(Layer.provide(consoleSinkLayer));
-  return Layer.mergeAll(logger.pipe(Layer.provideMerge(settings)), incidentsLayer, EventBusLive);
+  return Layer.mergeAll(
+    logger.pipe(Layer.provideMerge(settings)),
+    incidentsLayer,
+    EventBusLive,
+    memoryNoteStore().layer,
+    sequentialIdGenerator().layer,
+  );
 };

@@ -28,6 +28,8 @@ How to treat these pull requests:
 - A major update needs a look first. Read the changelog and [ADR 0001](../adr/0001-dependency-baseline.md), which says why versions are exact and why three `overrides` exist.
 - Dependabot does not touch `overrides`. When an update makes an override unnecessary, remove it by hand (see ADR 0001), then run `npm run verify`.
 - Do not merge a change to a workflow pin that lacks the tag comment.
+- **Action updates, the owner's standing rule (2026-11-21):** an agent may merge a Dependabot action update, major or not, after three checks. First, read the action's changes between the old and the new tag (its `action.yml`, README and changelog at both tags) against the inputs and behaviour our workflows rely on. Second, verify the new SHA against its tag with `git ls-remote https://github.com/<owner>/<action> refs/tags/<tag>`. Third, see CI green on the pull request. Anything doubtful goes to the owner. `release.yml` and `nightly-mutation.yml` do not run on a pull request, so say in the report what in them depends on the action.
+- **Majors held back** by ADR 0001 (TypeScript 7, ESLint 10, `@eslint/js` 10) are on Dependabot's `ignore` list. Remove an entry when its blocker is gone.
 
 Making `CI / e2e` a required check is a repository setting. It is yours to set, not the agent's (see step 2 below).
 

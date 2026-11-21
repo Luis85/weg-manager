@@ -9,8 +9,12 @@ export const shellEn: ShellCatalog = {
     "schema.newer": ({ version }) =>
       `The settings come from a newer plugin version (schema version ${version}).`,
     "schema.invalid": () => "The schema version must be a positive whole number.",
+    "migration.failed": ({ from }) =>
+      `The settings from schema version ${from} couldn't be upgraded to the current version.`,
     "greeting.length": ({ max }) => `The greeting must be 1 to ${max} characters long.`,
     "logLevel.unknown": ({ allowed }) => `The log level must be one of ${allowed.join(", ")}.`,
+    "rootFolder.invalid": ({ max }) =>
+      `The root folder must be a vault folder path of at most ${max} characters, with "/" between folder names, without "." or ".." as folder names and without the characters * " \\ < > : | ?.`,
   },
   errors: {
     storage: {
@@ -71,6 +75,13 @@ export const shellEn: ShellCatalog = {
     counting: "Counting notes…",
   },
   greetingForm: { label: "Greeting", save: "Save" },
+  frame: { navigation: "Views", content: "Content", back: "Back", forward: "Forward" },
+  routes: { welcome: "Home" },
+  notFound: {
+    title: "Not found",
+    detail: "What you wanted to open no longer exists. It may have been deleted or renamed.",
+    back: "Go to the start page",
+  },
   about: {
     title: `About ${PRODUCT_NAME}`,
     description: "Tools for the advisory boards of condominium owners' associations.",

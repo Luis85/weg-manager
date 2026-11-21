@@ -57,7 +57,9 @@ describe("SettingsService", () => {
       yield* Effect.yieldNow;
       const updated = yield* service.update({ greeting: "Yo" });
       assert.strictEqual(updated.greeting, "Yo");
-      assert.deepStrictEqual(store.saved(), [{ ...DEFAULT_SETTINGS, greeting: "Yo" }]);
+      assert.deepStrictEqual(store.saved(), [
+        { schemaVersion: 1, greeting: "Yo", logLevel: "warn" },
+      ]);
       const emitted = yield* Fiber.join(collected);
       assert.deepStrictEqual(
         Array.from(emitted).map((settings) => settings.greeting),
@@ -128,6 +130,48 @@ describe("SettingsService", () => {
     }).pipe(Effect.provide(layer));
   });
 
+  it.effect("exposes the root folder through current and changes, loaded from the file", () => {
+    const { store, notifier, layer } = setup({
+      initial: { schemaVersion: 1, rootFolder: " /Beirat/WEG/ " },
+    });
+    return Effect.gen(function* () {
+      const service = yield* SettingsService;
+      assert.strictEqual((yield* service.current).rootFolder, "Beirat/WEG");
+      const first = yield* Stream.runHead(service.changes);
+      assert.strictEqual(first._tag === "Some" ? first.value.rootFolder : null, "Beirat/WEG");
+      assert.deepStrictEqual(notifier.messages(), []);
+      assert.deepStrictEqual(store.saved(), []);
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("keeps a custom root folder in the file when another setting is saved", () => {
+    const { store, layer } = setup({ initial: { schemaVersion: 1, rootFolder: "Beirat/WEG" } });
+    return Effect.gen(function* () {
+      const service = yield* SettingsService;
+      yield* service.update({ logLevel: "debug" });
+      assert.deepStrictEqual(store.saved(), [
+        { schemaVersion: 1, logLevel: "debug", rootFolder: "Beirat/WEG" },
+      ]);
+      assert.strictEqual((yield* service.current).rootFolder, "Beirat/WEG");
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("falls back to the default root folder alone and notifies once", () => {
+    const { notifier, layer } = setup({
+      initial: { schemaVersion: 1, greeting: "Moin", rootFolder: "a/../b" },
+    });
+    return Effect.gen(function* () {
+      const service = yield* SettingsService;
+      const current = yield* service.current;
+      assert.strictEqual(current.rootFolder, "WEG Manager");
+      assert.strictEqual(current.greeting, "Moin");
+      assert.deepStrictEqual((yield* service.status).issues, [
+        { code: "rootFolder.invalid", max: 100 },
+      ]);
+      assert.strictEqual(notifier.messages().length, 1);
+    }).pipe(Effect.provide(layer));
+  });
+
   it.effect("keeps the current value when saving fails", () => {
     const { layer } = setup({ failSave: true });
     return Effect.gen(function* () {
@@ -152,7 +196,11 @@ describe("SettingsService", () => {
       assert.strictEqual(current.greeting, "Eins");
       assert.strictEqual(current.logLevel, "debug");
       assert.strictEqual(store.saved().length, 2);
-      assert.deepStrictEqual(store.saved()[1], current);
+      assert.deepStrictEqual(store.saved()[1], {
+        schemaVersion: 1,
+        greeting: "Eins",
+        logLevel: "debug",
+      });
     }).pipe(Effect.provide(layer));
   });
 });

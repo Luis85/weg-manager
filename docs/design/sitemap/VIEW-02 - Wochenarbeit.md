@@ -107,7 +107,7 @@ Zusammenfassung (entschieden, gesendet, nachgefasst), bis zu drei Schwerpunkte, 
 
 ## Mobil
 
-Gleiche Schritte, ein Element pro Bildschirm, Fortschrittsbalken oben, Aktionsleiste unten mit Abstand zur Obsidian-Navigation. Alle Eingaben (Notiz, Schwerpunkte, Bewertung) sind mobil möglich (K-09).
+Gleiche Schritte, ein Element pro Bildschirm, Fortschrittsbalken oben, Aktionsleiste unten mit Abstand zur Obsidian-Navigation. Alle Eingaben (Notiz, Schwerpunkte, Bewertung) sind im mobilen Ausbau nach dem MVP möglich (K-09).
 
 ![[v2-P-M-04-Woche-Entscheiden.png|180]]
 

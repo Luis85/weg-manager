@@ -9,9 +9,13 @@ export const shellDe: ShellCatalog = {
     "schema.newer": ({ version }) =>
       `Die Einstellungen stammen aus einer neueren Plugin-Version (Schemaversion ${version}).`,
     "schema.invalid": () => "Die Schemaversion muss eine positive ganze Zahl sein.",
+    "migration.failed": ({ from }) =>
+      `Die Einstellungen aus Schemaversion ${from} ließen sich nicht auf die aktuelle Version umstellen.`,
     "greeting.length": ({ max }) => `Die Begrüßung muss 1 bis ${max} Zeichen lang sein.`,
     "logLevel.unknown": ({ allowed }) =>
       `Die Protokollstufe muss eine von ${allowed.join(", ")} sein.`,
+    "rootFolder.invalid": ({ max }) =>
+      `Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens ${max} Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.`,
   },
   errors: {
     storage: {
@@ -73,6 +77,14 @@ export const shellDe: ShellCatalog = {
     counting: "Zähle Notizen …",
   },
   greetingForm: { label: "Begrüßung", save: "Speichern" },
+  frame: { navigation: "Ansichten", content: "Inhalt", back: "Zurück", forward: "Vorwärts" },
+  routes: { welcome: "Start" },
+  notFound: {
+    title: "Nicht gefunden",
+    detail:
+      "Was du öffnen wolltest, gibt es nicht mehr. Vielleicht wurde es gelöscht oder umbenannt.",
+    back: "Zur Startseite",
+  },
   about: {
     title: `Über ${PRODUCT_NAME}`,
     description: "Werkzeuge für Verwaltungsbeiräte von Wohnungseigentümergemeinschaften.",

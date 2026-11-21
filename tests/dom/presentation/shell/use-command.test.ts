@@ -4,7 +4,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import { VaultReadError } from "../../../../src/application/shell/errors";
 import { SettingsService } from "../../../../src/application/shell/settings-service";
 import { countMarkdownFiles, updateGreeting } from "../../../../src/application/shell/use-cases";
-import { useCommand } from "../../../../src/presentation/shell/runtime/use-runtime";
+import { encodeSettings } from "../../../../src/domain/shell";
+import { useCommand } from "../../../../src/presentation/shell";
 import { host, runtimes } from "../../../support/composable";
 
 const { make, disposeAll } = runtimes();
@@ -165,9 +166,8 @@ describe("useCommand after the scope ended", () => {
     await running;
     await settle();
     expect(store.stored()).toEqual(expect.objectContaining({ greeting: "Moin" }));
-    expect(await runtime.runPromise(SettingsService.use((service) => service.current))).toEqual(
-      store.stored(),
-    );
+    const current = await runtime.runPromise(SettingsService.use((service) => service.current));
+    expect(encodeSettings(current)).toEqual(store.stored());
   });
 
   it("shows a typed failure as a notice and leaves the component's refs alone", async () => {

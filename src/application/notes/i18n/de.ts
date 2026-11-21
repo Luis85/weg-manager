@@ -48,6 +48,11 @@ export const notesDe: NotesCatalog = {
           "Die Notiz ließ sich nicht auf die aktuelle Schemaversion umstellen. Prüfe ihre Eigenschaften in Obsidian.",
       },
     },
+    indexRead: {
+      title: "Notizen nicht aktuell",
+      detail:
+        "Obsidian konnte nicht alle Notizen lesen, deshalb zeigt die Liste vielleicht einen älteren Stand. Lies die Notizen erneut ein.",
+    },
   },
   recordIssues: {
     "schema.malformed": () =>
@@ -74,5 +79,13 @@ export const notesDe: NotesCatalog = {
     "field.date": (label) =>
       `„${label}“ ist kein gültiges Datum. Gib ein Datum im Format JJJJ-MM-TT ein.`,
     "field.list": (label) => `„${label}“ ist keine Liste von Texten. Gib eine Liste ein.`,
+  },
+  unindexedIssues: {
+    "schema.malformed": () =>
+      "Die Eigenschaft „schema“ ist nicht lesbar, deshalb kann WEG Manager die Notiz keinem Typ zuordnen. Korrigiere sie in Obsidian nach dem Dateivertrag.",
+    "schema.unknown-type": ({ type }) =>
+      `Die Notiz ist als Typ „${type}“ markiert, den diese Version von WEG Manager nicht kennt. Aktualisiere WEG Manager oder korrigiere „schema“ in Obsidian.`,
+    "frontmatter.unreadable": () =>
+      "Die Eigenschaften der Notiz sind kein gültiges YAML, deshalb kann WEG Manager sie nicht lesen. Korrigiere sie in Obsidian.",
   },
 };

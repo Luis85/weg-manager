@@ -33,5 +33,7 @@ export const describeNotesError = (error: NotesError, messages: NotesCatalog): U
         title: errors.writeRefused.title,
         detail: errors.writeRefused.detail[error.reason],
       };
+    case "NoteIndexReadError":
+      return { severity: "warning", ...errors.indexRead, action: "retry" };
   }
 };

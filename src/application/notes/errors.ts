@@ -56,6 +56,15 @@ export class NoteWriteRefusedError extends Schema.TaggedError<NoteWriteRefusedEr
   { reason: WriteRefusal },
 ) {}
 
+/**
+ * The note index could not read the vault (its `list`) or a note it follows (a `read`). The
+ * index keeps the notes it read last and shows this beside them, until a rebuild succeeds.
+ */
+export class NoteIndexReadError extends Schema.TaggedError<NoteIndexReadError>()(
+  "NoteIndexReadError",
+  {},
+) {}
+
 /** Every expected failure of the notes module. Each member needs a text in `describeNotesError`. */
 export type NotesError =
   | NoteNotFoundError
@@ -64,7 +73,8 @@ export type NotesError =
   | NoteUnreadableError
   | NoteWriteError
   | NoteEditConflictError
-  | NoteWriteRefusedError;
+  | NoteWriteRefusedError
+  | NoteIndexReadError;
 
 export const NOTES_ERROR_TAGS: ReadonlySet<string> = new Set<NotesError["_tag"]>([
   "NoteNotFoundError",
@@ -74,4 +84,5 @@ export const NOTES_ERROR_TAGS: ReadonlySet<string> = new Set<NotesError["_tag"]>
   "NoteWriteError",
   "NoteEditConflictError",
   "NoteWriteRefusedError",
+  "NoteIndexReadError",
 ]);

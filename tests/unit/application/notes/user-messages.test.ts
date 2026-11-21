@@ -5,6 +5,7 @@ import { de, en } from "../../../../src/application/messages";
 import {
   InvalidNoteNameError,
   NoteEditConflictError,
+  NoteIndexReadError,
   NoteNotFoundError,
   NotePathTakenError,
   NoteUnreadableError,
@@ -45,6 +46,7 @@ const ALL: readonly AppError[] = [
   new NoteWriteRefusedError({ reason: "newer-version" }),
   new NoteWriteRefusedError({ reason: "identity" }),
   new NoteWriteRefusedError({ reason: "migration-failed" }),
+  new NoteIndexReadError(),
 ];
 
 describe("isNotesError", () => {
@@ -182,6 +184,13 @@ describe("notes message texts", () => {
         detail:
           "Die Notiz ließ sich nicht auf die aktuelle Schemaversion umstellen. Prüfe ihre Eigenschaften in Obsidian.",
       },
+      {
+        severity: "warning",
+        title: "Notizen nicht aktuell",
+        detail:
+          "Obsidian konnte nicht alle Notizen lesen, deshalb zeigt die Liste vielleicht einen älteren Stand. Lies die Notizen erneut ein.",
+        action: "retry",
+      },
     ]);
   });
 
@@ -253,6 +262,13 @@ describe("notes message texts", () => {
         title: "Can't save the note",
         detail:
           "The note couldn't be converted to the current schema version. Check its properties in Obsidian.",
+      },
+      {
+        severity: "warning",
+        title: "Notes may be out of date",
+        detail:
+          "Obsidian couldn't read every note, so the list may be out of date. Read the notes again.",
+        action: "retry",
       },
     ]);
   });

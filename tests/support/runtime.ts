@@ -1,5 +1,8 @@
 import { Effect, Layer, ManagedRuntime } from "effect";
 import type { AppRuntime } from "../../src/application/app-services";
+import { AppEvent } from "../../src/application/events";
+import { noteIndexLayer, type NoteTypeRegistry } from "../../src/application/notes";
+import { EventBus } from "../../src/application/shell/event-bus";
 import { deviceStoreInMemory } from "../../src/application/shell/device-store";
 import { memoryNoteStore, sequentialIdGenerator } from "../../src/infrastructure/memory/notes";
 import { InvalidSettingsError } from "../../src/application/shell/errors";
@@ -26,6 +29,8 @@ export type TestRuntimeOptions = {
   readonly rejectUpdates?: readonly SettingsIssue[];
   /** The UI language; German by default, so the exact-text tests pin the product's language. */
   readonly language?: Language;
+  /** The note types the index holds; none by default, as in the plugin today. */
+  readonly noteTypes?: NoteTypeRegistry;
 };
 
 const rejecting = (issues: readonly SettingsIssue[]) =>
@@ -56,7 +61,7 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
     options.rejectUpdates === undefined
       ? live
       : rejecting(options.rejectUpdates).pipe(Layer.provide(live));
-  const layer = Layer.mergeAll(
+  const services = Layer.mergeAll(
     settings,
     notifier.layer,
     vault.layer,
@@ -66,10 +71,18 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
     testHostInfo,
     messages,
     events.layer,
-    notes.layer,
+    notes.layer.pipe(Layer.provide(events.layer)),
     deviceStoreInMemory(),
     sequentialIdGenerator().layer,
   );
+  const layer = noteIndexLayer(options.noteTypes ?? []).pipe(Layer.provideMerge(services));
   const runtime: AppRuntime = ManagedRuntime.make(layer);
-  return { runtime, store, notifier, vault, logger, clipboard, events, notes };
+  /** What the host event adapter publishes once Obsidian's cache holds every note. */
+  const vaultReady = () =>
+    runtime.runPromise(
+      EventBus.use((bus) =>
+        Effect.andThen(bus.publish(AppEvent.LayoutReady()), bus.publish(AppEvent.VaultReady())),
+      ),
+    );
+  return { runtime, store, notifier, vault, logger, clipboard, events, notes, vaultReady };
 };

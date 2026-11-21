@@ -64,6 +64,16 @@ export type RecordIssue =
   | IdIssue
   | { readonly code: "id.duplicate" };
 
+/**
+ * Why a note that must be shown belongs to no note type the plugin knows (ADR 0007): its `schema`
+ * has the prefix but cannot be read, it names a type no feature declares (`type` as written), or
+ * it lies in the plugin's folders and its frontmatter block cannot be parsed at all.
+ */
+export type UnindexedIssue =
+  | { readonly code: "schema.malformed" }
+  | { readonly code: "schema.unknown-type"; readonly type: string }
+  | { readonly code: "frontmatter.unreadable" };
+
 /** Every issue the codec reports. Language-free codes with data (ADR 0005). */
 export type NoteIssue<Code extends string = KindIssueCode> = RecordIssue | FieldIssue<Code>;
 

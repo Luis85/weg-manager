@@ -1,12 +1,5 @@
 import { Effect, Layer, Result } from "effect";
-import {
-  normalizePath,
-  stringifyYaml,
-  type App,
-  type CachedMetadata,
-  type Plugin,
-  type TFile,
-} from "obsidian";
+import { normalizePath, stringifyYaml, type App, type CachedMetadata, type TFile } from "obsidian";
 import {
   NoteNotFoundError,
   NoteStore,
@@ -21,10 +14,8 @@ import {
   type FrontmatterChange,
   type NewNote,
   type Note,
-  type NotesServices,
 } from "../../../application/notes";
 import { VaultReadError } from "../../../application/shell";
-import { randomIdGeneratorLayer } from "./id-generator";
 
 /** Obsidian's parser throws this when a note's YAML is broken. */
 const isYamlError = (cause: unknown): boolean =>
@@ -165,7 +156,3 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
 /** The Obsidian `NoteStore` of `app` as a Layer; the e2e probe plugin builds it the same way. */
 export const noteStoreLayer = (app: App): Layer.Layer<NoteStore> =>
   Layer.succeed(NoteStore)(obsidianNoteStore(app));
-
-/** The notes module's services for one plugin load. */
-export const notesLayer = (plugin: Plugin): Layer.Layer<NotesServices> =>
-  Layer.merge(noteStoreLayer(plugin.app), randomIdGeneratorLayer);

@@ -45,18 +45,18 @@ const greetingField = (raw: unknown): FieldResult<string> => {
   const decoded = decodeGreeting(raw);
   return Option.isSome(decoded)
     ? { ok: true, value: decoded.value }
-    : { ok: false, issue: `greeting must be text of 1 to ${GREETING_MAX_LENGTH} characters` };
+    : { ok: false, issue: `Die Begrüßung muss 1 bis ${GREETING_MAX_LENGTH} Zeichen lang sein.` };
 };
 
 const ribbonField = (raw: unknown): FieldResult<boolean> =>
   isBoolean(raw)
     ? { ok: true, value: raw }
-    : { ok: false, issue: "showRibbonIcon must be true or false" };
+    : { ok: false, issue: "Das Menüband-Symbol muss ein- oder ausgeschaltet sein." };
 
 const logLevelField = (raw: unknown): FieldResult<LogLevel> =>
   isLogLevel(raw)
     ? { ok: true, value: raw }
-    : { ok: false, issue: `logLevel must be one of ${LOG_LEVELS.join(", ")}` };
+    : { ok: false, issue: `Die Protokollstufe muss eine von ${LOG_LEVELS.join(", ")} sein.` };
 
 const orDefault = <A>(result: FieldResult<A>, fallback: A, issues: string[]): A => {
   if (result.ok) return result.value;
@@ -93,7 +93,7 @@ export const decodeSettings = (raw: unknown): DecodedSettings => {
   if (!isRecord(raw)) {
     return {
       settings: DEFAULT_SETTINGS,
-      issues: ["settings file does not contain an object"],
+      issues: ["Die Einstellungsdatei enthält keine gültigen Einstellungen."],
       writable: true,
     };
   }
@@ -101,13 +101,15 @@ export const decodeSettings = (raw: unknown): DecodedSettings => {
   if (version !== undefined && isVersion(version) && version > SETTINGS_VERSION) {
     return {
       settings: DEFAULT_SETTINGS,
-      issues: [`settings were written by a newer plugin version (schemaVersion ${version})`],
+      issues: [
+        `Die Einstellungen stammen aus einer neueren Plugin-Version (Schemaversion ${version}).`,
+      ],
       writable: false,
     };
   }
   const issues: string[] = [];
   if (version !== undefined && !isVersion(version))
-    issues.push("schemaVersion must be a positive integer");
+    issues.push("Die Schemaversion muss eine positive ganze Zahl sein.");
   return { settings: decodeFields(raw, issues), issues, writable: true };
 };
 

@@ -38,7 +38,7 @@ describe("decodeSettings", () => {
     expect(result.settings.greeting).toBe(DEFAULT_SETTINGS.greeting);
     expect(result.settings.showRibbonIcon).toBe(false);
     expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain("greeting");
+    expect(result.issues[0]).toContain("Begrüßung");
     expect(result.writable).toBe(true);
   });
 
@@ -48,7 +48,7 @@ describe("decodeSettings", () => {
       const result = decodeSettings({ ...valid, greeting });
       expect(result.settings.greeting).toBe(DEFAULT_SETTINGS.greeting);
       expect(result.issues).toHaveLength(1);
-      expect(result.issues[0]).toContain("greeting");
+      expect(result.issues[0]).toContain("Begrüßung");
     },
   );
 
@@ -72,14 +72,14 @@ describe("decodeSettings", () => {
     const result = decodeSettings({ ...valid, logLevel: "verbose" });
     expect(result.settings).toEqual({ ...valid, logLevel: "warn" });
     expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain("logLevel");
+    expect(result.issues[0]).toContain("Protokollstufe");
   });
 
   it("falls back for a non-boolean ribbon flag", () => {
     const result = decodeSettings({ ...valid, showRibbonIcon: "yes" });
     expect(result.settings.showRibbonIcon).toBe(DEFAULT_SETTINGS.showRibbonIcon);
     expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain("showRibbonIcon");
+    expect(result.issues[0]).toContain("Menüband-Symbol");
   });
 
   it("treats a missing schemaVersion as the current version", () => {
@@ -100,7 +100,7 @@ describe("decodeSettings", () => {
     expect(result.settings).toEqual(valid);
     expect(result.writable).toBe(true);
     expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain("schemaVersion");
+    expect(result.issues[0]).toContain("Schemaversion");
   });
 
   it("never throws and is idempotent on its own output", () => {
@@ -137,7 +137,7 @@ describe("validatePatch", () => {
   it.each(["", "x".repeat(GREETING_MAX_LENGTH + 1)])("rejects the greeting %j", (greeting) => {
     expect(validatePatch(valid, { greeting })).toEqual({
       ok: false,
-      issues: [expect.stringContaining("greeting")],
+      issues: [expect.stringContaining("Begrüßung")],
     });
   });
 

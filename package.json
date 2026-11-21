@@ -36,6 +36,7 @@
     "test:e2e": "npm run build && npm run build:probe && npm run vault:reference && wdio run tests/e2e/wdio.conf.mts"
   },
   "dependencies": {
+    "@iconify/vue": "5.0.5",
     "@nuxt/ui": "4.13.0",
     "@tanstack/vue-form": "1.33.5",
     "effect": "4.1.5",

@@ -13,3 +13,4 @@ reports/
 .stryker-tmp/
 .env.local
 .obsidian-cache/
+.claude/worktrees/

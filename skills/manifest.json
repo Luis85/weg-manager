@@ -8,8 +8,8 @@
       "source": "weg-gmail-to-vault/",
       "entrypoint": "SKILL.md",
       "archive": "dist/weg-gmail-to-vault-0.1.0.zip",
-      "sha256": "9c6d297195ce717d6a3da55232fb20722b0242c5dcfb731ea6ceb57930199791",
-      "size_bytes": 14816,
+      "sha256": "e6d1b822c9a0b399d3317b2dfae11b1c7215cde26392bc665869338994d9105f",
+      "size_bytes": 34573,
       "license": "MIT",
       "capabilities_required": [
         "existing-gmail-search-and-read-connector",

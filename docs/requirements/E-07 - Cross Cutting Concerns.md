@@ -24,6 +24,8 @@ Gemeinsam benötigte technische Fähigkeiten und nichtfunktionale Anforderungen 
 
 ## Enthaltene Fähigkeiten und Qualitätsanforderungen
 
+- [[F-24 - Technische Plugin-Grundlagen]] — Verlässliches Plugin-Verhalten bei Sync und externen Änderungen, ein Bearbeitungsort je Einstellung, Vault-Ereignisse für Fachfeatures; technische Umsetzung von F-21.
+
 - [[F-23 - Nativer AI-Chat]] — Chat im Plugin über offizielle Claude-Code-Laufzeit und berechtigte Nutzer-Subscription; geplanter MVP-Zusatz, Integrationsnachweis offen.
 
 - [[F-22 - Offene Notizen und direkter Agentenzugriff]] — Maßgebliche Markdown-/Frontmatter-Dateien und direkter Lese-/Schreibzugriff ohne Obsidian oder MCP; MVP.

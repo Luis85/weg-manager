@@ -8,6 +8,7 @@ import {
   pluginProblems,
   readData,
   reloadPlugin,
+  settingsTabContent,
   writeData,
 } from "../support";
 
@@ -35,28 +36,6 @@ const commandNames = () =>
       .filter(([key]) => key.startsWith(`${id}:`))
       .map(([, command]) => command.name)
       .toSorted();
-  }, PLUGIN_ID);
-
-/** The names of the plugin's rows in the real settings tab, closed again afterwards. */
-const settingNames = () =>
-  browser.executeObsidian(({ app }, id) => {
-    const setting = (
-      app as unknown as {
-        setting: {
-          open(): void;
-          close(): void;
-          openTabById(tab: string): void;
-          activeTab?: { containerEl: HTMLElement };
-        };
-      }
-    ).setting;
-    setting.open();
-    setting.openTabById(id);
-    const names = [
-      ...(setting.activeTab?.containerEl.querySelectorAll(".setting-item-name") ?? []),
-    ].map((el) => el.textContent ?? "");
-    setting.close();
-    return names;
   }, PLUGIN_ID);
 
 const noticeTexts = () =>
@@ -95,7 +74,7 @@ describe("UI language in Obsidian", function () {
       "WEG Manager: Open view",
       "WEG Manager: Show greeting",
     ]);
-    expect(await settingNames()).toEqual(["Greeting", "Log level"]);
+    expect((await settingsTabContent()).names).toEqual(["Log level"]);
   });
 
   it("shows notices in English", async function () {

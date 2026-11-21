@@ -57,13 +57,13 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 - **Display.** On Linux without a display, run `xvfb-run -a npm run test:e2e`. Windows and macOS need nothing extra.
 - **Isolation.** Each spec file gets a fresh Obsidian with a copy of `tests/e2e/vaults/basic`, and `dist/` is installed as the plugin.
 - **Language.** Without a stored choice Obsidian takes its language from Chromium's locale, which is `en-US` in CI and containers. `wdio.conf.mts` passes `--lang=de`, so Obsidian and the plugin start German and the specs assert German texts. `language.e2e.ts` switches to English the way Obsidian's own setting does: `localStorage` key `language`, then a plugin reload.
-- **Writing specs.** `browser.executeObsidian(({ app, obsidian }, ...args) => …)` runs code inside Obsidian. The function is serialised, so pass values as arguments; closures do not work. Shared helpers live in `tests/e2e/support.ts`: console spy, open view, `data.json`, plugin reload, light/dark switch.
+- **Writing specs.** `browser.executeObsidian(({ app, obsidian }, ...args) => …)` runs code inside Obsidian. The function is serialised, so pass values as arguments; closures do not work. Shared helpers live in `tests/e2e/support.ts`: console spy, open view, `data.json`, plugin reload, settings tab content, light/dark switch.
 - **Gate.** `test:e2e` is not part of `verify`, because it needs a display and a download. CI runs it as a separate `e2e` job.
 
 | Spec | Covers |
 | --- | --- |
 | `lifecycle.e2e.ts` | opening the view, reveal instead of duplicate, two tabs with one closed, the ribbon entry exactly once in `app.workspace.leftRibbon.items` after each load and after a ribbon re-render, three disable/enable cycles leaving no view behind, clean console |
-| `settings-and-theme.e2e.ts` | the native settings tab saving to `data.json`, empty greeting never written, light/dark switch with Obsidian's colours reaching the surface, newer `data.json` shown read-only and never overwritten |
+| `settings-and-theme.e2e.ts` | the native settings tab holding only the log level (no text field), the view's greeting form saving to `data.json`, empty greeting never written, light/dark switch with Obsidian's colours reaching the surface, newer `data.json` shown read-only and never overwritten |
 | `events.e2e.ts` | one listener per host event on Obsidian's internal `Events._` map, all removed on each disable; creating, changing, opening, renaming and deleting a note with a clean console |
 | `popout.e2e.ts` | the view moved to a pop-out: surface, portal and About dialog in the pop-out's document, theme switch there, clean close |
 | `external-settings.e2e.ts` | `data.json` changed outside Obsidian (as by Sync): the open view follows, a newer-version file switches to read-only and is never rewritten |

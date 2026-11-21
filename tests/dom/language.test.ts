@@ -24,12 +24,10 @@ const loaded = async (language: string, data?: unknown) => {
 const commandNames = (registry: ReturnType<typeof createTestPlugin>["registry"]) =>
   Object.fromEntries([...registry.commands.values()].map(({ id, name }) => [id, name]));
 
-type Text = { getValue(): string; simulateInput(value: string): unknown };
-
 const openTab = async (registry: ReturnType<typeof createTestPlugin>["registry"]) => {
   const tab = registry.settingTabs[0]!;
   tab.display();
-  await vi.waitFor(() => expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(2));
+  await vi.waitFor(() => expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(1));
   const rows = settingsIn(tab.containerEl);
   const control = <T>(index: number): T => {
     const component = rows[index]?.components[0];
@@ -41,11 +39,9 @@ const openTab = async (registry: ReturnType<typeof createTestPlugin>["registry"]
 
 const tabTexts = async (registry: ReturnType<typeof createTestPlugin>["registry"]) => {
   const { rows, control } = await openTab(registry);
-  const text = control<Text>(0);
-  const { selectEl } = control<{ selectEl: HTMLSelectElement }>(1);
+  const { selectEl } = control<{ selectEl: HTMLSelectElement }>(0);
   return {
     names: rows.map((row) => row.nameEl.textContent),
-    greeting: text.getValue(),
     levels: [...selectEl.options].map((option) => option.text),
   };
 };
@@ -66,8 +62,7 @@ describe("UI language follows Obsidian", () => {
     });
     expect(registry.ribbonIcons.map(({ title }) => title)).toEqual(["WEG Manager"]);
     expect(await tabTexts(registry)).toEqual({
-      names: ["Begrüßung", "Protokollstufe"],
-      greeting: "Hallo von WEG Manager",
+      names: ["Protokollstufe"],
       levels: ["Fehler", "Warnungen", "Informationen", "Details"],
     });
     plugin.unload();
@@ -85,8 +80,7 @@ describe("UI language follows Obsidian", () => {
       // The product name in every language, so the entry id does not change with the language.
       expect(registry.ribbonIcons.map(({ title }) => title)).toEqual(["WEG Manager"]);
       expect(await tabTexts(registry)).toEqual({
-        names: ["Greeting", "Log level"],
-        greeting: "Hello from WEG Manager",
+        names: ["Log level"],
         levels: ["Errors", "Warnings", "Information", "Details"],
       });
       plugin.unload();
@@ -98,7 +92,6 @@ describe("UI language follows Obsidian", () => {
     const { registry, plugin } = await loaded("de", old);
     await registry.runCommand("show-greeting");
     expect(recordedNotices().at(-1)?.text).toContain("Hallo von WEG Manager");
-    expect((await tabTexts(registry)).greeting).toBe("Hallo von WEG Manager");
     expect(registry.saved).toEqual([]);
     plugin.unload();
   });
@@ -107,18 +100,6 @@ describe("UI language follows Obsidian", () => {
     const { registry, plugin } = await loaded("en", { greeting: "Moin" });
     await registry.runCommand("show-greeting");
     expect(recordedNotices().at(-1)?.text).toContain("Moin");
-    plugin.unload();
-  });
-
-  it("validates the settings tab in English", async () => {
-    const { registry, plugin } = await loaded("en");
-    const { rows, control } = await openTab(registry);
-    control<Text>(0).simulateInput("  ");
-    await vi.waitFor(() =>
-      expect(rows[0]?.validationEl.textContent).toBe(
-        "The greeting must be 1 to 200 characters long.",
-      ),
-    );
     plugin.unload();
   });
 

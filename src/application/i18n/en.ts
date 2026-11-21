@@ -59,7 +59,6 @@ export const en: Catalog = {
     copyDiagnostics: "Copy diagnostics",
   },
   settingsTab: {
-    greeting: { name: "Greeting", desc: "Text that the “Show greeting” command shows." },
     logLevel: {
       name: "Log level",
       desc: "How much the plugin writes to the developer console.",

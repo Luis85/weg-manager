@@ -16,6 +16,7 @@ The walking skeleton (greeting and markdown file count) is the worked example. E
    - Call the use case through `useEffectAction(useCase)`, read state through `useSettings()` and texts through `useMessages()`.
    - Render failures with `ErrorNotice.vue`.
    - Every form uses TanStack Form (`useForm`), and its validators call the domain rule (see `GreetingForm.vue`). Never duplicate a rule in a component.
+   - Each setting has exactly one edit location: plugin-wide technical settings (the log level) in Obsidian's settings tab (`src/infrastructure/obsidian/settings-tab.ts`), feature data (the greeting) in the plugin's views. The other place shows the value read-only at most (PBI-49).
    - Import Nuxt UI components explicitly (`@nuxt/ui/components/Button.vue`). Prefix every Tailwind class with `wm:`.
    - A Nuxt UI component that is new to the plugin goes into the `@source` lists in `src/styles/app.css`. A new icon goes into `SHELL_ICONS` in `configs/vite.shared.ts`.
    - Test: `tests/dom/presentation/*.test.ts` through `mountSurface` with `testRuntime()` from `tests/support/runtime.ts` (German by default; `testRuntime({ language: "en" })` for English).

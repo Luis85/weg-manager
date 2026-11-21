@@ -77,6 +77,33 @@ export const writeData = (data: unknown) =>
     JSON.stringify(data),
   );
 
+/**
+ * The plugin's rows in the real settings tab: their names and how many text fields they hold.
+ * The settings window is closed again afterwards.
+ */
+export const settingsTabContent = () =>
+  browser.executeObsidian(({ app }, id) => {
+    const setting = (
+      app as unknown as {
+        setting: {
+          open(): void;
+          close(): void;
+          openTabById(tab: string): void;
+          activeTab?: { containerEl: HTMLElement };
+        };
+      }
+    ).setting;
+    setting.open();
+    setting.openTabById(id);
+    const tab = setting.activeTab?.containerEl;
+    const names = [...(tab?.querySelectorAll(".setting-item-name") ?? [])].map(
+      (el) => el.textContent ?? "",
+    );
+    const inputs = tab?.querySelectorAll("input").length ?? -1;
+    setting.close();
+    return { names, inputs };
+  }, PLUGIN_ID);
+
 /** Disables and re-enables the plugin, as a user does in Settings → Community plugins. */
 export const reloadPlugin = async () => {
   await obsidianPage.disablePlugin(PLUGIN_ID);

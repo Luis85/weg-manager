@@ -61,7 +61,6 @@ export const de: Catalog = {
     copyDiagnostics: "Diagnose kopieren",
   },
   settingsTab: {
-    greeting: { name: "Begrüßung", desc: "Text, den der Befehl „Begrüßung anzeigen“ zeigt." },
     logLevel: {
       name: "Protokollstufe",
       desc: "Wie ausführlich das Plugin in die Entwicklerkonsole schreibt.",

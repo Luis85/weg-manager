@@ -47,7 +47,6 @@ export type Catalog = {
     readonly copyDiagnostics: string;
   };
   readonly settingsTab: {
-    readonly greeting: { readonly name: string; readonly desc: string };
     readonly logLevel: {
       readonly name: string;
       readonly desc: string;

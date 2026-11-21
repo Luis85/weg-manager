@@ -2,7 +2,7 @@
 
 - Date: 2026-11-21
 - Reviewed: PR #4 at `e10ce37` (branch `claude/upbeat-lovelace-v4rir1`), all of `src/`, `harness/`, `configs/`, `scripts/`, the workflows, `docs/engineering/`, ADR 0001–0005, the handoff, and the product backlog as the source of what features will demand.
-- Status: PR #4 is merged. Phase 1 (steps 1.1 and 1.2) is implemented in PR #6. Phases 2 to 4 are open.
+- Status (2026-11-21): PR #4 and phase 1 (PR #6) are merged. Phase 2 is decided: ADR 0006, 0007, 0008 and `GLOSSARY.md`. Phases 3 and 4 are open and filed as PBIs under F-24. Sections 1 to 3 are the review as it was written; section 6 lists what the owner decided since.
 
 ## Verdict
 
@@ -68,12 +68,16 @@ Sizes are relative: S is one focused change with its tests, M touches several la
 
 ### Phase 1: fix the defects (no decisions needed)
 
+**Done** in PR #6, merged on 2026-11-21.
+
 | Step | Change | Done when | Size |
 | --- | --- | --- | --- |
 | 1.1 | Writes run to completion. Make save-then-set in `SettingsService.update` uninterruptible. Split `useEffectAction` into a query form (latest wins, interrupted on scope end) and a command form (never interrupted by scope end or a second call; a second call while pending is refused or queued, to be decided in the step). | The A1 probe is a unit test that fails on today's code and passes; a dom test closes a view during a held save and finds disk and memory equal. | S |
 | 1.2 | Typed diagnostics. Log context becomes an allow-list type (ids, counts, codes, booleans). A defect entry carries the error name and stack frames; the free-text message stays in the console entry and is left out of the report. Delete the length rule. | The A2 probe is a test: the report for a defect shows name and frames; the existing property test also covers non-`Error` causes that contain a path. ADR 0003 and `error-handling.md` updated. | S |
 
 ### Phase 2: decide (ADRs, no feature code)
+
+**Done** on 2026-11-21. The decisions are in `docs/adr/0006-module-structure.md`, `0007-vault-data-access.md` and `0008-navigation-and-view-state.md`. Where they differ from the recommendations in this table, the ADRs hold: code identifiers are English, and step 2.4 is dropped because mobile comes after the MVP.
 
 | Step | Decision | Recommendation | Size |
 | --- | --- | --- | --- |
@@ -93,7 +97,7 @@ Sizes are relative: S is one focused change with its tests, M touches several la
 | 3.5 | Presentation primitives: `useQuery`, `useCommand` (from 1.1), `useStream` replacing the settings-only `useFollowing`; routes and view state per ADR 0008; the app frame (navigation, community filter) with the first Nuxt UI table and sheet in the `@source` lists. | Dom tests for route restore and filter persistence; e2e: reopen Obsidian and land on the same route; pop-out and theme checks still pass. | M |
 | 3.6 | **Tracer slice, replacing the demo.** The thinnest real path through everything above: list and create one entity as vault notes, follow an external edit, survive a newer schema. Then delete the greeting setting, the `show-greeting` command, the file count, the About dialog and `LEGACY_DEFAULT_GREETING` (compatibility with a 0.1.0 that was never released). | One e2e spec per behaviour; harness scenarios for empty, loaded, invalid note, read-only; `adding-a-feature.md` rewritten with this slice as its worked example. | L |
 
-For 3.6 the recommended entity is **Gemeinschaft (PBI-01)**: first in `order`, no dependencies, and it forces the file-contract questions early. It needs the owner's go-ahead, because every PBI still says "Umsetzungsfreigabe offen". Without it, use a throwaway note type and delete it afterwards; the groundwork is proven either way, the file contract is not.
+For 3.6 the entity is **Community (Gemeinschaft, PBI-01)**, released by the owner for this cut only: create, list, edit and delete (to Obsidian's trash) with name, short code, colour, kind and unit label, plus the community switch. Contacts, Punkte, address, owner languages and the first-start wizard stay out, and PBI-01 stays open.
 
 ### Phase 4: guardrails and hygiene (parallel to phase 3)
 
@@ -112,7 +116,7 @@ merge PR #4
   └─ 2.1 ─ 3.1 ─┐
   └─ 2.2 ───────┼─ 3.2 ─ 3.3 ─ 3.4 ─┐
   └─ 2.3 ───────┴─ 3.5 ─────────────┴─ 3.6
-  └─ 2.4, 4.1–4.4                  (any time; 4.1 after 3.6 for the feature guide)
+  └─ 4.1–4.4                       (any time; 4.1 after 3.6 for the feature guide)
 ```
 
 ## 5. Ready for feature development when
@@ -124,12 +128,21 @@ merge PR #4
 - The view restores its route after a restart, and the reference vault meets B-NFR-04 in a test.
 - No demo code ships: no greeting, no file count.
 
-## 6. Decisions only the owner can take
+## 6. Owner decisions (2026-11-21)
 
-1. Merge PR #4 now and run this plan as follow-up pull requests (recommended), or extend PR #4.
-2. Release Gemeinschaft (PBI-01) as the tracer entity for step 3.6, or use a throwaway type.
-3. K-09 and O-02: is mobile part of the MVP, and on which reference phone? This sets step 2.4.
-4. German domain terms in code identifiers (recommended, matches the docs and ADR 0004), or English.
+| Topic | Decision | Recorded in |
+| --- | --- | --- |
+| Merging | PR #4 and PR #6 squash-merged. From here each step is its own pull request, merged once gate, e2e and mutation testing are green. | this plan |
+| Mobile | After the MVP. K-09 and PBI-33 leave the MVP; step 2.4 is dropped. Layouts still follow container width. | K-09, PBI-33 |
+| Tracer entity | Community (Gemeinschaft), the cut described under step 3.6. | PBI-01 comment, tracer PBI |
+| Language | English frontmatter keys, value codes and code identifiers; German in the UI and `docs/`. | ADR 0006, `GLOSSARY.md` |
+| Records | One note per record, recognised by `schema`, identified by a stable `id` (type plus UUID); readable numbers are a separate field. Root folder `WEG Manager/` as a setting without UI. | ADR 0007 |
+| Outside edits | Merged per field; a field changed on both sides stops the save for the user to choose. | ADR 0007 |
+| Navigation | One view, own typed routes, state kept by Obsidian. The tracer ships the app frame and one route; no placeholder screens. | ADR 0008 |
+| Community selection | Stored per device, not synced; one selection for all views. | ADR 0008 |
+| Short code | 2 to 5 characters, A–Z and digits, upper-case, unique, fixed after creation. | tracer PBI |
+| Kind and unit label | Plain text on the note, with suggestions in the form. | tracer PBI |
+| Demo slice | Deleted completely when the tracer lands. | tracer PBI |
 
 ## 7. Deliberately not in this plan
 

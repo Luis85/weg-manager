@@ -1,0 +1,33 @@
+# Dependabot version updates (PBI-58). The repo pins exact versions, and Dependabot
+# keeps them exact. Majors are not grouped, so each one gets its own pull request.
+#
+# `overrides` in package.json (ADR 0001, "Security overrides") are not touched by
+# Dependabot. Remove an override by hand once upstream requires the patched
+# version itself (check with `npm ls <pkg>` after an update).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: build
+    groups:
+      dev-tooling:
+        dependency-type: development
+        update-types: [minor, patch]
+      runtime:
+        dependency-type: production
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        update-types: [minor, patch]

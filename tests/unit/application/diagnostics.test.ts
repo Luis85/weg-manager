@@ -1,6 +1,6 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { REDACTED, buildDiagnostics, redact } from "../../../src/application/diagnostics";
+import { buildDiagnostics } from "../../../src/application/diagnostics";
 import { messagesLayer, type Language } from "../../../src/application/i18n";
 import { Logger, type RecordedLogEntry } from "../../../src/application/ports";
 import { SettingsServiceLive } from "../../../src/application/settings-service";
@@ -59,17 +59,41 @@ describe("buildDiagnostics", () => {
     Effect.gen(function* () {
       const text = yield* report({ failLoad: true }, [
         { at: 0, level: "error", event: "defect.reported", incidentId: "AB12CD" },
-        { at: 1000, level: "info", event: "plugin.loaded", context: { count: 2 } },
+        { at: 1000, level: "info", event: "plugin.loaded", data: { count: 2 } },
+        {
+          at: 2000,
+          level: "error",
+          event: "defect.reported",
+          data: { retry: false, count: 0 },
+          error: {
+            name: "TypeError",
+            message: "Ahornweg/Punkt 12.md fehlt",
+            frames: ["run (main.js:1:2)", "t.go (app.js:3:4)"],
+          },
+          incidentId: "CD34EF",
+        },
+        {
+          at: 3000,
+          level: "warn",
+          event: "vault.read.failed",
+          error: { name: "Error", message: "m", frames: [] },
+        },
       ]);
       assert.include(text, "Einstellungen beschreibbar: nein (unreadable)");
       assert.include(
         text,
         [
-          "Letzte Protokolleinträge (2):",
+          "Letzte Protokolleinträge (4):",
           "1970-01-01T00:00:00.000Z ERROR defect.reported (AB12CD)",
           '1970-01-01T00:00:01.000Z INFO plugin.loaded {"count":2}',
+          '1970-01-01T00:00:02.000Z ERROR defect.reported (CD34EF) {"retry":false,"count":0} TypeError',
+          "    run (main.js:1:2)",
+          "    t.go (app.js:3:4)",
+          "1970-01-01T00:00:03.000Z WARN vault.read.failed Error",
         ].join("\n"),
       );
+      assert.notInclude(text, "Ahornweg");
+      assert.notInclude(text, "fehlt");
     }),
   );
 
@@ -94,37 +118,4 @@ describe("buildDiagnostics", () => {
       );
     }),
   );
-});
-
-describe("redact", () => {
-  it("keeps a string of exactly 200 characters and redacts 201", () => {
-    assert.strictEqual(redact("x".repeat(200)), "x".repeat(200));
-    assert.strictEqual(redact("x".repeat(201)), REDACTED);
-  });
-
-  it("redacts every sensitive key, also inside arrays", () => {
-    assert.deepStrictEqual(
-      redact({
-        items: [{ content: "a", body: "b", text: "c", path: "d", name: "e", size: 1 }],
-        ok: true,
-      }),
-      {
-        items: [
-          {
-            content: REDACTED,
-            body: REDACTED,
-            text: REDACTED,
-            path: REDACTED,
-            name: REDACTED,
-            size: 1,
-          },
-        ],
-        ok: true,
-      },
-    );
-  });
-
-  it("keeps an empty key and null untouched", () => {
-    assert.deepStrictEqual(redact({ "": "v", nothing: null }), { "": "v", nothing: null });
-  });
 });

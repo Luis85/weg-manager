@@ -2,7 +2,7 @@
 type: Feature
 parent: "[[E-07 - Cross Cutting Concerns]]"
 order: 78000
-release: ""
+release: "[[MVP - Beirat Support]]"
 ---
 
 # F-24 · Technische Plugin-Grundlagen
@@ -18,6 +18,15 @@ Das Plugin verhält sich im Alltag verlässlich, auch wenn Obsidian Sync, mehrer
 - [[PBI-48 - Externe Änderungen an den Einstellungen übernehmen]]
 - [[PBI-49 - Eine Einstellung hat genau einen Bearbeitungsort]]
 - [[PBI-50 - Grundlage für Vault-Ereignisse und Indexierung]]
+- [[PBI-51 - Plugin-Code in Module gliedern]]
+- [[PBI-52 - Notizspeicher für Vault-Notizen bereitstellen]]
+- [[PBI-53 - Notizformat mit Schemaversion lesen und schreiben]]
+- [[PBI-54 - Index der Notizen aufbauen und aktuell halten]]
+- [[PBI-55 - Navigation und App-Rahmen der Plugin-Ansicht bereitstellen]]
+- [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]
+- [[PBI-57 - Einstellungen schemagesteuert lesen und migrieren]]
+- [[PBI-58 - CI und Abhängigkeiten gepflegt halten]]
+- [[PBI-59 - Entwicklerdokumentation an die neue Architektur anpassen]]
 
 ## Abgrenzung
 

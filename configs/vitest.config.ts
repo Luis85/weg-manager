@@ -46,19 +46,17 @@ export default defineConfig({
       reportsDirectory: "reports/coverage",
       thresholds: { lines: 90, statements: 90, functions: 90, branches: 85 },
     },
+    // Inline projects extend this file (Vitest 5), so the guard plugin and the alias above reach them already.
     projects: [
       {
-        plugins: [obsidianGuard()],
-        resolve: { alias: testAlias },
         test: { name: "unit", include: ["tests/unit/**/*.test.ts"], environment: "node" },
       },
       {
         test: { name: "skills", include: ["skills/tests/**/*.test.ts"], environment: "node" },
       },
       {
-        plugins: [obsidianGuard(), ...(sharedConfig({ mode: "test" }).plugins ?? [])],
+        plugins: [...(sharedConfig({ mode: "test" }).plugins ?? [])],
         define: sharedConfig({ mode: "test" }).define ?? {},
-        resolve: { alias: testAlias },
         test: {
           name: "dom",
           include: ["tests/dom/**/*.test.ts"],

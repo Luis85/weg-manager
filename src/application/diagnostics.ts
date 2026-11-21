@@ -4,28 +4,18 @@ import { HostInfo, Logger, Messages, type RecordedLogEntry } from "./ports";
 import { RECENT_LOG_LIMIT } from "./logger";
 import { SettingsService } from "./settings-service";
 
-export const REDACTED = "[redacted]";
-const SENSITIVE_KEYS = new Set(["content", "body", "text", "path", "name"]);
-const MAX_STRING = 200;
-
-/** Removes anything that could contain note content or identify files before it leaves the plugin. */
-export const redact = (value: unknown, key?: string): unknown => {
-  if (key !== undefined && SENSITIVE_KEYS.has(key)) return REDACTED;
-  if (typeof value === "string") return value.length > MAX_STRING ? REDACTED : value;
-  if (Array.isArray(value)) return value.map((item) => redact(item));
-  if (typeof value === "object" && value !== null) {
-    return Object.fromEntries(
-      Object.entries(value).map(([name, inner]) => [name, redact(inner, name)]),
-    );
-  }
-  return value;
-};
-
+/**
+ * One log entry as report text. Only typed values reach it: the event name, counts and flags,
+ * the error's name and its sanitised frames. The error message never does (B-NFR-07).
+ */
 const formatEntry = (entry: RecordedLogEntry): string => {
   const parts = [new Date(entry.at).toISOString(), entry.level.toUpperCase(), entry.event];
   if (entry.incidentId !== undefined) parts.push(`(${entry.incidentId})`);
-  if (entry.context !== undefined) parts.push(JSON.stringify(redact(entry.context)));
-  return parts.join(" ");
+  if (entry.data !== undefined) parts.push(JSON.stringify(entry.data));
+  if (entry.error !== undefined) parts.push(entry.error.name);
+  return [parts.join(" "), ...(entry.error?.frames ?? []).map((frame) => `    ${frame}`)].join(
+    "\n",
+  );
 };
 
 /**

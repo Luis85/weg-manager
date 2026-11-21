@@ -8,7 +8,7 @@ date: 2026-11-15
 # Skill-Evaluation · Gmail-Import
 
 > [!note] Stand
-> Diese Evaluation betrifft Version 0.1.0 mit dem Python-Writer. Seit Version 0.2.0 ist der Writer TypeScript ([ADR 0006](../adr/0006-skill-tooling-in-typescript.md) beschreibt die Umstellung). Die Tests sind nach Vitest portiert und erweitert ([Writer](../../skills/tests/import-messages.test.ts), [Validierung](../../skills/tests/import-validation.test.ts), [Kommandozeile und Paket](../../skills/tests/cli-and-package.test.ts)); ein Vergleichslauf ergab für dieselbe Eingabe identische Berichte, Dateinamen, Kennungen und Quell-Hashes. Die Anwendung mit einem Agenten unten wurde mit 0.2.0 nicht wiederholt.
+> Diese Evaluation betrifft Version 0.1.0 mit dem Python-Writer. Seit Version 0.2.0 ist der Writer TypeScript ([ADR 0009](../adr/0009-skill-tooling-in-typescript.md) beschreibt die Umstellung). Die Tests sind nach Vitest portiert und erweitert ([Writer](../../skills/tests/import-messages.test.ts), [Validierung](../../skills/tests/import-validation.test.ts), [Kommandozeile und Paket](../../skills/tests/cli-and-package.test.ts)); ein Vergleichslauf ergab für dieselbe Eingabe identische Berichte, Dateinamen, Kennungen und Quell-Hashes. Die Anwendung mit einem Agenten unten wurde mit 0.2.0 nicht wiederholt.
 
 Geprüft ist [weg-gmail-to-vault](../../skills/weg-gmail-to-vault/SKILL.md) Version 0.1.0. **Kein Live-Claude-/Gmail-Test, kein Zugriff auf echte Konten, keine echten Mails importiert.** Die Anwendungssimulation wurde durch einen Codex-Subagenten mit synthetischen Connector-Fixtures in einem isolierten OS-Tempvault durchgeführt.
 

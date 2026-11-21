@@ -42,7 +42,7 @@ Es gibt nur das einmalige `markdownFileCount` (`src/application/ports.ts`, `Vaul
 
 ## Akzeptanzkriterien
 
-1. Ein Port `VaultEvents` in `src/application/ports.ts` liefert einen Effect-`Stream` der Ereignisse `create`, `modify`, `delete` und `rename` (bei `rename` mit altem Pfad).
+1. Dateiereignisse laufen über den `EventBus` (`src/application/event-bus.ts`) und das typisierte Vokabular `AppEvent` (`src/application/events.ts`; ADR 0004, `docs/adr/0004-event-system.md`): `FileCreated`, `FileModified`, `FileDeleted` und `FileRenamed` (mit altem Pfad `oldPath`) als Stream über `EventBus.events` oder `EventBus.on(tag)`. Einen eigenen Port `VaultEvents` gibt es nicht.
 2. Die Obsidian-Umsetzung in `src/infrastructure/obsidian/` registriert `vault.on(...)` in einem scoped Layer und meldet mit `vault.offref(...)` ab; `runtime.dispose()` gibt jeden Listener frei.
 3. Indexierung und Ereignisweitergabe beginnen erst nach `workspace.onLayoutReady`, weil `vault.on("create")` vorher für jede vorhandene Datei feuert; diese Startereignisse erzeugen keinen Index-Doppelbestand.
 4. Die Dateianzahl im Panel folgt den Ereignissen, statt nur beim Einhängen zu zählen.
@@ -51,7 +51,7 @@ Es gibt nur das einmalige `markdownFileCount` (`src/application/ports.ts`, `Vaul
 
 ## Herkunft und Bezüge
 
-Code-Review der Plugin-Shell vom 21.11.2026. Technische Grundlage für [[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]] (Neueinlesen nach externer Änderung) und die Laufzeitgrenze aus B-NFR-11.
+Code-Review der Plugin-Shell vom 21.11.2026. Der noch offene Teil, die Indexierung, steht in [[PBI-54 - Index der Notizen aufbauen und aktuell halten]]. Technische Grundlage für [[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]] (Neueinlesen nach externer Änderung) und die Laufzeitgrenze aus B-NFR-11.
 
 ## Kommentare
 
@@ -61,4 +61,4 @@ Code-Review der Plugin-Shell vom 21.11.2026. Technische Grundlage für [[PBI-41 
   - **Dateianzahl folgt den Ereignissen:** Die Anzahl im Panel aktualisiert sich nach Anlegen, Löschen und Umbenennen (300 ms entprellt).
   - **Tests:** Im Double, in der Plugin-Lebensdauer und e2e (`tests/e2e/specs/events.e2e.ts`).
   - **Offen:** die eigentliche Indexierung. Sie gehört zum ersten Fachfeature.
-
+- 21.11.2026: Kriterium 1 ist auf `EventBus` und `AppEvent` umgeschrieben (Stand der Umsetzung, ADR 0004). PBI-50 bleibt offen: Die Indexierung ist nicht gebaut. Sie ist als [[PBI-54 - Index der Notizen aufbauen und aktuell halten]] eingeplant; das PBI stellt auch den Zeitpunkt „Vault lesbar“ nach dem Obsidian-Ereignis `resolved` bereit, den `LayoutReady` allein nicht garantiert.

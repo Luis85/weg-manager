@@ -5,7 +5,7 @@
 
 ## Context
 
-Features have to react to what happens in the vault and the workspace: a note is created or renamed, its frontmatter is re-indexed, the active file or the colour scheme changes. Obsidian offers this through its `Events` mixin on `vault`, `metadataCache` and `workspace`. Using it directly would spread `obsidian` imports and untyped callbacks through application code, would leak listeners whenever a bootstrap fails or is aborted (`bootstrap` then disposes the runtime without the plugin being unloaded, so `registerEvent` alone does not cover it), and would expose every feature to the flood of `create` events Obsidian fires for every existing file while it starts. Later the plugin also needs its own **domain events** (e.g. `PunktErstellt`), and they should travel the same way.
+Features have to react to what happens in the vault and the workspace: a note is created or renamed, its frontmatter is re-indexed, the active file or the colour scheme changes. Obsidian offers this through its `Events` mixin on `vault`, `metadataCache` and `workspace`. Using it directly would spread `obsidian` imports and untyped callbacks through application code, would leak listeners whenever a bootstrap fails or is aborted (`bootstrap` then disposes the runtime without the plugin being unloaded, so `registerEvent` alone does not cover it), and would expose every feature to the flood of `create` events Obsidian fires for every existing file while it starts. Later the plugin also needs its own **domain events** (e.g. `CommunityCreated`; English since [ADR 0006](0006-module-structure.md)), and they should travel the same way.
 
 ## Decision
 
@@ -37,7 +37,7 @@ Features have to react to what happens in the vault and the workspace: a note is
 
 ## Adding an event
 
-1. Add a member to `AppEvent` in `src/application/events.ts` with plain readonly fields. Domain events (e.g. `PunktErstellt { punktId }`) go into the same union.
+1. Add a member to `AppEvent` in `src/application/events.ts` with plain readonly fields. Domain events (e.g. `CommunityCreated { communityId }`) go into the same union.
 2. Typecheck now fails in every exhaustive `switch` on `_tag`; handle the new member there.
 3. Publish it: a host event from `hostEventsLayer`, with a mapping test in `tests/dom/infrastructure/events.test.ts`; a domain event from the use case or service that causes it, with `EventBus.publish`.
 4. Consume it with `EventBus.on("<Tag>")`, or `subscribe` for a forked consumer.

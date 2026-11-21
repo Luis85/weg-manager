@@ -30,7 +30,7 @@ flowchart LR
 | `src/domain` | `effect` | Pure rules: `decodeSettings`, `validatePatch`, defaults |
 | `src/application` | `effect`, domain | Ports (`SettingsStore`, `Notifier`, `VaultReader`, `Logger`, `Incidents`, `Clipboard`, `HostInfo`, `Messages`), `SettingsService`, `EventBus` and the `AppEvent` vocabulary, use cases, tagged errors, the German and English message catalogs (`i18n/`) |
 | `src/infrastructure/obsidian` | `obsidian`, application, presentation | Adapter Layers (including `hostEventsLayer`), commands, ribbon, settings tab, `ShellView` |
-| `src/presentation` | `vue`, `@nuxt/ui`, `@tanstack/vue-form`, application, domain | Vue surfaces. Components never see an Effect value; they call use cases through `useEffectAction` |
+| `src/presentation` | `vue`, `@nuxt/ui`, `@tanstack/vue-form`, application, domain | Vue surfaces. Components never see an Effect value. They run reads through `useQuery` and state changes through `useCommand` |
 | `harness/` | everything except `obsidian` | Browser stand-in for Obsidian with scenario Layers |
 
 `infrastructure` may import `presentation` only because `ShellView` mounts the surface (handoff ruling 14). It loads `presentation/mount` with a dynamic `import()`; nothing that runs at plugin load may import a module that pulls in Vue (see [Lazy presentation](#lazy-presentation)).
@@ -97,6 +97,7 @@ sequenceDiagram
 
 - `SettingsService` holds the settings and their status (writable, issues, read-only reason) in two `SubscriptionRef`s: `changes` and `statusChanges` emit the current value, then every change.
 - `reload` reads `data.json` again and decodes it as on load: a newer or unreadable file switches to read-only and is never written, a valid one switches back. Unchanged values publish nothing, and a notice appears only when the status changes. Reloads and updates are serialised.
+- `plugin.saveData` cannot be cancelled, so an update that has started its save always sets the settings too, even when interrupted. A reload, once it has read the file, sets status, notice and settings together. Waiting for an earlier update or reload stays interruptible.
 - `useSettings` and `useSettingsStatus` follow both streams in a surface. The settings tab reads a mirror of both, because Obsidian reads control values synchronously.
 
 ## Lazy presentation

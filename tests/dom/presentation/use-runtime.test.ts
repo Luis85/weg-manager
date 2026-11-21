@@ -2,49 +2,24 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { Effect } from "effect";
 import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
-import type { AppRuntime } from "../../../src/application/app-services";
 import { VaultReadError } from "../../../src/application/errors";
 import { countMarkdownFiles, updateGreeting } from "../../../src/application/use-cases";
 import {
-  provideRuntime,
   reportVueError,
-  useEffectAction,
+  useQuery,
   useRuntime,
   useSettings,
 } from "../../../src/presentation/runtime/use-runtime";
-import { testRuntime } from "../../support/runtime";
+import { host, runtimes } from "../../support/composable";
 
-const runtimes: AppRuntime[] = [];
+const { make, disposeAll } = runtimes();
 
-const host = <T>(runtime: AppRuntime, setup: () => T) => {
-  let exposed: T | undefined;
-  const wrapper = mount(
-    defineComponent({
-      setup() {
-        exposed = setup();
-        return () => h("div");
-      },
-    }),
-    { global: { plugins: [{ install: (app) => provideRuntime(app, runtime) }] } },
-  );
-  if (exposed === undefined) throw new Error("setup did not run");
-  return { wrapper, exposed };
-};
+afterEach(disposeAll);
 
-const make = () => {
-  const test = testRuntime();
-  runtimes.push(test.runtime);
-  return test;
-};
-
-afterEach(async () => {
-  await Promise.all(runtimes.splice(0).map((runtime) => runtime.dispose()));
-});
-
-describe("useEffectAction", () => {
+describe("useQuery", () => {
   it("stores a success value and clears pending", async () => {
     const { runtime } = make();
-    const { exposed } = host(runtime, () => useEffectAction(() => countMarkdownFiles));
+    const { exposed } = host(runtime, () => useQuery(() => countMarkdownFiles));
     const running = exposed.run();
     expect(exposed.pending.value).toBe(true);
     await running;
@@ -56,7 +31,7 @@ describe("useEffectAction", () => {
   it("puts a typed failure and its message into error and message", async () => {
     const { runtime, notifier } = make();
     const failure = new VaultReadError({ cause: new Error("x") });
-    const { exposed } = host(runtime, () => useEffectAction(() => Effect.fail(failure)));
+    const { exposed } = host(runtime, () => useQuery(() => Effect.fail(failure)));
     await exposed.run();
     expect(exposed.error.value).toBe(failure);
     expect(exposed.message.value?.title).toBe("Notizen nicht lesbar");
@@ -66,7 +41,7 @@ describe("useEffectAction", () => {
   it("reports a defect exactly once and leaves error empty", async () => {
     const { runtime, notifier, logger } = make();
     const { exposed } = host(runtime, () =>
-      useEffectAction(() => Effect.die(new Error("boom")) as Effect.Effect<never, VaultReadError>),
+      useQuery(() => Effect.die(new Error("boom")) as Effect.Effect<never, VaultReadError>),
     );
     await exposed.run();
     expect(exposed.error.value).toBeUndefined();
@@ -78,7 +53,7 @@ describe("useEffectAction", () => {
   it("reports a throw while building the effect once, without rejecting", async () => {
     const { runtime, notifier, logger } = make();
     const { exposed } = host(runtime, () =>
-      useEffectAction((): Effect.Effect<number, VaultReadError> => {
+      useQuery((): Effect.Effect<number, VaultReadError> => {
         throw new Error("build exploded");
       }),
     );
@@ -92,7 +67,7 @@ describe("useEffectAction", () => {
   it("interrupts the first run when a second starts", async () => {
     const { runtime, vault } = make();
     vault.hold();
-    const { exposed } = host(runtime, () => useEffectAction(() => countMarkdownFiles));
+    const { exposed } = host(runtime, () => useQuery(() => countMarkdownFiles));
     const first = exposed.run();
     await flushPromises();
     expect(vault.held()).toBe(1);
@@ -108,15 +83,22 @@ describe("useEffectAction", () => {
     expect(exposed.pending.value).toBe(false);
   });
 
-  it("drops a result that arrives after unmount", async () => {
+  it("interrupts a pending run when the scope ends and drops its result", async () => {
     const { runtime, vault, notifier } = make();
     vault.hold();
-    const { wrapper, exposed } = host(runtime, () => useEffectAction(() => countMarkdownFiles));
+    const counted: number[] = [];
+    const { wrapper, exposed } = host(runtime, () =>
+      useQuery(() =>
+        Effect.tap(countMarkdownFiles, (count) => Effect.sync(() => counted.push(count))),
+      ),
+    );
     const running = exposed.run();
     await flushPromises();
     wrapper.unmount();
     vault.release();
     await running;
+    await flushPromises();
+    expect(counted).toEqual([]);
     expect(exposed.value.value).toBeUndefined();
     expect(exposed.pending.value).toBe(true);
     expect(notifier.messages()).toEqual([]);
@@ -124,7 +106,7 @@ describe("useEffectAction", () => {
 
   it("treats a disposed runtime as a defect it cannot report, without rejecting", async () => {
     const { runtime } = make();
-    const { exposed } = host(runtime, () => useEffectAction(() => countMarkdownFiles));
+    const { exposed } = host(runtime, () => useQuery(() => countMarkdownFiles));
     await runtime.dispose();
     await expect(exposed.run()).resolves.toBeUndefined();
     expect(exposed.error.value).toBeUndefined();

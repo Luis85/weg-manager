@@ -6,7 +6,7 @@ import { changesMarkdownFiles } from "../../application/events";
 import { greetingOf } from "../../application/i18n";
 import { countMarkdownFiles } from "../../application/use-cases";
 import { RECOUNT_DELAY_MS, debounce } from "../recount";
-import { useAppEvents, useEffectAction, useMessages, useSettings } from "../runtime/use-runtime";
+import { useAppEvents, useMessages, useQuery, useSettings } from "../runtime/use-runtime";
 import AboutDialog from "./AboutDialog.vue";
 import ErrorNotice from "./ErrorNotice.vue";
 import GreetingForm from "./GreetingForm.vue";
@@ -15,7 +15,7 @@ import GreetingForm from "./GreetingForm.vue";
 const settings = useSettings();
 const messages = useMessages();
 const greeting = computed(() => greetingOf(settings.value, messages));
-const count = useEffectAction(() => countMarkdownFiles);
+const count = useQuery(() => countMarkdownFiles);
 const { pending, value: fileCount, message: countMessage } = count;
 const recount = () => count.run();
 

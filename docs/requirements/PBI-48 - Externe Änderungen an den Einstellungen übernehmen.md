@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -61,3 +61,4 @@ Code-Review der Plugin-Shell vom 21.11.2026. Relevant für [[K-09 - Vollständig
   - **Schreibschutz (4):** Eine neuere oder unlesbare `data.json` schaltet auf schreibgeschützt; die bisherige Meldung erscheint einmal, die Datei wird nicht geschrieben. Kommt danach wieder eine gültige Datei, ist das Plugin wieder beschreibbar.
   - **Tests (5, 6):** Unit-Tests in `tests/unit/application/settings-reload.test.ts`, DOM-Tests am Obsidian-Double in `tests/dom/external-settings.test.ts` und `tests/dom/settings-tab.test.ts`, e2e in `tests/e2e/specs/external-settings.e2e.ts`: Es schreibt `data.json` über `app.vault.adapter.write`, und die offene Ansicht zeigt die neue Begrüßung, ohne dass der Test `onExternalSettingsChange` selbst aufruft.
   - **Offen:** Das Eingabefeld des Begrüßungsformulars behält einen bereits angezeigten Wert; nur Überschrift, Hinweis und Sperre folgen dem Reload.
+- 21.11.2026: Abgeschlossen, ausgeliefert mit PR #4 (Plugin-Shell). Danach (Phase 1, PR #6) schließt `SettingsService` einen begonnenen Speichervorgang immer ab; Komponenten lesen mit `useQuery` und ändern Zustand mit `useCommand`. Damit bleiben `data.json` und Arbeitsspeicher auch bei einem unterbrochenen Schreibvorgang gleich.

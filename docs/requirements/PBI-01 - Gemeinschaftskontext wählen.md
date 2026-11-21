@@ -69,3 +69,11 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 ## Business Rules
 
 [[DF-12 - Gemeinschaftstrennung]].
+
+## Kommentare
+
+- 21.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen ersten Schnitt.
+  - **Freigabe:** Gemeinschaft ist die erste Entität, die durch den Vault-Weg geht (Durchstich). Der Schnitt umfasst Anlegen, Auflisten, Bearbeiten und Löschen (Löschen legt die Notiz in Obsidians Papierkorb) mit Name, Kürzel, Farbe, Art und Einheitenbezeichnung sowie den sichtbaren Gemeinschaftswechsel. Das erfüllt Kriterium 1 und 4. Kontakte, Punkte, Anschrift, Sprachen der Eigentümer und der Einrichtungsassistent bleiben draußen. Kriterien 2 und 3 brauchen Punkte; PBI-01 bleibt offen.
+  - **Kürzel (Kriterium 4):** 2 bis 5 Zeichen, A–Z und Ziffern, gespeichert in Großbuchstaben, unter den Gemeinschaften eindeutig, nach dem Anlegen nicht änderbar. Ein außerhalb des Plugins entstandenes Duplikat erscheint als Problem.
+  - **Art und Einheitenbezeichnung (Kriterium 4):** einfache Textfelder der Gemeinschaftsnotiz. Das Formular schlägt die eingebauten Paare (WEG mit Einheiten, Tiefgarage mit Stellplätzen) und bereits verwendete Paare vor. Die Farbe ist der Name einer Farbe aus der geprüften Palette; eine bereits vergebene Farbe ist gesperrt. Der Dateiname der Notiz ist der Name der Gemeinschaft, bei Kollision mit Zusatz ` (2)`.
+  - **Umsetzung:** [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]].

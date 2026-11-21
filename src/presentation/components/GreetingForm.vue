@@ -10,12 +10,7 @@ import { describeIssues, greetingOf } from "../../application/i18n";
 import { describeError } from "../../application/user-messages";
 import { validatePatch } from "../../domain/settings";
 import ErrorNotice from "./ErrorNotice.vue";
-import {
-  useEffectAction,
-  useMessages,
-  useSettings,
-  useSettingsStatus,
-} from "../runtime/use-runtime";
+import { useCommand, useMessages, useSettings, useSettingsStatus } from "../runtime/use-runtime";
 
 /** The greeting form: domain rules validate on change, the service has the final word. */
 const settings = useSettings();
@@ -29,7 +24,8 @@ const readOnlyMessage = computed(() => {
     ? undefined
     : describeError(new ReadOnlySettingsError({ reason }), messages);
 });
-const save = useEffectAction(updateGreeting);
+/** A save runs to its end even when the view closes meanwhile; a failure then becomes a notice. */
+const save = useCommand(updateGreeting);
 /** The greeting as the view shows it: the stored one or the default of the UI language. */
 const shown = computed(() => greetingOf(settings.value, messages));
 

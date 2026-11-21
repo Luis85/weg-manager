@@ -1,4 +1,4 @@
-# ADR 0006 · Skill tooling in TypeScript
+# ADR 0009 · Skill tooling in TypeScript
 
 - Status: accepted
 - Date: 2026-11-21

@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -23,7 +23,7 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-57 · Einstellungen schemagesteuert lesen und migrieren
@@ -53,3 +53,4 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Abschnitt 3 (Lücke B8) und S
 ## Kommentare
 
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
+- 21.11.2026: Abgeschlossen. Jede Einstellung ist eine Deklaration (Schema, Standardwert, Problemcode) in `src/domain/shell/settings.ts`; `makeSettingsCodec` (`settings-codec.ts`) leitet Lesen, Schreiben und Patch-Prüfung daraus ab. Die Migrationstabelle ist vorhanden und leer (`SETTINGS_VERSION` bleibt 1). Schlägt ein Migrationsschritt fehl, gelten Standardwerte und die Datei ist schreibgeschützt, damit ein späteres Speichern die alten Werte nicht ersetzt. `rootFolder` (Standard `WEG Manager`) wird gelesen, geprüft und nur bei Abweichung vom Standard geschrieben; eine Oberfläche gibt es nicht.

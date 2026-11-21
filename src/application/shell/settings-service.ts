@@ -67,7 +67,7 @@ const loadMessage = (loaded: Loaded, messages: ShellCatalog): UserMessage | unde
 const toStatus = (loaded: Loaded): SettingsStatus =>
   loaded.readOnlyReason === undefined
     ? { writable: loaded.writable, issues: loaded.issues }
-    : { writable: false, issues: loaded.issues, readOnlyReason: loaded.readOnlyReason };
+    : { writable: loaded.writable, issues: loaded.issues, readOnlyReason: loaded.readOnlyReason };
 
 /**
  * Loads settings on build and again on every `reload`. Neither ever fails: an unreadable store or a

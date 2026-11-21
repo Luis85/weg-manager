@@ -1,10 +1,10 @@
 # The Obsidian WEG Manager Plugin
 
-> **In English.** WEG Manager is an Obsidian plugin for the voluntary advisory boards (Verwaltungsbeiräte) of German condominium owners' associations (WEG). It keeps open items visible with their source, owner and next step, guides a bounded weekly review, and leaves every message under human control. All data stays local as Markdown notes with frontmatter in your own vault; it works without an account, network access or AI. The project is in its concept phase: the plugin is a working technical shell without domain features yet, desktop only, and not listed in the community plugin directory. The rest of this README and the product documentation are in German; the developer documentation under `docs/engineering/` is in English.
+> **In English.** WEG Manager is an Obsidian plugin for the voluntary advisory boards (Verwaltungsbeiräte) of German condominium owners' associations (WEG). It keeps open items visible with their source, owner and next step, guides a bounded weekly review, and leaves every message under human control. All data stays local as Markdown notes with frontmatter in your own vault; it works without an account, network access or AI. The project is in its concept phase: so far the plugin does one thing, it manages the communities (one association per Markdown note, created, edited, deleted and switched in one view). Everything else is design and prototype. It is desktop only and not listed in the community plugin directory. The rest of this README and the product documentation are in German; the developer documentation under `docs/engineering/` is in English.
 
 Ein Obsidian-Plugin für Verwaltungsbeiräte, die eine oder mehrere Wohnungseigentümergemeinschaften (WEG) begleiten. Offene Anliegen bleiben mit Quelle, Zuständigkeit und nächstem Schritt sichtbar, die Wochenarbeit ist geführt und begrenzt, Nachrichten bleiben unter menschlicher Kontrolle. Alle Daten liegen lokal als Markdown-Notizen mit Frontmatter im eigenen Vault, nutzbar ohne Konto, Netz und KI.
 
-> **Stand:** Konzeptphase. Anforderungen, Design und ein klickbarer Prototyp liegen vor. Das Plugin hat ein lauffähiges technisches Grundgerüst und als erste Fachfunktion die Gemeinschaften (anlegen, bearbeiten, löschen, wechseln).
+> **Stand:** Konzeptphase. Anforderungen, Design und ein klickbarer Prototyp liegen vor. Das Plugin hat ein lauffähiges technisches Grundgerüst und bisher eine einzige Fachfunktion: die Gemeinschaften (anlegen, bearbeiten, löschen, wechseln). Punkte, Lage, Wochenarbeit, Postausgang und Kontakte sind noch nicht umgesetzt; die Abschnitte zu Kernreise und Prototyp beschreiben das Ziel, nicht das Plugin von heute.
 
 ## Installation
 
@@ -19,13 +19,13 @@ Für ein Update die drei Dateien ersetzen und das Plugin neu laden. Später ist 
 ## Benutzung
 
 - **Ansicht öffnen:** über das Symbol *WEG Manager* in der linken Seitenleiste oder den Befehl **WEG Manager: Ansicht öffnen** in der Befehlspalette.
-- **Gemeinschaften:** die Ansicht öffnet mit deinen Gemeinschaften. Jede ist eine Notiz unter `WEG Manager/Gemeinschaften/` mit Name, Kürzel, Farbe, Art und Einheitenbezeichnung; der Dateivertrag steht in [`docs/contracts/DV-01 - Gemeinschaft v1.md`](docs/contracts/DV-01%20-%20Gemeinschaft%20v1.md). Links in der Ansicht wählst du die Gemeinschaft, in der du arbeitest; die Wahl gilt für alle offenen Ansichten und bleibt auf diesem Gerät gespeichert.
+- **Gemeinschaften:** die Ansicht öffnet mit deinen Gemeinschaften; du legst sie an, bearbeitest sie und löschst sie (Löschen fragt nach und legt die Notiz in den Papierkorb, den du in Obsidian eingestellt hast). Jede ist eine Notiz unter `WEG Manager/Gemeinschaften/` mit Name, Kürzel, Farbe, Art und Einheitenbezeichnung; der Dateivertrag steht in [`docs/contracts/DV-01 - Gemeinschaft v1.md`](docs/contracts/DV-01%20-%20Gemeinschaft%20v1.md), nach ihm lassen sich die Notizen auch ohne das Plugin anlegen und ändern. Das Plugin zeigt Notizen mit Problemen an, statt sie still zu reparieren, und überschreibt keine Änderung, die du außerhalb des Formulars gemacht hast, ohne dass du wählst. Im Rahmen der Ansicht wählst du die Gemeinschaft, in der du arbeitest; die Wahl gilt für alle offenen Ansichten und bleibt auf diesem Gerät gespeichert.
 - **Einstellungen:** unter *Einstellungen → WEG Manager* (Abschnitt Community-Plugins) lässt sich die Protokollstufe für die Entwicklerkonsole einstellen.
-- **Diagnose:** der Befehl **WEG Manager: Diagnose kopieren** legt einen Bericht mit Plugin-Version, Obsidian-API, Einstellungen und den letzten Protokolleinträgen in die Zwischenablage, zum Einfügen in eine Support-Anfrage. Notizinhalte und Dateinamen werden darin unkenntlich gemacht.
+- **Diagnose:** der Befehl **WEG Manager: Diagnose kopieren** legt einen Bericht mit Plugin-Version, Obsidian-API, Einstellungen und den letzten Protokolleinträgen in die Zwischenablage, zum Einfügen in eine Support-Anfrage. Notizinhalte, Dateinamen und Pfade kommen darin nicht vor.
 
 Die Befehle haben keine voreingestellten Tastenkürzel; eigene lassen sich unter *Einstellungen → Tastenkürzel* vergeben.
 
-## Kernreise
+## Kernreise (Ziel, noch nicht im Plugin)
 
 1. Gemeinschaften getrennt einrichten und vorhandene Registerpunkte übernehmen.
 2. Nachrichten, Unterlagen und einzelne erledigbare Punkte mit Quelle erfassen.
@@ -98,30 +98,33 @@ Voraussetzung: Node 24 (`.nvmrc`) und npm 11.
 
 ```sh
 npm ci            # installiert und setzt den pre-push-Hook (npm run verify)
-npm run dev:ui    # Browser-Harness, ?scenario=default|empty|error|slow|readonly
+npm run dev:ui    # Browser-Harness, ?scenario=loaded|empty|invalid|readonly|failure
 npm run dev       # Watch-Build; mit OBSIDIAN_PLUGIN_DIR in .env.local direkt in einen Test-Vault
 npm run verify    # Qualitätstor: Format, Lint, Typen, Tests mit Coverage, Analyse, Build, dist-Prüfung
 ```
 
 | Skript | Zweck |
 | --- | --- |
+| `format:check`, `lint`, `typecheck`, `analyze` | Prettier, oxlint und ESLint, vue-tsc, fallow (Schichten und Module) |
 | `test`, `test:coverage` | Vitest (Projekte `unit` und `dom`) |
-| `test:mutation`, `test:mutation:full` | Stryker auf Domain und Application |
+| `test:mutation`, `test:mutation:full`, `verify:full` | Stryker auf Domain und Application; `verify:full` ist das Qualitätstor mit Mutationstest |
+| `vault:reference`, `lint:scanner` | Referenz-Vault (2.000 Notizen) für die Zeitprüfungen; Annäherung an die Quellprüfung des Community-Verzeichnisses (nur Hinweis) |
 | `test:e2e` | End-to-End-Tests im echten Obsidian (WebdriverIO, lädt Obsidian beim ersten Lauf herunter; unter Linux ohne Display: `xvfb-run -a npm run test:e2e`) |
 | `build`, `check:dist` | `dist/main.js`, `styles.css`, `manifest.json` und ihre Invarianten |
 | `version`, `release:package` | Versionssprung und Release-Paket, siehe Releasing |
 
 Für die eigene Vault-Konfiguration: `node_modules/`, `dist/`, `reports/`, `release/`, `.stryker-tmp/`, `.obsidian-cache/` und `.fallow/` unter *Einstellungen → Dateien und Links → Ausgeschlossene Dateien* eintragen, da der Vault die Repo-Wurzel ist.
 
-Entwicklerdokumentation (englisch): [Architektur](docs/engineering/architecture.md) · [Feature hinzufügen](docs/engineering/adding-a-feature.md) · [Tests](docs/engineering/testing.md) · [Fehlerbehandlung](docs/engineering/error-handling.md) · [Releasing](docs/engineering/releasing.md) · [GitHub-Einrichtung](docs/engineering/github-setup.md) · [ADRs](docs/adr/)
+Entwicklerdokumentation (englisch): [Architektur](docs/engineering/architecture.md) · [Feature hinzufügen](docs/engineering/adding-a-feature.md) · [Tests](docs/engineering/testing.md) · [Fehlerbehandlung](docs/engineering/error-handling.md) · [Releasing](docs/engineering/releasing.md) · [GitHub-Einrichtung](docs/engineering/github-setup.md) · [ADRs](docs/adr/) · [Glossar](GLOSSARY.md). Regeln für Agenten und Mitwirkende: [AGENTS.md](AGENTS.md).
 
 ## Repository
 
 | Ort | Inhalt |
 | --- | --- |
-| `src/` | Plugin-Quellcode: `domain`, `application`, `infrastructure`, `presentation` |
+| `src/` | Plugin-Quellcode in vier Schichten (`domain`, `application`, `infrastructure`, `presentation`), jede in Module gegliedert: `shell`, `notes`, `communities` |
 | `harness/` | Browser-Harness für UI-Arbeit ohne Obsidian |
-| `docs/` | Produktkonzept, Anforderungen, Design, Prototyp, Entwicklerdokumentation |
+| `docs/` | Produktkonzept, Anforderungen, Design, Prototyp, Dateiverträge der Notizen (`contracts/`), Architekturentscheidungen (`adr/`), Entwicklerdokumentation (`engineering/`) |
+| `.github/` | CI-Workflows, Dependabot, Vorlage für Pull Requests |
 | `skills/` | Claude Skill `weg-gmail-to-vault` (0.1.0): übernimmt ausgewählte Gmail-Nachrichten lesend als Notizen in den Vault; mit Paketskript `package_claude_skills.py` (`--output-dir`) und Tests unter `skills/tests/` (`python3 -m unittest discover -s skills/tests`) |
 | `scripts/` | Build-, Prüf- und Release-Skripte des Plugins |
 | `configs/` | Konfiguration von Vite, Vitest, Stryker, fallow und TypeScript (Begründung in `docs/engineering/architecture.md`) |

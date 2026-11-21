@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -24,7 +24,7 @@ pages: []
 user-flows: []
 dependsOn:
   - "[[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]"
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-59 · Entwicklerdokumentation an die neue Architektur anpassen
@@ -53,3 +53,10 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Schritt 4.1 (nach Schritt 3.6
 ## Kommentare
 
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
+- 21.11.2026: Abgeschlossen. Stand der Umsetzung:
+  - **Archiv:** Blueprint und Handoff liegen unter `docs/plans/archive/`. Jede Note nennt oben, dass sie ein historischer Stand vom 21.11.2026 ist, und verweist auf die geltende Dokumentation; ihr Inhalt blieb bis auf zwei Pfade der Handoff-Links unverändert. `docs/plans/` hält nur den Verbesserungsplan. `docs/README_DOCS.md` führt den neuen Ordner (Kriterium 1).
+  - **Architektur:** `docs/engineering/architecture.md` ist neu geordnet und folgt ADR 0006 bis 0008 (Module, Notizspeicher, Codec, Index, Navigation). Die Mermaid-Diagramme zeigen Schichten, Module, den Lebenszyklus mit `VaultReady`, den Index und `getState`/`setState`. Jeder Pfad, Bezeichner und jedes Skript in den Leitfäden wurde gegen das Repository geprüft; was zum Demo oder zu früheren Ständen gehörte, ist entfernt, Doppelungen sind zusammengeführt (Kriterium 2).
+  - **Funktion hinzufügen:** `docs/engineering/adding-a-feature.md` führt entlang des Durchstichs von [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]] mit den echten Dateien je Schritt, der Liste der Kompositionszeilen und der Checkliste für Ansichten (Kriterium 3).
+  - **Verweise:** ADR 0001, 0002 und 0004 bis 0008 haben kurze, datierte Nachträge, wo spätere Schritte Aussagen überholt haben (Pfade, Durchsetzung durch ESLint, Auswahl und Wechsel im Modul `communities`). Verweise in `docs/`, `README.md` und `AGENTS.md` auf verschobene Dokumente und Pfade sind angepasst (Kriterium 4).
+  - **Plan und README:** Der Verbesserungsplan nennt je Schritt die Pull Requests und in Abschnitt 5 je Kriterium den Stand mit Beleg. Die `README.md` beschreibt Befehle, Struktur und den heutigen Funktionsumfang (nur Gemeinschaften).
+  - **Offen, nicht Teil dieses PBIs:** die manuelle Prüfung im eigenen Vault (Tastatur, Screenreader, Themes, andere Plugins), `CI / e2e` als Pflichtprüfung (Einstellung des Eigentümers, siehe PBI-58 Kriterium 5) und die Vorabversion 0.2.0.

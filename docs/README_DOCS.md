@@ -145,7 +145,7 @@ Aktuell ist Designstand v2: vier Navigationsziele plus Kontakte und Einstellunge
 
 ## Verteilbare Claude Skills
 
-Der Ordner `skills/` enthält Skill-Quellen und das [Paketmanifest](../skills/manifest.json), `skills/dist/` die erzeugten ZIPs. [weg-gmail-to-vault](../skills/weg-gmail-to-vault/SKILL.md) ist der erste konkrete MVP-Skill. `skills/package_claude_skills.py` baut das Paket reproduzierbar; `skills/tests/` enthält ausschließlich synthetische Tests für Writer und Paket. Dies ist Skill-Infrastruktur, keine implementierte Pluginoberfläche oder eigener Gmail-Connector. Es werden keine zusätzlichen README-Dateien angelegt.
+Der Ordner `skills/` enthält Skill-Quellen und das [Paketmanifest](../skills/manifest.json). Die ZIPs werden nicht eingecheckt: `python3 skills/package_claude_skills.py` erzeugt sie unter `skills/dist/`, die CI stellt sie als Artefakt `claude-skills` bereit. [weg-gmail-to-vault](../skills/weg-gmail-to-vault/SKILL.md) ist der erste konkrete MVP-Skill. `skills/package_claude_skills.py` baut das Paket reproduzierbar; `skills/tests/` enthält ausschließlich synthetische Tests für Writer und Paket. Dies ist Skill-Infrastruktur, keine implementierte Pluginoberfläche oder eigener Gmail-Connector. Es werden keine zusätzlichen README-Dateien angelegt.
 
 [[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] ist explizit dem MVP zugeordnet; das gemischte F-18 erhält keine pauschale Releasezuordnung für alle Kinder. Die Plugininstallation und ein tatsächlicher Claude-/Gmail-Test bleiben offen. `pages` und `user-flows` dieser neuen Story bleiben bis zur konkreten Ergänzung der Sitemap v2 leer; alte oder ähnliche Ansichten werden nicht als bereits fertiges Integrationsdesign ausgegeben.
 

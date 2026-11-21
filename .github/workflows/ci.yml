@@ -84,3 +84,22 @@ jobs:
           name: e2e-logs
           path: reports/e2e/
           if-no-files-found: ignore
+
+  # Claude skill weg-gmail-to-vault: unit tests, then the distributable ZIP (not committed; see
+  # docs/decisions/K-16). Independent of the plugin jobs.
+  skills:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 -m unittest discover -s skills/tests
+      - run: python3 skills/package_claude_skills.py
+      - name: Upload skill package
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-skills
+          path: skills/dist/*.zip
+          if-no-files-found: error

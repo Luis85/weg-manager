@@ -53,7 +53,7 @@ Als Beirat möchte ich mit einem vom Plugin bereitgestellten Claude Skill mein b
 
 ## Paket und Quellen
 
-[Skill](../../skills/weg-gmail-to-vault/SKILL.md) · [ZIP](../../skills/dist/weg-gmail-to-vault-0.1.0.zip) · [Manifest](../../skills/manifest.json) · [Notizschema](../../skills/weg-gmail-to-vault/references/email-note-schema.md).
+[Skill](../../skills/weg-gmail-to-vault/SKILL.md) · [Manifest](../../skills/manifest.json) · [Notizschema](../../skills/weg-gmail-to-vault/references/email-note-schema.md). Das ZIP wird mit `python3 skills/package_claude_skills.py` nach `skills/dist/` gebaut und nicht eingecheckt.
 
 [[Integrationskonzept - Gmail-Eingang mit Claude Skill]], [[Skill-Evaluation - Gmail-Import]], [[K-16 - Gmail-Eingang im MVP über Claude Skill bereitstellen]]. Der neue MVP-Eingangsweg ist unabhängig von den späteren Versand-/Drive-Stories PBI-43 bis PBI-45.
 

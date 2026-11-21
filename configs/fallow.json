@@ -57,9 +57,18 @@
         "patterns": ["src/infrastructure/**"]
       },
       {
+        "name": "presentation/shell",
+        "patterns": ["src/presentation/shell/**"],
+        "publicFiles": ["src/presentation/shell/index.ts", "src/presentation/shell/host.ts"]
+      },
+      {
         "name": "presentation",
         "autoDiscover": ["src/presentation"],
         "publicFiles": ["index.ts"]
+      },
+      {
+        "name": "presentation-composition",
+        "patterns": ["src/presentation/**"]
       },
       {
         "name": "composition",
@@ -104,6 +113,10 @@
         "allow": ["presentation/shell", "application", "application-composition", "domain"]
       },
       {
+        "from": "presentation-composition",
+        "allow": ["presentation", "application", "application-composition", "domain"]
+      },
+      {
         "from": "composition",
         "allow": [
           "infrastructure",
@@ -111,7 +124,8 @@
           "application",
           "application-composition",
           "domain",
-          "presentation"
+          "presentation",
+          "presentation-composition"
         ]
       },
       {

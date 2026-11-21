@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { EventBus } from "../../../../src/application/shell/event-bus";
 import { AppEvent } from "../../../../src/application/events";
 import { RECOUNT_DELAY_MS } from "../../../../src/presentation/shell/recount";
-import { mountSurface } from "../../../../src/presentation/shell/mount";
+import { mountApp } from "../../../support/surface";
 import { testRuntime } from "../../../support/runtime";
 
 const settle = async (ms = 0) => {
@@ -19,7 +19,7 @@ const open = async (vault = 3) => {
   const test = testRuntime({ vault });
   const root = document.createElement("div");
   document.body.append(root);
-  const close = mountSurface(root, test.runtime);
+  const close = mountApp(root, test.runtime);
   cleanups.push(async () => {
     close();
     await test.runtime.dispose();
@@ -79,7 +79,7 @@ describe("ShellPanel and vault events", () => {
     const test = testRuntime({ vault: 3 });
     const root = document.createElement("div");
     document.body.append(root);
-    const close = mountSurface(root, test.runtime);
+    const close = mountApp(root, test.runtime);
     cleanups.push(() => test.runtime.dispose());
     await settle();
     close();

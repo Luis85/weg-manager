@@ -19,12 +19,14 @@ import {
   addRibbonIcon,
   hostLanguage,
   mirrorSettings,
+  openRoute,
   registerCommands,
   runSafely,
   showMessage,
 } from "./infrastructure/obsidian/shell";
 import { makeRuntime } from "./infrastructure/runtime";
-import { releaseAll } from "./presentation/shell";
+import { appSurface } from "./presentation/app-surface";
+import { releaseAll } from "./presentation/shell/host";
 
 export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell";
 
@@ -45,14 +47,6 @@ const log = (runtime: AppRuntime, event: string) =>
     runtime,
     Logger.use((logger) => logger.log({ level: "info", event })),
   );
-
-const openView = async (plugin: Plugin): Promise<void> => {
-  const { workspace } = plugin.app;
-  const existing = workspace.getLeavesOfType(SHELL_VIEW_TYPE)[0];
-  const leaf = existing ?? workspace.getLeaf(true);
-  if (existing === undefined) await leaf.setViewState({ type: SHELL_VIEW_TYPE, active: true });
-  await workspace.revealLeaf(leaf);
-};
 
 /**
  * Wires one plugin load: runtime, commands, ribbon, settings tab, view. If the plugin is unloaded
@@ -108,7 +102,7 @@ export const bootstrap = async (
     const open = () =>
       runSafely(
         runtime,
-        Effect.promise(() => openView(plugin)),
+        Effect.promise(() => openRoute(plugin.app.workspace)),
       );
     const removeCommands = registerCommands(plugin, runtime, messages, () =>
       open().then(() => undefined),
@@ -123,7 +117,10 @@ export const bootstrap = async (
     addRibbonIcon(plugin, open);
     plugin.addSettingTab(tab);
     const surfaces = new Set<() => void>();
-    plugin.registerView(SHELL_VIEW_TYPE, (leaf) => new ShellView(leaf, runtime, surfaces));
+    plugin.registerView(
+      SHELL_VIEW_TYPE,
+      (leaf) => new ShellView(leaf, runtime, surfaces, appSurface),
+    );
     // Runs first on dispose: every open view releases its Vue app before the runtime goes.
     undo.push(() => {
       const closes = [...surfaces];

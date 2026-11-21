@@ -7,4 +7,5 @@ export { runSafely } from "./run";
 export { mirrorSettings } from "./settings-mirror";
 export { ShellSettingTab } from "./settings-tab";
 export { shellLayer, type ShellLayerOptions } from "./shell-layer";
+export { openRoute } from "./open-route";
 export { SHELL_VIEW_TYPE, ShellView } from "./shell-view";

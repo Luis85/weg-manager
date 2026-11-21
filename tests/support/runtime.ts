@@ -1,5 +1,6 @@
 import { Effect, Layer, ManagedRuntime } from "effect";
 import type { AppRuntime } from "../../src/application/app-services";
+import { deviceStoreInMemory } from "../../src/application/shell/device-store";
 import { memoryNoteStore } from "../../src/infrastructure/memory/notes";
 import { InvalidSettingsError } from "../../src/application/shell/errors";
 import { messagesLayer } from "../../src/application/messages";
@@ -66,6 +67,7 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
     messages,
     events.layer,
     notes.layer,
+    deviceStoreInMemory(),
   );
   const runtime: AppRuntime = ManagedRuntime.make(layer);
   return { runtime, store, notifier, vault, logger, clipboard, events, notes };

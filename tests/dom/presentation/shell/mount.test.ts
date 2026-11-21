@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { defineComponent, h, onMounted, ref } from "vue";
 import { SCOPE_CLASS as SCRIPT_SCOPE_CLASS } from "../../../../scripts/scope-css.mjs";
 import { updateGreeting } from "../../../../src/application/shell/use-cases";
-import { mountSurface } from "../../../../src/presentation/shell/mount";
+import { mountApp } from "../../../support/surface";
 import { PORTAL_CLASS, SCOPE_CLASS } from "../../../../src/presentation/shell/scope";
 import { testRuntime } from "../../../support/runtime";
 
@@ -41,7 +41,7 @@ describe("mountSurface", () => {
   it("renders the panel inside a scoped root", async () => {
     const { runtime } = testRuntime({ store: { initial: { greeting: "Moin" } } });
     const root = newRoot();
-    const close = mountSurface(root, runtime);
+    const close = mountApp(root, runtime);
     await settle();
     expect(root.classList.contains(SCOPE_CLASS)).toBe(true);
     expect(root.querySelector(`:scope > .${PORTAL_CLASS}`)).not.toBeNull();
@@ -66,7 +66,7 @@ describe("mountSurface", () => {
         return () => h("p", { ref: el }, "probe");
       },
     });
-    const close = mountSurface(root, runtime, { content: Probe });
+    const close = mountApp(root, runtime, { content: Probe });
     await settle();
     expect(seen).toEqual([{ connected: true, inRoot: true }]);
     close();
@@ -77,7 +77,7 @@ describe("mountSurface", () => {
     const { runtime } = testRuntime();
     const root = newRoot();
     root.className = "host-class";
-    const close = mountSurface(root, runtime);
+    const close = mountApp(root, runtime);
     await settle();
     close();
     expect(root.children).toHaveLength(0);
@@ -98,7 +98,7 @@ describe("mountSurface", () => {
       render: () => h("div", [h("p", { "data-testid": "sibling" }, "still here"), h(Broken)]),
     });
     const root = newRoot();
-    const close = mountSurface(root, runtime, { content: Content });
+    const close = mountApp(root, runtime, { content: Content });
     await settle();
     expect(notifier.messages()).toEqual([
       expect.objectContaining({ title: "Unerwarteter Fehler in WEG Manager" }),
@@ -114,7 +114,7 @@ describe("mountSurface", () => {
     document.head.replaceChildren();
     const before = document.head.childElementCount;
     const root = newRoot();
-    const close = mountSurface(root, runtime);
+    const close = mountApp(root, runtime);
     await settle();
     expect(document.head.childElementCount).toBe(before);
     buttonNamed(root, "Über").click();
@@ -129,8 +129,8 @@ describe("mountSurface", () => {
     const { runtime } = testRuntime();
     const first = newRoot();
     const second = newRoot();
-    const closeFirst = mountSurface(first, runtime);
-    const closeSecond = mountSurface(second, runtime);
+    const closeFirst = mountApp(first, runtime);
+    const closeSecond = mountApp(second, runtime);
     await settle();
     closeFirst();
     await runtime.runPromise(updateGreeting("Neu"));
@@ -146,7 +146,7 @@ describe("mountSurface", () => {
     const popout = document.implementation.createHTMLDocument("pop-out");
     const root = newRoot(popout);
     const mainChildren = document.body.childElementCount;
-    const close = mountSurface(root, runtime);
+    const close = mountApp(root, runtime);
     await settle();
     buttonNamed(root, "Über").click();
     await settle();

@@ -75,6 +75,13 @@ export const shellEn: ShellCatalog = {
     counting: "Counting notes…",
   },
   greetingForm: { label: "Greeting", save: "Save" },
+  frame: { navigation: "Views", content: "Content", back: "Back", forward: "Forward" },
+  routes: { welcome: "Home" },
+  notFound: {
+    title: "Not found",
+    detail: "What you wanted to open no longer exists. It may have been deleted or renamed.",
+    back: "Go to the start page",
+  },
   about: {
     title: `About ${PRODUCT_NAME}`,
     description: "Tools for the advisory boards of condominium owners' associations.",

@@ -2,8 +2,8 @@ import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import type { UserMessage } from "../../../../src/application/shell/user-messages";
-import ErrorNotice from "../../../../src/presentation/shell/components/ErrorNotice.vue";
-import { mountSurface } from "../../../../src/presentation/shell/mount";
+import { ErrorNotice } from "../../../../src/presentation/shell";
+import { mountApp } from "../../../support/surface";
 import { testRuntime } from "../../../support/runtime";
 
 const cleanups: (() => Promise<void>)[] = [];
@@ -15,7 +15,7 @@ const show = async (message: UserMessage, handlers?: Record<string, () => unknow
   const content = defineComponent({
     render: () => h(ErrorNotice, { message, ...(handlers ? { handlers } : {}) }),
   });
-  const close = mountSurface(root, test.runtime, { content });
+  const close = mountApp(root, test.runtime, { content });
   cleanups.push(async () => {
     close();
     await test.runtime.dispose();

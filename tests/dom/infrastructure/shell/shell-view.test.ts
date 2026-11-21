@@ -1,5 +1,6 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { appSurface } from "../../../../src/presentation/app-surface";
 import { SCOPE_CLASS } from "../../../../src/presentation/shell/scope";
 import { testRuntime } from "../../../support/runtime";
 
@@ -74,7 +75,7 @@ describe("ShellView", () => {
     const leaf = app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)[0];
     const view = leaf?.view as InstanceType<typeof ShellView> | undefined;
     expect(view?.contentEl.classList.contains(SCOPE_CLASS)).toBe(true);
-    expect(view?.contentEl.textContent).toContain("Moin");
+    await vi.waitFor(() => expect(view?.contentEl.textContent).toContain("Moin"));
     const children = view?.contentEl.children.length;
     await view?.onOpen();
     expect(view?.contentEl.children.length).toBe(children);
@@ -129,11 +130,11 @@ describe("ShellView", () => {
 
   it("empties the content element before it mounts", async () => {
     const { runtime } = testRuntime({ store: { initial: { greeting: "Moin" } } });
-    const view = new ShellView(newLeaf(), runtime, new Set());
+    const view = new ShellView(newLeaf(), runtime, new Set(), appSurface);
     view.contentEl.append(document.createElement("p"));
     await view.onOpen();
     expect(view.contentEl.querySelector("p")).toBeNull();
-    expect(view.contentEl.textContent).toContain("Moin");
+    await vi.waitFor(() => expect(view.contentEl.textContent).toContain("Moin"));
     await view.onClose();
     await runtime.dispose();
   });
@@ -142,7 +143,7 @@ describe("ShellView", () => {
     const { runtime } = testRuntime();
     const surface = deferredSurface();
     const surfaces = new Set<() => void>();
-    const view = new ShellView(newLeaf(), runtime, surfaces, surface.load);
+    const view = new ShellView(newLeaf(), runtime, surfaces, appSurface, surface.load);
     const opening = view.onOpen();
     expect(surfaces.size).toBe(1);
     surface.resolve();
@@ -157,7 +158,7 @@ describe("ShellView", () => {
     const { runtime } = testRuntime();
     const surface = deferredSurface();
     const surfaces = new Set<() => void>();
-    const view = new ShellView(newLeaf(), runtime, surfaces, surface.load);
+    const view = new ShellView(newLeaf(), runtime, surfaces, appSurface, surface.load);
     const opening = view.onOpen();
     await view.onClose();
     surface.resolve();
@@ -171,7 +172,7 @@ describe("ShellView", () => {
     const { runtime } = testRuntime();
     const surface = deferredSurface();
     const surfaces = new Set<() => void>();
-    const view = new ShellView(newLeaf(), runtime, surfaces, surface.load);
+    const view = new ShellView(newLeaf(), runtime, surfaces, appSurface, surface.load);
     const opening = view.onOpen();
     for (const close of surfaces) close();
     surface.resolve();

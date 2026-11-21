@@ -4,12 +4,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import { VaultReadError } from "../../../../src/application/shell/errors";
 import { countMarkdownFiles, updateGreeting } from "../../../../src/application/shell/use-cases";
-import {
-  reportVueError,
-  useQuery,
-  useRuntime,
-  useSettings,
-} from "../../../../src/presentation/shell/runtime/use-runtime";
+import { useQuery, useSettings } from "../../../../src/presentation/shell";
+import { reportVueError, useRuntime } from "../../../../src/presentation/shell/runtime/use-runtime";
 import { host, runtimes } from "../../../support/composable";
 
 const { make, disposeAll } = runtimes();

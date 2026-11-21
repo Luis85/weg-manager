@@ -11,7 +11,13 @@ export const CSS_PREFIX = "wm";
  * Icons bundled into the plugin (no runtime network). Nuxt UI's default icons (`ui.icons`) are
  * added automatically; list here every other `lucide:*` icon the shell uses.
  */
-export const SHELL_ICONS = ["lucide:layout-dashboard", "lucide:info", "lucide:refresh-cw"];
+export const SHELL_ICONS = [
+  "lucide:layout-dashboard",
+  "lucide:info",
+  "lucide:refresh-cw",
+  "lucide:arrow-left",
+  "lucide:arrow-right",
+];
 
 export type SharedOptions = {
   readonly mode: string;

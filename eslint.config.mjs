@@ -51,6 +51,9 @@ const obsidianmdForVue = [
  *   is one entry here; its folders need no further rule.
  * - Every import into a module folder from outside it goes through the folder's `index.ts`
  *   (`../shell`, never `../shell/ports`), also between layers of the same module.
+ * - `presentation/shell` has a second entry, the Vue-free `host.ts`, for the code that runs at
+ *   plugin load (`bootstrap`, the Obsidian adapters, the composition files in `src/presentation/`).
+ *   That code may not import the Vue-loading `index.ts` except as types.
  * - A core module imports no module listed after it: `shell` none, `notes` only `shell`. Feature
  *   modules may import each other's index.
  * - Nothing in `src/` imports the in-memory adapters (`src/infrastructure/memory/`): they serve the
@@ -59,10 +62,39 @@ const obsidianmdForVue = [
 const CORE_MODULES = ["shell", "notes"];
 const FEATURE_MODULES = ["communities"];
 const MODULES = [...CORE_MODULES, ...FEATURE_MODULES];
-const pastIndex = MODULES.map((module) => ({
-  regex: `(^|/)${module}/(?!index$)`,
-  message: `Import module ${module} only through its index.ts (ADR 0006).`,
-}));
+const pastIndex = [
+  ...MODULES.map((module) => ({
+    regex: module === "shell" ? "(^|/)shell/(?!index$|host$)" : `(^|/)${module}/(?!index$)`,
+    message: `Import module ${module} only through its index.ts (ADR 0006).`,
+  })),
+  {
+    regex: "(^|/)(?<!presentation/)shell/host$",
+    message: "Only presentation/shell has a host.ts entry (ADR 0006).",
+  },
+];
+/** In `src/presentation/` the shell's folder is `./shell`, so `./shell/host` is its host entry. */
+const pastIndexInPresentation = pastIndex.slice(0, -1);
+/** Code that runs at plugin load: it loads Vue only through `loadSurface` (Lazy presentation). */
+const PLUGIN_LOAD_FILES = ["src/main.ts", "src/bootstrap.ts", "src/infrastructure/**/*.ts"];
+/** @returns {import("eslint").Linter.Config} */
+const vueFreeAtLoad = (/** @type {string[]} */ files, /** @type {string} */ regex) => ({
+  files,
+  rules: {
+    "@typescript-eslint/no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          {
+            regex,
+            allowTypeImports: true,
+            message:
+              "Plugin-load code imports presentation/shell/host; index.ts loads Vue (ADR 0006).",
+          },
+        ],
+      },
+    ],
+  },
+});
 const testOnly = {
   regex: "(^|/)memory(/|$)",
   message: "The in-memory adapters are for tests and the harness only (ADR 0007).",
@@ -81,6 +113,9 @@ const restrict = (/** @type {{ regex: string; message: string }[]} */ patterns) 
 /** @type {import("eslint").Linter.Config[]} */
 const moduleBoundaries = [
   { files: ["src/**/*.ts", "src/**/*.vue"], rules: restrict([...pastIndex, testOnly]) },
+  { files: ["src/presentation/*.ts"], rules: restrict([...pastIndexInPresentation, testOnly]) },
+  vueFreeAtLoad(PLUGIN_LOAD_FILES, "(^|/)presentation/shell(/index)?$"),
+  vueFreeAtLoad(["src/presentation/*.ts"], "^\\./shell(/index)?$"),
   ...CORE_MODULES.map((module, index) => ({
     files: moduleFolders(module),
     rules: restrict([

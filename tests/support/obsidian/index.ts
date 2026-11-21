@@ -27,7 +27,14 @@ export {
   ToggleComponent,
   settingsIn,
 } from "./settings";
-export { ItemView, View, WorkspaceLeaf, type ViewCreator } from "./views";
+export {
+  ItemView,
+  View,
+  WorkspaceLeaf,
+  type ViewCreator,
+  type ViewState,
+  type ViewStateResult,
+} from "./views";
 export { FileManager } from "./file-manager";
 export { MetadataCache, type CachedMetadata } from "./metadata-cache";
 export { normalizePath } from "./paths";

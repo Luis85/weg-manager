@@ -6,6 +6,7 @@ import {
   controllableVault,
   inMemoryStore,
   recordingClipboard,
+  recordingEventBus,
   recordingLogger,
   recordingNotifier,
   sequentialIncidents,
@@ -38,6 +39,7 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
   const vault = controllableVault(options.vault ?? 3);
   const logger = recordingLogger();
   const clipboard = recordingClipboard();
+  const events = recordingEventBus();
   const live = SettingsServiceLive.pipe(Layer.provide(Layer.merge(store.layer, notifier.layer)));
   const settings =
     options.rejectUpdates === undefined
@@ -51,7 +53,8 @@ export const testRuntime = (options: TestRuntimeOptions = {}) => {
     sequentialIncidents(),
     clipboard.layer,
     testHostInfo,
+    events.layer,
   );
   const runtime: AppRuntime = ManagedRuntime.make(layer);
-  return { runtime, store, notifier, vault, logger, clipboard };
+  return { runtime, store, notifier, vault, logger, clipboard, events };
 };

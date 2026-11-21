@@ -28,7 +28,7 @@ export {
   settingsIn,
 } from "./settings";
 export { ItemView, View, WorkspaceLeaf, type ViewCreator } from "./views";
-export { Vault, type TFile } from "./vault";
+export { MetadataCache, TAbstractFile, TFile, TFolder, Vault } from "./vault";
 export { Workspace } from "./workspace";
 export { WorkspaceRibbon, type RibbonItem } from "./ribbon";
 export { installDomExtensions } from "./dom";

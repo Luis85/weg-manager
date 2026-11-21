@@ -1,6 +1,7 @@
 import { Effect, Layer } from "effect";
 import type { AppServices } from "../src/application/app-services";
 import { ClipboardError, StorageError, VaultReadError } from "../src/application/errors";
+import { EventBusLive } from "../src/application/event-bus";
 import { LoggerLive } from "../src/application/logger";
 import {
   Clipboard,
@@ -86,5 +87,5 @@ export const harnessLayer = (
   );
   const settings = SettingsServiceLive.pipe(Layer.provideMerge(adapters));
   const logger = LoggerLive({ developmentMode: true }).pipe(Layer.provide(consoleSinkLayer));
-  return Layer.mergeAll(logger.pipe(Layer.provideMerge(settings)), incidentsLayer);
+  return Layer.mergeAll(logger.pipe(Layer.provideMerge(settings)), incidentsLayer, EventBusLive);
 };

@@ -1,5 +1,7 @@
 import { Effect, Layer } from "effect";
 import { ClipboardError, StorageError, VaultReadError } from "../../src/application/errors";
+import { EventBus, EventBusLive } from "../../src/application/event-bus";
+import type { AppEvent } from "../../src/application/events";
 import {
   Clipboard,
   HostInfo,
@@ -168,3 +170,33 @@ export const testHostInfo = Layer.succeed(HostInfo)({
   apiVersion: "1.15.1",
   platform: "test",
 });
+
+/** The real `EventBusLive`, recording every published event; `failNextPublish` makes one publish die. */
+export const recordingEventBus = () => {
+  const published: AppEvent[] = [];
+  let failNext = false;
+  const layer = Layer.effect(
+    EventBus,
+    EventBus.useSync((bus) =>
+      EventBus.of({
+        ...bus,
+        publish: (event) =>
+          Effect.suspend(() => {
+            if (failNext) {
+              failNext = false;
+              return Effect.die(new Error("publish failed"));
+            }
+            published.push(event);
+            return bus.publish(event);
+          }),
+      }),
+    ),
+  ).pipe(Layer.provideMerge(EventBusLive));
+  return {
+    layer,
+    published: () => [...published],
+    failNextPublish: () => {
+      failNext = true;
+    },
+  };
+};

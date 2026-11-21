@@ -2,9 +2,18 @@ import { flushPromises } from "@vue/test-utils";
 import { Effect, Stream, SubscriptionRef } from "effect";
 import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
+import { AppEvent } from "../../../../src/application/events";
+import { en } from "../../../../src/application/messages";
+import { EventBus } from "../../../../src/application/shell/event-bus";
 import { SettingsService } from "../../../../src/application/shell/settings-service";
 import { setLogLevel, updateGreeting } from "../../../../src/application/shell/use-cases";
-import { useSettings, useSettingsStatus, useStream } from "../../../../src/presentation/shell";
+import {
+  useAppEvents,
+  useMessages,
+  useSettings,
+  useSettingsStatus,
+  useStream,
+} from "../../../../src/presentation/shell";
 import { host, runtimes } from "../../../support/composable";
 import { mountApp } from "../../../support/surface";
 
@@ -107,5 +116,37 @@ describe("useSettings and useSettingsStatus", () => {
     });
     const status = await runtime.runPromise(SettingsService.use((service) => service.status));
     expect(exposed.status.value).toEqual(status);
+  });
+});
+
+describe("useAppEvents and useMessages", () => {
+  it("hands every event to the handler until the scope ends; a throw is reported once", async () => {
+    const { runtime, logger } = make();
+    const seen: string[] = [];
+    const { wrapper } = host(runtime, () => {
+      useAppEvents((event) => {
+        seen.push(event._tag);
+        if (event._tag === "LayoutReady") throw new Error("handler broke");
+      });
+      return "subscribed";
+    });
+    await flushPromises();
+    const publish = (event: AppEvent) =>
+      runtime.runPromise(EventBus.use((bus) => bus.publish(event)));
+    await publish(AppEvent.LayoutReady());
+    await publish(AppEvent.FileCreated({ path: "a.md", extension: "md" }));
+    await flushPromises();
+    expect(seen).toEqual(["LayoutReady", "FileCreated"]);
+    expect(defects(logger)).toHaveLength(1);
+    wrapper.unmount();
+    await publish(AppEvent.FileCreated({ path: "b.md", extension: "md" }));
+    await flushPromises();
+    expect(seen).toEqual(["LayoutReady", "FileCreated"]);
+  });
+
+  it("gives the catalog of the runtime's language", () => {
+    const { runtime } = make({ language: "en" });
+    const { exposed } = host(runtime, () => useMessages());
+    expect(exposed).toBe(en);
   });
 });

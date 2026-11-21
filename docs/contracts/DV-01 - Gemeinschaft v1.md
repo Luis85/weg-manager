@@ -50,7 +50,7 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 
 ## Ablage und Dateiname
 
-- Das Plugin legt neue Gemeinschaften in `<Wurzelordner>/Gemeinschaften/` an. Der Wurzelordner ist die Einstellung `rootFolder`, vorgegeben `WEG Manager`. Der Ordnername `Gemeinschaften` ist in jeder Sprache deutsch, weil ein Vault zwischen Geräten geteilt wird.
+- Das Plugin legt neue Gemeinschaften in `<Wurzelordner>/Gemeinschaften/` an. Der Wurzelordner ist die Einstellung `rootFolder`, vorgegeben `WEG Manager`. Beginnt der Name eines seiner Ordner mit einem Punkt, ist er ungültig und es gilt die Vorgabe, weil Obsidian versteckte Ordner nicht einliest. Der Ordnername `Gemeinschaften` ist in jeder Sprache deutsch, weil ein Vault zwischen Geräten geteilt wird.
 - Der Dateiname ist der Name der Gemeinschaft. Zeichen, die ein Dateiname oder ein Wikilink nicht tragen kann (`\ / : * ? " < > | # ^ [ ]` und Steuerzeichen), werden je Folge durch einen Bindestrich ersetzt. Mehrere Leerzeichen werden zu einem; Punkte und Leerzeichen am Anfang und Ende fallen weg. Bleibt nichts übrig, heißt die Datei wie das Kürzel. Aus `Ahornweg 12/14` wird `Ahornweg 12-14.md`; `name` behält `Ahornweg 12/14`.
 - Ist der Name im Ordner schon vergeben (auch in anderer Groß- und Kleinschreibung), heißt die Datei `Name (2).md`, `Name (3).md` und so weiter.
 - Ändert der Mensch im Plugin den Namen, benennt das Plugin die Datei mit um, solange sie noch den Namen trägt, den das Plugin ihr gegeben hat (der alte Name, auch mit Zusatz ` (2)`). Hat der Mensch der Datei einen eigenen Namen gegeben, bleibt dieser. Klappt das Umbenennen nicht, bleibt die gespeicherte Notiz, wo sie ist.

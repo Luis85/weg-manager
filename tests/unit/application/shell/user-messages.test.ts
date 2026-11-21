@@ -114,7 +114,7 @@ describe("message catalog texts", () => {
       severity: "warning",
       title: "Eingabe ungültig",
       detail:
-        'Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?. Die Protokollstufe muss eine von error, warn sein.',
+        'Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne Ordnernamen, die mit „.“ beginnen (solche Ordner blendet Obsidian aus), und ohne die Zeichen * " \\ < > : | ?. Die Protokollstufe muss eine von error, warn sein.',
     });
     expect(describeError(new VaultReadError({ cause: null }), de)).toEqual({
       severity: "error",
@@ -162,7 +162,7 @@ describe("message catalog texts", () => {
       severity: "warning",
       title: "Invalid input",
       detail:
-        'The root folder must be a vault folder path of at most 100 characters, with "/" between folder names, without "." or ".." as folder names and without the characters * " \\ < > : | ?.',
+        'The root folder must be a vault folder path of at most 100 characters, with "/" between folder names, without folder names that start with "." (Obsidian hides such folders) and without the characters * " \\ < > : | ?.',
     });
   });
 
@@ -171,7 +171,7 @@ describe("message catalog texts", () => {
       severity: "warning",
       title: "Einstellungen teilweise zurückgesetzt",
       detail:
-        'Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?. Die Einstellungsdatei enthält keine gültigen Einstellungen. Für diese Werte gelten Standardwerte. Prüfe die Einstellungen.',
+        'Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne Ordnernamen, die mit „.“ beginnen (solche Ordner blendet Obsidian aus), und ohne die Zeichen * " \\ < > : | ?. Die Einstellungsdatei enthält keine gültigen Einstellungen. Für diese Werte gelten Standardwerte. Prüfe die Einstellungen.',
       action: "open-settings",
     });
     expect(describeSettingsIssues([{ code: "schema.invalid" }], en.shell)).toEqual({

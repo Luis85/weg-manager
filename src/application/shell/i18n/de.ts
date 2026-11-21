@@ -13,7 +13,7 @@ export const shellDe: ShellCatalog = {
     "logLevel.unknown": ({ allowed }) =>
       `Die Protokollstufe muss eine von ${allowed.join(", ")} sein.`,
     "rootFolder.invalid": ({ max }) =>
-      `Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens ${max} Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.`,
+      `Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens ${max} Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne Ordnernamen, die mit „.“ beginnen (solche Ordner blendet Obsidian aus), und ohne die Zeichen * " \\ < > : | ?.`,
   },
   errors: {
     storage: {

@@ -103,7 +103,7 @@ describe("buildDiagnostics", () => {
       const text = yield* report({ initial: { rootFolder: 7, logLevel: "laut" } }, []);
       assert.include(
         text,
-        'Hinweise zu Einstellungen: Die Protokollstufe muss eine von error, warn, info, debug sein. Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.',
+        'Hinweise zu Einstellungen: Die Protokollstufe muss eine von error, warn, info, debug sein. Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne Ordnernamen, die mit „.“ beginnen (solche Ordner blendet Obsidian aus), und ohne die Zeichen * " \\ < > : | ?.',
       );
     }),
   );
@@ -113,7 +113,7 @@ describe("buildDiagnostics", () => {
       const text = yield* report({ initial: { rootFolder: "a:b" } }, []);
       assert.include(
         text,
-        'Hinweise zu Einstellungen: Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.',
+        'Hinweise zu Einstellungen: Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne Ordnernamen, die mit „.“ beginnen (solche Ordner blendet Obsidian aus), und ohne die Zeichen * " \\ < > : | ?.',
       );
     }),
   );
@@ -125,7 +125,7 @@ describe("buildDiagnostics", () => {
       assert.include(text, "Einstellungen beschreibbar: ja");
       assert.include(
         text,
-        'Hinweise zu Einstellungen: Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.',
+        'Hinweise zu Einstellungen: Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne Ordnernamen, die mit „.“ beginnen (solche Ordner blendet Obsidian aus), und ohne die Zeichen * " \\ < > : | ?.',
       );
     }),
   );

@@ -18,17 +18,22 @@ const normalise = (value: string): string =>
     .map((segment) => segment.trim())
     .join("/");
 
+/**
+ * A name that starts with a dot is a hidden folder, which Obsidian does not index, so notes
+ * created there would never be listed; `.`, `..` and Obsidian's config folder (`.obsidian`, and
+ * an override, which Obsidian requires to start with a dot too) are among them.
+ */
 const isFolderPath = (value: string): boolean =>
   value
     .split("/")
     .every(
-      (segment) =>
-        segment !== "" && segment !== "." && segment !== ".." && !FORBIDDEN_IN_NAME.test(segment),
+      (segment) => segment !== "" && !segment.startsWith(".") && !FORBIDDEN_IN_NAME.test(segment),
     );
 
 /**
  * A vault-relative folder path with `/` between the names, stored normalised: no leading or
- * trailing slash, no empty, `.` or `..` name, none of the characters Obsidian forbids in a name.
+ * trailing slash, no empty name, no name that starts with a dot (a hidden folder), none of the
+ * characters Obsidian forbids in a name.
  */
 export const RootFolder = Schema.String.pipe(
   Schema.decodeTo(

@@ -320,3 +320,39 @@ describe("toLoggedError with a real error", () => {
     }
   });
 });
+
+describe("toLoggedError frames, hostile shapes", () => {
+  it("takes the position from the end, not from a directory that looks like one", () => {
+    assert.deepStrictEqual(framesOf("    at run (/home/weg:1:2/main.js:10:5)"), [
+      "run (main.js:10:5)",
+    ]);
+  });
+
+  it("treats a scheme as one only at the start of a location", () => {
+    assert.deepStrictEqual(framesOf("    at /home/a://b?c/main.js:1:2"), ["main.js:1:2"]);
+  });
+
+  it("drops a V8 line whose closing bracket has no opening one", () => {
+    assert.deepStrictEqual(framesOf("    at x<anonymous>)"), []);
+  });
+
+  it("drops a V8 line that opens its bracket without a function name", () => {
+    assert.deepStrictEqual(framesOf("    at  (main.js:1:2)"), []);
+  });
+
+  it("drops a line that is neither format even when it is a valid location", () => {
+    assert.deepStrictEqual(framesOf("<anonymous>"), []);
+  });
+
+  it("keeps the first frame of a stack without a header when the message is empty", () => {
+    assert.deepStrictEqual(toLoggedError(withStack("run@main.js:1:2", "")).frames, [
+      "run (main.js:1:2)",
+    ]);
+  });
+
+  it("returns no frames when the stack is not a string", () => {
+    const error = new Error("boom");
+    Object.defineProperty(error, "stack", { value: 42 });
+    assert.deepStrictEqual(toLoggedError(error).frames, []);
+  });
+});

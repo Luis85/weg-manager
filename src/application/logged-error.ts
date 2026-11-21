@@ -7,7 +7,7 @@ const FUNCTION_NAME = /^[\w$.<> [\]]+$/;
 const FILE_NAME = /^[\w$.@:<>-]+$/;
 const POSITION = /:\d+:\d+$/;
 const SCHEME = /^[A-Za-z][A-Za-z0-9+.-]*:\/\//;
-const QUERY = /[?#].*$/;
+const QUERY = /[?#].*/;
 
 const stripQuery = (text: string): string => text.replace(QUERY, "");
 
@@ -84,8 +84,9 @@ const describeNonError = (cause: unknown): string => {
 export const toLoggedError = (cause: unknown): LoggedError => {
   if (!isError(cause)) return { name: "NonError", message: describeNonError(cause), frames: [] };
   const message = typeof cause.message === "string" ? cause.message : "";
-  const stack = typeof cause.stack === "string" ? cause.stack : "";
   const name = typeof cause.name === "string" && NAME.test(cause.name) ? cause.name : "Error";
   // V8 puts `name: message` first, and a message can have lines that look like frames.
-  return { name, message, frames: parseFrames(stack.replace(message, "")) };
+  const frames =
+    typeof cause.stack === "string" ? parseFrames(cause.stack.replace(message, "")) : [];
+  return { name, message, frames };
 };

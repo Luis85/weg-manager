@@ -10,6 +10,8 @@ export const describeIssue = (issue: SettingsIssue, messages: ShellCatalog): str
       return messages.issues[issue.code](issue);
     case "schema.invalid":
       return messages.issues[issue.code](issue);
+    case "migration.failed":
+      return messages.issues[issue.code](issue);
     case "greeting.length":
       return messages.issues[issue.code](issue);
     case "logLevel.unknown":

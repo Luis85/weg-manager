@@ -9,6 +9,8 @@ export const shellEn: ShellCatalog = {
     "schema.newer": ({ version }) =>
       `The settings come from a newer plugin version (schema version ${version}).`,
     "schema.invalid": () => "The schema version must be a positive whole number.",
+    "migration.failed": ({ from }) =>
+      `The settings from schema version ${from} couldn't be upgraded to the current version.`,
     "greeting.length": ({ max }) => `The greeting must be 1 to ${max} characters long.`,
     "logLevel.unknown": ({ allowed }) => `The log level must be one of ${allowed.join(", ")}.`,
   },

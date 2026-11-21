@@ -1,4 +1,12 @@
-import { Option, Schema } from "effect";
+import { Schema, SchemaGetter } from "effect";
+import {
+  StructuralIssue,
+  makeSettingsCodec,
+  type DecodedSettings as CodecDecoded,
+  type Migrations,
+  type PatchResult as CodecPatchResult,
+  type SettingsFields,
+} from "./settings-codec";
 
 export const SETTINGS_VERSION = 1;
 export const GREETING_MAX_LENGTH = 200;
@@ -21,20 +29,12 @@ export type Settings = {
 
 export type EditableSettings = Omit<Settings, "schemaVersion">;
 
-export const DEFAULT_SETTINGS: Settings = {
-  schemaVersion: SETTINGS_VERSION,
-  greeting: null,
-  logLevel: "warn",
-};
-
 /**
  * A broken rule, as data: the domain knows no language. The message catalog turns each `code`
- * into a sentence (`src/application/shell/i18n/`).
+ * into a sentence (`src/application/shell/i18n/`). The file-level codes come from the codec.
  */
 export const SettingsIssue = Schema.Union([
-  Schema.Struct({ code: Schema.Literal("file.invalid") }),
-  Schema.Struct({ code: Schema.Literal("schema.newer"), version: Schema.Number }),
-  Schema.Struct({ code: Schema.Literal("schema.invalid") }),
+  StructuralIssue,
   Schema.Struct({ code: Schema.Literal("greeting.length"), max: Schema.Number }),
   Schema.Struct({
     code: Schema.Literal("logLevel.unknown"),
@@ -44,99 +44,63 @@ export const SettingsIssue = Schema.Union([
 
 export type SettingsIssue = typeof SettingsIssue.Type;
 
-export type DecodedSettings = {
-  readonly settings: Settings;
-  readonly issues: readonly SettingsIssue[];
-  readonly writable: boolean;
+type FieldIssue = Exclude<SettingsIssue, StructuralIssue>;
+
+export type DecodedSettings = CodecDecoded<Settings, FieldIssue>;
+export type PatchResult = CodecPatchResult<Settings, FieldIssue>;
+
+/** Trimmed, 1 to 200 characters; the legacy default and `null` both mean "not customised". */
+const Greeting = Schema.NullOr(
+  Schema.Trim.check(Schema.isNonEmpty(), Schema.isMaxLength(GREETING_MAX_LENGTH)),
+).pipe(
+  Schema.decodeTo(Schema.NullOr(Schema.String), {
+    decode: SchemaGetter.transform((value) => (value === LEGACY_DEFAULT_GREETING ? null : value)),
+    encode: SchemaGetter.passthrough(),
+  }),
+);
+
+/**
+ * One declaration per setting: its schema, its default, the issue a bad value produces and whether
+ * a default stays out of the file. Decode, patch validation and encode all follow from this.
+ * A greeting that is not customised is left out of the file, so it reads the same in every plugin
+ * version: older ones fall back to their own default without an issue.
+ */
+const FIELDS: SettingsFields<EditableSettings, FieldIssue> = {
+  greeting: {
+    schema: Greeting,
+    default: null,
+    issue: { code: "greeting.length", max: GREETING_MAX_LENGTH },
+    omitWhenDefault: true,
+  },
+  logLevel: {
+    schema: Schema.Literals(LOG_LEVELS),
+    default: "warn",
+    issue: { code: "logLevel.unknown", allowed: LOG_LEVELS },
+    omitWhenDefault: false,
+  },
 };
 
-export type PatchResult =
-  | { readonly ok: true; readonly settings: Settings }
-  | { readonly ok: false; readonly issues: readonly SettingsIssue[] };
+/** Empty: version 1 is the only one so far. A future bump adds `1: (raw) => …` here. */
+const MIGRATIONS: Migrations = {};
 
-type FieldResult<A> =
-  { readonly ok: true; readonly value: A } | { readonly ok: false; readonly issue: SettingsIssue };
-
-const Greeting = Schema.Trim.check(Schema.isNonEmpty(), Schema.isMaxLength(GREETING_MAX_LENGTH));
-const decodeGreeting = Schema.decodeUnknownOption(Greeting);
-const isLogLevel = Schema.is(Schema.Literals(LOG_LEVELS));
-const isVersion = Schema.is(Schema.Int.check(Schema.isGreaterThan(0)));
-
-const greetingField = (raw: unknown): FieldResult<string | null> => {
-  if (raw === null) return { ok: true, value: null };
-  const decoded = decodeGreeting(raw);
-  if (Option.isNone(decoded))
-    return { ok: false, issue: { code: "greeting.length", max: GREETING_MAX_LENGTH } };
-  return { ok: true, value: decoded.value === LEGACY_DEFAULT_GREETING ? null : decoded.value };
-};
-
-const logLevelField = (raw: unknown): FieldResult<LogLevel> =>
-  isLogLevel(raw)
-    ? { ok: true, value: raw }
-    : { ok: false, issue: { code: "logLevel.unknown", allowed: LOG_LEVELS } };
-
-const orDefault = <A>(result: FieldResult<A>, fallback: A, issues: SettingsIssue[]): A => {
-  if (result.ok) return result.value;
-  issues.push(result.issue);
-  return fallback;
-};
-
-const isRecord = (raw: unknown): raw is Record<string, unknown> =>
-  typeof raw === "object" && raw !== null && !Array.isArray(raw);
-
-/** Reads the known fields only; unknown keys (such as the retired `showRibbonIcon`) are dropped. */
-const decodeFields = (raw: Record<string, unknown>, issues: SettingsIssue[]): Settings => ({
-  schemaVersion: SETTINGS_VERSION,
-  greeting:
-    "greeting" in raw
-      ? orDefault(greetingField(raw["greeting"]), DEFAULT_SETTINGS.greeting, issues)
-      : DEFAULT_SETTINGS.greeting,
-  logLevel:
-    "logLevel" in raw
-      ? orDefault(logLevelField(raw["logLevel"]), DEFAULT_SETTINGS.logLevel, issues)
-      : DEFAULT_SETTINGS.logLevel,
+const codec = makeSettingsCodec({
+  version: SETTINGS_VERSION,
+  fields: FIELDS,
+  migrations: MIGRATIONS,
 });
+
+export const DEFAULT_SETTINGS: Settings = codec.defaults;
 
 /**
  * Decodes `data.json` content. Never throws. Invalid fields fall back one by one; a file written by a
  * newer plugin version loads defaults and is marked read-only so it is never overwritten.
  */
-export const decodeSettings = (raw: unknown): DecodedSettings => {
-  if (raw === undefined || raw === null)
-    return { settings: DEFAULT_SETTINGS, issues: [], writable: true };
-  if (!isRecord(raw)) {
-    return { settings: DEFAULT_SETTINGS, issues: [{ code: "file.invalid" }], writable: true };
-  }
-  const version = raw["schemaVersion"];
-  if (version !== undefined && isVersion(version) && version > SETTINGS_VERSION) {
-    return {
-      settings: DEFAULT_SETTINGS,
-      issues: [{ code: "schema.newer", version }],
-      writable: false,
-    };
-  }
-  const issues: SettingsIssue[] = [];
-  if (version !== undefined && !isVersion(version)) issues.push({ code: "schema.invalid" });
-  return { settings: decodeFields(raw, issues), issues, writable: true };
-};
+export const decodeSettings = (raw: unknown): DecodedSettings => codec.decode(raw);
 
-/**
- * What goes into `data.json`. A greeting that is not customised is left out, so the file reads the
- * same in every plugin version: older ones fall back to their own default without an issue.
- */
+/** What goes into `data.json`; defaults that may stay out do. */
 export const encodeSettings = (settings: Settings): Record<string, unknown> =>
-  settings.greeting === null
-    ? { schemaVersion: settings.schemaVersion, logLevel: settings.logLevel }
-    : {
-        schemaVersion: settings.schemaVersion,
-        greeting: settings.greeting,
-        logLevel: settings.logLevel,
-      };
+  codec.encode(settings);
 
 /** Applies a patch of editable fields; the result is all-or-nothing. */
-export const validatePatch = (current: Settings, patch: Partial<EditableSettings>): PatchResult => {
-  const merged: Record<string, unknown> = { ...current, ...patch, schemaVersion: SETTINGS_VERSION };
-  const issues: SettingsIssue[] = [];
-  const settings = decodeFields(merged, issues);
-  return issues.length === 0 ? { ok: true, settings } : { ok: false, issues };
-};
+export const validatePatch = (current: Settings, patch: Partial<EditableSettings>): PatchResult =>
+  codec.validatePatch(current, patch);

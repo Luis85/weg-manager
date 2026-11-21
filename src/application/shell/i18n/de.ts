@@ -9,6 +9,8 @@ export const shellDe: ShellCatalog = {
     "schema.newer": ({ version }) =>
       `Die Einstellungen stammen aus einer neueren Plugin-Version (Schemaversion ${version}).`,
     "schema.invalid": () => "Die Schemaversion muss eine positive ganze Zahl sein.",
+    "migration.failed": ({ from }) =>
+      `Die Einstellungen aus Schemaversion ${from} ließen sich nicht auf die aktuelle Version umstellen.`,
     "greeting.length": ({ max }) => `Die Begrüßung muss 1 bis ${max} Zeichen lang sein.`,
     "logLevel.unknown": ({ allowed }) =>
       `Die Protokollstufe muss eine von ${allowed.join(", ")} sein.`,

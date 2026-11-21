@@ -35,6 +35,7 @@ const ISSUES: readonly SettingsIssue[] = [
   { code: "file.invalid" },
   { code: "schema.newer", version: 3 },
   { code: "schema.invalid" },
+  { code: "migration.failed", from: 1 },
   { code: "greeting.length", max: 200 },
   { code: "logLevel.unknown", allowed: ["error", "warn", "info", "debug"] },
 ];
@@ -73,6 +74,7 @@ describe("catalogs", () => {
       "Die Einstellungsdatei enthält keine gültigen Einstellungen.",
       "Die Einstellungen stammen aus einer neueren Plugin-Version (Schemaversion 3).",
       "Die Schemaversion muss eine positive ganze Zahl sein.",
+      "Die Einstellungen aus Schemaversion 1 ließen sich nicht auf die aktuelle Version umstellen.",
       "Die Begrüßung muss 1 bis 200 Zeichen lang sein.",
       "Die Protokollstufe muss eine von error, warn, info, debug sein.",
     ]);
@@ -80,6 +82,7 @@ describe("catalogs", () => {
       "The settings file contains no valid settings.",
       "The settings come from a newer plugin version (schema version 3).",
       "The schema version must be a positive whole number.",
+      "The settings from schema version 1 couldn't be upgraded to the current version.",
       "The greeting must be 1 to 200 characters long.",
       "The log level must be one of error, warn, info, debug.",
     ]);

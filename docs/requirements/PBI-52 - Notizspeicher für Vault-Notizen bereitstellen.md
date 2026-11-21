@@ -59,3 +59,10 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Abschnitt 3 (Lücke B1) und S
 ## Kommentare
 
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
+- 21.11.2026: Stand der Umsetzung und Abweichungen von den Kriterien.
+  - **Kein Schreiben des Notiztexts:** Der Port `NoteStore` ändert nur Frontmatter. Der Notiztext gehört dem Nutzer (`docs/adr/0007-vault-data-access.md`); ein Aufruf zum Ändern des Texts über `vault.process` kommt erst, wenn ein Notiztyp einen Abschnitt im Text festlegt. Das präzisiert Kriterium 1.
+  - **Namenskollision:** Zwei Namen kollidieren, wenn sie sich nur in Groß- und Kleinschreibung oder in der Unicode-Form (NFC/NFD) unterscheiden. So verhält sich der Speicher auf Windows, macOS und Linux gleich; der kollidierende Name bekommt den Zusatz ` (2)`.
+  - **Nachweis in echtem Obsidian:** Ein nur für die e2e-Tests gebautes Prüf-Plugin (`tests/e2e/probe-plugin/`) ruft den echten Adapter auf. Dieselben Szenarien laufen gegen das Obsidian-Testdouble; Abweichungen des Doubles sind behoben.
+  - **Verbleibende Attrappen:** Die Attrappen für `VaultReader` (Dateianzahl des Demos) bleiben, bis [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]] das Demo löscht. Das betrifft Kriterium 3.
+  - **Bekannte Lücke:** Ein vorhandener Ordner, dessen Name sich nur in Groß- und Kleinschreibung vom gewünschten unterscheidet (z. B. `weg manager/` statt `WEG Manager/`), wird nicht erkannt; auf Windows und macOS schlägt das Anlegen dann als Schreibfehler fehl.
+

@@ -77,6 +77,14 @@ export const shellDe: ShellCatalog = {
     counting: "Zähle Notizen …",
   },
   greetingForm: { label: "Begrüßung", save: "Speichern" },
+  frame: { navigation: "Ansichten", content: "Inhalt" },
+  routes: { welcome: "Start" },
+  notFound: {
+    title: "Nicht gefunden",
+    detail:
+      "Was du öffnen wolltest, gibt es nicht mehr. Vielleicht wurde es gelöscht oder umbenannt.",
+    back: "Zur Startseite",
+  },
   about: {
     title: `Über ${PRODUCT_NAME}`,
     description: "Werkzeuge für Verwaltungsbeiräte von Wohnungseigentümergemeinschaften.",

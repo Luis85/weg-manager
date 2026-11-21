@@ -151,6 +151,28 @@ describe("surface texts", () => {
     ]);
   });
 
+  it("words the app frame, its routes and the not-found state", () => {
+    expect([de.shell.frame, de.shell.routes, de.shell.notFound]).toEqual([
+      { navigation: "Ansichten", content: "Inhalt" },
+      { welcome: "Start" },
+      {
+        title: "Nicht gefunden",
+        detail:
+          "Was du öffnen wolltest, gibt es nicht mehr. Vielleicht wurde es gelöscht oder umbenannt.",
+        back: "Zur Startseite",
+      },
+    ]);
+    expect([en.shell.frame, en.shell.routes, en.shell.notFound]).toEqual([
+      { navigation: "Views", content: "Content" },
+      { welcome: "Home" },
+      {
+        title: "Not found",
+        detail: "What you wanted to open no longer exists. It may have been deleted or renamed.",
+        back: "Go to the start page",
+      },
+    ]);
+  });
+
   it("words the panel, the form, the About dialog and the copy confirmation", () => {
     expect([de.shell.panel.counting, de.shell.greetingForm, de.shell.diagnosticsCopied]).toEqual([
       "Zähle Notizen …",

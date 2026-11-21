@@ -4,7 +4,7 @@ import { defineComponent, h, type ComponentInternalInstance } from "vue";
 import { SettingsService } from "../../../../src/application/shell/settings-service";
 import { encodeSettings } from "../../../../src/domain/shell";
 import GreetingForm from "../../../../src/presentation/shell/components/GreetingForm.vue";
-import { mountSurface } from "../../../../src/presentation/shell";
+import { mountApp } from "../../../support/surface";
 import { testRuntime, type TestRuntimeOptions } from "../../../support/runtime";
 
 const settle = async () => {
@@ -19,7 +19,7 @@ const open = async (options: TestRuntimeOptions = {}) => {
   const test = testRuntime(options);
   const root = document.createElement("div");
   document.body.append(root);
-  const close = mountSurface(root, test.runtime);
+  const close = mountApp(root, test.runtime);
   opened.push({ close, dispose: () => test.runtime.dispose() });
   await settle();
   const input = () => root.querySelector("[data-testid=greeting-input]") as HTMLInputElement;
@@ -115,7 +115,7 @@ describe("GreetingForm closed during a save", () => {
     const test = testRuntime({ store: { uncancellableSaves: true } });
     const root = document.createElement("div");
     document.body.append(root);
-    const close = mountSurface(root, test.runtime, { content });
+    const close = mountApp(root, test.runtime, { content });
     opened.push({ close, dispose: () => test.runtime.dispose() });
     await settle();
     const input = root.querySelector("[data-testid=greeting-input]") as HTMLInputElement;

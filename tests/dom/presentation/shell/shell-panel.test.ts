@@ -6,7 +6,7 @@ import { ReadOnlySettingsError } from "../../../../src/application/shell/errors"
 import { de } from "../../../../src/application/messages";
 import { describeIssue } from "../../../../src/application/shell/i18n/describe";
 import { describeError } from "../../../../src/application/user-messages";
-import { mountSurface } from "../../../../src/presentation/shell";
+import { mountApp } from "../../../support/surface";
 import { testRuntime, type TestRuntimeOptions } from "../../../support/runtime";
 
 const settle = async () => {
@@ -21,7 +21,7 @@ const open = async (options: TestRuntimeOptions = {}) => {
   const test = testRuntime(options);
   const root = document.createElement("div");
   document.body.append(root);
-  const close = mountSurface(root, test.runtime);
+  const close = mountApp(root, test.runtime);
   opened.push({ close, dispose: () => test.runtime.dispose() });
   await settle();
   const q = (id: string) => root.querySelector(`[data-testid=${id}]`);
@@ -60,7 +60,7 @@ describe("ShellPanel", () => {
     test.vault.hold();
     const root = document.createElement("div");
     document.body.append(root);
-    const close = mountSurface(root, test.runtime);
+    const close = mountApp(root, test.runtime);
     opened.push({ close, dispose: () => test.runtime.dispose() });
     await settle();
     expect(root.querySelector("[data-testid=file-count-pending]")).not.toBeNull();
@@ -84,7 +84,7 @@ describe("ShellPanel", () => {
     test.vault.hold();
     const root = document.createElement("div");
     document.body.append(root);
-    const close = mountSurface(root, test.runtime);
+    const close = mountApp(root, test.runtime);
     opened.push({ close, dispose: () => test.runtime.dispose() });
     await settle();
     const region = () => root.querySelector("[data-testid=file-count-region]");
@@ -194,7 +194,7 @@ describe("ShellPanel", () => {
     test.vault.hold();
     const root = document.createElement("div");
     document.body.append(root);
-    const close = mountSurface(root, test.runtime);
+    const close = mountApp(root, test.runtime);
     await settle();
     expect(test.vault.held()).toBe(1);
     close();

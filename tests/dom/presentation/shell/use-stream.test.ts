@@ -4,13 +4,9 @@ import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import { SettingsService } from "../../../../src/application/shell/settings-service";
 import { setLogLevel, updateGreeting } from "../../../../src/application/shell/use-cases";
-import {
-  mountSurface,
-  useSettings,
-  useSettingsStatus,
-  useStream,
-} from "../../../../src/presentation/shell";
+import { useSettings, useSettingsStatus, useStream } from "../../../../src/presentation/shell";
 import { host, runtimes } from "../../../support/composable";
+import { mountApp } from "../../../support/surface";
 
 const { make, disposeAll } = runtimes();
 
@@ -84,7 +80,7 @@ describe("useStream", () => {
     });
     const root = document.createElement("div");
     document.body.append(root);
-    const close = mountSurface(root, runtime, { content: Broken });
+    const close = mountApp(root, runtime, { content: Broken });
     await flushPromises();
     await flushPromises();
     expect(defects(logger)).toHaveLength(1);

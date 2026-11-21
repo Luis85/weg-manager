@@ -1,7 +1,9 @@
 import { ManagedRuntime } from "effect";
 import { languageFromCode } from "../src/application/messages";
 import type { UserMessage } from "../src/application/shell";
-import { mountSurface } from "../src/presentation/shell/mount";
+import { appSurface } from "../src/presentation/app-surface";
+import { mountSurface } from "../src/presentation/shell";
+import { memoryNavigation } from "../src/presentation/shell/host";
 import "../src/styles/app.css";
 import "./fake-host.css";
 import { SCENARIOS, harnessLayer, parseScenario } from "./layers";
@@ -34,8 +36,14 @@ const runtime = ManagedRuntime.make(
     language,
   }),
 );
-mountSurface(element("surface-wide"), runtime);
-mountSurface(element("surface-narrow"), runtime);
+/** Each surface keeps its own route, as each open view does. */
+const mount = (id: string) =>
+  mountSurface(element(id), runtime, {
+    surface: appSurface,
+    navigation: memoryNavigation(appSurface),
+  });
+mount("surface-wide");
+mount("surface-narrow");
 
 const select = element("scenario") as HTMLSelectElement;
 for (const name of SCENARIOS) select.add(new Option(name, name, false, name === scenario));

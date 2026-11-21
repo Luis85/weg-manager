@@ -2,4 +2,10 @@
 // adapters need at plugin load. Nothing here may import Vue at runtime; the surface comes only
 // through `loadSurface`. Feature components import `index.ts` instead.
 export { releaseAll } from "./release";
+export {
+  memoryNavigation,
+  type ScreenLoader,
+  type SurfaceDefinition,
+  type ViewNavigation,
+} from "./routing";
 export { loadSurface, type SurfaceLoader } from "./surface";

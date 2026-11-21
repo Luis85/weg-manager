@@ -1,6 +1,12 @@
 import { ItemView, type WorkspaceLeaf } from "obsidian";
 import type { AppRuntime } from "../../../application/app-services";
-import { loadSurface as importSurface, type SurfaceLoader } from "../../../presentation/shell/host";
+import type { RouteLike } from "../../../application/shell";
+import {
+  loadSurface as importSurface,
+  memoryNavigation,
+  type SurfaceDefinition,
+  type SurfaceLoader,
+} from "../../../presentation/shell/host";
 
 export const SHELL_VIEW_TYPE = "weg-manager-view";
 
@@ -9,13 +15,14 @@ export const SHELL_VIEW_TYPE = "weg-manager-view";
  * can close them all before it disposes the runtime. The close is registered before the surface
  * module has loaded: a view closed or released while it loads never mounts.
  */
-export class ShellView extends ItemView {
+export class ShellView<R extends RouteLike> extends ItemView {
   private close: (() => void) | undefined;
 
   constructor(
     leaf: WorkspaceLeaf,
     private readonly runtime: AppRuntime,
     private readonly surfaces: Set<() => void>,
+    private readonly definition: SurfaceDefinition<R>,
     private readonly loadSurface: SurfaceLoader = importSurface,
   ) {
     super(leaf);
@@ -46,7 +53,10 @@ export class ShellView extends ItemView {
     this.contentEl.empty();
     const { mountSurface } = await this.loadSurface();
     if (closed) return;
-    release = mountSurface(this.contentEl, this.runtime);
+    release = mountSurface(this.contentEl, this.runtime, {
+      surface: this.definition,
+      navigation: memoryNavigation(this.definition),
+    });
   }
 
   override async onClose(): Promise<void> {

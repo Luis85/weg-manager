@@ -32,7 +32,7 @@ describe("lazy presentation", () => {
     await flushPromises();
     expect(evaluated).toContain("mount");
     expect(evaluated).toContain("vue");
-    expect(document.body.textContent).toContain("Moin");
+    await vi.waitFor(() => expect(document.body.textContent).toContain("Moin"));
     plugin.unload();
   });
 });

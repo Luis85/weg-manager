@@ -24,6 +24,7 @@ import {
   showMessage,
 } from "./infrastructure/obsidian/shell";
 import { makeRuntime } from "./infrastructure/runtime";
+import { appSurface } from "./presentation/app-surface";
 import { releaseAll } from "./presentation/shell/host";
 
 export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell";
@@ -123,7 +124,10 @@ export const bootstrap = async (
     addRibbonIcon(plugin, open);
     plugin.addSettingTab(tab);
     const surfaces = new Set<() => void>();
-    plugin.registerView(SHELL_VIEW_TYPE, (leaf) => new ShellView(leaf, runtime, surfaces));
+    plugin.registerView(
+      SHELL_VIEW_TYPE,
+      (leaf) => new ShellView(leaf, runtime, surfaces, appSurface),
+    );
     // Runs first on dispose: every open view releases its Vue app before the runtime goes.
     undo.push(() => {
       const closes = [...surfaces];

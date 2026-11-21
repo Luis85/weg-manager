@@ -58,6 +58,12 @@ export type ShellCatalog = {
   };
   readonly panel: { markdownFiles(count: number): string; readonly counting: string };
   readonly greetingForm: { readonly label: string; readonly save: string };
+  /** The app frame's landmarks, for screen readers. */
+  readonly frame: { readonly navigation: string; readonly content: string };
+  /** The frame's navigation entry of each shell route. */
+  readonly routes: { readonly welcome: string };
+  /** A route to something that no longer exists. */
+  readonly notFound: { readonly title: string; readonly detail: string; readonly back: string };
   readonly about: {
     readonly title: string;
     readonly description: string;

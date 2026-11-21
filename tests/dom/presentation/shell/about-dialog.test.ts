@@ -1,6 +1,6 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
-import { mountSurface } from "../../../../src/presentation/shell";
+import { mountApp } from "../../../support/surface";
 import { testRuntime } from "../../../support/runtime";
 
 const settle = async () => {
@@ -18,7 +18,7 @@ describe("AboutDialog", () => {
     const { runtime } = testRuntime();
     const root = document.createElement("div");
     document.body.append(root);
-    const close = mountSurface(root, runtime);
+    const close = mountApp(root, runtime);
     await settle();
     const open = [...root.querySelectorAll("button")].find((button) =>
       button.textContent.includes("Über"),

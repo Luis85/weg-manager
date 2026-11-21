@@ -32,6 +32,7 @@ export {
   type DeviceValue,
   type LogEntry,
 } from "./ports";
+export { ShellRoute, routesOf, type RouteLike, type Routes } from "./routes";
 export type { ShellServices } from "./services";
 export { SettingsService, SettingsServiceLive, type SettingsStatus } from "./settings-service";
 export {

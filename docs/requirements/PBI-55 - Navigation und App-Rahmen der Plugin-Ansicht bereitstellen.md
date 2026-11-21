@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -25,7 +25,7 @@ pages: []
 user-flows: []
 dependsOn:
   - "[[PBI-51 - Plugin-Code in Module gliedern]]"
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-55 · Navigation und App-Rahmen der Plugin-Ansicht bereitstellen
@@ -58,3 +58,8 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Abschnitt 3 (Lücken B3 und B
 
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
 - 21.11.2026: Vorgabe aus PBI-51: `src/presentation/shell/` bekommt zwei öffentliche Einstiege. `index.ts` ist die Schnittstelle für Fachkomponenten (`useQuery`, `useCommand`, `useStream`, Routen-Composables, gemeinsame Komponenten) und darf Vue laden. `host.ts` ist Vue-frei und enthält, was `bootstrap` und die Obsidian-Adapter beim Laden brauchen (`releaseAll`, `loadSurface`). Lint und fallow lassen genau diese beiden Dateien als Einstieg zu; `docs/adr/0006-module-structure.md` wird entsprechend ergänzt.
+- 21.11.2026: Abgeschlossen. Stand der Umsetzung:
+  - **Fester Tab, eigener Verlauf** (Entscheidung des Produktverantwortlichen): Die Plugin-Ansicht ist kein navigierbarer Obsidian-Tab. Eine Notiz, die bei aktivem Plugin-Tab geöffnet wird, landet in einem anderen Tab. Zurück und Vorwärts sind Schaltflächen im Rahmen; der Verlauf liegt je Ansicht im Arbeitsspeicher (höchstens 50 Schritte) und wird nicht gespeichert. Die aktuelle Route steht weiter im Ansichtszustand von Obsidian und ist nach einem Neustart wieder da. Obsidians eigene Pfeile im Tab-Kopf wirken nicht auf die Navigation im Plugin. Festgehalten als Ergänzung in `docs/adr/0008-navigation-and-view-state.md`.
+  - **Zwei Einstiege** in `src/presentation/shell/`: `index.ts` für Fachkomponenten, `host.ts` (Vue-frei) für den Plugin-Start.
+  - **Startroute** ist vorerst `welcome` mit dem Demo-Panel; `einstellungen/gemeinschaften` kommt mit [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]. Das betrifft die Kriterien, die die Startroute und den Gemeinschaftswechsel nennen: Der Rahmen hat dafür einen Platz (`context`), die Auswahl selbst entsteht in PBI-56 und nutzt den Port `DeviceStore`.
+  - **Zusammenführen je Feld beim Speichern** gehört zum Notizformat und entsteht in [[PBI-53 - Notizformat mit Schemaversion lesen und schreiben]].

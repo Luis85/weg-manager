@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -27,7 +27,7 @@ pages: []
 user-flows: []
 dependsOn:
   - "[[PBI-51 - Plugin-Code in Module gliedern]]"
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-52 · Notizspeicher für Vault-Notizen bereitstellen
@@ -65,4 +65,4 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Abschnitt 3 (Lücke B1) und S
   - **Nachweis in echtem Obsidian:** Ein nur für die e2e-Tests gebautes Prüf-Plugin (`tests/e2e/probe-plugin/`) ruft den echten Adapter auf. Dieselben Szenarien laufen gegen das Obsidian-Testdouble; Abweichungen des Doubles sind behoben.
   - **Verbleibende Attrappen:** Die Attrappen für `VaultReader` (Dateianzahl des Demos) bleiben, bis [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]] das Demo löscht. Das betrifft Kriterium 3.
   - **Bekannte Lücke:** Ein vorhandener Ordner, dessen Name sich nur in Groß- und Kleinschreibung vom gewünschten unterscheidet (z. B. `weg manager/` statt `WEG Manager/`), wird nicht erkannt; auf Windows und macOS schlägt das Anlegen dann als Schreibfehler fehl.
-
+- 21.11.2026: Abgeschlossen, ausgeliefert mit PR #21.

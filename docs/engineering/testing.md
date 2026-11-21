@@ -69,6 +69,8 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 | `readonly` | a note of a newer schema version beside a valid one |
 | `failure` | the index's first read fails: the failure with retry, which then reads the communities |
 
+The fake host (`harness/fake-host.css`) plays Obsidian 1.15.1's default theme: the theme variables read from the running app in light and dark, and Obsidian's base rules that reach plugin markup (button chrome, text inputs, heading sizes and margins). Take new values from the app, not from memory: print them from `getComputedStyle(document.body)` in a throwaway e2e spec. The dev server scopes the plugin CSS with the same transform as the build. Below 720 px the two surfaces stack and stretch to the window.
+
 The note index runs in every scenario over the in-memory `NoteStore`, with the plugin's registry (`appNoteTypes`). The browser has no metadata cache to wait for, so the harness publishes `LayoutReady` and `VaultReady` once its services are built, and the index builds at once from the notes the scenario seeds.
 
 ## End-to-end tests in Obsidian
@@ -105,6 +107,7 @@ The note index runs in every scenario over the in-memory `NoteStore`, with the p
 | `communities-outside-edit.e2e.ts` | an outside edit while the form is open: another field merged; the same field a conflict that writes nothing, shows the three values and saves the note's value or the user's as chosen; clean console |
 | `communities-newer-schema.e2e.ts` | a note of `v2` listed read-only with its issue and no action, never written across a selection and a plugin reload; clean console |
 | `communities-invalid.e2e.ts` | a broken colour, a duplicate short code, a duplicate id and unreadable frontmatter in the folder each shown with its issue beside a valid community; the valid one saved and the broken colour repaired, the others untouched; clean console |
+| `appearance.e2e.ts` | in Obsidian's default theme, light and dark: the plugin's lists, headings and paragraphs start from zero and ghost buttons carry no Obsidian chrome; every visible text reaches 4.5:1 on its effective background (list with warnings and problems, selected community and current page, the create sheet with errors, the delete dialog and its failure alert), text fields 3:1, valid and invalid; the selected community has a check mark and the current page a bar; a 100-character name truncates in the switch (with its title) and wraps on its card, without horizontal overflow, as a sidebar and at 320 px; clean console. The ratios land in `reports/e2e/appearance-contrast.json`; the maths is `tests/support/contrast.ts` (unit-tested) |
 | `community-selection.e2e.ts` | the only community selected, and kept when a second arrives; two views following one selection; the selection kept across a restart; a choice asked for once the selected community is gone and two are left; clean console |
 
 The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaught error. It ignores only Chromium's `ResizeObserver loop` notification. It is installed after the first load, so the three disable/enable cycles provide the load coverage.

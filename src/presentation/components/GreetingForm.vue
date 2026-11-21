@@ -4,14 +4,22 @@ import UFormField from "@nuxt/ui/components/FormField.vue";
 import UInput from "@nuxt/ui/components/Input.vue";
 import { useForm } from "@tanstack/vue-form";
 import { computed } from "vue";
+import { ReadOnlySettingsError } from "../../application/errors";
 import { updateGreeting } from "../../application/use-cases";
+import { describeError } from "../../application/user-messages";
 import { validatePatch } from "../../domain/settings";
 import ErrorNotice from "./ErrorNotice.vue";
 import { useEffectAction, useSettings, useSettingsStatus } from "../runtime/use-runtime";
 
 /** The greeting form: domain rules validate on change, the service has the final word. */
 const settings = useSettings();
-const readOnly = !useSettingsStatus().writable;
+const status = useSettingsStatus();
+const readOnly = !status.writable;
+/** Why the settings are read-only and what to do, from the shared message catalog. */
+const readOnlyMessage =
+  status.readOnlyReason === undefined
+    ? undefined
+    : describeError(new ReadOnlySettingsError({ reason: status.readOnlyReason }));
 const save = useEffectAction(updateGreeting);
 
 const greetingIssue = (greeting: string): string | undefined => {
@@ -67,9 +75,7 @@ const submit = () => form.handleSubmit();
         </UFormField>
       </template>
     </form.Field>
-    <p v-if="readOnly" class="wm:text-sm wm:text-muted" data-testid="read-only-hint">
-      Die Einstellungen sind schreibgeschützt und können hier nicht geändert werden.
-    </p>
+    <ErrorNotice v-if="readOnlyMessage" :message="readOnlyMessage" data-testid="read-only-hint" />
     <ErrorNotice v-if="notice" :message="notice" :handlers="{ retry: submit }" />
     <div>
       <UButton type="submit" label="Speichern" :loading="isSubmitting" :disabled="disabled" />

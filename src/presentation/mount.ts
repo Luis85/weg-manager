@@ -60,12 +60,13 @@ export const mountSurface = (
   };
   provideRuntime(app, runtime);
   app.use(ui);
-  app.mount(host);
+  // Attach first, so floating UI and focus handling measure a connected element on mount.
   root.append(host, portal);
   releases.push(() => {
     host.remove();
     portal.remove();
   });
+  app.mount(host);
   releases.push(() => app.unmount());
 
   let closed = false;

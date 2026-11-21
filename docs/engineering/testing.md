@@ -50,7 +50,7 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 
 ## Browser harness
 
-`npm run dev:ui` serves `harness/`: two surfaces on one runtime (one of them 320 px wide), a theme switch, and visible notices. `?scenario=` selects the state:
+`npm run dev:ui` serves `harness/`: two surfaces on one runtime (one of them 320 px wide, so its frame shows the navigation as a row), each with its own in-memory route, a theme switch, and visible notices. `?scenario=` selects the state:
 
 | Scenario | Shows |
 | --- | --- |

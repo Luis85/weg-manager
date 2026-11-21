@@ -11,7 +11,7 @@ flowchart LR
     logging["logging/ (only console use)"]
   end
   subgraph pres["presentation (Vue + Nuxt UI)"]
-    rt["shell/runtime/use-runtime.ts (only importer of effect)"]
+    rt["shell/runtime/ (only importer of effect)"]
   end
   app["application: ports, services, use cases, errors, messages"]
   dom["domain: settings schema and rules"]
@@ -34,7 +34,7 @@ flowchart LR
 | `src/presentation` | `vue`, `@nuxt/ui`, `@tanstack/vue-form`, application, domain | Vue surfaces. Components never see an Effect value. They run reads through `useQuery` and state changes through `useCommand` |
 | `harness/` | everything except `obsidian` | Browser stand-in for Obsidian with scenario Layers |
 
-`infrastructure` may import `presentation` only because `ShellView` mounts the surface (handoff ruling 14). It loads `presentation/shell/mount` through `loadSurface`, a dynamic `import()` in `src/presentation/shell/surface.ts`; nothing that runs at plugin load may import a module that pulls in Vue (see [Lazy presentation](#lazy-presentation)).
+`infrastructure` may import `presentation` only because `ShellView` mounts the surface (handoff ruling 14). It imports only the Vue-free `presentation/shell/host` and loads `presentation/shell/mount` through `loadSurface`, a dynamic `import()` in `src/presentation/shell/surface.ts`; nothing that runs at plugin load may import a module that pulls in Vue (see [Lazy presentation](#lazy-presentation)).
 
 ## Modules
 
@@ -47,20 +47,23 @@ Decision record: [ADR 0006](../adr/0006-module-structure.md). Each layer is slic
 | infrastructure | `src/infrastructure/obsidian/<module>/`, `src/infrastructure/memory/<module>/` | `obsidian/app-layer.ts` (`appLayer`), plus `logging/` and `runtime.ts`, which are not Obsidian adapters and stay where they were |
 | presentation | `src/presentation/<module>/` | none |
 
-- **Public face.** Each module folder has an `index.ts`. Code outside the folder imports only that, also the same module from another layer (`../../../application/shell`, never `…/shell/ports`). Tests may import a module's files directly.
+- **Public face.** Each module folder has an `index.ts`. Code outside the folder imports only that, also the same module from another layer (`../../../application/shell`, never `…/shell/ports`). The one exception is `presentation/shell`, which also has `host.ts` (see *Presentation entries* below). Tests may import a module's files directly.
 - **Direction.** feature → `notes` → `shell`. `shell` imports no other module; `notes` imports only `shell`; feature modules may import each other's index, acyclically.
 - **Composition.** A root file composes module parts and holds no rule of its own: `AppError = ShellError | NotesError`, `AppEvent = Data.TaggedEnum<ShellEvents>`, `AppServices = ShellServices | NotesServices`, `Catalog = { shell: ShellCatalog; notes: NotesCatalog }`, `appLayer` = `shellLayer` merged with `notesLayer`. A new module adds its part to each. `notes` has no events yet.
 - **`describeError`** hands an error to its module's describer with that module's part of the catalog: `isNotesError(error) ? describeNotesError(error, messages.notes) : describeShellError(error, messages.shell)`. An error union added to `AppError` without its describer does not compile.
 - **`Messages`** stays one service holding the whole `Catalog`; module code reads its own part (`(yield* Messages).shell`). The shell's catalog part carries `language`.
 - **Type-only edges to the root.** `EventBus` and `Messages` live in the shell but carry the composed types, so `src/application/shell/` imports `AppEvent` and `Catalog` from the root as types only. Runtime imports go the other way only, so there is no runtime cycle.
-- **Presentation entry.** `src/presentation/shell/index.ts` stays free of Vue: it offers `releaseAll` and `loadSurface`, the lazy `import("./mount")` that `ShellView` calls.
+- **Presentation entries** ([ADR 0006](../adr/0006-module-structure.md), amendment). `presentation/shell` has two public files:
+  - `index.ts` is the interface for feature components and loads Vue: `useQuery`, `useCommand`, `useStream`, `useSettings`, `useSettingsStatus`, `useAppEvents`, `useMessages`, `useRoute`, `useNavigate`, `ErrorNotice`, `NotFoundState`, `shellScreens` and `mountSurface`.
+  - `host.ts` is Vue-free, for code at plugin load (`bootstrap`, the Obsidian adapters, `app-surface.ts`): `releaseAll`, `loadSurface`, `memoryNavigation` and the types `SurfaceDefinition`, `ViewNavigation`, `ScreenLoader`, `SurfaceLoader`. `tests/unit/presentation/shell/host.test.ts` fails if loading it evaluates Vue.
 
 ### Enforcement
 
 | Rule | Tool |
 | --- | --- |
 | Layers (which packages and layers a folder may import) | oxlint `no-restricted-imports` overrides in `.oxlintrc.json`, path-based; fallow zone rules |
-| Import a module only through its `index.ts` | ESLint `no-restricted-imports` (`eslint.config.mjs`, every file in `src/`); fallow `publicFiles: ["index.ts"]` on every discovered module zone |
+| Import a module only through its `index.ts` (and `presentation/shell` also through `host.ts`) | ESLint `no-restricted-imports` (`eslint.config.mjs`, every file in `src/`); fallow `publicFiles: ["index.ts"]` on every discovered module zone, and an explicit `presentation/shell` zone with `index.ts` and `host.ts` |
+| Code at plugin load never imports the Vue-loading `presentation/shell/index.ts`, except as types | ESLint `@typescript-eslint/no-restricted-imports` on `main.ts`, `bootstrap.ts`, `src/infrastructure/**` and `src/presentation/*.ts`; `tests/dom/lazy-presentation.test.ts` at runtime |
 | Direction between modules | ESLint, from the ordered module list `CORE_MODULES` (`shell`, `notes`) and `FEATURE_MODULES` (`communities`); fallow rules keep each `shell` zone to the shell and the composition files |
 | Every `src/` file belongs to a zone | fallow `boundaries.coverage.requireAllFiles` |
 
@@ -132,7 +135,8 @@ sequenceDiagram
   O->>V: onOpen
   V->>V: contentEl.empty(), loadSurface() = import("presentation/shell/mount")
   Note over V: closed meanwhile? do not mount
-  V->>V: mountSurface(contentEl, runtime)
+  V->>V: mountSurface(contentEl, runtime, { surface: appSurface, navigation })
+  O->>V: setState(saved state): decode the route, the surface follows
   O->>M: onExternalSettingsChange (data.json changed on disk)
   M->>B: reloadSettings()
   B->>R: SettingsService.reload (views follow its streams)
@@ -173,23 +177,43 @@ Decode, patch validation and encode are driven by one declaration per setting (`
 - `SettingsService` holds the settings and their status (writable, issues, read-only reason) in two `SubscriptionRef`s: `changes` and `statusChanges` emit the current value, then every change.
 - `reload` reads `data.json` again and decodes it as on load: a newer or unreadable file switches to read-only and is never written, a valid one switches back. Unchanged values publish nothing, and a notice appears only when the status changes. Reloads and updates are serialised.
 - `plugin.saveData` cannot be cancelled, so an update that has started its save always sets the settings too, even when interrupted. A reload, once it has read the file, sets status, notice and settings together. Waiting for an earlier update or reload stays interruptible.
-- `useSettings` and `useSettingsStatus` follow both streams in a surface. The settings tab reads a mirror of both, because Obsidian reads control values synchronously.
+- `useSettings` and `useSettingsStatus` follow both streams in a surface through `useStream`. The settings tab reads a mirror of both, because Obsidian reads control values synchronously.
 
 ## Lazy presentation
 
-- Vue, Nuxt UI, reka-ui, VueUse and TanStack Form are evaluated on the first `import("presentation/shell/mount")`, which `ShellView.onOpen` starts through `loadSurface`, not in `onload`. `bootstrap` imports only the Vue-free `presentation/shell` index (`releaseAll`, `loadSurface`).
+- Vue, Nuxt UI, reka-ui, VueUse and TanStack Form are evaluated on the first `import("presentation/shell/mount")`, which `ShellView.onOpen` starts through `loadSurface`, not in `onload`. `bootstrap` imports only the Vue-free `presentation/shell/host` and `presentation/app-surface.ts`, whose screens are `import()` calls too: a screen's module is evaluated the first time a view shows its route.
 - The bundle stays one CommonJS file (`codeSplitting: false`): rolldown wraps the dynamically imported modules in a lazy init function inside `main.js`.
 - `tests/dom/lazy-presentation.test.ts` fails if loading the plugin evaluates `vue` or `presentation/shell/mount`.
 - Measured on 2026-11-21 in Node 24 on the built `main.js` with a stubbed `obsidian` and `document` (41 alternating runs each, compile included; not an Obsidian startup number): Vue's runtime-dom no longer runs at `require` but when the view opens, and the median `require` time fell from 43 ms to 38 ms. The init wrappers grew `main.js` from 541 KB to 550 KB.
 
 ## A surface
 
-`mountSurface(root, runtime)` creates one Vue app per view:
+`mountSurface(root, runtime, { surface, navigation })` creates one Vue app per view. `surface` is a `SurfaceDefinition` (`appSurface` in the plugin), `navigation` the view's route (see [Navigation](#navigation)); tests pass `content` to mount a single component instead of the frame.
 
 - The app mounts into an element appended to `root`, beside a portal element for modals and popovers. Both live in `root.ownerDocument`, so a pop-out window keeps its dialogs.
 - `bindHostTheme(root)` mirrors `theme-dark`/`theme-light` from the owner document's body to `dark`/`light` on `root`.
 - `app.config.errorHandler` routes render errors to `reportDefect`.
 - The returned close is idempotent. It runs every release even if one throws, then rethrows the first error.
+
+## Navigation
+
+Decision record: [ADR 0008](../adr/0008-navigation-and-view-state.md). One registered view type; each open view has its own Vue app and its own route.
+
+- **Routes are data.** A route is a plain object with a `name` and the parameters its screen needs. Each module contributes a schema (`ShellRoute` in `src/application/shell/routes.ts`); `src/application/routes.ts` composes `Route = Schema.Union([ShellRoute])` and `appRoutes = routesOf(Route, start)`. `decode` never throws: an unknown name, a missing or broken parameter or no object at all gives the start route. `equals` compares by value. The shell's only route, `welcome`, is the demo panel and the start until the first feature slice.
+- **The surface definition.** `src/presentation/app-surface.ts` composes `appSurface`: `appRoutes`, a screen loader per route name (`import("./shell").then(({ shellScreens }) => shellScreens.welcome)`), the navigation entries (label from the catalog, icon) and, later, the frame's context area. The screen record is typed by `Route["name"]`, so a route without a screen fails typecheck. A route whose `screen` returns `undefined` shows `NotFoundState`; a screen shows it too when its record is gone. Tests build their own definition with test routes (`tests/support/surface.ts`).
+- **The view owns the route.** `ShellView.getState()` returns `{ route }`, so the route is in `workspace.json`; `setState()` decodes it and tells the surface. The surface gets a `ViewNavigation` (`current`, `navigate`, `onChange`) and never imports `obsidian`. `useRoute()` and `useNavigate()` read and change it.
+- **Obsidian owns the history.** `navigate` calls `leaf.setViewState({ type, state: { route } })`. Obsidian then calls `setState`, which sets `result.history = true` for a changed route and calls `workspace.requestSaveLayout()`. Obsidian 1.15.1 records a step only for a view with `navigation = true` (`WorkspaceLeaf.recordHistory`), so `ShellView` sets it; its back and forward buttons then call `setState` with the earlier state. The plugin keeps no stack of its own. A consequence of `navigation = true`: like a note, the view is a navigable tab, so opening a file while it is the active tab opens the file in that tab, and back returns to the view.
+- **Opening from outside.** `openRoute(workspace, route?)` (`src/infrastructure/obsidian/shell/open-route.ts`) sets the route in the first open view or in a new tab, and reveals it. Without a route an open view keeps its own. The `open-view` command and the ribbon use it; a feature command passes its route.
+- **Restore order.** Obsidian calls `onOpen` before `setState`, so a restored view mounts on the start route and switches to the saved one in the same task, before the next paint.
+- **The frame.** `AppFrame.vue` holds a labelled `<nav>` (the context slot on top, one button per entry, `aria-current="page"` on the current one) and a labelled `<section>` with the route outlet. It is a size container: from 860 px of its own width (handoff 07) the navigation is a sidebar, below it a row above the content. The window width plays no part.
+
+## Device storage
+
+`DeviceStore` (`src/application/shell/ports.ts`) keeps small JSON values per device and vault, never in `data.json`, so Sync does not carry them to another device. The community selection is the first user.
+
+- The Obsidian adapter (`src/infrastructure/obsidian/shell/device-store.ts`) uses `app.loadLocalStorage`/`saveLocalStorage` under `weg-manager/<key>`. It stores `{ value }`, because Obsidian clears a key saved with a falsy value; an entry it did not write reads as `undefined`.
+- Neither call fails: Obsidian swallows its own storage errors, and a lost value only costs a choice the user makes again. A caller decodes what it reads with its schema.
+- `deviceStoreInMemory()` (`src/application/shell/device-store.ts`) serves the tests and the harness.
 
 ## CSS ownership
 

@@ -13,7 +13,7 @@ import {
 } from "../support";
 
 /** WebDriver key codes; `Key` from `@wdio/globals` has no type the e2e lint can resolve. */
-const KEY = { ctrl: "", backspace: "", enter: "" } as const;
+const KEY = { ctrl: "\uE009", backspace: "\uE003", enter: "\uE007" } as const;
 
 /** The greeting field of the open view's form, edited from the keyboard. */
 const greetingInput = () => browser.$(ROOT).$("[data-testid=greeting-input]");

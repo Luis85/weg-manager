@@ -1,0 +1,147 @@
+import { assert, describe, it } from "@effect/vitest";
+import { Effect, Layer, Stream } from "effect";
+import {
+  SettingsService,
+  SettingsServiceLive,
+  type SettingsStatus,
+} from "../../../src/application/settings-service";
+import { DEFAULT_SETTINGS, type Settings } from "../../../src/domain/settings";
+import { inMemoryStore, recordingNotifier, type StoreOptions } from "../../support/layers";
+
+const setup = (options: StoreOptions = {}) => {
+  const store = inMemoryStore(options);
+  const notifier = recordingNotifier();
+  const layer = SettingsServiceLive.pipe(
+    Layer.provide(Layer.mergeAll(store.layer, notifier.layer)),
+  );
+  return { store, notifier, layer };
+};
+
+/** Records every value of `changes` and `statusChanges` from now on, including the current one. */
+const record = Effect.gen(function* () {
+  const service = yield* SettingsService;
+  const settings: Settings[] = [];
+  const statuses: SettingsStatus[] = [];
+  yield* Effect.forkChild(
+    Stream.runForEach(service.changes, (next) => Effect.sync(() => settings.push(next))),
+  );
+  yield* Effect.forkChild(
+    Stream.runForEach(service.statusChanges, (next) => Effect.sync(() => statuses.push(next))),
+  );
+  yield* Effect.yieldNow;
+  return { service, settings, statuses };
+});
+
+/** Lets the forked recorders take what was published. */
+const drain = Effect.repeat(Effect.yieldNow, { times: 5 });
+
+const WRITABLE: SettingsStatus = { writable: true, issues: [] };
+
+describe("SettingsService.reload", () => {
+  it.effect("publishes a valid external change once, without saving or notifying", () => {
+    const { store, notifier, layer } = setup({ initial: { greeting: "Alt" } });
+    return Effect.gen(function* () {
+      const { service, settings, statuses } = yield* record;
+      store.writeExternally({ schemaVersion: 1, greeting: "Neu", logLevel: "info" });
+      yield* service.reload;
+      yield* drain;
+      assert.deepStrictEqual(
+        settings.map((value) => value.greeting),
+        ["Alt", "Neu"],
+      );
+      assert.deepStrictEqual(yield* service.current, {
+        schemaVersion: 1,
+        greeting: "Neu",
+        logLevel: "info",
+      });
+      assert.deepStrictEqual(statuses, [WRITABLE]);
+      assert.deepStrictEqual(store.saved(), []);
+      assert.deepStrictEqual(notifier.messages(), []);
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("publishes nothing when the file holds the same values", () => {
+    const { store, layer } = setup({ initial: { greeting: "Gleich" } });
+    return Effect.gen(function* () {
+      const { service, settings, statuses } = yield* record;
+      store.writeExternally({ schemaVersion: 1, greeting: "Gleich" });
+      yield* service.reload;
+      yield* service.reload;
+      yield* drain;
+      assert.strictEqual(settings.length, 1);
+      assert.strictEqual(statuses.length, 1);
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("falls back for an invalid field, reports the issue and keeps writing", () => {
+    const { store, notifier, layer } = setup();
+    return Effect.gen(function* () {
+      const { service, statuses } = yield* record;
+      store.writeExternally({ greeting: "", logLevel: "debug" });
+      yield* service.reload;
+      yield* drain;
+      const current = yield* service.current;
+      assert.strictEqual(current.greeting, DEFAULT_SETTINGS.greeting);
+      assert.strictEqual(current.logLevel, "debug");
+      assert.strictEqual(statuses.length, 2);
+      assert.deepStrictEqual(statuses[1]?.writable, true);
+      assert.strictEqual(statuses[1]?.issues.length, 1);
+      assert.strictEqual(notifier.messages()[0]?.title, "Einstellungen teilweise zurückgesetzt");
+      const updated = yield* service.update({ greeting: "Wieder gültig" });
+      assert.strictEqual(updated.greeting, "Wieder gültig");
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("switches to read-only for a file from a newer version and never writes it", () => {
+    const { store, notifier, layer } = setup({ initial: { greeting: "Alt" } });
+    return Effect.gen(function* () {
+      const { service, statuses } = yield* record;
+      store.writeExternally({ schemaVersion: 2, greeting: "Zukunft" });
+      yield* service.reload;
+      yield* drain;
+      assert.strictEqual(statuses.at(-1)?.readOnlyReason, "newer-version");
+      assert.strictEqual((yield* service.status).writable, false);
+      assert.strictEqual(notifier.messages().at(-1)?.title, "Einstellungen schreibgeschützt");
+      const error = yield* Effect.flip(service.update({ greeting: "Yo" }));
+      assert.strictEqual(error._tag, "ReadOnlySettingsError");
+      assert.deepStrictEqual(store.saved(), []);
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("switches to read-only when the file cannot be read, and back once it can", () => {
+    const { store, notifier, layer } = setup({ initial: { greeting: "Alt" } });
+    return Effect.gen(function* () {
+      const { service, statuses } = yield* record;
+      store.setFailLoad(true);
+      yield* service.reload;
+      yield* drain;
+      assert.deepStrictEqual(statuses.at(-1), {
+        writable: false,
+        issues: [],
+        readOnlyReason: "unreadable",
+      });
+      assert.strictEqual(notifier.messages().length, 1);
+      const error = yield* Effect.flip(service.update({ greeting: "Yo" }));
+      assert.strictEqual(error._tag, "ReadOnlySettingsError");
+
+      store.setFailLoad(false);
+      store.writeExternally({ greeting: "Wieder da" });
+      yield* service.reload;
+      yield* drain;
+      assert.deepStrictEqual(statuses.at(-1), WRITABLE);
+      assert.strictEqual((yield* service.current).greeting, "Wieder da");
+      assert.deepStrictEqual(store.saved(), []);
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("does not repeat a notice for a reload that changes nothing", () => {
+    const { store, notifier, layer } = setup({ initial: { schemaVersion: 2 } });
+    return Effect.gen(function* () {
+      const service = yield* SettingsService;
+      assert.strictEqual(notifier.messages().length, 1);
+      store.writeExternally({ schemaVersion: 2 });
+      yield* service.reload;
+      assert.strictEqual(notifier.messages().length, 1);
+    }).pipe(Effect.provide(layer));
+  });
+});

@@ -3,6 +3,7 @@ import type { Plugin } from "obsidian";
 import type { AppRuntime } from "./application/app-services";
 import { reportDefect } from "./application/defects";
 import { Logger } from "./application/ports";
+import { SettingsService } from "./application/settings-service";
 import { describeDefect } from "./application/user-messages";
 import { consoleSink } from "./infrastructure/logging/console-sink";
 import { appLayer } from "./infrastructure/obsidian/app-layer";
@@ -14,12 +15,17 @@ import { mirrorSettings } from "./infrastructure/obsidian/settings-mirror";
 import { ShellSettingTab } from "./infrastructure/obsidian/settings-tab";
 import { SHELL_VIEW_TYPE, ShellView } from "./infrastructure/obsidian/shell-view";
 import { makeRuntime } from "./infrastructure/runtime";
-import { releaseAll } from "./presentation/mount";
+import { releaseAll } from "./presentation/release";
 
 export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell-view";
 
 export type BootstrapHandle = {
   readonly runtime: AppRuntime;
+  /**
+   * Re-reads `data.json` after it changed outside Obsidian, then refreshes the settings tab.
+   * Open views follow through `SettingsService.changes` and `statusChanges`. Never rejects.
+   */
+  reloadSettings(): Promise<void>;
   dispose(): Promise<void>;
 };
 
@@ -55,7 +61,9 @@ export const bootstrap = async (
   const aborted = () => options.signal?.aborted === true;
   const undo: (() => unknown)[] = [];
   let started = false;
+  let disposed = false;
   const dispose = async () => {
+    disposed = true;
     // Undo in reverse order, one step after the other. A failing step does not stop the others
     // or the runtime; the first error is rethrown once everything is released.
     const errors: unknown[] = [];
@@ -79,7 +87,7 @@ export const bootstrap = async (
   try {
     const inert = async (): Promise<BootstrapHandle> => {
       await dispose();
-      return { runtime, dispose: async () => undefined };
+      return { runtime, reloadSettings: async () => undefined, dispose: async () => undefined };
     };
     const mirror = await mirrorSettings(runtime);
     undo.push(() => mirror.stop());
@@ -100,7 +108,8 @@ export const bootstrap = async (
     undo.push(() => {
       if (!started) removeCommands();
     });
-    plugin.addSettingTab(new ShellSettingTab(plugin.app, plugin, runtime, mirror));
+    const tab = new ShellSettingTab(plugin.app, plugin, runtime, mirror);
+    plugin.addSettingTab(tab);
     const surfaces = new Set<() => void>();
     plugin.registerView(SHELL_VIEW_TYPE, (leaf) => new ShellView(leaf, runtime, surfaces));
     // Runs first on dispose: every open view releases its Vue app before the runtime goes.
@@ -111,7 +120,16 @@ export const bootstrap = async (
     });
     await log(runtime, "plugin.loaded");
     started = true;
-    return { runtime, dispose };
+    const reloadSettings = async () => {
+      if (disposed) return;
+      await runSafely(
+        runtime,
+        SettingsService.use((service) => service.reload),
+      );
+      await mirror.refresh().catch(() => undefined);
+      tab.update();
+    };
+    return { runtime, reloadSettings, dispose };
   } catch (error) {
     await runtime.runPromise(reportDefect(error)).catch(() => reportUnloadFailure(error));
     await dispose().catch(() => undefined);

@@ -7,6 +7,7 @@ const { default: WegManagerPlugin } = await import("../../src/main");
 
 type Text = { simulateInput(value: string): unknown; getValue(): string; disabled: boolean };
 type Control = { disabled: boolean };
+type External = { onExternalSettingsChange(): Promise<void> };
 
 const openTab = async (data?: unknown) => {
   const { registry, plugin } = createTestPlugin(WegManagerPlugin, { data });
@@ -78,6 +79,27 @@ describe("settings tab", () => {
       expect(row.components.every((component: Control) => component.disabled)).toBe(true);
     }
     expect(tab.containerEl.textContent).toContain("neueren Version");
+    plugin.unload();
+  });
+
+  it("shows a greeting that arrives from outside while it is open", async () => {
+    const { rows, registry, plugin } = await openTab({ greeting: "Moin" });
+    registry.writeExternally({ greeting: "Von außen" });
+    await (plugin as unknown as External).onExternalSettingsChange();
+    expect(control<Text>(rows(), 0).getValue()).toBe("Von außen");
+    expect(registry.saved).toEqual([]);
+    plugin.unload();
+  });
+
+  it("turns read-only while open when a file from a newer version arrives", async () => {
+    const { rows, tab, registry, plugin } = await openTab({ greeting: "Moin" });
+    registry.writeExternally({ schemaVersion: 2, greeting: "Zukunft" });
+    await (plugin as unknown as External).onExternalSettingsChange();
+    for (const row of rows().slice(0, 2)) {
+      expect(row.components.every((component: Control) => component.disabled)).toBe(true);
+    }
+    expect(tab.containerEl.textContent).toContain("neueren Version");
+    expect(registry.saved).toEqual([]);
     plugin.unload();
   });
 

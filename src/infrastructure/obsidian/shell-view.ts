@@ -1,12 +1,22 @@
 import { ItemView, type WorkspaceLeaf } from "obsidian";
 import type { AppRuntime } from "../../application/app-services";
-import { mountSurface } from "../../presentation/mount";
+import type { mountSurface } from "../../presentation/mount";
 
 export const SHELL_VIEW_TYPE = "weg-manager-view";
 
+/** Loads the Vue surface module; `ShellView` takes another one in tests. */
+export type SurfaceLoader = () => Promise<{ readonly mountSurface: typeof mountSurface }>;
+
+/**
+ * Vue, Nuxt UI and TanStack Form are evaluated on the first `import()`, when a view opens, not
+ * while the plugin loads. The bundle stays one file: rolldown turns the import into a lazy init.
+ */
+const importSurface: SurfaceLoader = () => import("../../presentation/mount");
+
 /**
  * One Vue surface per open view. `surfaces` holds the close of every open view, so bootstrap
- * can close them all before it disposes the runtime.
+ * can close them all before it disposes the runtime. The close is registered before the surface
+ * module has loaded: a view closed or released while it loads never mounts.
  */
 export class ShellView extends ItemView {
   private close: (() => void) | undefined;
@@ -15,6 +25,7 @@ export class ShellView extends ItemView {
     leaf: WorkspaceLeaf,
     private readonly runtime: AppRuntime,
     private readonly surfaces: Set<() => void>,
+    private readonly loadSurface: SurfaceLoader = importSurface,
   ) {
     super(leaf);
   }
@@ -33,9 +44,18 @@ export class ShellView extends ItemView {
 
   override async onOpen(): Promise<void> {
     if (this.close !== undefined) return;
-    const close = mountSurface(this.contentEl, this.runtime);
+    let closed = false;
+    let release: (() => void) | undefined;
+    const close = () => {
+      closed = true;
+      release?.();
+    };
     this.close = close;
     this.surfaces.add(close);
+    this.contentEl.empty();
+    const { mountSurface } = await this.loadSurface();
+    if (closed) return;
+    release = mountSurface(this.contentEl, this.runtime);
   }
 
   override async onClose(): Promise<void> {

@@ -114,17 +114,20 @@ export const useEffectAction = <Args extends unknown[], A, E extends AppError>(
   };
 };
 
-/** The current settings, following every change until the component's scope ends. */
-export const useSettings = (): Readonly<ShallowRef<Settings>> => {
+/** A ref that starts at what `read` returns and follows `changes` until the component's scope ends. */
+const useFollowing = <A>(
+  read: (service: SettingsService["Service"]) => Effect.Effect<A>,
+  changes: (service: SettingsService["Service"]) => Stream.Stream<A>,
+): Readonly<ShallowRef<A>> => {
   const runtime = useRuntime();
-  const settings = shallowRef(runtime.runSync(SettingsService.use((service) => service.current)));
+  const value = shallowRef(runtime.runSync(SettingsService.use(read)));
   const controller = new AbortController();
   void runtime
     .runPromiseExit(
       SettingsService.use((service) =>
-        Stream.runForEach(service.changes, (next) =>
+        Stream.runForEach(changes(service), (next) =>
           Effect.sync(() => {
-            settings.value = next;
+            value.value = next;
           }),
         ),
       ),
@@ -132,8 +135,15 @@ export const useSettings = (): Readonly<ShallowRef<Settings>> => {
     )
     .catch(() => undefined);
   onScopeDispose(() => controller.abort());
-  return settings;
+  return value;
 };
+
+/** The current settings, following every change until the component's scope ends. */
+export const useSettings = (): Readonly<ShallowRef<Settings>> =>
+  useFollowing(
+    (service) => service.current,
+    (service) => service.changes,
+  );
 
 /**
  * Calls `handler` for every `AppEvent` from now until the component's scope ends. A throwing
@@ -165,6 +175,9 @@ export const useAppEvents = (handler: (event: AppEvent) => void): void => {
   onScopeDispose(() => controller.abort());
 };
 
-/** Whether settings can be written; fixed for one plugin load. */
-export const useSettingsStatus = (): SettingsStatus =>
-  useRuntime().runSync(SettingsService.use((service) => service.status));
+/** Whether settings can be written and why not, following every reload of the settings. */
+export const useSettingsStatus = (): Readonly<ShallowRef<SettingsStatus>> =>
+  useFollowing(
+    (service) => service.status,
+    (service) => service.statusChanges,
+  );

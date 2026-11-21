@@ -3,23 +3,9 @@ import { createApp, h, type Component } from "vue";
 import type { AppRuntime } from "../application/app-services";
 import ShellApp from "./components/ShellApp.vue";
 import { provideRuntime, reportVueError } from "./runtime/use-runtime";
+import { releaseAll } from "./release";
 import { PORTAL_CLASS, SCOPE_CLASS } from "./scope";
 import { bindHostTheme } from "./theme";
-
-/**
- * Runs every release in reverse order, even when one throws, then rethrows the first error.
- */
-export const releaseAll = (releases: readonly (() => void)[]): void => {
-  const errors: unknown[] = [];
-  for (const release of releases.toReversed()) {
-    try {
-      release();
-    } catch (error) {
-      errors.push(error);
-    }
-  }
-  if (errors.length > 0) throw errors[0];
-};
 
 /** Vue's `useId` prefix per app, so two surfaces in one document never share ids. */
 const idPrefix = (): string => `wm${crypto.randomUUID().slice(0, 8)}-`;

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { defineComponent, h, onMounted, ref } from "vue";
 import { SCOPE_CLASS as SCRIPT_SCOPE_CLASS } from "../../../scripts/scope-css.mjs";
 import { updateGreeting } from "../../../src/application/use-cases";
-import { mountSurface, releaseAll } from "../../../src/presentation/mount";
+import { mountSurface } from "../../../src/presentation/mount";
 import { PORTAL_CLASS, SCOPE_CLASS } from "../../../src/presentation/scope";
 import { testRuntime } from "../../support/runtime";
 
@@ -156,28 +156,5 @@ describe("mountSurface", () => {
     expect(document.body.childElementCount).toBe(mainChildren);
     close();
     await runtime.dispose();
-  });
-});
-
-describe("releaseAll", () => {
-  it("runs every release in reverse order and rethrows the first error", () => {
-    const calls: string[] = [];
-    const releases = [
-      () => calls.push("a"),
-      () => {
-        calls.push("b");
-        throw new Error("b failed");
-      },
-      () => {
-        calls.push("c");
-        throw new Error("c failed");
-      },
-    ];
-    expect(() => releaseAll(releases)).toThrow("c failed");
-    expect(calls).toEqual(["c", "b", "a"]);
-  });
-
-  it("does nothing for an empty list", () => {
-    expect(() => releaseAll([])).not.toThrow();
   });
 });

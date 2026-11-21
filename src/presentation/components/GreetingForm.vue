@@ -14,12 +14,12 @@ import { useEffectAction, useSettings, useSettingsStatus } from "../runtime/use-
 /** The greeting form: domain rules validate on change, the service has the final word. */
 const settings = useSettings();
 const status = useSettingsStatus();
-const readOnly = !status.writable;
+const readOnly = computed(() => !status.value.writable);
 /** Why the settings are read-only and what to do, from the shared message catalog. */
-const readOnlyMessage =
-  status.readOnlyReason === undefined
-    ? undefined
-    : describeError(new ReadOnlySettingsError({ reason: status.readOnlyReason }));
+const readOnlyMessage = computed(() => {
+  const reason = status.value.readOnlyReason;
+  return reason === undefined ? undefined : describeError(new ReadOnlySettingsError({ reason }));
+});
 const save = useEffectAction(updateGreeting);
 
 const greetingIssue = (greeting: string): string | undefined => {
@@ -42,7 +42,7 @@ const form = useForm({
 
 const canSubmit = form.useSelector((state) => state.canSubmit);
 const isSubmitting = form.useSelector((state) => state.isSubmitting);
-const disabled = computed(() => readOnly || !canSubmit.value || isSubmitting.value);
+const disabled = computed(() => readOnly.value || !canSubmit.value || isSubmitting.value);
 /** Field-level problems are shown under the field; anything else (storage) as a notice. */
 const notice = computed(() =>
   save.error.value?._tag === "InvalidSettingsError" ? undefined : save.message.value,

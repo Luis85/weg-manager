@@ -22,8 +22,12 @@ const pathAndExtension = (file: TFile) => ({ path: file.path, extension: file.ex
  *
  * - Host events are held back until the layout is ready (Obsidian fires `create` for every
  *   existing file while it starts); then `LayoutReady` is published first.
+ * - Every listener is also handed to `plugin.registerEvent`, so Obsidian detaches it synchronously
+ *   in `unload()`, before the runtime's asynchronous dispose has finished.
  * - Every listener is removed with `offref` when the runtime's scope closes, so a bootstrap that
  *   fails or is aborted leaves nothing behind even though the plugin itself is not unloaded.
+ *   Obsidian's `offref` removes a ref by identity and ignores one that is already gone, so the
+ *   second release is harmless.
  * - Mapping and publishing run synchronously inside Obsidian's callback. A defect goes to
  *   `reportDefect` and never throws into Obsidian.
  */
@@ -121,7 +125,13 @@ export const hostEventsLayer = (plugin: Plugin) =>
               else scheme = currentScheme();
             }),
           ],
-        ]),
+        ]).pipe(
+          Effect.tap((refs) =>
+            Effect.sync(() => {
+              for (const [, ref] of refs) plugin.registerEvent(ref);
+            }),
+          ),
+        ),
         (refs) =>
           Effect.sync(() => {
             active = false;

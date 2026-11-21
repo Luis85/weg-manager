@@ -2,18 +2,19 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
-const { createTestPlugin } = await import("@test/obsidian");
+const { App, createTestPlugin } = await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../src/main");
 
-type App = ReturnType<typeof createTestPlugin>["app"];
+type TestApp = ReturnType<typeof createTestPlugin>["app"];
 
-const listeners = (app: App) => ({
+const listeners = (app: TestApp) => ({
   vault: app.vault.listenerCount(),
   metadataCache: app.metadataCache.listenerCount(),
   workspace: app.workspace.listenerCount(),
 });
 
 const NONE = { vault: 0, metadataCache: 0, workspace: 0 };
+const ONE_LOAD = { vault: 4, metadataCache: 1, workspace: 2 };
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -26,12 +27,33 @@ describe("host event listeners across the plugin lifecycle", () => {
     const { plugin, registry, app } = createTestPlugin(WegManagerPlugin);
     const cycle = async () => {
       await registry.load();
-      expect(listeners(app)).toEqual({ vault: 4, metadataCache: 1, workspace: 2 });
+      expect(listeners(app)).toEqual(ONE_LOAD);
       plugin.unload();
       await vi.waitFor(() => expect(listeners(app)).toEqual(NONE));
     };
     await cycle();
     await cycle();
+  });
+
+  it("are removed synchronously by unload, before the runtime has finished disposing", async () => {
+    const { plugin, registry, app } = createTestPlugin(WegManagerPlugin);
+    await registry.load();
+    plugin.unload();
+    expect(listeners(app)).toEqual(NONE);
+  });
+
+  it("survive the old runtime's late dispose after a quick re-enable", async () => {
+    const app = new App();
+    const first = createTestPlugin(WegManagerPlugin, { app });
+    await first.registry.load();
+    first.plugin.unload();
+    const second = createTestPlugin(WegManagerPlugin, { app });
+    await second.registry.load();
+    // The first runtime's finalizer calls offref on refs that unload already removed.
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(listeners(app)).toEqual(ONE_LOAD);
+    second.plugin.unload();
+    expect(listeners(app)).toEqual(NONE);
   });
 
   it("are all removed when the plugin unloads while settings are still loading", async () => {

@@ -43,6 +43,10 @@ export type PluginRegistry = {
   runCommand(id: string): unknown;
   /** Makes the next `addCommand` throw once. */
   failNextAddCommand(): void;
+  /** Replaces `data.json` as Sync or another program would; Obsidian then calls `onExternalSettingsChange`. */
+  writeExternally(data: unknown): void;
+  /** Makes every later `loadData` fail (`true`) or succeed again (`false`). */
+  setFailLoadData(fail: boolean): void;
   /** Holds `loadData` until `releaseLoadData()` is called. */
   holdLoadData(): void;
   releaseLoadData(): void;
@@ -187,6 +191,12 @@ export const createTestPlugin = <P extends object>(
     },
     failNextAddCommand: () => {
       state(double).failAddCommand = true;
+    },
+    writeExternally: (data) => {
+      state(double).data = structuredClone(data);
+    },
+    setFailLoadData: (fail) => {
+      state(double).failLoadData = fail;
     },
     holdLoadData: () => {
       let release: () => void = noop;

@@ -24,10 +24,12 @@ def build_package(repo, output):
             raise ValueError('Missing or unsafe skill resource: '+name)
     (output/'dist').mkdir(parents=True,exist_ok=True)
     archive=output/'dist'/(SKILL_NAME+'-'+VERSION+'.zip')
-    with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as bundle:
+    # Stored, not deflated: deflate output differs between zlib builds, so a compressed archive
+    # (and the checksum in manifest.json) would depend on the machine that built it.
+    with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_STORED) as bundle:
         for name in sorted(required):
             entry=zipfile.ZipInfo(SKILL_NAME+'/'+name,date_time=(2026,11,15,0,0,0))
-            entry.compress_type=zipfile.ZIP_DEFLATED
+            entry.compress_type=zipfile.ZIP_STORED
             entry.external_attr=0o100644 << 16
             bundle.writestr(entry,(source/name).read_bytes())
     manifest={

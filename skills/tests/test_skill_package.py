@@ -35,5 +35,12 @@ class PackagingTests(unittest.TestCase):
             two=mod.build_package(ROOT,Path(temp)/'two')
             self.assertEqual(one['skills'][0]['sha256'],two['skills'][0]['sha256'])
 
+    def test_committed_manifest_matches_a_fresh_build(self):
+        # The archive is stored uncompressed, so its bytes do not depend on the zlib build.
+        with tempfile.TemporaryDirectory() as temp:
+            fresh=mod.build_package(ROOT,Path(temp))
+        committed=json.loads((ROOT/'skills'/'manifest.json').read_text(encoding='utf-8'))
+        self.assertEqual(committed,fresh,'skills/manifest.json is stale: run python3 skills/package_claude_skills.py')
+
 
 if __name__=='__main__': unittest.main()

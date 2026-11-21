@@ -94,6 +94,7 @@ describe("decodeSettings", () => {
     const result = decodeSettings({ ...valid, schemaVersion: 2 });
     expect(result.settings).toEqual(DEFAULT_SETTINGS);
     expect(result.writable).toBe(false);
+    expect(result.readOnlyReason).toBe("newer-version");
     expect(result.issues).toEqual([{ code: "schema.newer", version: 2 }]);
   });
 

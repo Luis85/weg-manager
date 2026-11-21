@@ -37,10 +37,15 @@ export type SettingsFields<F extends object, Issue extends IssueLike> = {
  */
 export type Migrations = Readonly<Record<number, (raw: Record<string, unknown>) => unknown>>;
 
+/** Why a file must not be written: it is from a newer version, or it could not be understood. */
+export type ReadOnlyReason = "newer-version" | "unreadable";
+
 export type Decoded<S, Issue extends IssueLike> = {
   readonly settings: S;
   readonly issues: readonly (Issue | StructuralIssue)[];
   readonly writable: boolean;
+  /** Set exactly when `writable` is false. */
+  readonly readOnlyReason?: ReadOnlyReason;
 };
 
 export type PatchOutcome<S, Issue extends IssueLike> =
@@ -115,7 +120,13 @@ export const makeSettingsCodec = <
   ): Decoded<Settings, Issue> => {
     const migrated = isVersion(fileVersion) ? migrate(raw, fileVersion) : Result.succeed(raw);
     if (Result.isFailure(migrated)) {
-      return { settings: defaults, issues: [migrated.failure], writable: true };
+      // The old values are still in the file. Read-only keeps a later save from replacing them.
+      return {
+        settings: defaults,
+        issues: [migrated.failure],
+        writable: false,
+        readOnlyReason: "unreadable",
+      };
     }
     const issues: Array<Issue | StructuralIssue> = [];
     if (fileVersion !== undefined && !isVersion(fileVersion))
@@ -129,7 +140,8 @@ export const makeSettingsCodec = <
    * file itself is rewritten only by the next save: an older plugin on another device must not see
    * a file it takes for newer merely because this one loaded it. Invalid fields fall back one by
    * one; a file of a newer version loads defaults and is marked read-only so it is never
-   * overwritten; a file a step cannot migrate loads defaults like an unreadable one.
+   * overwritten; a file a step cannot migrate loads defaults and is read-only too, so its old
+   * values survive until a fixed version reads them.
    */
   const decode = (raw: unknown): Decoded<Settings, Issue> => {
     if (raw === undefined || raw === null)
@@ -143,6 +155,7 @@ export const makeSettingsCodec = <
         settings: defaults,
         issues: [{ code: "schema.newer", version: fileVersion }],
         writable: false,
+        readOnlyReason: "newer-version",
       };
     }
     return decodeObject(raw, fileVersion);

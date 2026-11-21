@@ -54,9 +54,6 @@ const unreadable: Loaded = {
   readOnlyReason: "unreadable",
 };
 
-const toLoaded = (decoded: DecodedSettings): Loaded =>
-  decoded.writable ? decoded : { ...decoded, readOnlyReason: "newer-version" };
-
 const loadMessage = (loaded: Loaded, messages: ShellCatalog): UserMessage | undefined => {
   if (loaded.readOnlyReason !== undefined) {
     return describeShellError(
@@ -84,7 +81,7 @@ export const SettingsServiceLive = Layer.effect(
     const notifier = yield* Notifier;
     const { shell: messages } = yield* Messages;
     const read = store.load.pipe(
-      Effect.map((raw) => toLoaded(decodeSettings(raw))),
+      Effect.map((raw): Loaded => decodeSettings(raw)),
       Effect.catchTag("StorageError", () => Effect.succeed(unreadable)),
     );
     const announce = (loaded: Loaded) => {

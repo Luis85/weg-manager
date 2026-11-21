@@ -98,6 +98,7 @@ describe("makeSettingsCodec", () => {
       settings: { schemaVersion: 3, name: "none", count: 0, note: null },
       issues: [{ code: "schema.newer", version: 4 }],
       writable: false,
+      readOnlyReason: "newer-version",
     });
     expect(calls).toEqual([]);
   });
@@ -198,15 +199,19 @@ describe("migrations", () => {
     ["returns undefined", () => undefined],
     ["returns an array", () => []],
     ["returns a string", () => "x"],
-  ])("fail safely when a step %s: defaults and migration.failed", (_label, step) => {
-    const codec = setup({ 1: record, 2: step });
-    const result = codec.decode({ schemaVersion: 1, name: "Anna", count: 5 });
-    expect(result).toEqual({
-      settings: codec.defaults,
-      issues: [{ code: "migration.failed", from: 2 }],
-      writable: true,
-    });
-  });
+  ])(
+    "fail safely when a step %s: defaults, migration.failed and a read-only file",
+    (_label, step) => {
+      const codec = setup({ 1: record, 2: step });
+      const result = codec.decode({ schemaVersion: 1, name: "Anna", count: 5 });
+      expect(result).toEqual({
+        settings: codec.defaults,
+        issues: [{ code: "migration.failed", from: 2 }],
+        writable: false,
+        readOnlyReason: "unreadable",
+      });
+    },
+  );
 
   it("name the step that failed, and run no later one", () => {
     const calls: number[] = [];

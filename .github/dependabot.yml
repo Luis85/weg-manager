@@ -13,6 +13,17 @@ updates:
     open-pull-requests-limit: 3
     commit-message:
       prefix: build
+    # Majors that other tools block (ADR 0001, "Fallbacks and their blockers"). Remove an entry when its
+    # blocker is gone, then let Dependabot propose the major again.
+    ignore:
+      # typescript-eslint 8 accepts only typescript <6.1.0.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      # eslint-plugin-obsidianmd's dependencies accept only ESLint ^9.
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/js"
+        update-types: ["version-update:semver-major"]
     groups:
       dev-tooling:
         dependency-type: development

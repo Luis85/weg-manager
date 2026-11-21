@@ -21,7 +21,7 @@ The shell has none of this. Its only vault access counts Markdown files. This AD
 - **The body belongs to the user.** The plugin writes frontmatter. It changes a body only where a type's contract defines a section.
 - **Folders are where new notes are created, nothing more.** The default root is `WEG Manager/`, held as a setting. Folder names are part of the contract and are German in every UI language (`WEG Manager/Gemeinschaften/`), because a vault is shared between devices. A name clash gets the suffix ` (2)`.
 
-The first type, as the tracer slice builds it (the values are examples; the colour names come from the reviewed palette):
+The first type, as the tracer slice builds it (the values are examples; `color` is an English name from the fixed palette):
 
 ```yaml
 ---
@@ -29,7 +29,7 @@ schema: weg-manager.community/v1
 id: community-3f2b8c1e-7a44-4d0b-9c2e-5b1f0a6d9e21
 name: Ahornweg 12
 short_code: AW
-color: c1
+color: teal
 kind: WEG
 unit_label: Einheiten
 ---
@@ -68,5 +68,5 @@ unit_label: Einheiten
 - Ids are not readable. Lists and texts show names, short codes and numbers.
 - A conflict costs the user a choice instead of costing data. Forms need the loaded state and a per-field conflict view.
 - The file names differ from the code: German folders and UI, English keys. `GLOSSARY.md` and each type's contract page carry the mapping.
-- Each type needs its contract documented when it is built (K-14). How the contract reaches a user's vault is a product question under PBI-41.
+- Each type needs its contract documented when it is built (K-14): one German page per type and version under `docs/`, German text around the English keys and codes, as the Gmail skill's contract is written. How the contract reaches a user's vault is a product question under PBI-41.
 - The Obsidian test double grows by the vault, metadata-cache and file-manager calls named above, and one in-memory `NoteStore` serves both the tests and the browser harness.

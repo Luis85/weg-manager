@@ -76,6 +76,8 @@ Runde Knoten sind Sheets oder Dialoge, eckige Knoten Ansichten oder Bereiche.
 
 ## Navigationsmodell
 
+Stand 21.11.2026: Die Spalte „Mobil“ und alle mobilen Layouts und Mockups dieser Sitemap und der Ansichten beschreiben den Ausbau nach dem MVP ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]). Im MVP gilt das Desktop-Layout; die Breite des Containers bestimmt weiter das Layout, weil Panes schmal sein können.
+
 | Ziel | Rolle | Desktop | Mobil |
 | --- | --- | --- | --- |
 | Lage | Startpunkt, Lagecheck zwischendurch | Sidebar, Badge = Anzahl dringend | Segment oben |

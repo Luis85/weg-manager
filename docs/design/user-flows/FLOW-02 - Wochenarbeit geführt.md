@@ -31,6 +31,8 @@ requirements:
 
 **Auslöser:** Wochentag laut Rhythmus oder „Woche starten“ in der Lage. **Ziel:** alle wartenden Zusagen beurteilt, bis zu 7 Entscheidungen getroffen, Nachrichten vorbereitet, Übergabe gespeichert – in ≤ 60 min aktiver Zeit (H-03).
 
+**Stand 21.11.2026:** Die mobile Bedienung ([[PBI-33 - Wochenarbeit auf dem Handy abschließen]]) folgt nach dem MVP, siehe [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]. Im MVP läuft die Wochenarbeit auf dem Desktop.
+
 ```mermaid
 flowchart TD
   S[Woche starten] --> E1{Ungeprüfte Eingänge?}

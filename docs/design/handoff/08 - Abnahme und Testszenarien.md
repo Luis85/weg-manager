@@ -9,7 +9,7 @@ date: 2026-11-15
 
 # Handoff · Abnahme und Testszenarien
 
-Abbildung der geplanten internen Abnahmen AT-B01–18 aus dem [[02-MVP-PRD]] auf Ansichten und Komponenten. „Prototyp“ nennt, ob das Verhalten im klickbaren Prototyp nachvollziehbar ist (✓), angedeutet (~) oder fehlt (–).
+Abbildung der geplanten internen Abnahmen AT-B01–18 aus dem [[02-MVP-PRD]] auf Ansichten und Komponenten. AT-B13 (mobil) gehört zum Ausbau nach dem MVP. „Prototyp“ nennt, ob das Verhalten im klickbaren Prototyp nachvollziehbar ist (✓), angedeutet (~) oder fehlt (–).
 
 | AT | Szenario (Kurz) | Ansichten | Prüfpunkte im UI | Prototyp |
 | --- | --- | --- | --- | --- |
@@ -25,7 +25,7 @@ Abbildung der geplanten internen Abnahmen AT-B01–18 aus dem [[02-MVP-PRD]] auf
 | AT-B10 | Übergabe, später akutes Problem | Übergabe, Lage | Schwerpunkte erscheinen in Lage; neue Dringlichkeit oben; Rückstand bleibt | ✓ |
 | AT-B11 | Interne Bewertung, privates Original, ungeprüfte Anlage | Postausgang, Ausgabe | ausgeschlossene Bausteine sichtbar gesperrt; keine transitive Mitnahme | ~ |
 | AT-B12 | Offline, externe Dateiänderung, doppelte ID, Abbruch, Sichern | alle, Einstellungen | Alerts statt Datenverlust; Eingaben bleiben; Plugin aus → Akten lesbar | – |
-| AT-B13 | Komplette Wochenreise mobil mit Unterbrechung | Woche mobil | alle Eingaben mobil; Pausieren/Fortsetzen; nichts unter Host-Navigation verdeckt | ✓ |
+| AT-B13 | Nach dem MVP: Komplette Wochenreise mobil mit Unterbrechung | Woche mobil | alle Eingaben mobil; Pausieren/Fortsetzen; nichts unter Host-Navigation verdeckt | ✓ |
 | AT-B14 | Öffentliche Installation in frischem Vault | Erststart | Einrichtung in 3 Schritten ohne Entwicklerwerkzeuge; danach Einführungstour, überspringbar und neu startbar | ~ (Tour) |
 | AT-B15 | Vorgang ohne Plugin und Obsidian lesen und ändern | alle (Dateivertrag), Datenprobleme | Akten als lesbare Markdown-Notizen; externe gültige Änderung beim nächsten Start übernommen; kein Export nötig | – |
 | AT-B16 | Agent ändert Notizen bei geschlossenem und offenem Plugin | Datenprobleme, Lage, Punktakte | Alert „Geändert außerhalb des Plugins“ mit Vergleichen; ungültiges YAML/neueres Schema sichtbar, nichts still überschrieben | – (Mockup Konflikt) |
@@ -42,7 +42,7 @@ Entsprechen den Testaufgaben im Prototyp (Button „Testaufgaben“ in der Proto
 4. **Entscheiden:** Sonnensegel mit Notiz entscheiden; eine Entscheidung zurückstellen.
 5. **Senden:** Eigentümer-Info DE und EN prüfen, als gesendet markieren.
 6. **Übergabe:** Schwerpunkte und Doppelpflege eintragen, Woche abschließen.
-7. **Unterwegs (Handy):** Telefonische Zusage ohne Termin erfassen.
+7. **Unterwegs (Handy), nach dem MVP:** Telefonische Zusage ohne Termin erfassen.
 8. **Kontakte:** Herausfinden, wen man wegen der Rolltor-Wartung erreicht; einen neuen Kontakt anlegen.
 
 ## Auswertung

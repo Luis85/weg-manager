@@ -1,5 +1,8 @@
 # Obsidian Plugin Shell — Baseline Blueprint
 
+> **Historical record (archived 2026-11-21).** This plan describes the plugin shell as first built, with a greeting demo, one view and one panel. It no longer matches the code.
+> The current truth is in [architecture](../../engineering/architecture.md), [adding a feature](../../engineering/adding-a-feature.md) and the [ADRs](../../adr/).
+
 **Goal:** Produce a new Obsidian plugin repository — TypeScript, Vue 3 + Nuxt UI, Effect, Vitest, Stryker, oxlint, fallow, Azure Pipelines — whose quality gate is green and whose one small walking-skeleton feature proves every layer end to end, so a developer can start feature work on day one.
 
 **Architecture:** Layered, ports-and-adapters, dependencies point inward only. `domain` (pure, Effect Schema) ← `application` (Effect services, tagged errors, ports, use cases) ← `infrastructure/obsidian` (the only code that imports `obsidian`; provides Layers) and `presentation` (Vue + Nuxt UI; calls application use cases through one runtime composable and never imports `effect` itself). `src/main.ts` is composition only. One `ManagedRuntime` per plugin load, one Vue app per open view, everything released on `onunload`.

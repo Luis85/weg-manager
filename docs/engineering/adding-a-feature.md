@@ -32,7 +32,7 @@ The walking skeleton (greeting and markdown file count) in module `shell` is the
 
 Every feature reads and writes notes through the `NoteStore` port of module `notes` (`src/application/notes/`, ADR 0007); see [Architecture → Vault notes](architecture.md#vault-notes). Import it from the module's index. The Obsidian adapter (`src/infrastructure/obsidian/notes/`) is the only code that changes vault files; a feature adds no vault adapter of its own.
 
-- **Create a record** with `create({ folder, name, frontmatter, body })`. Folders come from settings and are created when missing; a taken name gets ` (2)`.
+- **Create a record** with `create({ folder, name, frontmatter, body })`. Folders come from settings and are created when missing; a taken name gets ` (2)`. A name is taken also in another case or Unicode form (`ahornweg` beside `Ahornweg`), as on Windows and macOS.
 - **Change frontmatter** with `update(path, change)`. `change` runs inside Obsidian's atomic `processFrontMatter` on the frontmatter just read from the file and returns `Result.succeed({ set, remove })` or `Result.fail(yourError)` to write nothing. Write only the keys your type knows; the store keeps every other key, the key order and the body.
 - **Delete** with `trash(path)`, **rename** with `rename(path, newName)`.
 - **Read** with `list` (every record, by `schema`) and `read(path)`. Both come from the metadata cache, which catches up with a write a moment later: use the note a write returns, not a read right after it.

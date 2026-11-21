@@ -1,6 +1,6 @@
 ---
 type: PBI
-parent: "[[F-21 - Nichtfunktionale Anforderungen]]"
+parent: "[[F-24 - Technische Plugin-Grundlagen]]"
 order: 76000
 actors:
   - "[[ACT-01-Beirat]]"

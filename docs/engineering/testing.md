@@ -9,7 +9,9 @@ Tests come first. Each behaviour step writes the failing test, sees it fail, the
 | `unit` | `tests/unit/**/*.test.ts` | node | domain, application, scripts, harness layers, logging |
 | `dom` | `tests/dom/**/*.test.ts` | happy-dom + Vue/Nuxt UI plugins | lifecycle, settings tab, views, components |
 
-- Run one file: `npx vitest run tests/dom/presentation/shell-panel.test.ts`
+Tests mirror the module folders: `tests/<project>/<layer>/<module>/`, e.g. `tests/unit/application/shell/` for `src/application/shell/`. Tests of the composition (plugin load through `main.ts`, `bootstrap.ts`, the files at a layer root) stay above them, e.g. `tests/dom/lifecycle.test.ts`.
+
+- Run one file: `npx vitest run tests/dom/presentation/shell/shell-panel.test.ts`
 - Run one project: `npx vitest run --project unit`
 - Run tests by name: `npx vitest run -t "read-only"`
 

@@ -1,7 +1,7 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect } from "effect";
 import { afterEach, vi } from "vitest";
-import { Incidents, LogSink } from "../../../src/application/ports";
+import { Incidents, LogSink } from "../../../src/application/shell/ports";
 import { consoleSinkLayer } from "../../../src/infrastructure/logging/console-sink";
 import { incidentsLayer } from "../../../src/infrastructure/logging/incidents";
 

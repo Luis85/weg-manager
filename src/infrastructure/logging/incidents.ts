@@ -1,5 +1,5 @@
 import { Effect, Layer, Random } from "effect";
-import { Incidents } from "../../application/ports";
+import { Incidents } from "../../application/shell";
 
 const ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const LENGTH = 6;

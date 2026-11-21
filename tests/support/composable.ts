@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils";
 import { defineComponent, h } from "vue";
 import type { AppRuntime } from "../../src/application/app-services";
-import { provideRuntime } from "../../src/presentation/runtime/use-runtime";
+import { provideRuntime } from "../../src/presentation/shell/runtime/use-runtime";
 import { testRuntime, type TestRuntimeOptions } from "./runtime";
 
 /** Runs `setup` inside a mounted component on `runtime` and hands back what it returned. */

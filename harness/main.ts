@@ -1,7 +1,7 @@
 import { ManagedRuntime } from "effect";
-import { languageFromCode } from "../src/application/i18n";
-import type { UserMessage } from "../src/application/user-messages";
-import { mountSurface } from "../src/presentation/mount";
+import { languageFromCode } from "../src/application/messages";
+import type { UserMessage } from "../src/application/shell";
+import { mountSurface } from "../src/presentation/shell/mount";
 import "../src/styles/app.css";
 import "./fake-host.css";
 import { SCENARIOS, harnessLayer, parseScenario } from "./layers";

@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -54,3 +54,4 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Abschnitt 3 (Lücke B2) und S
 ## Kommentare
 
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
+- 21.11.2026: Abgeschlossen. Der vorhandene Code ist das Modul `shell`; die Sammeldateien in `src/application/` komponieren nur noch. Die Modulgrenzen prüfen ESLint (`eslint.config.mjs`, Block `moduleBoundaries`) und fallow (`configs/fallow.json`); die Schichtregeln bleiben in oxlint. Ein neues Modul ist ein Eintrag in den Modullisten von `eslint.config.mjs` und, sobald andere es importieren, in den `allow`-Listen von `configs/fallow.json`. Offen für [[PBI-55 - Navigation und App-Rahmen der Plugin-Ansicht bereitstellen]]: `src/presentation/shell/index.ts` ist heute Vue-frei, weil `bootstrap` es beim Laden importiert; Fachkomponenten brauchen einen zweiten, Vue-seitigen Einstieg.

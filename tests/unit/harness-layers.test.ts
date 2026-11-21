@@ -1,8 +1,8 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect, Exit, Fiber } from "effect";
 import { TestClock } from "effect/testing";
-import { countMarkdownFiles, updateGreeting } from "../../src/application/use-cases";
-import type { UserMessage } from "../../src/application/user-messages";
+import { countMarkdownFiles, updateGreeting } from "../../src/application/shell/use-cases";
+import type { UserMessage } from "../../src/application/shell/user-messages";
 import {
   HARNESS_FILE_COUNT,
   SLOW_MS,
@@ -64,7 +64,9 @@ describe("harnessLayer", () => {
 
   it.effect("reports a clipboard failure as ClipboardError", () =>
     Effect.gen(function* () {
-      const { Clipboard } = yield* Effect.promise(() => import("../../src/application/ports"));
+      const { Clipboard } = yield* Effect.promise(
+        () => import("../../src/application/shell/ports"),
+      );
       const layer = harnessLayer("default");
       const error = yield* Effect.flip(
         Clipboard.use((clipboard) => clipboard.write("x")).pipe(Effect.provide(layer)),

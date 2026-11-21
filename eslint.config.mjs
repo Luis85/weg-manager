@@ -41,6 +41,51 @@ const obsidianmdForVue = [
   ...tsSourceBlocks.map(toVue).filter((config) => Object.keys(config.rules).length > 0),
 ];
 
+/**
+ * Module boundaries (ADR 0006), the second axis next to oxlint's layer rules. Both axes use
+ * `no-restricted-imports`, and a later oxlint override replaces an earlier one's options instead of
+ * adding to them, so a module rule there would switch off the layer rule of the same files. This
+ * block runs after the oxlint block, which turns the rule off in ESLint.
+ *
+ * - Modules in dependency order: `shell`, then `notes`, then the feature modules. A new module
+ *   is one entry here; its folders need no further rule.
+ * - Every import into a module folder from outside it goes through the folder's `index.ts`
+ *   (`../shell`, never `../shell/ports`), also between layers of the same module.
+ * - A core module imports no module listed after it: `shell` none, `notes` only `shell`. Feature
+ *   modules may import each other's index.
+ */
+const CORE_MODULES = ["shell", "notes"];
+const FEATURE_MODULES = ["communities"];
+const MODULES = [...CORE_MODULES, ...FEATURE_MODULES];
+const pastIndex = MODULES.map((module) => ({
+  regex: `(^|/)${module}/(?!index$)`,
+  message: `Import module ${module} only through its index.ts (ADR 0006).`,
+}));
+const moduleFolders = (/** @type {string} */ module) => [
+  `src/domain/${module}/**`,
+  `src/application/${module}/**`,
+  `src/infrastructure/obsidian/${module}/**`,
+  `src/presentation/${module}/**`,
+];
+/** @returns {import("eslint").Linter.RulesRecord} */
+const restrict = (/** @type {{ regex: string; message: string }[]} */ patterns) => ({
+  "no-restricted-imports": ["error", { patterns }],
+});
+/** @type {import("eslint").Linter.Config[]} */
+const moduleBoundaries = [
+  { files: ["src/**/*.ts", "src/**/*.vue"], rules: restrict(pastIndex) },
+  ...CORE_MODULES.map((module, index) => ({
+    files: moduleFolders(module),
+    rules: restrict([
+      ...pastIndex,
+      ...MODULES.slice(index + 1).map((later) => ({
+        regex: `(^|/)${later}(/|$)`,
+        message: `Module ${module} never imports ${later}: feature → notes → shell (ADR 0006).`,
+      })),
+    ]),
+  })),
+];
+
 /** Vue's presets carry no `files`; scope them so `.ts` files keep the TypeScript parser. */
 const vueOnly = vue.configs["flat/recommended"].map((config) =>
   config.files ? config : { ...config, files: ["**/*.vue"] },
@@ -142,4 +187,5 @@ export default defineConfig(
     rules: { "max-lines": ["error", { max: 450, ...LOC }] },
   },
   ...oxlint.buildFromOxlintConfigFile("./.oxlintrc.json"),
+  ...moduleBoundaries,
 );

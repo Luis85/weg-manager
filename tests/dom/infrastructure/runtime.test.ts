@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { showGreeting } from "../../../src/application/use-cases";
+import { showGreeting } from "../../../src/application/shell/use-cases";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 

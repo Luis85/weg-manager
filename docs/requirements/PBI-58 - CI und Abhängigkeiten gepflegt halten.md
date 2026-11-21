@@ -53,3 +53,4 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Schritt 4.4. Einrichtung: `do
 ## Kommentare
 
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
+- 21.11.2026: Kriterien 1 bis 4 sind mit PR #8 ausgeliefert (Vitest-Warnung, Actions per Commit-SHA, Dependabot, Dokumentation). Offen bleibt Kriterium 5: `CI / e2e` als Pflichtprüfung, sobald Vault-Specs bestehen. Das ist eine Repository-Einstellung des Eigentümers.

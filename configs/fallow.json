@@ -29,11 +29,22 @@
     "zones": [
       {
         "name": "domain",
-        "patterns": ["src/domain/**"]
+        "autoDiscover": ["src/domain"],
+        "publicFiles": ["index.ts"]
       },
       {
         "name": "application",
+        "autoDiscover": ["src/application"],
+        "publicFiles": ["index.ts"]
+      },
+      {
+        "name": "application-composition",
         "patterns": ["src/application/**"]
+      },
+      {
+        "name": "adapters",
+        "autoDiscover": ["src/infrastructure/obsidian"],
+        "publicFiles": ["index.ts"]
       },
       {
         "name": "infrastructure",
@@ -41,7 +52,8 @@
       },
       {
         "name": "presentation",
-        "patterns": ["src/presentation/**"]
+        "autoDiscover": ["src/presentation"],
+        "publicFiles": ["index.ts"]
       },
       {
         "name": "composition",
@@ -51,25 +63,82 @@
     "rules": [
       {
         "from": "domain",
-        "allow": []
+        "allow": ["domain/shell"]
       },
       {
         "from": "application",
-        "allow": ["domain"]
+        "allow": ["domain", "application/shell", "application-composition"]
+      },
+      {
+        "from": "application-composition",
+        "allow": ["domain", "application"]
+      },
+      {
+        "from": "adapters",
+        "allow": [
+          "adapters/shell",
+          "infrastructure",
+          "application",
+          "application-composition",
+          "domain",
+          "presentation"
+        ]
       },
       {
         "from": "infrastructure",
-        "allow": ["application", "domain", "presentation"]
+        "allow": ["adapters", "application", "application-composition", "domain"]
       },
       {
         "from": "presentation",
-        "allow": ["application", "domain"]
+        "allow": ["presentation/shell", "application", "application-composition", "domain"]
       },
       {
         "from": "composition",
-        "allow": ["infrastructure", "application", "domain", "presentation"]
+        "allow": [
+          "infrastructure",
+          "adapters",
+          "application",
+          "application-composition",
+          "domain",
+          "presentation"
+        ]
+      },
+      {
+        "from": "domain/shell",
+        "allow": []
+      },
+      {
+        "from": "application/shell",
+        "allow": ["domain/shell"],
+        "allowTypeOnly": ["application-composition"]
+      },
+      {
+        "from": "adapters/shell",
+        "allow": [
+          "infrastructure",
+          "application/shell",
+          "application-composition",
+          "domain/shell",
+          "presentation/shell"
+        ]
+      },
+      {
+        "from": "presentation/shell",
+        "allow": ["application/shell", "application-composition", "domain/shell"]
       }
-    ]
+    ],
+    "coverage": {
+      "requireAllFiles": true,
+      "allowUnmatched": [
+        "src/env.d.ts",
+        "src/styles/**",
+        "tests/**",
+        "scripts/**",
+        "harness/**",
+        "configs/**",
+        "*.mjs"
+      ]
+    }
   },
   "ignoreDependencies": [
     "obsidian",

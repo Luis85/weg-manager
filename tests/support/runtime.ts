@@ -1,9 +1,10 @@
 import { Effect, Layer, ManagedRuntime } from "effect";
 import type { AppRuntime } from "../../src/application/app-services";
-import { InvalidSettingsError } from "../../src/application/errors";
-import { messagesLayer, type Language } from "../../src/application/i18n";
-import { SettingsService, SettingsServiceLive } from "../../src/application/settings-service";
-import type { SettingsIssue } from "../../src/domain/settings";
+import { InvalidSettingsError } from "../../src/application/shell/errors";
+import { messagesLayer } from "../../src/application/messages";
+import type { Language } from "../../src/application/shell/i18n/catalog";
+import { SettingsService, SettingsServiceLive } from "../../src/application/shell/settings-service";
+import type { SettingsIssue } from "../../src/domain/shell/settings";
 import {
   controllableVault,
   inMemoryStore,

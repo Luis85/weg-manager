@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -27,7 +27,7 @@ pages: []
 user-flows: []
 dependsOn:
   - "[[PBI-53 - Notizformat mit Schemaversion lesen und schreiben]]"
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-54 · Index der Notizen aufbauen und aktuell halten
@@ -64,3 +64,10 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Abschnitt 3 (Lücken B5 und B
   - **Referenz-Vault:** `npm run vault:reference` erzeugt ihn deterministisch nach `tests/e2e/vaults/reference/` (nicht eingecheckt): zwei Gemeinschaften, 200 Punkte, 2.000 Notizen mit Frontmatter, 200 ohne.
   - **Messwerte in diesem Container** (nicht die Referenzmaschine, noch keine Schwelle): `VaultReady` beim Kaltstart nach 2,4 bis 3,3 s, beim Warmstart nach rund 0,25 s; `NoteStore.list` danach 9 bis 20 ms für 2.000 Datensätze.
   - **Offen:** der Index selbst mit Zeitprüfung gegen B-NFR-04.
+- 21.11.2026: Abgeschlossen. Stand der Umsetzung des Index:
+  - **Dienst `NoteIndex`** (`src/application/notes/`): hält je registriertem Notiztyp die gelesenen Notizen mit ihren Problemen, sortiert nach Pfad, und meldet doppelte `id` über alle Typen. Eine Momentaufnahme sagt, ob der Index bereit ist und ob das letzte Lesen fehlschlug.
+  - **Notiztypen** stehen in `src/application/note-types.ts`; ein Fachmodul ergänzt dort eine Zeile.
+  - **Ohne Typ, aber sichtbar:** fehlerhafter `schema`-Wert, gültiger `schema`-Wert unbekannten Typs und, nur unterhalb des Wurzelordners, ein Frontmatter-Block, der sich nicht lesen lässt. Für Letzteres hat der Port `NoteStore` den Aufruf `unreadable(folder)` bekommen; gemessen in Obsidian 1.15.1 unterscheidet nur der Abschnitt `yaml` in `sections` kaputtes YAML von einer Notiz ohne Block.
+  - **Aufbau und Folgen:** einmal Lesen bei `VaultReady`, danach erneutes Lesen je Pfad bei `MetadataChanged`, `FileDeleted` und `FileRenamed`, gebündelt nach 100 ms Ruhe (höchstens 1 s). Eigene Schreibvorgänge nehmen denselben Weg wie fremde.
+  - **Fehlerzustand:** Schlägt das Lesen fehl, bleiben die letzten Notizen stehen und die Ansicht zeigt „Notizen nicht aktuell“ mit „Erneut versuchen“.
+  - **Zeitprüfung** (dieser Container, nicht die Referenzmaschine): Aufbau aus 2.000 Datensätzen 30 bis 160 ms; von `VaultReady` bis zum bereiten Index in echtem Obsidian 29 bis 49 ms; eine fremde Änderung erscheint nach 106 bis 124 ms. Geprüft wird jeweils gegen 1 s.

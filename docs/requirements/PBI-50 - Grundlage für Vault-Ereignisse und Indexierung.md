@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -25,7 +25,7 @@ decisions:
 hypotheses: []
 pages: []
 user-flows: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-50 · Grundlage für Vault-Ereignisse und Indexierung
@@ -62,3 +62,4 @@ Code-Review der Plugin-Shell vom 21.11.2026. Der noch offene Teil, die Indexieru
   - **Tests:** Im Double, in der Plugin-Lebensdauer und e2e (`tests/e2e/specs/events.e2e.ts`).
   - **Offen:** die eigentliche Indexierung. Sie gehört zum ersten Fachfeature.
 - 21.11.2026: Kriterium 1 ist auf `EventBus` und `AppEvent` umgeschrieben (Stand der Umsetzung, ADR 0004). PBI-50 bleibt offen: Die Indexierung ist nicht gebaut. Sie ist als [[PBI-54 - Index der Notizen aufbauen und aktuell halten]] eingeplant; das PBI stellt auch den Zeitpunkt „Vault lesbar“ nach dem Obsidian-Ereignis `resolved` bereit, den `LayoutReady` allein nicht garantiert.
+- 21.11.2026: Abgeschlossen. Der offene Teil, die Indexierung, ist mit [[PBI-54 - Index der Notizen aufbauen und aktuell halten]] ausgeliefert.

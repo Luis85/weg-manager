@@ -4,7 +4,8 @@
     "lib": ["ES2023"],
     "types": ["node"],
     "allowJs": true,
-    "checkJs": true
+    "checkJs": true,
+    "allowImportingTsExtensions": true
   },
   "include": ["*.ts", "*.mjs", "scripts/**/*.mjs"]
 }

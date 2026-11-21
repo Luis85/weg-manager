@@ -5,7 +5,8 @@
     "types": ["node"],
     "paths": {
       "@test/obsidian": ["./tests/support/obsidian/index.ts"]
-    }
+    },
+    "allowJs": true
   },
   "include": [
     "src/**/*.ts",

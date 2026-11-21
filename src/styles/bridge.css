@@ -1,0 +1,57 @@
+/*
+ * Nuxt UI roles from plugin tokens. Listed for .light and .dark too, because Nuxt UI's own theme
+ * blocks use those classes and would otherwise win by specificity.
+ */
+:root,
+.light,
+.dark {
+  --ui-bg: var(--wm-bg);
+  --ui-bg-muted: var(--wm-bg-secondary);
+  --ui-bg-elevated: var(--wm-bg-secondary);
+  --ui-bg-accented: var(--wm-border);
+  --ui-bg-inverted: var(--wm-text);
+  --ui-text: var(--wm-text);
+  --ui-text-dimmed: var(--wm-text-muted);
+  --ui-text-muted: var(--wm-text-muted);
+  --ui-text-toned: var(--wm-text);
+  --ui-text-highlighted: var(--wm-text);
+  --ui-text-inverted: var(--wm-text-on-accent);
+  --ui-border: var(--wm-border);
+  --ui-border-muted: var(--wm-border);
+  --ui-border-accented: var(--wm-border);
+  --ui-border-inverted: var(--wm-text);
+  --ui-primary: var(--wm-accent);
+  --ui-error: var(--wm-error);
+  --ui-success: var(--wm-success);
+  --ui-warning: var(--wm-warning);
+  --ui-radius: var(--wm-radius);
+  font-family: var(--wm-font);
+  color: var(--wm-text);
+}
+
+/* Minimal owned reset (instead of Tailwind preflight). */
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  border: 0 solid;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--wm-accent);
+  outline-offset: 1px;
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
+}

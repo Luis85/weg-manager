@@ -3,6 +3,7 @@ process.env.TZ = "UTC";
 import { fileURLToPath } from "node:url";
 import type { Plugin } from "vite";
 import { defineConfig } from "vitest/config";
+import { sharedConfig } from "./vite.shared.ts";
 
 const OBSIDIAN_GUARD = "\0obsidian-guard";
 
@@ -48,7 +49,8 @@ export default defineConfig({
         test: { name: "unit", include: ["tests/unit/**/*.test.ts"], environment: "node" },
       },
       {
-        plugins: [obsidianGuard()],
+        plugins: [obsidianGuard(), ...(sharedConfig({ mode: "test" }).plugins ?? [])],
+        define: sharedConfig({ mode: "test" }).define ?? {},
         resolve: { alias: testAlias },
         test: {
           name: "dom",

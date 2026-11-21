@@ -25,6 +25,12 @@
       {
         "allow": ["_tag"]
       }
+    ],
+    "import/no-unassigned-import": [
+      "error",
+      {
+        "allow": ["**/*.css"]
+      }
     ]
   },
   "overrides": [

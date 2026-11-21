@@ -1,5 +1,6 @@
 import { Plugin } from "obsidian";
 import { bootstrap, reportUnloadFailure, type BootstrapHandle } from "./bootstrap";
+import "./styles/app.css";
 
 /** Composition only: start the shell on load, release it on unload. */
 export default class WegManagerPlugin extends Plugin {

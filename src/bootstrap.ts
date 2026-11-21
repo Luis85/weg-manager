@@ -54,13 +54,27 @@ export const bootstrap = async (
   // A function, not a value: the signal can flip while bootstrap awaits.
   const aborted = () => options.signal?.aborted === true;
   const undo: (() => unknown)[] = [];
+  let started = false;
   const dispose = async () => {
-    // Undo in reverse order, one step after the other.
+    // Undo in reverse order, one step after the other. A failing step does not stop the others
+    // or the runtime; the first error is rethrown once everything is released.
+    const errors: unknown[] = [];
     await undo
       .splice(0)
       .toReversed()
-      .reduce<Promise<unknown>>((previous, step) => previous.then(step), Promise.resolve());
+      .reduce<Promise<unknown>>(
+        (previous, step) =>
+          previous.then(async () => {
+            try {
+              await step();
+            } catch (error) {
+              errors.push(error);
+            }
+          }),
+        Promise.resolve(),
+      );
     await runtime.dispose();
+    if (errors.length > 0) throw errors[0];
   };
   try {
     const inert = async (): Promise<BootstrapHandle> => {
@@ -76,7 +90,12 @@ export const bootstrap = async (
         Effect.promise(() => openView(plugin)),
       );
     undo.push(bindRibbonIcon(plugin, mirror, open));
-    undo.push(registerCommands(plugin, runtime, () => open().then(() => undefined)));
+    const removeCommands = registerCommands(plugin, runtime, () => open().then(() => undefined));
+    // Only a failed bootstrap removes its commands. On a normal unload Obsidian removes them
+    // itself, and removing by id here could hit the commands of a quick re-enable.
+    undo.push(() => {
+      if (!started) removeCommands();
+    });
     plugin.addSettingTab(new ShellSettingTab(plugin.app, plugin, runtime, mirror));
     const surfaces = new Set<() => void>();
     plugin.registerView(SHELL_VIEW_TYPE, (leaf) => new ShellView(leaf, runtime, surfaces));
@@ -87,6 +106,7 @@ export const bootstrap = async (
       releaseAll(closes);
     });
     await log(runtime, "plugin.loaded");
+    started = true;
     return { runtime, dispose };
   } catch (error) {
     await runtime.runPromise(reportDefect(error)).catch(() => reportUnloadFailure(error));

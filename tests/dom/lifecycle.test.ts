@@ -158,4 +158,25 @@ describe("bootstrap handle", () => {
     await handle.dispose();
     await expect(handle.runtime.runPromise(Effect.void)).rejects.toThrow(/dispos/i);
   });
+
+  it("disposes the runtime and rethrows when one release throws", async () => {
+    const { plugin, registry } = createTestPlugin(WegManagerPlugin);
+    const handle = await bootstrap(plugin);
+    const icon = registry.ribbonIcons[0]?.el;
+    expect(icon).toBeDefined();
+    vi.spyOn(icon!, "remove").mockImplementation(() => {
+      throw new Error("ribbon release failed");
+    });
+    await expect(handle.dispose()).rejects.toThrow("ribbon release failed");
+    await expect(handle.runtime.runPromise(Effect.void)).rejects.toThrow(/dispos/i);
+  });
+
+  it("keeps the commands of a quick re-enable when the old load is disposed late", async () => {
+    const { plugin, registry } = createTestPlugin(WegManagerPlugin);
+    const first = await bootstrap(plugin);
+    const second = await bootstrap(plugin);
+    await first.dispose();
+    expect(registry.commands.size).toBe(3);
+    await second.dispose();
+  });
 });

@@ -1,7 +1,8 @@
 import { Schema } from "effect";
-import { NoteNameIssue } from "../../domain/notes";
+import { NoteNameIssue, WriteRefusal } from "../../domain/notes";
 
-// No error here carries a path or note content: a describer could not leak what it never gets.
+// No error here carries a path, and only `NoteEditConflictError` carries note content: the form
+// needs the values to let the user choose. Its describer and its message never use them.
 
 /** No Markdown note lies at the path: it was moved, renamed or deleted meanwhile. */
 export class NoteNotFoundError extends Schema.TaggedError<NoteNotFoundError>()(
@@ -32,13 +33,38 @@ export class NoteWriteError extends Schema.TaggedError<NoteWriteError>()("NoteWr
   cause: Schema.Defect(),
 }) {}
 
+/** One field both the user and an outside edit changed: loaded, saved and current value. */
+const FieldConflict = Schema.Struct({
+  key: Schema.String,
+  base: Schema.Unknown,
+  edited: Schema.Unknown,
+  current: Schema.Unknown,
+});
+
+/**
+ * The note was changed outside the form in fields the user changed too, to other values (ADR
+ * 0007). Nothing was written; the form shows each field's values for the user to choose.
+ */
+export class NoteEditConflictError extends Schema.TaggedError<NoteEditConflictError>()(
+  "NoteEditConflictError",
+  { conflicts: Schema.Array(FieldConflict) },
+) {}
+
+/** The note is no longer the record the form loaded, so nothing was written. */
+export class NoteWriteRefusedError extends Schema.TaggedError<NoteWriteRefusedError>()(
+  "NoteWriteRefusedError",
+  { reason: WriteRefusal },
+) {}
+
 /** Every expected failure of the notes module. Each member needs a text in `describeNotesError`. */
 export type NotesError =
   | NoteNotFoundError
   | NotePathTakenError
   | InvalidNoteNameError
   | NoteUnreadableError
-  | NoteWriteError;
+  | NoteWriteError
+  | NoteEditConflictError
+  | NoteWriteRefusedError;
 
 export const NOTES_ERROR_TAGS: ReadonlySet<string> = new Set<NotesError["_tag"]>([
   "NoteNotFoundError",
@@ -46,4 +72,6 @@ export const NOTES_ERROR_TAGS: ReadonlySet<string> = new Set<NotesError["_tag"]>
   "InvalidNoteNameError",
   "NoteUnreadableError",
   "NoteWriteError",
+  "NoteEditConflictError",
+  "NoteWriteRefusedError",
 ]);

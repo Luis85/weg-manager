@@ -17,7 +17,7 @@ import {
   type Language,
   type UserMessage,
 } from "../src/application/shell";
-import { memoryNoteStore } from "../src/infrastructure/memory/notes";
+import { memoryNoteStore, sequentialIdGenerator } from "../src/infrastructure/memory/notes";
 import { consoleSinkLayer } from "../src/infrastructure/logging/console-sink";
 import { incidentsLayer } from "../src/infrastructure/logging/incidents";
 
@@ -102,5 +102,6 @@ export const harnessLayer = (
     incidentsLayer,
     EventBusLive,
     memoryNoteStore().layer,
+    sequentialIdGenerator().layer,
   );
 };

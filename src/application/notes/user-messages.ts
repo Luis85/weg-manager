@@ -25,5 +25,13 @@ export const describeNotesError = (error: NotesError, messages: NotesCatalog): U
       return { severity: "warning", ...errors.unreadable };
     case "NoteWriteError":
       return { severity: "error", ...errors.write, action: "retry" };
+    case "NoteEditConflictError":
+      return { severity: "warning", ...errors.editConflict };
+    case "NoteWriteRefusedError":
+      return {
+        severity: "warning",
+        title: errors.writeRefused.title,
+        detail: errors.writeRefused.detail[error.reason],
+      };
   }
 };

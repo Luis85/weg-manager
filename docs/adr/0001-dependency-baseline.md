@@ -53,6 +53,7 @@ Runtime: Node 24 LTS (`.nvmrc`), npm 11.
 ### Fallbacks and their blockers
 
 - **TypeScript 6.0.3 instead of 7.0.2.** `typescript-eslint@8.73.0` (latest) declares the peer `typescript >=4.8.4 <6.1.0`, and `eslint-plugin-obsidianmd` needs `typescript-eslint`. ESLint is a required gate step, so TypeScript stays on the newest 6.x. Re-check when `typescript-eslint` widens its range.
+- **Nuxt UI's runtime `colors` and `head` plugins are replaced by no-ops.** `@nuxt/ui/vue-plugin` installs `runtime/plugins/colors.js`, which appends `<style id="nuxt-ui-colors">` to `document.head` on the first mount. This breaks the CSS ownership rule that mounting a view adds nothing to the host page, and in a pop-out window it would style the main window instead. `scripts/no-head-plugins.mjs` resolves both files to no-op modules (one module each, so Vue does not warn about a plugin installed twice). `src/styles/bridge.css` sets every colour role. Each replaced file is pinned by sha256, so an upgrade that changes one fails the build until it is reviewed again. The `mount` dom test fails without the replacement.
 - **ESLint 9.39.5 instead of 10.15.0.** `eslint-plugin-obsidianmd@0.6.0` pulls `@microsoft/eslint-plugin-sdl`, `eslint-plugin-import` and `eslint-plugin-react`, which accept ESLint only up to `^9`. With ESLint 10, `npm ls --all` fails. Re-check on every `eslint-plugin-obsidianmd` release.
 
 ### Probe results (2026-11-21)

@@ -1,6 +1,7 @@
 /*
  * Nuxt UI roles from plugin tokens. Listed for .light and .dark too, because Nuxt UI's own theme
- * blocks use those classes and would otherwise win by specificity.
+ * blocks use those classes and would otherwise win by specificity. Nuxt UI's runtime colors
+ * plugin is replaced by a no-op (scripts/no-head-plugins.mjs), so every colour role is set here.
  */
 :root,
 .light,
@@ -21,6 +22,8 @@
   --ui-border-accented: var(--wm-border);
   --ui-border-inverted: var(--wm-text);
   --ui-primary: var(--wm-accent);
+  --ui-secondary: var(--wm-accent);
+  --ui-info: var(--wm-accent);
   --ui-error: var(--wm-error);
   --ui-success: var(--wm-success);
   --ui-warning: var(--wm-warning);

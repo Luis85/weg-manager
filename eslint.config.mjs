@@ -41,6 +41,19 @@ export default defineConfig(
   },
   ...vueOnly,
   {
+    // Prettier owns template layout; these eslint-plugin-vue presets would fight it.
+    files: ["**/*.vue"],
+    rules: {
+      "vue/max-attributes-per-line": "off",
+      "vue/singleline-html-element-content-newline": "off",
+      "vue/multiline-html-element-content-newline": "off",
+      "vue/html-indent": "off",
+      "vue/html-closing-bracket-newline": "off",
+      "vue/html-self-closing": "off",
+      "vue/first-attribute-linebreak": "off",
+    },
+  },
+  {
     files: ["**/*.vue"],
     languageOptions: {
       parser: vueParser,

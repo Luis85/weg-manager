@@ -14,6 +14,7 @@ import { mirrorSettings } from "./infrastructure/obsidian/settings-mirror";
 import { ShellSettingTab } from "./infrastructure/obsidian/settings-tab";
 import { SHELL_VIEW_TYPE, ShellView } from "./infrastructure/obsidian/shell-view";
 import { makeRuntime } from "./infrastructure/runtime";
+import { releaseAll } from "./presentation/mount";
 
 export { SHELL_VIEW_TYPE } from "./infrastructure/obsidian/shell-view";
 
@@ -77,7 +78,14 @@ export const bootstrap = async (
     undo.push(bindRibbonIcon(plugin, mirror, open));
     undo.push(registerCommands(plugin, runtime, () => open().then(() => undefined)));
     plugin.addSettingTab(new ShellSettingTab(plugin.app, plugin, runtime, mirror));
-    plugin.registerView(SHELL_VIEW_TYPE, (leaf) => new ShellView(leaf));
+    const surfaces = new Set<() => void>();
+    plugin.registerView(SHELL_VIEW_TYPE, (leaf) => new ShellView(leaf, runtime, surfaces));
+    // Runs first on dispose: every open view releases its Vue app before the runtime goes.
+    undo.push(() => {
+      const closes = [...surfaces];
+      surfaces.clear();
+      releaseAll(closes);
+    });
     await log(runtime, "plugin.loaded");
     return { runtime, dispose };
   } catch (error) {

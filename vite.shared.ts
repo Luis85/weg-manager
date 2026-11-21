@@ -1,6 +1,7 @@
 import ui from "@nuxt/ui/vite";
 import vue from "@vitejs/plugin-vue";
 import type { UserConfig } from "vite";
+import { noHeadPlugins } from "./scripts/no-head-plugins.mjs";
 import { scopeCss } from "./scripts/scope-css.mjs";
 
 export const PLUGIN_ID = "weg-manager";
@@ -21,6 +22,7 @@ export type SharedOptions = {
 /** Vue + Nuxt UI + CSS ownership, shared by the plugin build, the harness and the dom tests. */
 export const sharedConfig = ({ mode, skipScope }: SharedOptions): UserConfig => ({
   plugins: [
+    noHeadPlugins(),
     vue(),
     ui({
       router: false,

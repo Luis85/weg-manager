@@ -19,12 +19,20 @@
     ".superpowers/**"
   ],
   "rules": {
-    "no-console": "error"
+    "no-console": "error",
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": ["_tag"]
+      }
+    ]
   },
   "overrides": [
     {
       "files": ["scripts/**", "src/infrastructure/logging/**"],
-      "rules": { "no-console": "off" }
+      "rules": {
+        "no-console": "off"
+      }
     },
     {
       "files": ["src/domain/**", "src/application/**"],

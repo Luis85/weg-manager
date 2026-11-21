@@ -1,6 +1,6 @@
 # ADR 0008 · One view, typed routes
 
-- Status: accepted; history amended on 2026-11-21 (see the note at the end)
+- Status: accepted; history and the place of the selection amended on 2026-11-21 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -43,3 +43,11 @@ Decision:
 - The first state Obsidian sets on a view (a restored layout, `openRoute` on a new view) is where its history starts. A state set later on the open view (`openRoute` on it) is a navigation.
 
 Consequences: Obsidian's own back and forward buttons in the view header do nothing for in-plugin navigation; the frame's controls do. The e2e spec checks that a note opened like a file-explorer click lands in another tab (it fails with `navigation = true`) and that the frame's controls move between routes.
+
+## Amendment, 2026-11-21: composition and the community selection
+
+- **`Route` is composed at the root.** Each module contributes a route schema (`CommunitiesRoute`); `src/application/routes.ts` builds `Route = Schema.Union([...])` and `appRoutes = routesOf(Route, start)`. The shell holds only the mechanism (`RouteLike`, `routesOf`, the history). The decision "a typed union in the shell's application layer" reads as that composition.
+- **The selection and the switch belong to `communities`.** The shell cannot import a feature module, so `CommunitySelectionService` (`src/application/communities/selection.ts`) and `CommunitySwitch.vue` live in the communities module. The shell's frame offers a context area that `appSurface` fills with the switch. The selection is still one service for every view and is stored through the shell's `DeviceStore`, per device.
+- **The stored choice.** A community the rule selects by itself (the only one) is stored too, once the index has read the vault without a failure, so a second community does not drop it. A stored community that is gone stays stored and counts again when its note returns, as after Sync.
+- **Not enforced yet.** With two or more communities and none selected, the switch shows the prompt, but no screen is gated by it: the only screen edits communities themselves. The first screen that edits a record belonging to a community has to refuse editing until one is selected.
+- **Not-found.** `NotFoundState` serves a route without a screen. No route has a record parameter yet, so a route to a missing record is untested until the first one.

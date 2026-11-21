@@ -92,7 +92,10 @@ export const useEffectAction = <Args extends unknown[], A, E extends AppError>(
     error.value = undefined;
     message.value = undefined;
     const exit = await runtime
-      .runPromiseExit(fn(...args), { signal: controller.signal })
+      .runPromiseExit(
+        Effect.suspend(() => fn(...args)),
+        { signal: controller.signal },
+      )
       .catch((cause: unknown) => Exit.die(cause));
     if (!alive || current !== controller) return;
     current = undefined;

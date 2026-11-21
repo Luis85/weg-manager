@@ -75,6 +75,20 @@ describe("useEffectAction", () => {
     expect(logger.entries().filter((entry) => entry.event === "defect.reported")).toHaveLength(1);
   });
 
+  it("reports a throw while building the effect once, without rejecting", async () => {
+    const { runtime, notifier, logger } = make();
+    const { exposed } = host(runtime, () =>
+      useEffectAction((): Effect.Effect<number, VaultReadError> => {
+        throw new Error("build exploded");
+      }),
+    );
+    await expect(exposed.run()).resolves.toBeUndefined();
+    expect(exposed.pending.value).toBe(false);
+    expect(exposed.error.value).toBeUndefined();
+    expect(notifier.messages()).toHaveLength(1);
+    expect(logger.entries().filter((entry) => entry.event === "defect.reported")).toHaveLength(1);
+  });
+
   it("interrupts the first run when a second starts", async () => {
     const { runtime, vault } = make();
     vault.hold();

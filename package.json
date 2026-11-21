@@ -31,7 +31,8 @@
     "version": "node scripts/version-bump.mjs && git add manifest.json versions.json",
     "release:package": "node scripts/package-release.mjs",
     "prepare": "node scripts/install-hooks.mjs",
-    "test:e2e": "npm run build && wdio run tests/e2e/wdio.conf.mts"
+    "build:probe": "vite build --config configs/vite.probe.config.ts",
+    "test:e2e": "npm run build && npm run build:probe && wdio run tests/e2e/wdio.conf.mts"
   },
   "dependencies": {
     "@nuxt/ui": "4.13.0",

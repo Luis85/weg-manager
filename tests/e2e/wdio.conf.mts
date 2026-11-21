@@ -4,7 +4,8 @@ import { parseObsidianVersions } from "wdio-obsidian-service";
 
 /**
  * End-to-end tests in a real Obsidian app (docs/design/research/Testing research - Obsidian
- * end-to-end tests.md). Runs `dist/` as installed plugin; `npm run test:e2e` builds first.
+ * end-to-end tests.md). Runs `dist/` as installed plugin, beside the test-only note store probe
+ * (`tests/e2e/probe-plugin/`); `npm run test:e2e` builds both first.
  */
 const rootDir = resolve(import.meta.dirname, "../..");
 const cacheDir = resolve(rootDir, ".obsidian-cache");
@@ -28,7 +29,7 @@ export const config: WebdriverIO.Config = {
     "wdio:obsidianOptions": {
       appVersion,
       installerVersion,
-      plugins: ["dist"],
+      plugins: ["dist", "tests/e2e/probe-plugin/dist"],
       vault: "tests/e2e/vaults/basic",
     },
     // Without a stored choice Obsidian takes its language from Chromium's locale, so the whole app

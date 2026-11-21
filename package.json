@@ -13,6 +13,7 @@
     "lint": "npm run lint:ox && npm run lint:es",
     "lint:ox": "oxlint --deny-warnings",
     "lint:es": "eslint --max-warnings 0 .",
+    "lint:scanner": "eslint --config configs/eslint.scanner.config.mjs .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run --config configs/vitest.config.ts",

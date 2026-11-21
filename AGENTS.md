@@ -27,7 +27,7 @@ The Obsidian plugin lives in `src/`; read `docs/engineering/architecture.md` bef
 - **Errors:** every expected failure is a tagged `AppError` with a `describeError` text (German, du-form, cause then action); bugs go through `reportDefect`. No note content in logs. Details: `docs/engineering/error-handling.md`.
 - **Forms:** TanStack Form for every presentation form, validators call the domain rule. The settings tab stays on Obsidian's native settings API.
 - **CSS ownership:** Tailwind classes carry the `wm:` prefix; import Nuxt UI components explicitly from `@nuxt/ui/components/*.vue`; a newly used Nuxt UI component goes into the `@source` lists in `src/styles/app.css`, a new icon into `SHELL_ICONS` in `configs/vite.shared.ts`. Nothing may write to `document.head`.
-- **Obsidian guidelines:** no `innerHTML`, no default hotkeys, `console` only in `src/infrastructure/logging/`, listeners through `this.register*`, command ids without the plugin id.
+- **Obsidian guidelines:** no `innerHTML`, no default hotkeys, `console` only in `src/infrastructure/logging/`, listeners through `this.register*`, command ids without the plugin id. `.vue` files are linted with the obsidianmd rules too; `v-html` is banned.
 - **Effect 4:** services are `Context.Service` classes, errors `Schema.TaggedError`; check `node_modules/effect/dist/*.d.ts` rather than Effect 3 habits.
 - **Limits:** 400 lines of code per source file, 450 per test file (ESLint `max-lines`).
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `test:`, `build:`, `ci:`, `docs:`, `chore:`).

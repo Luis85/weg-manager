@@ -68,6 +68,15 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 
 The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaught error. It ignores only Chromium's `ResizeObserver loop` notification. It is installed after the first load, so the three disable/enable cycles provide the load coverage.
 
+## Scanner-equivalent lint
+
+`npm run lint:scanner` approximates the source scan of Obsidian's community directory. It runs `configs/eslint.scanner.config.mjs` over the repo: only `eslint-plugin-obsidianmd`'s `recommended` config, the rule changes and the fixed ignore list from the plugin's [scanner configuration](https://github.com/obsidianmd/eslint-plugin/blob/a998a5992b7bf9b6f3e0fe1e61a3ad180546f4a5/docs/configuration.md#community-plugin-scanner-configuration). Our own ignores (such as `.claude/**`) and Vue rules do not apply.
+
+- **What it adds to the scanner's list.** Files git does not track are skipped, because the scanner sees a clone. Bundled JavaScript outside `src/` is skipped by the scanner's content rule. `.js` files are linted without type information, because no tsconfig here takes them in.
+- **Not exact.** The scanner also turns most remaining errors into warnings and adds stricter layers for new submissions. Read the output as a preview, not a verdict.
+- **Informational.** It is not part of `verify`. CI runs it as the `scanner-lint` job with `continue-on-error`, so findings show in the log but never block.
+- **Known failure.** `.claude/skills/archify/explainer/reader.js` fails with `no-unsanitized/property` (it assigns `innerHTML`) and other errors. The owner decided to deal with it at submission time; options are in [Plugin research](../design/research/Plugin%20research%20-%20Obsidian%20best%20practices.md) item 1.
+
 ## Manual checks in Obsidian
 
 The e2e suite automates the old checks 2–7. What still needs a person:

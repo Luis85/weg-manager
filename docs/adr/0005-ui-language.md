@@ -1,6 +1,6 @@
 # ADR 0005 · UI language follows Obsidian
 
-- Status: accepted; the greeting it describes was removed on 2026-11-21 (see the note at the end)
+- Status: accepted; the greeting it describes was removed and the catalog paths moved on 2026-11-21 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -32,3 +32,17 @@ Every text the plugin showed was German and hard-wired: issue sentences in `src/
 The sample greeting was demo data of the plugin shell. The community slice (PBI-56) replaced the demo, and with it went `Settings.greeting`, `greetingOf`, `LEGACY_DEFAULT_GREETING`, the issue code `greeting.length` and the catalog key `defaultGreeting`. An old `greeting` key in `data.json` is an unknown key now and is dropped on decode without an issue; `SETTINGS_VERSION` stays 1.
 
 Everything else in this ADR stands: the language is chosen once per plugin load from Obsidian's, the domain returns issue codes and the catalogs word them, there is one typed catalog per language and module, and the diagnostics report stays German. The rule the greeting illustrated also stands for the settings that remain: a value that is still the default is left out of the file, so older versions read it without an issue (`rootFolder` today).
+
+## Amendment, 2026-11-21: where things live after the module split
+
+The decision stands; the files moved with [ADR 0006](0006-module-structure.md):
+
+| This ADR says | Now |
+| --- | --- |
+| `src/application/i18n/index.ts` (`languageFromCode`) | `src/application/messages.ts`, which also holds `Catalog`, `de`, `en`, `catalogFor` and `messagesLayer` |
+| `src/application/i18n/de.ts`, `en.ts`, `catalog.ts` | one catalog per module in `src/application/<module>/i18n/` (`catalog.ts`, `de.ts`, `en.ts`, `describe.ts`); `Catalog` has one key per module, so a key missing in one language still fails typecheck |
+| `src/infrastructure/obsidian/language.ts` | `src/infrastructure/obsidian/shell/language.ts` |
+| `Messages` in `src/application/ports.ts` | `src/application/shell/ports.ts`; module code reads its own part (`(yield* Messages).shell`) |
+| `useMessages()` from `src/presentation/runtime/use-runtime.ts` | `src/presentation/shell/runtime/use-runtime.ts` |
+| `src/domain/settings.ts`, `describeIssue`, `user-messages.ts` | `src/domain/shell/settings.ts`, `src/application/shell/i18n/describe.ts`, and the describers of each module |
+| `tests/unit/application/i18n.test.ts` | `tests/unit/application/shell/i18n.test.ts`, and one `i18n.test.ts` or `user-messages.test.ts` per module |

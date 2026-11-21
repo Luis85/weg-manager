@@ -1,6 +1,6 @@
 # Testing
 
-Tests come first. Each behaviour step writes the failing test, sees it fail, then implements. A "discriminating check" counts only once it has been seen to fail on a planted defect.
+Tests come first. Each behaviour step writes the failing test, sees it fail, then implements. A "discriminating check" counts only once it has been seen to fail on a planted defect. `npm run verify` runs the unit and dom projects with coverage; the end-to-end suite and mutation testing run on their own (see the end-to-end section).
 
 ## Projects
 
@@ -8,6 +8,7 @@ Tests come first. Each behaviour step writes the failing test, sees it fail, the
 | --- | --- | --- | --- |
 | `unit` | `tests/unit/**/*.test.ts` | node | domain, application, scripts, harness layers, logging |
 | `dom` | `tests/dom/**/*.test.ts` | happy-dom + Vue/Nuxt UI plugins | lifecycle, settings tab, views, components |
+| e2e | `tests/e2e/specs/*.e2e.ts` | real Obsidian (WebdriverIO) | see [End-to-end tests](#end-to-end-tests-in-obsidian) |
 
 Tests mirror the module folders: `tests/<project>/<layer>/<module>/`, e.g. `tests/unit/application/shell/` for `src/application/shell/`. Tests of the composition (plugin load through `main.ts`, `bootstrap.ts`, the files at a layer root) stay above them, e.g. `tests/dom/lifecycle.test.ts`.
 
@@ -51,6 +52,7 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 
 - `npm run test:mutation` runs incrementally; `npm run test:mutation:full` re-runs every mutant.
 - Stryker mutates `src/domain` and `src/application` and runs only their unit tests, with the TypeScript checker on.
+- Before pushing a change to one module, run Stryker on its files only: `npx stryker run configs/stryker.config.mjs --mutate "src/domain/communities/**/*.ts,src/application/communities/**/*.ts"`. The communities module scores 100 %; keep it there.
 - Thresholds: break 75, low 80, high 90. Never lower them.
 - A `// Stryker disable` comment needs its reason on the same line.
 - Reports land in `reports/mutation/`. The nightly GitHub workflow runs the full suite.
@@ -84,7 +86,7 @@ The note index runs in every scenario over the in-memory `NoteStore`, with the p
 - **Cache.** The download cache is `.obsidian-cache/` in the checkout. In a git worktree, a symlink to the main checkout's cache avoids a second download.
 - **Language.** Without a stored choice Obsidian takes its language from Chromium's locale, which is `en-US` in CI and containers. `wdio.conf.mts` passes `--lang=de`, so Obsidian and the plugin start German and the specs assert German texts. `language.e2e.ts` switches to English the way Obsidian's own setting does: `localStorage` key `language`, then a plugin reload.
 - **Writing specs.** `browser.executeObsidian(({ app, obsidian }, ...args) => …)` runs code inside Obsidian. The function is serialised, so pass values as arguments; closures do not work. Shared helpers live in `tests/e2e/support.ts`: console spy, open view, `data.json`, plugin reload, settings tab content, light/dark switch.
-- **Gate.** `test:e2e` is not part of `verify`, because it needs a display and a download. CI runs it as a separate `e2e` job.
+- **Gate.** `test:e2e` is not part of `verify`, because it needs a display and a download. CI runs it as a separate `e2e` job, which is not a required check yet (see [github-setup.md](github-setup.md)). A change to lifecycle, settings tab, theme, pop-out, view state or vault behaviour needs a passing e2e run.
 
 | Spec | Covers |
 | --- | --- |
@@ -117,8 +119,10 @@ The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaug
 
 ## Manual checks in Obsidian
 
-The e2e suite automates the old checks 2–7. What still needs a person:
+The e2e suite covers lifecycle, settings, theme, pop-out, language, vault access and navigation. What still needs a person, in a personal vault with the pre-release (0.2.0, not built yet; see [releasing.md](releasing.md)):
 
 1. Run `npm run dev` with `OBSIDIAN_PLUGIN_DIR` set in `.env.local` and look at the view in your own vault, with your theme and community plugins.
 2. Use the view with keyboard only and with a screen reader.
-3. Mobile, once `isDesktopOnly` is lifted. `wdio-obsidian-service` can then also emulate mobile.
+3. Check light and dark themes, also third-party ones, and the community colours on each.
+4. Check that other plugins and an existing vault carry on as before.
+5. Mobile, once `isDesktopOnly` is lifted (after the MVP). `wdio-obsidian-service` can then also emulate mobile.

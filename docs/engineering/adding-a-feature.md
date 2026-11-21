@@ -1,13 +1,26 @@
 # Adding a feature
 
-The tracer slice, module `communities`, is the worked example: the first record type through every layer (PBI-56). A new feature follows the same steps in the same order. Each step names the real files of the slice and the test that comes **first**: write it, see it fail, then implement.
+The tracer slice, module `communities`, is the worked example: the first record type through every layer (PBI-56). A new feature follows the same steps in the same order. Each step names the real files of the slice and the test that comes **first**: write it, see it fail, then implement. How the pieces fit is in [architecture.md](architecture.md); how to run the tests is in [testing.md](testing.md).
 
 A feature is a module: one folder per layer, each with an `index.ts` (see [Modules](architecture.md#modules)). It imports `notes` and `shell` only through their indexes; `shell` and `notes` never import it.
+
+The shared files only compose. A new module adds one line to each of these, and typecheck fails until it does:
+
+| File | Line |
+| --- | --- |
+| `src/application/app-services.ts` | its services in `AppServices` |
+| `src/application/errors.ts` and `user-messages.ts` | its errors in `AppError`, its describer in `describeError` |
+| `src/application/messages.ts` | its part of `Catalog`, in `de` and `en` |
+| `src/application/events.ts` | its event record, when it has events |
+| `src/application/routes.ts` | its route schema in `Route` |
+| `src/application/note-types.ts` | its note types in `appNoteTypes` |
+| `src/infrastructure/obsidian/app-layer.ts` | its Layer in `appLayer` |
+| `src/presentation/app-surface.ts` | its screens, navigation entry and frame parts |
 
 ## 0. Words and contract
 
 - Put each new domain term into `GLOSSARY.md` before it enters code: English in code, German in the UI and in `docs/` (ADR 0006). The slice uses *community*, *short code*, *kind*, *unit label* and *community selection*, and added *colour*, *community switch*, *conflict* and *read-only*.
-- Register the module in `FEATURE_MODULES` in `eslint.config.mjs`. Its folders become fallow zones by themselves. If another module will import it, add it to the `allow` lists in `configs/fallow.json` too.
+- Register the module in `FEATURE_MODULES` in `eslint.config.mjs`. Its folders become fallow zones by themselves. If another module will import it, add it to the `allow` lists of the layer rules in `configs/fallow.json` too, next to `<layer>/shell`; fallow refuses a rule that names a zone with no folder yet, so add each entry with the first file of that folder.
 - Write the file contract page with the note type: one German page per type and version in `docs/contracts/` (`DV-01 - Gemeinschaft v1.md`), in the manner described in [docs/README_DOCS.md](../README_DOCS.md).
 
 ## 1. Domain: the note type and the rules
@@ -41,7 +54,7 @@ Folder `src/domain/communities/`. Pure functions and Effect Schema; no services,
 
 Folder `src/application/communities/`. Test fixture: `tests/support/communities/fixture.ts` builds the module over the note index, the in-memory `NoteStore`, a sequential id generator and an in-memory device store; its specs run under `TestClock`, and `indexed` moves the clock past one index batch.
 
-1. **Register the type** in `src/application/note-types.ts`: `export const appNoteTypes: NoteTypeRegistry = [communityType];`. The index then holds its notes.
+1. **Register the type** in `src/application/note-types.ts`: `export const appNoteTypes: NoteTypeRegistry = [communityType];`. The index then holds its notes. First test: `tests/unit/application/note-types.test.ts`.
 2. **Read the records** (`list.ts`). `toCommunityList` turns the index's snapshot into what the views show: each note with its path, file name, id, valid values, issues and frontmatter, sorted by name, plus `short-code.duplicate` on every community whose code another one has. `communityList` and `communityListChanges` (`use-cases.ts`) are the pair `useStream` follows. First test: `tests/unit/application/communities/list.test.ts`.
 3. **Write through `NoteStore`** (`use-cases.ts`). Each use case checks its rule against the current list, then writes:
    - `createCommunity(input)`: `newRecordFrontmatter` and `NoteStore.create` into `<rootFolder>/Gemeinschaften/`, named by `communityFileName`.
@@ -50,11 +63,11 @@ Folder `src/application/communities/`. Test fixture: `tests/support/communities/
 
    First tests: `create-delete.test.ts` and `update.test.ts`, with the note's exact frontmatter, the merge, the conflict, the refusal and a note that is gone.
 4. **A shared value** (`selection.ts`). The community selection is a service with a current value and a stream (`SubscriptionRef`), like the settings. It follows the index, applies `selectedCommunity` and stores the choice through the shell's `DeviceStore`. Its Layer joins `appLayer` through the module's infrastructure folder (step 3). First test: `selection.test.ts`.
-5. **Errors** (`errors.ts`). `InvalidCommunityError { issues }`, a `Schema.TaggedError`; the module's union joins `AppError` (`src/application/errors.ts`) and its describer joins `describeError` (`src/application/user-messages.ts`). See [error-handling.md](error-handling.md).
-6. **Texts** (`i18n/catalog.ts`, `de.ts`, `en.ts`, `describe.ts`). The module's part of `Catalog` (`src/application/messages.ts`), typed, German in du-form and English in sentence case, cause then action. `describeCommunityIssue` words the module's codes with the field's label and hands the shared ones to the notes catalog. First test: `i18n.test.ts`, which pins every text in both languages.
+5. **Errors** (`errors.ts`, `user-messages.ts`). `InvalidCommunityError { issues }`, a `Schema.TaggedError`, with `COMMUNITIES_ERROR_TAGS` and the guard `isCommunitiesError`; the module's union joins `AppError` and its describer joins `describeError`. See [error-handling.md](error-handling.md).
+6. **Texts** (`i18n/catalog.ts`, `de.ts`, `en.ts`, `describe.ts`). The module's part of `Catalog`, typed, German in du-form and English in sentence case, cause then action. `describeCommunityIssue` words the module's codes with the field's label and hands the shared ones to the notes catalog. First test: `i18n.test.ts`, which pins every text in both languages.
 7. **The route** (`routes.ts`). `CommunitiesRoute` joins the union in `src/application/routes.ts`, which also sets the start route.
 
-Mutation testing covers `src/domain` and `src/application`; keep the module's score at 100 %. Run Stryker on its files only: `npx stryker run configs/stryker.config.mjs --mutate "src/domain/communities/**/*.ts,src/application/communities/**/*.ts"`.
+Mutation testing covers `src/domain` and `src/application`; the slice's score is 100 %, keep it there. Run Stryker on the module's files only (see [testing.md](testing.md#mutation-testing)).
 
 ## 3. Infrastructure: the Layer
 
@@ -78,7 +91,7 @@ Folder `src/presentation/communities/`. Components import the shell only from `s
 
 ### Checklist for a new view
 
-Each item needs a passing test; the slice's screen is the start route, so the shell's tests cover it:
+Each item needs a passing test. The slice's screen is the start route, so the shell's tests cover it:
 
 - [ ] Disable → enable → disable in one session, and unload while load is pending: nothing leaks, and the second load behaves like the first (`tests/dom/lifecycle.test.ts`, `tests/e2e/specs/lifecycle.e2e.ts`).
 - [ ] `data.json` missing, corrupt, partially invalid, or from a newer version: the plugin still loads, invalid fields fall back one by one, and a read-only file is never written (`tests/dom/external-settings.test.ts`, `external-settings.e2e.ts`, `settings-and-theme.e2e.ts`).
@@ -101,6 +114,8 @@ Make the new states reachable through `?scenario=` in `harness/layers.ts`: `load
 `npm run verify` exits 0, and `xvfb-run -a npm run test:e2e` passes. Before pushing a change to domain or application, run Stryker on the files you changed.
 
 ## Reference: the notes module
+
+What a feature author needs when it reads or writes notes. The mechanics are in [Vault notes](architecture.md#vault-notes).
 
 - **Writing** goes through `NoteStore` only (`src/application/notes/ports.ts`); its Obsidian adapter is the only code that changes vault files. Writes are commands: run them through `useCommand`. A body change needs a contract section first (ADR 0007).
 - **Create** with `create({ folder, name, frontmatter })`, the frontmatter from `newRecordFrontmatter(type, values)`. A taken name gets ` (2)`, also in another case or Unicode form.

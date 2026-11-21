@@ -1,5 +1,8 @@
 # Obsidian Plugin Shell – Handoff
 
+> **Historical record (archived 2026-11-21).** This handoff describes the state after the plugin shell was built (PR #4), before the modules, the note store and the communities slice. Sections 1 to 6 no longer match the code.
+> The current truth is in [architecture](../../engineering/architecture.md), [adding a feature](../../engineering/adding-a-feature.md) and the [ADRs](../../adr/); what followed is in the [improvement plan](../pre-feature-improvement-plan.md).
+
 - Date: 2026-11-21
 - Branch: `feature/plugin-shell` (pushed to `origin`; not merged into `main`)
 - Plan: [obsidian-plugin-shell-blueprint.md](obsidian-plugin-shell-blueprint.md), edited during the run: TanStack Form, error handling, Twelve-Factor, ESLint and the line limits were added.
@@ -12,7 +15,7 @@
 | Task | Content | State | Commit |
 | --- | --- | --- | --- |
 | 0 | Skeleton: `manifest.json`, `versions.json`, `package.json`, `.npmrc`, `.nvmrc`, `.gitattributes`, `.editorconfig`, `.gitignore` additions | done | `1a350e6` |
-| 1 | Dependency baseline, compatibility probes, [ADR 0001](../adr/0001-dependency-baseline.md) | done | `a7b9c46` |
+| 1 | Dependency baseline, compatibility probes, [ADR 0001](../../adr/0001-dependency-baseline.md) | done | `a7b9c46` |
 | 2 | TypeScript, oxlint, ESLint, Prettier, fallow, Vitest; import boundaries; `max-lines` | done | `b035432` |
 | 3 | Domain: `src/domain/settings.ts` (decode with fallback per field, `validatePatch`) | done | `92c542d` |
 | 4 | Application: ports, tagged errors, `SettingsService`, Logger, `describeError`/`reportDefect`, diagnostics, use cases | done | `c64dde4` |
@@ -238,7 +241,7 @@ Follow the blueprint, applying rulings 3–5, and write ADR 0002 and ADR 0003 to
 
 ## 8. After run 2: Obsidian 1.15.1 and e2e tests
 
-Decided by the owner on 2026-11-21, following [the testing research](../design/research/Testing%20research%20-%20Obsidian%20end-to-end%20tests.md):
+Decided by the owner on 2026-11-21, following [the testing research](../../design/research/Testing%20research%20-%20Obsidian%20end-to-end%20tests.md):
 
 - **`minAppVersion` is 1.15.1** (`manifest.json`, `versions.json`, the test double). The `obsidian` types stay at 1.14.4, because no 1.15.x types have been published. ADR 0001 records the exception.
 - **E2e suite.** `npm run test:e2e` runs three specs in the real Obsidian 1.15.1 app, on installers 1.5.8 and 1.15.1, using `wdio-obsidian-service` 3.5.0 and WebdriverIO 10.2.0. Details are in `docs/engineering/testing.md`.

@@ -1,11 +1,11 @@
 # ADR 0001 · Dependency baseline
 
-- Status: accepted
+- Status: accepted; the runtime cost note amended on 2026-11-21 (see the note at the end)
 - Date: 2026-11-21
 
 ## Context
 
-The plugin shell pins every dependency exactly. "Latest" means the newest stable `dist-tags.latest` that passes the compatibility probes in the plugin shell blueprint (Task 1). An older major is allowed only with a named blocker in this record.
+The plugin shell pins every dependency exactly. "Latest" means the newest stable `dist-tags.latest` that passes the compatibility probes in the [plugin shell blueprint](../plans/archive/obsidian-plugin-shell-blueprint.md) (Task 1, archived). An older major is allowed only with a named blocker in this record.
 
 ## Decision
 
@@ -109,3 +109,7 @@ Rule: a new runtime dependency needs a row here and a reason that an existing on
 ## Re-check cadence
 
 Monthly and on each Obsidian minor release: `npm outdated`, then re-run the probes for every pair that changes. Update this record with each change.
+
+## Amendment, 2026-11-21: Vue is no longer evaluated at load
+
+The sentence "Today all of it is evaluated when the plugin loads" in *Runtime dependencies and their cost* no longer holds. Vue, Nuxt UI, reka-ui, VueUse and TanStack Form are evaluated when a view opens, and a screen's module when its route is first shown ([architecture](../engineering/architecture.md#lazy-presentation)). `main.js` is about 550 KB minified since the lazy init wrappers; the `check:dist` budgets (1.5 MB and 250 KB) are unchanged. The choice of dependencies stands.

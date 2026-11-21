@@ -13,14 +13,14 @@ The user never sees a stack trace, a path, a raw `error.message` or note content
 
 ## Adding an expected failure
 
-1. Add a `Schema.TaggedError` class to the module's `errors.ts` (for the shell `src/application/shell/errors.ts`) and add it to the module's error union (`ShellError`), which `AppError` (`src/application/errors.ts`) includes.
-2. The module's describer is exhaustive over `_tag`, so typecheck now fails until you add the new case to `describeShellError` in `src/application/shell/user-messages.ts`. Its title and detail go into the module's catalog type (`ShellCatalog` in `src/application/shell/i18n/catalog.ts`) and into both `de.ts` and `en.ts`; typecheck fails until both have them. A new module's error union joins `AppError` and gets its branch in `describeError` (`src/application/user-messages.ts`).
-3. Add a test in `tests/unit/application/shell/user-messages.test.ts` for the exact German text (and the English one where it matters), and run the property test against leaks, which runs for both catalogs.
+1. Add a `Schema.TaggedError` class to the module's `errors.ts` (for the notes module `src/application/notes/errors.ts`) and add it to the module's error union (`NotesError`) and tag set (`NOTES_ERROR_TAGS`). `AppError` (`src/application/errors.ts`) is the union of the modules' unions.
+2. The module's describer is exhaustive over `_tag`, so typecheck now fails until you add the new case to it (`describeNotesError` in `src/application/notes/user-messages.ts`). Its title and detail go into the module's catalog type (`NotesCatalog` in `src/application/notes/i18n/catalog.ts`) and into both `de.ts` and `en.ts`; typecheck fails until both have them. A new module's error union joins `AppError`, its guard (`isNotesError`) and describer join `describeError` (`src/application/user-messages.ts`); the shell's describer (`describeShellError`) is the fallback there.
+3. Add a test for the exact German text (and the English one where it matters): `tests/unit/application/notes/user-messages.test.ts` for the notes module, `tests/unit/application/shell/user-messages.test.ts` for the shell, `tests/unit/application/communities/i18n.test.ts` for communities. The first two also hold the property test against leaks, which runs for both catalogs.
 4. Return the error from the port or service that can fail. Components get it in `.error` and `.message` of `useQuery(...)` or `useCommand(...)`. A command that fails after its view closed shows the message as a notice.
 
 ## Writing a message
 
-Every message exists in German and English ([ADR 0005](../adr/0005-ui-language.md)); Obsidian's language picks one. German uses the du-form, English sentence case as in Obsidian. Both state first the cause, then the action (handoff HO-06). No reassurance texts. A domain rule returns an issue code (`SettingsIssue`), never a sentence; `describeIssue` words it.
+Every message exists in German and English ([ADR 0005](../adr/0005-ui-language.md)); Obsidian's language picks one. German uses the du-form, English sentence case as in Obsidian. Both state first the cause, then the action (design handoff note HO-06, `docs/design/handoff/06 - Texte und Begriffe.md`). No reassurance texts. A domain rule returns an issue code (`SettingsIssue`, `NoteIssue`, `CommunityFieldIssue`), never a sentence; the module's `describe` functions word it (see [UI language](architecture.md#ui-language)).
 
 | | Title | Detail |
 | --- | --- | --- |
@@ -36,8 +36,9 @@ Every boundary catches defects and calls `reportDefect`, once:
 
 - bootstrap;
 - command callbacks (`runSafely`);
-- `useQuery` and `useCommand`;
+- `useQuery`, `useCommand` and `useStream`;
 - the Vue `errorHandler` of each surface;
+- the host event adapter (`hostEventsLayer`) and the note index's builds and batches;
 - unload (`reportUnloadFailure`, used when the runtime itself is gone).
 
 `reportDefect` logs `defect.reported` at `error` level with the cause as a `LoggedError` (`toLoggedError`, see Logging) and a six-character incident id (0–9, A–Z), then notifies `describeDefect(id, messages)`. An interruption, for example an unload during a pending action, is not a defect and stays silent.

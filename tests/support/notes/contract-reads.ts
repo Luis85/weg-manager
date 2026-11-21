@@ -2,6 +2,18 @@ import { assert, describe, it } from "@effect/vitest";
 import { Effect } from "effect";
 import { COMMUNITY, interruptWhileHeld, promise, run, type NoteStoreFixture } from "./fixture";
 
+/** Broken, plain and record notes in and around the folder `WEG Manager`. */
+const seedBlocks = (fixture: NoteStoreFixture) =>
+  promise(async () => {
+    await fixture.seed("WEG Manager/Kaputt.md", "broken");
+    await fixture.seed("WEG Manager/Punkte/AW/Auch kaputt.md", "broken", "# Text\n");
+    await fixture.seed("WEG Manager/Ahornweg.md", COMMUNITY);
+    await fixture.seed("WEG Manager/Ohne Eigenschaften.md", "none", "# Text\n");
+    await fixture.seed("WEG Manager Alt/Kaputt.md", "broken");
+    await fixture.seed("Privat/Kaputt.md", "broken");
+    await fixture.settle();
+  });
+
 /** The contract's reads and creates; `contract.ts` runs it. */
 export const readContract = (make: () => NoteStoreFixture) => {
   describe("list", () => {
@@ -103,6 +115,52 @@ export const readContract = (make: () => NoteStoreFixture) => {
         });
         fixture.setFailReads(true);
         const error = yield* Effect.flip(run(fixture, (store) => store.read("A.md")));
+        assert.strictEqual(error._tag, "VaultReadError");
+      }),
+    );
+  });
+
+  describe("unreadable", () => {
+    it.effect("lists the notes in a folder and below whose frontmatter is broken, by path", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        yield* seedBlocks(fixture);
+        const inRoot = yield* run(fixture, (store) => store.unreadable("/WEG Manager/"));
+        assert.deepStrictEqual(inRoot, [
+          "WEG Manager/Kaputt.md",
+          "WEG Manager/Punkte/AW/Auch kaputt.md",
+        ]);
+      }),
+    );
+
+    it.effect("lists every such note in the vault for the vault root", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        yield* seedBlocks(fixture);
+        assert.deepStrictEqual(yield* run(fixture, (store) => store.unreadable("/")), [
+          "Privat/Kaputt.md",
+          "WEG Manager Alt/Kaputt.md",
+          "WEG Manager/Kaputt.md",
+          "WEG Manager/Punkte/AW/Auch kaputt.md",
+        ]);
+      }),
+    );
+
+    it.effect("is empty for a folder without such notes, or no folder at all", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        yield* seedBlocks(fixture);
+        assert.deepStrictEqual(yield* run(fixture, (store) => store.unreadable("Fehlt")), []);
+        assert.deepStrictEqual(yield* run(fixture, (store) => store.unreadable("WEG")), []);
+      }),
+    );
+
+    it.effect("fails with VaultReadError when the vault cannot be read", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        yield* seedBlocks(fixture);
+        fixture.setFailReads(true);
+        const error = yield* Effect.flip(run(fixture, (store) => store.unreadable("/")));
         assert.strictEqual(error._tag, "VaultReadError");
       }),
     );

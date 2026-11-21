@@ -47,6 +47,11 @@ export const notesEn: NotesCatalog = {
           "The note couldn't be converted to the current schema version. Check its properties in Obsidian.",
       },
     },
+    indexRead: {
+      title: "Notes may be out of date",
+      detail:
+        "Obsidian couldn't read every note, so the list may be out of date. Read the notes again.",
+    },
   },
   recordIssues: {
     "schema.malformed": () =>
@@ -71,5 +76,13 @@ export const notesEn: NotesCatalog = {
     "field.checkbox": (label) => `“${label}” isn't a checkbox value. Check or uncheck it.`,
     "field.date": (label) => `“${label}” isn't a valid date. Enter a date as YYYY-MM-DD.`,
     "field.list": (label) => `“${label}” isn't a list of text. Enter a list.`,
+  },
+  unindexedIssues: {
+    "schema.malformed": () =>
+      "The schema property can't be read, so WEG Manager can't tell the note's type. Fix it in Obsidian as the file contract describes.",
+    "schema.unknown-type": ({ type }) =>
+      `The note is marked as type “${type}”, which this version of WEG Manager doesn't know. Update WEG Manager or fix the schema property in Obsidian.`,
+    "frontmatter.unreadable": () =>
+      "The note's properties aren't valid YAML, so WEG Manager can't read them. Fix them in Obsidian.",
   },
 };

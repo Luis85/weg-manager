@@ -12,21 +12,31 @@ import { startupRecorder, type StartupRecorder } from "./startup-recorder";
  * - `api`: the Obsidian `NoteStore` adapter as promise-returning calls;
  * - `startup`: how Obsidian's workspace and metadata cache got ready from this plugin's `onload`
  *   on, and when the plugin's own host event adapter, run here on a runtime of its own, published
- *   `LayoutReady` and `VaultReady`.
+ *   `LayoutReady` and `VaultReady`, and when the note index on that runtime was first ready
+ *   (`index:ready`);
+ * - `events`: that runtime's note index for the reference vault's two types: counts, and the
+ *   moment an edit shows in its snapshot.
  *
  * `npm run build:probe` bundles it into `tests/e2e/probe-plugin/dist/`.
  */
 export default class NoteStoreProbe extends Plugin {
   api: ProbeApi | undefined;
   startup: StartupRecorder | undefined;
-  private events: ReturnType<typeof hostEventsProbe> | undefined;
+  /** The host event adapter and the note index on the probe's runtime. */
+  events: ReturnType<typeof hostEventsProbe> | undefined;
 
   override onload(): void {
     const startup = startupRecorder(this.app);
     this.startup = startup;
-    this.events = hostEventsProbe(this, (event) => {
-      startup.event(event._tag);
-    });
+    this.events = hostEventsProbe(
+      this,
+      (event) => {
+        startup.event(event._tag);
+      },
+      () => {
+        startup.mark("index:ready");
+      },
+    );
     this.api = probeApi(this.app);
   }
 

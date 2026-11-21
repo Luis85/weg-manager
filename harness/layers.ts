@@ -1,10 +1,14 @@
 import { Effect, Layer } from "effect";
 import type { AppServices } from "../src/application/app-services";
+import { AppEvent } from "../src/application/events";
+import { appNoteTypes } from "../src/application/note-types";
+import { noteIndexLayer } from "../src/application/notes";
 import { messagesLayer } from "../src/application/messages";
 import {
   Clipboard,
   ClipboardError,
   deviceStoreInMemory,
+  EventBus,
   EventBusLive,
   HostInfo,
   LoggerLive,
@@ -97,11 +101,25 @@ export const harnessLayer = (
   );
   const settings = SettingsServiceLive.pipe(Layer.provideMerge(adapters));
   const logger = LoggerLive({ developmentMode: true }).pipe(Layer.provide(consoleSinkLayer));
-  return Layer.mergeAll(
+  const shell = Layer.mergeAll(
     logger.pipe(Layer.provideMerge(settings)),
     incidentsLayer,
     EventBusLive,
-    memoryNoteStore().layer,
-    sequentialIdGenerator().layer,
   );
+  const notes = noteIndexLayer(appNoteTypes).pipe(
+    Layer.provideMerge(
+      Layer.merge(memoryNoteStore().layer, sequentialIdGenerator().layer).pipe(
+        Layer.provideMerge(shell),
+      ),
+    ),
+  );
+  // Built last, as the host event adapter is in the plugin: the browser has no metadata cache to
+  // wait for, so the vault is ready at once and the index builds from the in-memory notes.
+  return vaultReadyAtOnce.pipe(Layer.provideMerge(notes));
 };
+
+const vaultReadyAtOnce = Layer.effectDiscard(
+  EventBus.use((bus) =>
+    Effect.andThen(bus.publish(AppEvent.LayoutReady()), bus.publish(AppEvent.VaultReady())),
+  ),
+);

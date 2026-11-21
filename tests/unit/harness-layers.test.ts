@@ -1,7 +1,7 @@
 import { assert, describe, it } from "@effect/vitest";
-import { Effect, Exit, Fiber } from "effect";
+import { Effect, Exit, Fiber, Option, Stream } from "effect";
 import { TestClock } from "effect/testing";
-import { NoteStore } from "../../src/application/notes";
+import { INDEX_BATCH_QUIET, NoteStore, unindexedChanges } from "../../src/application/notes";
 import { countMarkdownFiles, updateGreeting } from "../../src/application/shell/use-cases";
 import type { UserMessage } from "../../src/application/shell/user-messages";
 import {
@@ -96,6 +96,25 @@ describe("harnessLayer", () => {
         { path: "F/A.md", frontmatter: { schema: "weg-manager.x/v1" } },
       ]);
     }),
+  );
+
+  it.effect("builds the note index at once and follows the in-memory store", () =>
+    Effect.gen(function* () {
+      const ready = yield* Stream.runHead(
+        Stream.filter(unindexedChanges, (snapshot) => snapshot.ready),
+      );
+      assert.isTrue(Option.isSome(ready));
+      yield* NoteStore.use((store) =>
+        store.create({ folder: "F", name: "A", frontmatter: { schema: "weg-manager.x/v1" } }),
+      );
+      yield* TestClock.adjust(INDEX_BATCH_QUIET);
+      const shown = yield* Stream.runHead(
+        Stream.filter(unindexedChanges, (snapshot) => snapshot.notes.length === 1),
+      );
+      assert.deepStrictEqual(Option.getOrThrow(shown).notes, [
+        { path: "F/A.md", issue: { code: "schema.unknown-type", type: "x" } },
+      ]);
+    }).pipe(Effect.provide(harnessLayer("default"))),
   );
 });
 

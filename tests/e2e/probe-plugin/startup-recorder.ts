@@ -95,6 +95,10 @@ export const startupRecorder = (app: App) => {
       count(`bus:${tag}`);
       if (tag === "LayoutReady" || tag === "VaultReady") snapshot(`bus:${tag}`);
     },
+    /** A moment of the probe's own, such as `index:ready`: counted with its first and last time. */
+    mark: (label: string) => {
+      count(label);
+    },
     dispose: () => {
       live = false;
       for (const [emitter, ref] of refs) emitter.offref(ref);

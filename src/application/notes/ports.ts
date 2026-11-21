@@ -56,6 +56,12 @@ export class NoteStore extends Context.Service<
     readonly list: Effect.Effect<readonly Note[], VaultReadError>;
     /** The note at `path`; a note without frontmatter, or whose YAML is broken, has `{}`. */
     read(path: string): Effect.Effect<Note, NoteNotFoundError | VaultReadError>;
+    /**
+     * The paths of the Markdown notes in `folder` or below (`/` is the whole vault) whose
+     * frontmatter block cannot be read: broken YAML, or YAML that is no map. `list` leaves them
+     * out and `read` gives `{}`, so this is the only way to find them. Sorted by path.
+     */
+    unreadable(folder: string): Effect.Effect<readonly string[], VaultReadError>;
     create(
       note: NewNote,
     ): Effect.Effect<Note, InvalidNoteNameError | NotePathTakenError | NoteWriteError>;

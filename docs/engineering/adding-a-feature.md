@@ -70,6 +70,21 @@ Every feature reads and writes notes through the `NoteStore` port of module `not
   ```
 
   Write the type's file contract page with it (ADR 0007). Test the declaration with the exact issues of broken notes, as `tests/unit/domain/notes/decode.test.ts` does for the test type.
+- **Register the type** with the note index: add it to `appNoteTypes` in `src/application/note-types.ts`, imported from your domain's `index.ts`:
+
+  ```ts
+  export const appNoteTypes: NoteTypeRegistry = [communityType];
+  ```
+
+  That is the one line a feature adds; the index then holds its records. Each type name once: a second one with the same name is a defect at load.
+- **Read the records** from the index, not with `list`: `noteSnapshot(type)` and `noteChanges(type)` from the notes application index are the pair `useStream` follows. In a component:
+
+  ```ts
+  const communities = useStream(noteSnapshot(communityType), noteChanges(communityType));
+  ```
+
+  `communities.value` is `{ ready, failure, notes }`. Show loading while `ready` is false. Each note is an `editable` or `read-only` record of your type with its issues, duplicates marked, sorted by path; sort for display yourself. When `failure` is set, the notes are the last ones read: render `ErrorNotice` with `describeError(failure, messages)` and give its `retry` action `useCommand(() => rebuildNoteIndex)` (see `tests/dom/presentation/notes/index-failure.test.ts`). Notes of no registered type, with a broken `schema` or unreadable frontmatter in the root folder, come from `unindexedSnapshot` and `unindexedChanges`; `describeUnindexedIssue` words them.
+- **After a write**, the view follows by itself: the index reads the note again after Obsidian has indexed it, about 100 ms later. Do not patch the list from the write's result; use that result only for the form that wrote it.
 - **Word its issues.** The notes catalog words the shared codes; `describeNoteIssue(issue, messages.notes, label)` takes the field label from your catalog. A code your declaration adds gets its text in your module's catalog part, in both languages.
 - **Read a record** with `type.decode(note)`. Show a `read-only` record without a save button and its issues; an `editable` one may still have field issues, which the form marks by `key`. Keep the decoded `frontmatter` in the form as the loaded state.
 - **Bump the version** only for a change older notes cannot be read as. Add the step for the old version to the table and test it with real-shaped old notes. A note is lifted in memory and written in the new form only when the user saves it.
@@ -77,11 +92,11 @@ Every feature reads and writes notes through the `NoteStore` port of module `not
 - **Save a form** with `update(path, editChange(type, loaded, edited))`: the per-field merge runs inside the atomic write. It fails with `NoteEditConflictError` (show each field's `base`, `edited` and `current` and let the user choose) or `NoteWriteRefusedError` (the note is no longer the loaded record), and then writes nothing.
 - **Change frontmatter** with `update(path, change)`. `change` runs inside Obsidian's atomic `processFrontMatter` on the frontmatter just read from the file and returns `Result.succeed({ set, remove })` or `Result.fail(yourError)` to write nothing. Write only the keys your type knows; the store keeps every other key, the key order and the body.
 - **Delete** with `trash(path)`, **rename** with `rename(path, newName)`.
-- **Read** with `list` (every record, by `schema`) and `read(path)`. Both come from the metadata cache, which catches up with a write a moment later: use the note a write returns, not a read right after it.
+- **Read** one note with `read(path)`; for lists, follow the index (above). `list` is what the index builds from. Both come from the metadata cache, which catches up with a write a moment later: use the note a write returns, not a read right after it.
 - **Never** call `vault.modify`, `vault.adapter`, or `read` followed by a write. A body change needs a contract section first (ADR 0007) and then a `NoteStore` call for it.
 - **Find files without scanning.** Do not call `getFiles()` or `getMarkdownFiles()` in a hot path (an event handler, a render, a loop). `list` scans once; keep it behind `VaultReady` and a debounce. Before `VaultReady` it can miss records Obsidian has not indexed yet.
 - **Errors.** The store's failures and the merge's conflict and refusal are tagged `AppError`s of module `notes` with texts in both catalogs. A failure your own `change` decides on is your module's error and needs its own text.
-- **Tests.** Use the in-memory adapter (`memoryNoteStore()` from `src/infrastructure/memory/notes`, also in `testRuntime().notes`) to seed notes, switch failures on and look behind the port. `sequentialIdGenerator()` from the same folder gives known ids (`…-000000000001`, `…-000000000002`); `testRuntime` and the harness provide one. `tests/unit/application/notes/edit-through-store.test.ts` shows create, outside edit and save end to end.
+- **Tests.** Use the in-memory adapter (`memoryNoteStore()` from `src/infrastructure/memory/notes`, also in `testRuntime().notes`) to seed notes, switch failures on and look behind the port. `testRuntime({ noteTypes: [yourType] })` runs the index for your type; `vaultReady()` publishes what Obsidian's host adapter publishes at start, so the first build runs. Seeds and writes publish the host's file events, so the index follows them as in Obsidian. `sequentialIdGenerator()` from the same folder gives known ids (`…-000000000001`, `…-000000000002`); `testRuntime` and the harness provide one. `tests/unit/application/notes/edit-through-store.test.ts` shows create, outside edit and save end to end.
 
 ## Checklist for a new view
 

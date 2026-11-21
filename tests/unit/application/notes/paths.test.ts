@@ -6,11 +6,44 @@ import {
   planNewNote,
   planRename,
   freeNotePath,
+  isInFolder,
+  pathsInFolder,
   renamedNotePath,
 } from "../../../../src/application/notes/paths";
 
 /** Obsidian's `normalizePath`, as far as these tests need it. */
 const normalize = (path: string) => path.replace(/\/+/g, "/").replace(/^\/|\/$/g, "") || "/";
+
+describe("isInFolder", () => {
+  it("is true for a note in the folder or in a folder below it", () => {
+    assert.isTrue(isInFolder("WEG Manager/A.md", "WEG Manager"));
+    assert.isTrue(isInFolder("WEG Manager/Punkte/AW/P-001.md", "WEG Manager"));
+  });
+
+  it("is false for a folder whose name only starts the same, and for the folder itself", () => {
+    assert.isFalse(isInFolder("WEG Manager Alt/A.md", "WEG Manager"));
+    assert.isFalse(isInFolder("WEG ManagerA.md", "WEG Manager"));
+    assert.isFalse(isInFolder("WEG Manager", "WEG Manager"));
+    assert.isFalse(isInFolder("Privat/WEG Manager/A.md", "WEG Manager"));
+  });
+
+  it("is true for every path in the vault root", () => {
+    assert.isTrue(isInFolder("A.md", "/"));
+    assert.isTrue(isInFolder("Privat/A.md", "/"));
+  });
+});
+
+describe("pathsInFolder", () => {
+  it("keeps the paths in the folder, sorted by code unit", () => {
+    assert.deepStrictEqual(
+      pathsInFolder(
+        new Set(["W/b.md", "Privat/a.md", "W/A.md", "W/Ä.md", "W Alt/a.md", "W/a/z.md"]),
+        "W",
+      ),
+      ["W/A.md", "W/a/z.md", "W/b.md", "W/Ä.md"],
+    );
+  });
+});
 
 describe("freeNotePath", () => {
   it.effect("takes the name when it is free", () =>

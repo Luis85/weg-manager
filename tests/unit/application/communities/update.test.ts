@@ -98,6 +98,33 @@ describe("updateCommunity", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
+  it.effect("leaves a field the user did not change as written, spaces included", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      const community = yield* loaded(fixture, { name: "Gemeinschaft 1 " });
+      const note = yield* updateCommunity(community, inputOf(community, { kind: "Haus" }));
+      assert.strictEqual(note.path, PATH);
+      assert.deepStrictEqual((yield* stored(PATH)).frontmatter, {
+        ...community.frontmatter,
+        kind: "Haus",
+      });
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("keeps an outside change to a field with spaces the user did not change", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      const community = yield* loaded(fixture, { name: "Gemeinschaft 1 " });
+      fixture.memory.seed(PATH, { ...community.frontmatter, name: "Ahornweg 14" }, BODY);
+      yield* updateCommunity(community, inputOf(community, { kind: "Haus" }));
+      assert.deepStrictEqual((yield* stored(PATH)).frontmatter, {
+        ...community.frontmatter,
+        name: "Ahornweg 14",
+        kind: "Haus",
+      });
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
   it.effect("keeps a valid short code: it is fixed once given", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {

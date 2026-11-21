@@ -16,6 +16,7 @@ export {
   colorsInUse,
   communityValues,
   duplicateShortCodes,
+  editedValues,
   normalizeShortCode,
   validateCommunity,
   CommunityFieldIssue,

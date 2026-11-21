@@ -3,6 +3,7 @@ import {
   communityFileName,
   communityType,
   communityValues,
+  editedValues,
   followsName,
   validateCommunity,
   type CommunityInput,
@@ -116,7 +117,8 @@ const followName = (note: Note, before: Community, values: CommunityValues) =>
 /**
  * Saves the form of `community` (as it was loaded) with `input` (PBI-56, ADR 0007). The rules run
  * against the other communities; the short code stays as loaded unless it may be repaired
- * (`canChangeShortCode`). The write merges per field with an outside edit; a field both changed
+ * (`canChangeShortCode`). A field left as loaded keeps the note's value as written, not even
+ * trimmed (`editedValues`). The write merges per field with an outside edit; a field both changed
  * is a conflict, a note that is no longer this record is refused, and a note that is gone is
  * `NoteNotFoundError`. Then the file follows the name.
  */
@@ -127,10 +129,8 @@ export const updateCommunity = (community: Community, input: CommunityInput) =>
     const fixed = canChangeShortCode(community)
       ? input
       : { ...input, short_code: loaded.short_code ?? input.short_code };
-    const values = yield* checked(fixed, {
-      others: valuesOf(communities),
-      loaded,
-    });
+    yield* checked(fixed, { others: valuesOf(communities), loaded });
+    const values = editedValues(fixed, community.frontmatter) as CommunityValues;
     const path = yield* pathOf(community);
     const store = yield* NoteStore;
     const written = yield* store.update(

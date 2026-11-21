@@ -58,7 +58,7 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 ## Was das Plugin schreibt
 
 - Beim Anlegen: `schema`, `id` und die fünf Felder in dieser Reihenfolge, der Text darunter leer.
-- Beim Speichern nur die Felder, die der Mensch im Formular geändert hat. Wurde ein Feld inzwischen außerhalb des Plugins geändert, gilt die Änderung des Feldes, das nur eine Seite geändert hat. Haben beide Seiten dasselbe Feld verschieden geändert, schreibt das Plugin nichts und lässt den Menschen je Feld wählen ([[DF-23 - Externe Bearbeitung ohne stilles Überschreiben]]).
+- Beim Speichern nur die Felder, die der Mensch im Formular geändert hat. Ein Feld, das er nicht angefasst hat, bleibt, wie es in der Notiz steht, auch mit Leerzeichen am Anfang oder Ende; ein geändertes Feld schreibt das Plugin ohne sie. Wurde ein Feld inzwischen außerhalb des Plugins geändert, gilt die Änderung des Feldes, das nur eine Seite geändert hat. Haben beide Seiten dasselbe Feld verschieden geändert, schreibt das Plugin nichts und lässt den Menschen je Feld wählen ([[DF-23 - Externe Bearbeitung ohne stilles Überschreiben]]).
 - Unbekannte Schlüssel, ihre Reihenfolge und der Text unter dem Frontmatter bleiben unverändert.
 - Das Plugin ändert nur die Zeilen der Schlüssel, die es schreibt. Kommentare, Anführungszeichen und Zahlenformen (`01067`), die Zeilenenden (LF oder CRLF) und ein BOM am Dateianfang bleiben, wie sie sind. Ein Frontmatter, das es so nicht ändern kann (etwa mit Ankern oder in einer Zeile `{…}`), schreibt es nicht und sagt es dem Menschen.
 - Löschen legt die Notiz in den Papierkorb, den der Mensch in Obsidian eingestellt hat.

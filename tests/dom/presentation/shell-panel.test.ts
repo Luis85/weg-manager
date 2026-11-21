@@ -64,6 +64,37 @@ describe("ShellPanel", () => {
     expect(root.querySelector("[data-testid=file-count]")?.textContent).toContain("7");
   });
 
+  it("uses the singular for exactly one file", async () => {
+    const panel = await open({ vault: 1 });
+    expect(panel.q("file-count")?.textContent.trim()).toBe("1 Markdown-Datei im Vault");
+  });
+
+  it.each([0, 3])("uses the plural for %i files", async (files) => {
+    const panel = await open({ vault: files });
+    expect(panel.q("file-count")?.textContent.trim()).toBe(`${files} Markdown-Dateien im Vault`);
+  });
+
+  it("marks the count region busy for screen readers, then announces the result politely", async () => {
+    const test = testRuntime({ vault: 7 });
+    test.vault.hold();
+    const root = document.createElement("div");
+    document.body.append(root);
+    const close = mountSurface(root, test.runtime);
+    opened.push({ close, dispose: () => test.runtime.dispose() });
+    await settle();
+    const region = () => root.querySelector("[data-testid=file-count-region]");
+    expect(region()?.getAttribute("aria-live")).toBe("polite");
+    expect(region()?.getAttribute("aria-busy")).toBe("true");
+    const status = region()?.querySelector(".wm\\:sr-only");
+    expect(status?.textContent.trim()).toBe("Zähle Notizen …");
+    test.vault.release();
+    await settle();
+    expect(region()?.getAttribute("aria-busy")).not.toBe("true");
+    expect(region()?.getAttribute("aria-live")).toBe("polite");
+    expect(region()?.querySelector("[data-testid=file-count]")?.textContent).toContain("7");
+    expect(region()?.textContent).not.toContain("Zähle Notizen");
+  });
+
   it("shows the vault error with a retry that succeeds once the vault recovers", async () => {
     const panel = await open({ vault: "fail" });
     const alert = panel.root.querySelector("[role=alert]");

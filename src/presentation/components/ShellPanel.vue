@@ -29,8 +29,11 @@ const countLabel = computed(() =>
     : `${String(fileCount.value)} Markdown-Dateien im Vault`,
 );
 
-/** Recount once a burst of vault changes adds, removes or renames Markdown files. */
-const later = debounce(recount, RECOUNT_DELAY_MS);
+/**
+ * Recount once a burst of vault changes adds, removes or renames Markdown files. The timer drops
+ * the promise on purpose: `run` never rejects (failures land in `countMessage`).
+ */
+const later = debounce(() => void recount(), RECOUNT_DELAY_MS);
 useAppEvents((event) => {
   if (changesMarkdownFiles(event)) later.trigger();
 });

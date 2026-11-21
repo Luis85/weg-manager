@@ -13,6 +13,34 @@ const TS_PROJECTS = [
   "./tests/e2e/tsconfig.json",
 ];
 
+/**
+ * eslint-plugin-obsidianmd scopes its source-file rules to JS/TS, so `.vue` files would get none
+ * ("Core JS rules apply only to JS and TS files"). Re-scope the obsidianmd rules (and the
+ * no-unsanitized innerHTML guard) of its TypeScript source blocks to SFCs, read from the exported
+ * recommended config so they follow plugin upgrades. The Vue parser has `project`, so the
+ * type-aware ones run too. Blocks keep their own `ignores` (tests, tool configs) and order, so
+ * later severities and options win as they do for `.ts`. Not carried over: the JSON/plain-text
+ * blocks (`validate-manifest`, `validate-license`, `depend/ban-dependencies`) need other
+ * languages, and the third-party rules other than no-unsanitized are not Obsidian's.
+ */
+const TS_SOURCE = "**/*.{ts,cts,mts,tsx}";
+const forVue = (/** @type {string} */ rule) =>
+  rule.startsWith("obsidianmd/") || rule.startsWith("no-unsanitized/");
+const tsSourceBlocks = obsidianmd.configs.recommended.filter(
+  (config) => config.files?.length === 1 && config.files[0] === TS_SOURCE,
+);
+const unsanitized = tsSourceBlocks.find((config) => config.plugins?.["no-unsanitized"])?.plugins;
+/** @param {import("eslint").Linter.Config} config */
+const toVue = (config) => ({
+  files: ["**/*.vue"],
+  ignores: config.ignores ?? [],
+  rules: Object.fromEntries(Object.entries(config.rules ?? {}).filter(([rule]) => forVue(rule))),
+});
+const obsidianmdForVue = [
+  { files: ["**/*.vue"], plugins: { "no-unsanitized": unsanitized?.["no-unsanitized"] ?? {} } },
+  ...tsSourceBlocks.map(toVue).filter((config) => Object.keys(config.rules).length > 0),
+];
+
 /** Vue's presets carry no `files`; scope them so `.ts` files keep the TypeScript parser. */
 const vueOnly = vue.configs["flat/recommended"].map((config) =>
   config.files ? config : { ...config, files: ["**/*.vue"] },
@@ -69,6 +97,12 @@ export default defineConfig(
       },
       globals: globals.browser,
     },
+  },
+  ...obsidianmdForVue,
+  {
+    // Nuxt UI renders all markup; raw HTML would bypass Vue's escaping (Obsidian bans innerHTML).
+    files: ["**/*.vue"],
+    rules: { "vue/no-v-html": "error" },
   },
   {
     files: ["src/**/*.ts", "src/**/*.vue"],

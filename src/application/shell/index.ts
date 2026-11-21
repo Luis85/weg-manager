@@ -1,6 +1,7 @@
 // The public face of the shell's application layer (ADR 0006): other modules, other layers and the
 // composition files import only this.
 export { reportDefect } from "./defects";
+export { deviceStoreInMemory } from "./device-store";
 export {
   ClipboardError,
   ReadOnlySettingsError,
@@ -19,6 +20,7 @@ export { toLoggedError } from "./logged-error";
 export { LoggerLive, type LoggerOptions } from "./logger";
 export {
   Clipboard,
+  DeviceStore,
   HostInfo,
   Incidents,
   LogSink,
@@ -27,6 +29,7 @@ export {
   Notifier,
   SettingsStore,
   VaultReader,
+  type DeviceValue,
   type LogEntry,
 } from "./ports";
 export type { ShellServices } from "./services";

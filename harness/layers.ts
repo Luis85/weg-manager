@@ -4,6 +4,7 @@ import { messagesLayer } from "../src/application/messages";
 import {
   Clipboard,
   ClipboardError,
+  deviceStoreInMemory,
   EventBusLive,
   HostInfo,
   LoggerLive,
@@ -92,6 +93,7 @@ export const harnessLayer = (
     }),
     Layer.succeed(HostInfo)({ pluginVersion: "harness", apiVersion: "none", platform: "browser" }),
     messagesLayer(options.language ?? "de"),
+    deviceStoreInMemory(),
   );
   const settings = SettingsServiceLive.pipe(Layer.provideMerge(adapters));
   const logger = LoggerLive({ developmentMode: true }).pipe(Layer.provide(consoleSinkLayer));

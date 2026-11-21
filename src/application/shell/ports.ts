@@ -84,3 +84,28 @@ export class HostInfo extends Context.Service<
 export class Messages extends Context.Service<Messages, Catalog>()(
   "weg-manager/application/Messages",
 ) {}
+
+/** A JSON value, small enough for local storage. */
+export type DeviceValue =
+  | null
+  | boolean
+  | number
+  | string
+  | readonly DeviceValue[]
+  | { readonly [key: string]: DeviceValue };
+
+/**
+ * Small values kept per device and vault, never in `data.json`, so Sync does not carry them to
+ * another device (ADR 0008). The community selection is the first. A read returns `undefined` for a
+ * key never written or cleared; the caller decodes what it reads with its schema, because an
+ * earlier plugin version may have written it. Neither call fails: Obsidian's local storage
+ * swallows its own errors, and a value that is lost only costs a choice the user makes again.
+ */
+export class DeviceStore extends Context.Service<
+  DeviceStore,
+  {
+    read(key: string): Effect.Effect<unknown>;
+    /** Stores a copy of `value`; `undefined` clears the key. */
+    write(key: string, value: DeviceValue | undefined): Effect.Effect<void>;
+  }
+>()("weg-manager/application/DeviceStore") {}

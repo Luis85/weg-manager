@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Obsidian plugin for WEG advisory boards.",
+  "description": "Keep the communities of a German condominium (WEG) advisory board as notes in your vault.",
   "license": "MIT",
   "engines": {
     "node": ">=24"

@@ -154,3 +154,24 @@ describe("validatePatch", () => {
     expect(result).toEqual({ ok: true, settings: { ...valid, greeting: "Hi" } });
   });
 });
+
+/** Defaults and issue texts are product decisions; pin them exactly. */
+describe("settings copy and defaults", () => {
+  it("has the documented defaults", () => {
+    expect(DEFAULT_SETTINGS).toEqual({
+      schemaVersion: 1,
+      greeting: "Hello from WEG Manager",
+      showRibbonIcon: true,
+      logLevel: "warn",
+    });
+  });
+
+  it("names the issue for a non-object file and an unknown log level exactly", () => {
+    expect(decodeSettings("x").issues).toEqual([
+      "Die Einstellungsdatei enthält keine gültigen Einstellungen.",
+    ]);
+    expect(decodeSettings({ logLevel: "laut" }).issues).toEqual([
+      "Die Protokollstufe muss eine von error, warn, info, debug sein.",
+    ]);
+  });
+});

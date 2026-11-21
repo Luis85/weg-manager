@@ -38,4 +38,22 @@ describe("reportDefect", () => {
       );
     }).pipe(Effect.provide(layer));
   });
+
+  it.effect("logs name, message and stack of an Error and the text of anything else", () => {
+    const logger = recordingLogger();
+    const layer = Layer.mergeAll(logger.layer, recordingNotifier().layer, sequentialIncidents());
+    const withStack = new TypeError("bad");
+    withStack.stack = "at here";
+    const withoutStack = new RangeError("far");
+    withoutStack.stack = "";
+    return Effect.gen(function* () {
+      yield* reportDefect(withStack);
+      yield* reportDefect(withoutStack);
+      yield* reportDefect(42);
+      assert.deepStrictEqual(
+        logger.entries().map((entry) => entry.context?.["cause"]),
+        ["TypeError: bad\nat here", "RangeError: far", "42"],
+      );
+    }).pipe(Effect.provide(layer));
+  });
 });

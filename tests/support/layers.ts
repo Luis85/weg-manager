@@ -14,7 +14,7 @@ import {
 import type { UserMessage } from "../../src/application/user-messages";
 
 /** A gate that holds an effect until `release()`; `held()` counts waiting effects. */
-export const gate = () => {
+const gate = () => {
   let open = true;
   let waiting: (() => void)[] = [];
   const pass = Effect.callback<void>((resume) => {

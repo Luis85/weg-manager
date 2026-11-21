@@ -28,6 +28,7 @@ export class SettingsService extends Context.Service<
     /** Emits the current value first, then every change. */
     readonly changes: Stream.Stream<Settings>;
   }
+  // Stryker disable next-line StringLiteral: a service key only has to be unique; tests cannot observe its text.
 >()("weg-manager/application/SettingsService") {}
 
 type Loaded = DecodedSettings & { readonly readOnlyReason?: ReadOnlyReason };

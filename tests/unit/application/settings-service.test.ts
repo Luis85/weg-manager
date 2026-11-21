@@ -89,7 +89,11 @@ describe("SettingsService", () => {
     return Effect.gen(function* () {
       const service = yield* SettingsService;
       assert.deepStrictEqual(yield* service.current, DEFAULT_SETTINGS);
-      assert.strictEqual((yield* service.status).writable, false);
+      assert.deepStrictEqual(yield* service.status, {
+        writable: false,
+        issues: [],
+        readOnlyReason: "unreadable",
+      });
       assert.strictEqual(notifier.messages().length, 1);
       const error = yield* Effect.flip(service.update({ greeting: "Yo" }));
       assert.deepStrictEqual(

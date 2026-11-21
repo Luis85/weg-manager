@@ -1,3 +1,4 @@
+// Stryker disable StringLiteral: the only strings here are service keys; they only have to be unique and tests cannot observe their text.
 import { Context, type Effect } from "effect";
 import type { LogLevel } from "../domain/settings";
 import type { ClipboardError, StorageError, VaultReadError } from "./errors";

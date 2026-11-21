@@ -53,7 +53,11 @@ describe("settings use cases", () => {
         notifier.messages().map((message) => message.detail),
         ["Moin"],
       );
-      assert.strictEqual(notifier.messages()[0]?.severity, "info");
+      assert.deepStrictEqual(notifier.messages()[0], {
+        severity: "info",
+        title: "WEG Manager",
+        detail: "Moin",
+      });
     }).pipe(Effect.provide(layer));
   });
 });
@@ -150,7 +154,11 @@ describe("copyDiagnostics", () => {
       yield* copyDiagnostics;
       assert.strictEqual(clipboard.writes().length, 1);
       assert.include(clipboard.writes()[0] ?? "", "1.14.4");
-      assert.strictEqual(notifier.messages().at(-1)?.severity, "info");
+      assert.deepStrictEqual(notifier.messages().at(-1), {
+        severity: "info",
+        title: "Diagnose kopiert",
+        detail: "Füge den Bericht in deine Support-Anfrage ein.",
+      });
     }).pipe(Effect.provide(layer));
   });
 

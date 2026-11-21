@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/fallow/schema.json",
-  "entry": ["src/main.ts", "harness/main.ts"],
+  "entry": ["harness/main.ts"],
   "supportEntry": [
     "scripts/*.mjs",
     "*.config.ts",
@@ -13,31 +13,70 @@
     "docs/**",
     ".claude/**",
     "skills/**",
-    "tests/skills/**",
     "reports/**",
     "release/**",
     ".stryker-tmp/**",
     ".superpowers/**"
   ],
-  "duplicates": { "minTokens": 50 },
-  "health": { "maxCyclomatic": 10 },
+  "duplicates": {
+    "minTokens": 50
+  },
+  "health": {
+    "maxCyclomatic": 10
+  },
   "boundaries": {
     "zones": [
-      { "name": "domain", "patterns": ["src/domain/**"] },
-      { "name": "application", "patterns": ["src/application/**"] },
-      { "name": "infrastructure", "patterns": ["src/infrastructure/**"] },
-      { "name": "presentation", "patterns": ["src/presentation/**"] },
-      { "name": "composition", "patterns": ["src/main.ts", "src/bootstrap.ts"] }
+      {
+        "name": "domain",
+        "patterns": ["src/domain/**"]
+      },
+      {
+        "name": "application",
+        "patterns": ["src/application/**"]
+      },
+      {
+        "name": "infrastructure",
+        "patterns": ["src/infrastructure/**"]
+      },
+      {
+        "name": "presentation",
+        "patterns": ["src/presentation/**"]
+      },
+      {
+        "name": "composition",
+        "patterns": ["src/main.ts", "src/bootstrap.ts"]
+      }
     ],
     "rules": [
-      { "from": "domain", "allow": [] },
-      { "from": "application", "allow": ["domain"] },
-      { "from": "infrastructure", "allow": ["application", "domain", "presentation"] },
-      { "from": "presentation", "allow": ["application", "domain"] },
+      {
+        "from": "domain",
+        "allow": []
+      },
+      {
+        "from": "application",
+        "allow": ["domain"]
+      },
+      {
+        "from": "infrastructure",
+        "allow": ["application", "domain", "presentation"]
+      },
+      {
+        "from": "presentation",
+        "allow": ["application", "domain"]
+      },
       {
         "from": "composition",
         "allow": ["infrastructure", "application", "domain", "presentation"]
       }
     ]
-  }
+  },
+  "ignoreDependencies": ["obsidian", "@iconify-json/lucide", "@eslint/js"],
+  "overrides": [
+    {
+      "files": ["tests/support/obsidian/**"],
+      "rules": {
+        "unused-class-members": "off"
+      }
+    }
+  ]
 }

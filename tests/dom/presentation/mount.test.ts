@@ -1,6 +1,6 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, h } from "vue";
+import { defineComponent, h, onMounted, ref } from "vue";
 import { SCOPE_CLASS as SCRIPT_SCOPE_CLASS } from "../../../scripts/scope-css.mjs";
 import { updateGreeting } from "../../../src/application/use-cases";
 import { mountSurface, releaseAll } from "../../../src/presentation/mount";
@@ -46,6 +46,29 @@ describe("mountSurface", () => {
     expect(root.classList.contains(SCOPE_CLASS)).toBe(true);
     expect(root.querySelector(`:scope > .${PORTAL_CLASS}`)).not.toBeNull();
     expect(root.querySelector("[data-testid=greeting]")?.textContent).toContain("Moin");
+    close();
+    await runtime.dispose();
+  });
+
+  it("mounts the app into an element already attached to the root", async () => {
+    const { runtime } = testRuntime();
+    const seen: { connected: boolean; inRoot: boolean }[] = [];
+    const root = newRoot();
+    const Probe = defineComponent({
+      setup() {
+        const el = ref<HTMLElement>();
+        onMounted(() => {
+          seen.push({
+            connected: el.value?.isConnected ?? false,
+            inRoot: root.contains(el.value ?? null),
+          });
+        });
+        return () => h("p", { ref: el }, "probe");
+      },
+    });
+    const close = mountSurface(root, runtime, { content: Probe });
+    await settle();
+    expect(seen).toEqual([{ connected: true, inRoot: true }]);
     close();
     await runtime.dispose();
   });

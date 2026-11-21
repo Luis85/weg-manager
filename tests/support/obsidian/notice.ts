@@ -9,8 +9,16 @@ const notices: RecordedNotice[] = [];
 
 export const recordedNotices = (): readonly RecordedNotice[] => notices;
 
+let failNext = false;
+
+/** Makes the next `new Notice` throw once (to provoke a defect inside the Notifier). */
+export const failNextNotice = (): void => {
+  failNext = true;
+};
+
 export const clearNotices = (): void => {
   notices.length = 0;
+  failNext = false;
 };
 
 const textOf = (message: string | DocumentFragment): string =>
@@ -24,6 +32,10 @@ export class Notice {
   hidden = false;
 
   constructor(message: string | DocumentFragment, duration?: number) {
+    if (failNext) {
+      failNext = false;
+      throw new Error("notice failed");
+    }
     this.containerEl = document.createElement("div");
     this.noticeEl = this.containerEl;
     this.messageEl = document.createElement("div");

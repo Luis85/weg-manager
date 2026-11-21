@@ -22,4 +22,7 @@ const write = (entry: LogEntry): void => {
   }
 };
 
-export const consoleSinkLayer = Layer.succeed(LogSink)({ write });
+/** Direct access for the last-resort path when no runtime is available. */
+export const consoleSink = { write };
+
+export const consoleSinkLayer = Layer.succeed(LogSink)(consoleSink);

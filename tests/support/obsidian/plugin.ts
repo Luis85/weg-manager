@@ -33,6 +33,7 @@ export type PluginRegistry = {
   readonly commands: Map<string, Command>;
   readonly views: Map<string, ViewCreator>;
   readonly settingTabs: PluginSettingTab[];
+  /** Ribbon icons still attached to the DOM (a plugin may remove its own icon element). */
   readonly ribbonIcons: RibbonIcon[];
   readonly notices: typeof recordedNotices;
   readonly saved: unknown[];
@@ -108,6 +109,10 @@ export abstract class Plugin extends Component {
     return { ...command, id };
   }
 
+  removeCommand(commandId: string): void {
+    state(this).registry.commands.delete(commandId);
+  }
+
   addRibbonIcon(
     icon: string,
     title: string,
@@ -119,12 +124,10 @@ export abstract class Plugin extends Component {
     el.addEventListener("click", (event) => callback(event));
     document.body.append(el);
     const entry = { icon, title, el };
-    value.registry.ribbonIcons.push(entry);
-    this.register(() => {
-      el.remove();
-      const index = value.registry.ribbonIcons.indexOf(entry);
-      if (index !== -1) value.registry.ribbonIcons.splice(index, 1);
-    });
+    (value.registry as PluginRegistry & { allRibbonIcons: RibbonIcon[] }).allRibbonIcons.push(
+      entry,
+    );
+    this.register(() => el.remove());
     return el;
   }
 
@@ -151,20 +154,27 @@ export abstract class Plugin extends Component {
   }
 }
 
-export type PluginClass<P extends Plugin> = new (app: App, manifest: PluginManifest) => P;
+/** Accepts the production plugin class, which is typed against the real `obsidian` package. */
+export type PluginClass<P> = new (...args: never[]) => P;
 
-export const createTestPlugin = <P extends Plugin>(
+export const createTestPlugin = <P extends object>(
   PluginClass: PluginClass<P>,
   options: { readonly data?: unknown; readonly failLoadData?: boolean; readonly app?: App } = {},
 ): { plugin: P; registry: PluginRegistry; app: App } => {
   clearNotices();
   const app = options.app ?? new App();
-  const plugin = new PluginClass(app, TEST_MANIFEST);
-  const registry: PluginRegistry = {
+  const Constructor = PluginClass as unknown as new (app: App, manifest: PluginManifest) => P;
+  const plugin = new Constructor(app, TEST_MANIFEST);
+  const double = plugin as unknown as Plugin;
+  const allRibbonIcons: RibbonIcon[] = [];
+  const registry: PluginRegistry & { allRibbonIcons: RibbonIcon[] } = {
+    allRibbonIcons,
     commands: new Map(),
     views: new Map(),
     settingTabs: [],
-    ribbonIcons: [],
+    get ribbonIcons() {
+      return allRibbonIcons.filter((entry) => entry.el.isConnected);
+    },
     notices: recordedNotices,
     saved: [],
     runCommand: (id) => {
@@ -173,26 +183,26 @@ export const createTestPlugin = <P extends Plugin>(
       return command.callback?.() ?? command.checkCallback?.(false);
     },
     failNextAddCommand: () => {
-      state(plugin).failAddCommand = true;
+      state(double).failAddCommand = true;
     },
     holdLoadData: () => {
       let release: () => void = noop;
       const promise = new Promise<void>((resolve) => {
         release = resolve;
       });
-      state(plugin).gate = { promise, release };
+      state(double).gate = { promise, release };
     },
     releaseLoadData: () => {
-      const gate = state(plugin).gate;
-      state(plugin).gate = undefined;
+      const gate = state(double).gate;
+      state(double).gate = undefined;
       gate?.release();
     },
     load: async () => {
-      plugin.load();
-      await plugin.lastOnloadResult;
+      double.load();
+      await double.lastOnloadResult;
     },
   };
-  internals.set(plugin, {
+  internals.set(double, {
     registry,
     data: options.data,
     failLoadData: options.failLoadData ?? false,

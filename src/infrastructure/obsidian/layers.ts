@@ -1,18 +1,11 @@
 import { Effect, Layer } from "effect";
-import { Notice, Platform, apiVersion, type Plugin } from "obsidian";
+import { Platform, apiVersion, type Plugin } from "obsidian";
 import { ClipboardError, StorageError, VaultReadError } from "../../application/errors";
 import { Clipboard, HostInfo, Notifier, SettingsStore, VaultReader } from "../../application/ports";
 import type { UserMessage } from "../../application/user-messages";
+import { showMessage } from "./notices";
 
-/** Milliseconds a notice stays visible; errors need time to read and act on. */
-export const NOTICE_DURATION = { info: 4000, warning: 8000, error: 12000 } as const;
-
-/** Builds the notice body with DOM APIs only (no innerHTML). */
-const messageFragment = (message: UserMessage): DocumentFragment =>
-  createFragment((fragment) => {
-    fragment.createEl("strong", { text: message.title });
-    if (message.detail !== "") fragment.createDiv({ text: message.detail });
-  });
+export { NOTICE_DURATION } from "./notices";
 
 const platformName = (): string => {
   const kind = Platform.isMobile ? "mobile" : "desktop";
@@ -37,10 +30,7 @@ const storeLayer = (plugin: Plugin) =>
   });
 
 const notifierLayer = Layer.succeed(Notifier)({
-  notify: (message: UserMessage) =>
-    Effect.asVoid(
-      Effect.sync(() => new Notice(messageFragment(message), NOTICE_DURATION[message.severity])),
-    ),
+  notify: (message: UserMessage) => Effect.asVoid(Effect.sync(() => showMessage(message))),
 });
 
 const vaultLayer = (plugin: Plugin) =>

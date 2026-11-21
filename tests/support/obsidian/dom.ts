@@ -12,19 +12,22 @@ type Creator = <K extends keyof HTMLElementTagNameMap>(
   callback?: (el: HTMLElementTagNameMap[K]) => void,
 ) => HTMLElementTagNameMap[K];
 
-const applyInfo = (el: HTMLElement, info: DomElementInfo | string | undefined): void => {
-  if (info === undefined) return;
-  if (typeof info === "string") {
-    el.className = info;
-    return;
-  }
-  if (info.cls !== undefined)
-    el.classList.add(...(Array.isArray(info.cls) ? info.cls : info.cls.split(" ")));
-  if (info.text !== undefined) el.textContent = info.text;
-  if (info.title !== undefined) el.title = info.title;
-  for (const [name, value] of Object.entries(info.attr ?? {})) {
+const classesOf = (cls: string | string[] | undefined): string[] =>
+  cls === undefined ? [] : Array.isArray(cls) ? cls : cls.split(" ");
+
+const applyAttributes = (el: HTMLElement, attr: DomElementInfo["attr"]): void => {
+  for (const [name, value] of Object.entries(attr ?? {})) {
     if (value !== null && value !== false) el.setAttribute(name, String(value));
   }
+};
+
+const applyInfo = (el: HTMLElement, info: DomElementInfo | string | undefined): void => {
+  if (info === undefined) return;
+  const options = typeof info === "string" ? { cls: info } : info;
+  el.classList.add(...classesOf(options.cls));
+  if (options.text !== undefined) el.textContent = options.text;
+  if (options.title !== undefined) el.title = options.title;
+  applyAttributes(el, options.attr);
 };
 
 const creatorFor = (

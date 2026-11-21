@@ -3,7 +3,13 @@
 export { App } from "./app";
 export { Component } from "./component";
 export { Events, type EventRef } from "./events";
-export { Notice, clearNotices, recordedNotices, type RecordedNotice } from "./notice";
+export {
+  Notice,
+  clearNotices,
+  failNextNotice,
+  recordedNotices,
+  type RecordedNotice,
+} from "./notice";
 export {
   Plugin,
   TEST_MANIFEST,

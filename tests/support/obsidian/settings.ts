@@ -113,6 +113,8 @@ export class Setting {
   readonly nameEl: HTMLElement;
   readonly descEl: HTMLElement;
   readonly controlEl: HTMLElement;
+  /** Where Obsidian shows a failed `validate` message. */
+  readonly validationEl: HTMLElement;
   readonly components: SettingControl[] = [];
   disabled = false;
 
@@ -123,7 +125,8 @@ export class Setting {
     this.nameEl = doc.createElement("div");
     this.descEl = doc.createElement("div");
     this.controlEl = doc.createElement("div");
-    this.settingEl.append(this.nameEl, this.descEl, this.controlEl);
+    this.validationEl = doc.createElement("div");
+    this.settingEl.append(this.nameEl, this.descEl, this.controlEl, this.validationEl);
     containerEl.append(this.settingEl);
     created.push(this);
   }
@@ -168,12 +171,95 @@ export class Setting {
   }
 }
 
+type Predicate = boolean | (() => boolean) | undefined;
+const evaluate = (value: Predicate, fallback: boolean): boolean =>
+  typeof value === "function" ? value() : (value ?? fallback);
+
+type ControlDefinition = {
+  type: "text" | "toggle" | "dropdown";
+  key: string;
+  defaultValue?: unknown;
+  options?: Record<string, string>;
+  disabled?: Predicate;
+  validate?: (value: never) => string | void | Promise<string | void>;
+};
+
+export type DefinitionItem = {
+  name: string;
+  desc?: string | DocumentFragment;
+  control?: ControlDefinition;
+  visible?: Predicate;
+  searchable?: Predicate;
+};
+
+/**
+ * Renders `getSettingDefinitions()` the way Obsidian 1.13+ does for the parts this plugin uses:
+ * text, toggle and dropdown controls plus plain rows. A failed `validate` shows its message in
+ * `validationEl` and skips `setControlValue`.
+ */
 export abstract class SettingTab {
   readonly containerEl: HTMLElement = document.createElement("div");
+  settingItems: DefinitionItem[] = [];
   constructor(readonly app: App) {}
-  abstract display(): void;
+
+  getSettingDefinitions(): DefinitionItem[] {
+    return [];
+  }
+
+  getControlValue(_key: string): unknown {
+    return undefined;
+  }
+
+  setControlValue(_key: string, _value: unknown): void | Promise<void> {}
+
+  update(): void {
+    this.settingItems = this.getSettingDefinitions();
+  }
+
+  display(): void {
+    this.update();
+    this.containerEl.replaceChildren();
+    for (const item of this.settingItems) {
+      if (evaluate(item.visible, true)) this.renderItem(item);
+    }
+  }
+
   hide(): void {
     this.containerEl.replaceChildren();
+  }
+
+  /** Test helper: resolves once the latest `setControlValue` call has settled. */
+  pending: Promise<unknown> = Promise.resolve();
+
+  private renderItem(item: DefinitionItem): void {
+    const setting = new Setting(this.containerEl).setName(item.name);
+    if (item.desc !== undefined) setting.setDesc(item.desc);
+    const control = item.control;
+    if (control === undefined) return;
+    const value = this.getControlValue(control.key) ?? control.defaultValue;
+    const commit = (next: unknown) => {
+      this.pending = Promise.resolve(control.validate?.(next as never)).then((issue) => {
+        setting.validationEl.textContent = typeof issue === "string" ? issue : "";
+        if (typeof issue === "string" && issue !== "") return undefined;
+        return this.setControlValue(control.key, next);
+      });
+      return this.pending;
+    };
+    if (control.type === "text") {
+      setting.addText((text) =>
+        text.setValue(typeof value === "string" ? value : "").onChange(commit),
+      );
+    } else if (control.type === "toggle") {
+      setting.addToggle((toggle) => toggle.setValue(value === true).onChange(commit));
+    } else {
+      setting.addDropdown((dropdown) =>
+        dropdown
+          .addOptions(control.options ?? {})
+          .setValue(String(value))
+          .onChange(commit),
+      );
+    }
+    setting.setDisabled(evaluate(control.disabled, false));
   }
 }
 

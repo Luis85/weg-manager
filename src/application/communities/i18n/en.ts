@@ -75,6 +75,8 @@ export const communitiesEn: CommunitiesCatalog = {
   },
   issues: {
     "name.invalid": (_, label) => oneLine(label, NAME_MAX_LENGTH),
+    "name.too-long": (_, label) =>
+      `“${label}” makes a file name that is too long, because some characters take more space. Shorten the name.`,
     "short-code.invalid": () => "The short code needs 2–5 letters (A–Z) or digits.",
     "short-code.taken": ({ value, other }) =>
       `“${other}” already uses ${value}. Choose another short code.`,

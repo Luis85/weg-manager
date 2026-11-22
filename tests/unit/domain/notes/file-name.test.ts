@@ -1,6 +1,12 @@
 import { assert as fcAssert, property, string } from "fast-check";
 import { describe, expect, it } from "vitest";
-import { followsTitle, noteNameIssue, recordFileName } from "../../../../src/domain/notes";
+import {
+  MAX_FILE_NAME_BYTES,
+  fitsFileName,
+  followsTitle,
+  noteNameIssue,
+  recordFileName,
+} from "../../../../src/domain/notes";
 
 describe("recordFileName", () => {
   it("is the record's title when the title is a usable file name", () => {
@@ -62,5 +68,27 @@ describe("followsTitle: the file still carries the name the plugin gave it for t
     expect(followsTitle("Ahornweg 12 alt", "Ahornweg 12", "AW")).toBe(false);
     expect(followsTitle("Ahornweg (2) 12", "Ahornweg 12", "AW")).toBe(false);
     expect(followsTitle("x Ahornweg 12", "Ahornweg 12", "AW")).toBe(false);
+  });
+});
+
+describe("fitsFileName: the title's file name stays within 255 bytes on every platform", () => {
+  it("counts UTF-8 bytes, with `.md` and the longest clash suffix ` (100)`", () => {
+    expect(MAX_FILE_NAME_BYTES).toBe(255);
+    expect(fitsFileName("a".repeat(246))).toBe(true);
+    expect(fitsFileName("a".repeat(247))).toBe(false);
+    expect(fitsFileName("漢".repeat(82))).toBe(true);
+    expect(fitsFileName("漢".repeat(83))).toBe(false);
+    expect(fitsFileName("😀".repeat(61))).toBe(true);
+    expect(fitsFileName("😀".repeat(62))).toBe(false);
+    expect(fitsFileName("ä".repeat(123))).toBe(true);
+    expect(fitsFileName("ä".repeat(124))).toBe(false);
+  });
+
+  it("counts the file name the title gives, not the title as typed", () => {
+    // U+3000 takes three bytes; the file name has a plain space instead.
+    expect(fitsFileName(`${"a".repeat(244)}　b`)).toBe(true);
+    expect(fitsFileName(`  ${"a".repeat(246)}..  `)).toBe(true);
+    expect(fitsFileName(`${"a".repeat(245)}//`)).toBe(true);
+    expect(fitsFileName("...")).toBe(true);
   });
 });

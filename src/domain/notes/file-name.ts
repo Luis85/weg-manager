@@ -1,5 +1,5 @@
 import { isControlCharacter } from "./fields";
-import { clashKey } from "./notes";
+import { MAX_NAME_ATTEMPTS, clashKey, clashName } from "./notes";
 
 /**
  * Characters a file name may not hold on one of the product's platforms (`\ / : * ? " < > |`)
@@ -34,6 +34,26 @@ export const recordFileName = (title: string, fallback: string): string => {
     .replace(/[.\s]+$/, "");
   return cleaned === "" ? fallback : cleaned;
 };
+
+/**
+ * The longest file name, in UTF-8 bytes: the limit of Linux and macOS. Windows counts 255 UTF-16
+ * units, which never come to more bytes, so the limit holds there too.
+ */
+export const MAX_FILE_NAME_BYTES = 255;
+
+/** What a note's file name may have beyond its title's: the longest clash suffix and `.md`. */
+const LONGEST_ADDITION = `${clashName("", MAX_NAME_ATTEMPTS)}.md`;
+
+/**
+ * Whether a record named `title` gets a file name the disk takes, with every clash suffix up to
+ * ` (100)` and `.md`: at most `MAX_FILE_NAME_BYTES` bytes in UTF-8 (PBI-65). It counts the file
+ * name the title gives (`recordFileName`), not the title as typed. A feature checks it at its
+ * title field, so a name that is too long is an issue there, never a failed write; a note that
+ * already has a longer title keeps it.
+ */
+export const fitsFileName = (title: string): boolean =>
+  new TextEncoder().encode(`${recordFileName(title, "")}${LONGEST_ADDITION}`).length <=
+  MAX_FILE_NAME_BYTES;
 
 const CLASH_SUFFIX = / \(([2-9]|[1-9]\d+)\)$/;
 

@@ -163,6 +163,24 @@ describe("updateCommunity", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
+  it.effect("saves a note whose name is too long for a file name, while the name stays", () => {
+    const fixture = communitiesFixture();
+    const long = "漢".repeat(90);
+    return Effect.gen(function* () {
+      const community = yield* loaded(fixture, { name: long });
+      const note = yield* updateCommunity(community, inputOf(community, { kind: "Haus" }));
+      assert.strictEqual(note.path, PATH);
+      assert.strictEqual((yield* stored(PATH)).frontmatter["kind"], "Haus");
+      const error = yield* Effect.flip(
+        updateCommunity(community, inputOf(community, { name: `${long}字` })),
+      );
+      assert.deepStrictEqual(
+        error,
+        new InvalidCommunityError({ issues: [{ key: "name", code: "name.too-long" }] }),
+      );
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
   it.effect("renames the file with the name while it carries the old name", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {

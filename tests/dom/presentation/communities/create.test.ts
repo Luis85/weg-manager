@@ -144,6 +144,17 @@ describe("creating a community", () => {
     expect(await paths(screen)).toEqual([]);
   });
 
+  it("shows a name too long for a file name at its field and writes nothing", async () => {
+    const screen = await openCommunities();
+    await openForm(screen);
+    await fill(screen, { ...VALID, name: "漢".repeat(83) });
+    await save(screen);
+    expect(screen.q("community-form")?.textContent ?? "").toContain(
+      t.issues["name.too-long"]({ key: "name", code: "name.too-long" }, t.fields.name),
+    );
+    expect(await paths(screen)).toEqual([]);
+  });
+
   it("refuses a taken short code and disables a taken colour, saying so in its name", async () => {
     const screen = await openCommunities({
       seed: (notes) =>

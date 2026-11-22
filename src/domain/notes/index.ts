@@ -12,7 +12,7 @@ export {
   type FieldDeclaration,
   type KindIssueCode,
 } from "./fields";
-export { followsTitle, recordFileName } from "./file-name";
+export { MAX_FILE_NAME_BYTES, fitsFileName, followsTitle, recordFileName } from "./file-name";
 export { editedValues, trimmedValues, type FormDraft, type FormInput } from "./form";
 export type {
   DecodedNote,

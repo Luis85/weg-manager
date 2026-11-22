@@ -17,7 +17,7 @@ iteration: ""
 
 # F-25 · Onboarding und Einführung
 
-**Planungsstand:** Angelegt am 22.11.2026 auf Wunsch des Produktverantwortlichen; Konzeptentwurf · **Umfang:** MVP für Einrichtung und Ankunft auf der Lage (PBI-61, PBI-62, PBI-63, PBI-65); Verzeichniseintrag und Hinweise im Kontext (PBI-60, PBI-64) nach dem MVP ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]], O-19a)
+**Planungsstand:** Angelegt am 22.11.2026 auf Wunsch des Produktverantwortlichen; Konzeptentwurf · **Umfang:** MVP für Verzeichniseintrag, Einrichtung und Ankunft auf der Lage (PBI-60 bis PBI-63, PBI-65); Hinweise im Kontext (PBI-64) nach dem MVP ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]], O-19a)
 
 ## Fähigkeit und Ergebnis
 

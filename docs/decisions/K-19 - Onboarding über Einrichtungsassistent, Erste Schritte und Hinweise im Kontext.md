@@ -22,7 +22,7 @@ Die Einzelheiten stehen in [[F-25 - Onboarding und Einführung]], [[FLOW-09 - Er
 
 ## Geltung
 
-Gilt für den ersten Start in einem Vault ohne Gemeinschaft und für die ersten Besuche der Bereiche des Plugins. Der Assistent und die Lage mit „Erste Schritte“ gehören zum MVP, die Hinweise im Kontext und der Eintrag im Community-Verzeichnis folgen danach (siehe O-19a).
+Gilt für den ersten Start in einem Vault ohne Gemeinschaft und für die ersten Besuche der Bereiche des Plugins. Verzeichniseintrag, Assistent und die Lage mit „Erste Schritte“ gehören zum MVP, die Hinweise im Kontext folgen danach (siehe O-19a).
 
 ## Kontext und Begründung
 
@@ -65,7 +65,7 @@ Die Festlegung bleibt im Rahmen von [[K-11 - Lokalen Obsidian-Kern ohne Konto un
 
 Der Produktverantwortliche hat am 22.11.2026 entschieden:
 
-- **O-19a Release:** Einrichtung und Ankunft auf der Lage gehören zum MVP ([[PBI-61 - Beim ersten Aktivieren in die Einrichtung geführt werden]], [[PBI-62 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]], dazu [[PBI-65 - Kürzel einer Gemeinschaft nachträglich ändern]]). Hinweise im Kontext ([[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]) und der Eintrag im Community-Verzeichnis ([[PBI-60 - Plugin im Community-Verzeichnis finden und installieren]]) folgen nach dem MVP.
+- **O-19a Release:** Verzeichniseintrag, Einrichtung und Ankunft auf der Lage gehören zum MVP ([[PBI-60 - Plugin im Community-Verzeichnis finden und installieren]], [[PBI-61 - Beim ersten Aktivieren in die Einrichtung geführt werden]], [[PBI-62 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]], dazu [[PBI-65 - Kürzel einer Gemeinschaft nachträglich ändern]]). Hinweise im Kontext ([[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]) folgen nach dem MVP. Der Verzeichniseintrag gehört ins MVP, weil die Veröffentlichung Voraussetzung für den Pilot ist ([[K-12 - Veröffentlichen vor dem Produktpilot]], AT-B14).
 - **O-19b Speicherort:** je Gerät. Auf einem zweiten Gerät erscheinen Hinweise einmal erneut; das ist harmlos, weil sie nicht blockieren, und vermeidet Sync-Konflikte in den Plugin-Daten.
 - **O-19c Ablageordner:** im Assistenten nur angezeigt. Ändern lässt er sich später in den Plugin-Einstellungen von Obsidian, als technische Einstellung an einem Ort ([[PBI-49 - Eine Einstellung hat genau einen Bearbeitungsort]]).
 - **Tour:** keine, auch nicht als Befehl. Es bleiben „Hinweise erneut zeigen“ und die Hilfe.

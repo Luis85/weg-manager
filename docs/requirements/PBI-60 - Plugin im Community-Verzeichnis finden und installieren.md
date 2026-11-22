@@ -5,7 +5,7 @@ order: 89000
 actors:
   - "[[ACT-01-Beirat]]"
   - "[[ACT-05-Obsidian]]"
-release: ""
+release: "[[MVP - Beirat Support]]"
 status: ""
 started: ""
 finished: ""
@@ -33,7 +33,7 @@ triage: ""
 
 # PBI-60 · Plugin im Community-Verzeichnis finden und installieren
 
-**Planungsstand:** Konzeptentwurf · **Umfang:** nach dem MVP, siehe [[F-25 - Onboarding und Einführung]]
+**Planungsstand:** Konzeptentwurf · **Umfang:** MVP, siehe [[F-25 - Onboarding und Einführung]]
 
 ## User Story
 
@@ -58,4 +58,4 @@ Schritt 1 des Ablaufs aus [[F-25 - Onboarding und Einführung]]. Plattformbefund
 
 ## Kommentare
 
-- 22.11.2026: Der Produktverantwortliche ordnet den Verzeichniseintrag nach dem MVP ein ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]], O-19a). Für den Pilot vor der Veröffentlichung gilt [[K-12 - Veröffentlichen vor dem Produktpilot]]; die Abnahme AT-B14 ist mit dieser Reihenfolge abzugleichen.
+- 22.11.2026: Der Produktverantwortliche ordnet den Verzeichniseintrag dem MVP zu, weil die Veröffentlichung Voraussetzung für den Pilot ist ([[K-12 - Veröffentlichen vor dem Produktpilot]], Abnahme AT-B14; [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]], O-19a).

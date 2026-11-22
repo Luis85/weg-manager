@@ -190,9 +190,9 @@ export const vaultFacts = async (
     // and a plain `---` on line 4.
     // Their events are left out: whether a file's index or the next create comes first varies.
     createClosings: await (async () => {
-      for (const [index, closing] of input.closings.entries()) {
-        await app.vault.create(`A/close-${index}.md`, closing);
-      }
+      await Promise.all(
+        input.closings.map((closing, index) => app.vault.create(`A/close-${index}.md`, closing)),
+      );
       await settle();
       return input.closings.length;
     })(),

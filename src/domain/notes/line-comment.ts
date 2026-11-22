@@ -23,6 +23,27 @@ const QUOTED: Readonly<Record<string, RegExp>> = {
 const PROPERTY = /^[!&][^ \t]*/;
 
 /**
+ * The length of what `rest` starts with where a value starts: quoted text, a tag or an anchor;
+ * `0` for anything else, `undefined` for quotes that do not close on the line.
+ */
+const valueToken = (rest: string): number | undefined => {
+  const quoted = QUOTED[rest.charAt(0)];
+  if (quoted !== undefined) return quoted.exec(rest)?.[0].length;
+  return PROPERTY.exec(rest)?.[0].length ?? 0;
+};
+
+/** The comment that starts at `index` with the blanks before it, if a `#` there starts one. */
+const commentAt = (value: string, index: number): string | undefined =>
+  value.charAt(index) === "#" && isBlank(value.charAt(index - 1))
+    ? value.slice(value.slice(0, index).search(/[ \t]+$/))
+    : undefined;
+
+const isFlowStart = (character: string): boolean => character === "[" || character === "{";
+
+/** Inside `[…]` or `{…}`, a value may start after these. */
+const opensValue = (character: string): boolean => character === "," || character === ":";
+
+/**
  * The comment at the end of `value`, the text of a key line after the key's colon, with the
  * blanks before it (` # Art`); `""` when it has none.
  *
@@ -30,31 +51,18 @@ const PROPERTY = /^[!&][^ \t]*/;
  * YAML allows nothing but a comment on the line, so the scan need not count brackets.
  */
 export const lineComment = (value: string): string => {
-  /** Where the blanks before the current character start. */
-  let blanks = 0;
   let inFlow = false;
   /** Whether a value may start here, so a quote opens quoted text. */
   let valueStart = true;
   for (let index = 0; index < value.length; index += 1) {
     const character = value.charAt(index);
-    if (isBlank(character)) {
-      if (!isBlank(value.charAt(index - 1))) blanks = index;
-      continue;
-    }
-    if (character === "#" && isBlank(value.charAt(index - 1))) return value.slice(blanks);
-    const quoted = valueStart ? QUOTED[character] : undefined;
-    const property = valueStart ? PROPERTY.exec(value.slice(index)) : null;
-    if (quoted !== undefined) {
-      const text = quoted.exec(value.slice(index));
-      if (text === null) return "";
-      index += text[0].length - 1;
-    } else if (property !== null) {
-      index += property[0].length - 1;
-    } else if (valueStart && (character === "[" || character === "{")) {
-      inFlow = true;
-    } else {
-      valueStart = inFlow && (character === "," || character === ":");
-    }
+    const comment = commentAt(value, index);
+    if (comment !== undefined) return comment;
+    const token = valueStart ? valueToken(value.slice(index)) : 0;
+    if (token === undefined) return "";
+    if (token > 0) index += token - 1;
+    else if (valueStart && isFlowStart(character)) inFlow = true;
+    else if (!isBlank(character)) valueStart = inFlow && opensValue(character);
   }
   return "";
 };

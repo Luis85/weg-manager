@@ -371,19 +371,26 @@ describe("updateNoteText on generated notes", () => {
         // new value (`key: …`) or kept as it was (a value that did not change); a removed one
         // takes it along.
         const headLines = head.split(eol);
-        for (const [key, form, blanks] of entries) {
+        const commented = entries.filter(
+          ([key, form, blanks]) => commentOf(key, form, blanks) !== "",
+        );
+        const fate = (key: string) => {
+          if (Object.hasOwn(patch.set, key)) return "kept";
+          return remove.includes(key) ? "gone" : "untouched";
+        };
+        const seen = commented.map(([key, form, blanks]) => {
           const comment = commentOf(key, form, blanks);
-          if (comment === "") continue;
-          const lines = headLines.filter((line) => line.includes(comment));
-          if (Object.hasOwn(patch.set, key)) {
-            const [first] = entryText(key, form, blanks).split("\n");
-            expect(lines).toHaveLength(1);
-            expect(lines[0]?.endsWith(comment)).toBe(true);
-            expect(lines[0]?.startsWith(`${key}:`) === true || lines[0] === first).toBe(true);
-          } else if (remove.includes(key)) {
-            expect(lines).toEqual([]);
-          }
-        }
+          const found = headLines.filter((line) => line.includes(comment));
+          const [first] = entryText(key, form, blanks).split("\n");
+          const [line] = found;
+          const kept =
+            found.length === 1 &&
+            line?.endsWith(comment) === true &&
+            (line.startsWith(`${key}:`) || line === first);
+          if (kept) return fate(key) === "untouched" ? "untouched" : "kept";
+          return found.length === 0 ? "gone" : "misplaced";
+        });
+        expect(seen).toEqual(commented.map(([key]) => fate(key)));
       }),
       { numRuns: GENERATED_NOTES },
     );

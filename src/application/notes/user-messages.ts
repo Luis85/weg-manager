@@ -1,11 +1,6 @@
-import type { AppError } from "../errors";
 import type { UserMessage } from "../shell";
-import { NOTES_ERROR_TAGS, type NotesError } from "./errors";
+import type { NotesError } from "./errors";
 import type { NotesCatalog } from "./i18n/catalog";
-
-/** True for an error of the notes module; `describeError` narrows with it. */
-export const isNotesError = (error: AppError): error is NotesError =>
-  NOTES_ERROR_TAGS.has(error._tag);
 
 /** The text of a notes error. `describeError` (`src/application/user-messages.ts`) hands it here. */
 export const describeNotesError = (error: NotesError, messages: NotesCatalog): UserMessage => {

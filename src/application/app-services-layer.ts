@@ -1,7 +1,8 @@
 import { Layer } from "effect";
 import type { AppServices } from "./app-services";
-import { communitySelectionLayer } from "./communities";
 import { messagesLayer } from "./messages";
+import { servicesLayerOf } from "./module";
+import { APP_MODULES } from "./modules";
 import { appNoteTypes } from "./note-types";
 import {
   noteIndexLayer,
@@ -66,8 +67,9 @@ export type AppServicesOptions = LoggerOptions & {
 /**
  * Every application service of one load, built from the host's adapters (ADR 0006): the shell's
  * services first (settings, then the logger on them, the event bus), the notes module's on them,
- * the feature modules' on both, the host event adapter last. Typed `Layer<AppServices>`: a module
- * service that is missing or needs a service built after it fails typecheck here, in one place.
+ * the feature modules' Layers from their manifests on both, the host event adapter last. Typed
+ * `Layer<AppServices>`: a feature service that needs a service no module built before it fails
+ * typecheck here, in one place.
  */
 export const appServicesLayer = (
   adapters: AppAdapters,
@@ -92,6 +94,6 @@ export const appServicesLayer = (
       ),
     ),
   );
-  const features = communitySelectionLayer.pipe(Layer.provideMerge(notes));
+  const features = servicesLayerOf(APP_MODULES).pipe(Layer.provideMerge(notes));
   return adapters.hostEvents.pipe(Layer.provideMerge(features));
 };

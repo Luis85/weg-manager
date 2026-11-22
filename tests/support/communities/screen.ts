@@ -38,11 +38,8 @@ export const closeAll = async () => {
 /** Waits until `check` passes: the index follows a write after its batch delay. */
 const until = (check: () => void) => vi.waitFor(check, { timeout: 2000, interval: 20 });
 
-/** The test id each settings section's root carries. */
-const SECTION_SCREENS: Readonly<Record<SettingsSection, string>> = {
-  communities: "communities-screen",
-  "data-issues": "data-issues-screen",
-};
+/** The test id a settings section's root carries: `<section id>-screen`. */
+const sectionScreen = (section: SettingsSection) => `${section}-screen`;
 
 /**
  * The app on a section of the settings screen over the in-memory store, with handles to drive it:
@@ -61,7 +58,7 @@ export const openSettings = async (section: SettingsSection, options: ScreenOpti
   // The screen and its section are lazily loaded components: wait until they are there.
   await vi.waitFor(
     () => {
-      if (root.querySelector(`[data-testid=${SECTION_SCREENS[section]}]`) === null)
+      if (root.querySelector(`[data-testid=${sectionScreen(section)}]`) === null)
         throw new Error("no screen");
     },
     { timeout: 5000, interval: 10 },

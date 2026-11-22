@@ -1,5 +1,7 @@
 import type { Component } from "vue";
 import type { Catalog } from "../../application/messages";
+import type { AppModuleName } from "../../application/modules";
+import type { Route, RouteNameOf, SectionIdOf } from "../../application/routes";
 import {
   historyAt,
   stepBack,
@@ -35,6 +37,23 @@ export type SettingsSectionPart = {
   readonly label: (catalog: Catalog) => string;
   readonly component: ScreenLoader;
   readonly badge?: ScreenLoader;
+};
+
+/**
+ * What module `Name` adds to every view (ADR 0006, amendment 2026-11-22): the screen of each route
+ * its manifest adds (the shell's: the settings screen), the part of each settings section it adds,
+ * its entries in the frame's navigation and what it puts into the frame's context area. A module
+ * writes it in its `screens.ts`, which code at plugin load imports: it loads its components only
+ * through `import()`, so it evaluates no Vue. Typecheck fails while a route or a section of the
+ * module's manifest has no part here, or a part has no route or section.
+ */
+export type ModuleScreens<Name extends AppModuleName> = {
+  readonly screens: { readonly [RouteName in RouteNameOf<Name>]: ScreenLoader };
+  readonly sections: {
+    readonly [Section in SectionIdOf<Name>]: SettingsSectionPart;
+  };
+  readonly menu?: readonly MenuEntry<Route>[];
+  readonly context?: ScreenLoader;
 };
 
 /**

@@ -75,7 +75,7 @@ export type NotesError =
   | NoteIndexReadError;
 
 /** One key per member of `NotesError`; typecheck fails while one is missing or extra. */
-const NOTES_ERROR_TAG_KEYS = {
+export const NOTES_ERROR_TAG_KEYS = {
   NoteNotFoundError: true,
   NotePathTakenError: true,
   InvalidNoteNameError: true,
@@ -86,5 +86,3 @@ const NOTES_ERROR_TAG_KEYS = {
   NoteWriteRefusedError: true,
   NoteIndexReadError: true,
 } satisfies Record<NotesError["_tag"], true>;
-
-export const NOTES_ERROR_TAGS: ReadonlySet<string> = new Set(Object.keys(NOTES_ERROR_TAG_KEYS));

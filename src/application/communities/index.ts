@@ -15,7 +15,6 @@ export {
 export { COMMUNITY_SETTINGS, CommunitiesRoute } from "./routes";
 export {
   CommunitySelectionService,
-  SELECTION_KEY,
   communitySelection,
   communitySelectionChanges,
   communitySelectionLayer,

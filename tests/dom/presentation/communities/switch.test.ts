@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { SELECTION_KEY } from "../../../../src/application/communities";
+import { SELECTION_KEY } from "../../../../src/application/communities/selection";
 import { de } from "../../../../src/application/messages";
 import { DeviceStore } from "../../../../src/application/shell";
 import { appSurface } from "../../../../src/presentation/app-surface";

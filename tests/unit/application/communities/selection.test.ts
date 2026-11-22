@@ -2,12 +2,12 @@ import { assert, describe, expect, it } from "@effect/vitest";
 import { Effect, Fiber, Stream } from "effect";
 import {
   CommunitySelectionService,
-  SELECTION_KEY,
   communitySelection,
   communitySelectionChanges,
   selectCommunity,
   type CommunitySelection,
 } from "../../../../src/application/communities";
+import { SELECTION_KEY } from "../../../../src/application/communities/selection";
 import { NoteStore } from "../../../../src/application/notes";
 import { DeviceStore } from "../../../../src/application/shell";
 import {

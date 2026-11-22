@@ -20,7 +20,7 @@ export const communitiesEn: CommunitiesCatalog = {
     removeLabel: (name) => `Delete ${name}`,
     readOnly: "Read-only",
     selected: "Current",
-    summary: (kind, unitLabel) => `${kind} · counted in ${unitLabel}`,
+    summary: (kind, unitLabel) => `${kind} (${unitLabel})`,
     otherNotes: "Other WEG Manager notes",
     openNote: "Open in Obsidian",
     openNoteLabel: (name) => `Open ${name} in Obsidian`,

@@ -19,7 +19,7 @@ export const communitiesDe: CommunitiesCatalog = {
     removeLabel: (name) => `${name} löschen`,
     readOnly: "Schreibgeschützt",
     selected: "Aktuell",
-    summary: (kind, unitLabel) => `${kind} · Einheiten: ${unitLabel}`,
+    summary: (kind, unitLabel) => `${kind} (${unitLabel})`,
     otherNotes: "Andere Notizen von WEG Manager",
     openNote: "In Obsidian öffnen",
     openNoteLabel: (name) => `${name} in Obsidian öffnen`,

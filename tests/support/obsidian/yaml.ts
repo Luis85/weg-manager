@@ -93,7 +93,7 @@ const entryAt = (lines: readonly string[], index: number) => {
 
 /** Like Obsidian's `parseYaml`: `null` for empty text, else the map. */
 export const parseYaml = (yaml: string): Record<string, unknown> | null => {
-  const lines = yaml.split("\n").filter((line) => line.trim() !== "" && !/^\s*#/.test(line));
+  const lines = yaml.split(/\r?\n/).filter((line) => line.trim() !== "" && !/^\s*#/.test(line));
   if (lines.length === 0) return null;
   const result: Record<string, unknown> = {};
   for (let index = 0; index < lines.length;) {

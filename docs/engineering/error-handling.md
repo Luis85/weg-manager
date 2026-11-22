@@ -16,7 +16,7 @@ The user never sees a stack trace, a path, a raw `error.message` or note content
 1. Add a `Schema.TaggedError` class to the module's `errors.ts` (for the notes module `src/application/notes/errors.ts`) and add it to the module's error union (`NotesError`) and tag set (`NOTES_ERROR_TAGS`). `AppError` (`src/application/errors.ts`) is the union of the modules' unions.
 2. The module's describer is exhaustive over `_tag`, so typecheck now fails until you add the new case to it (`describeNotesError` in `src/application/notes/user-messages.ts`). Its title and detail go into the module's catalog type (`NotesCatalog` in `src/application/notes/i18n/catalog.ts`) and into both `de.ts` and `en.ts`; typecheck fails until both have them. A new module's error union joins `AppError`, its guard (`isNotesError`) and describer join `describeError` (`src/application/user-messages.ts`); the shell's describer (`describeShellError`) is the fallback there.
 3. Add a test for the exact German text (and the English one where it matters): `tests/unit/application/notes/user-messages.test.ts` for the notes module, `tests/unit/application/shell/user-messages.test.ts` for the shell, `tests/unit/application/communities/i18n.test.ts` for communities. The first two also hold the property test against leaks, which runs for both catalogs.
-4. Return the error from the port or service that can fail. Components get it in `.error` and `.message` of `useQuery(...)` or `useCommand(...)`. A command that fails after its view closed shows the message as a notice.
+4. Return the error from the port or service that can fail. Components get it in `.error` and `.message` of `useQuery(...)` or `useCommand(...)` for the template, and as the outcome `run` resolves to: `{ _tag: "success", value }`, `{ _tag: "failure", error, message }`, `{ _tag: "defect" }` (already reported) or `{ _tag: "interrupted" }`. Code that goes on after `await run(...)` decides on the outcome, never on the refs (a defect leaves `error` empty, too). A run clears `value`, `error` and `message` when it starts. A command that fails after its view closed shows the message as a notice.
 
 ## Writing a message
 
@@ -40,6 +40,8 @@ Every boundary catches defects and calls `reportDefect`, once:
 - the Vue `errorHandler` of each surface;
 - the host event adapter (`hostEventsLayer`) and the note index's builds and batches;
 - unload (`reportUnloadFailure`, used when the runtime itself is gone).
+
+The boundaries that end an effect (commands, the host event adapter, `useQuery`, `useCommand`, `useStream`) share one policy for a cause they did not expect: `reportUnexpected(cause)` (`src/application/shell/defects.ts`) stays silent for an interruption and reports anything else once, squashed to one value (`Cause.squash`). `Effect.catchCause(reportUnexpected)` guards an effect; the presentation runtime runs it on a run's `Exit`.
 
 `reportDefect` logs `defect.reported` at `error` level with the cause as a `LoggedError` (`toLoggedError`, see Logging) and a six-character incident id (0–9, A–Z), then notifies `describeDefect(id, messages)`. An interruption, for example an unload during a pending action, is not a defect and stays silent.
 

@@ -146,7 +146,11 @@ const typed = (key: CommunityKey, change: (value: string) => void, value: string
 
 const submit = () => form.handleSubmit();
 
-/** Takes the user's choice per field and saves again against the note's current values. */
+/**
+ * Takes the user's choice per field and saves again against the note's current values. The
+ * choice is settled once applied: a chosen value that breaks a rule (an emptied property) stays in
+ * an editable form with its field's issue, and the next save goes against the same note values.
+ */
 const resolve = (choices: ConflictChoices) => {
   const next: Record<string, unknown> = { ...base.value };
   for (const conflict of conflicts.value ?? []) {
@@ -157,6 +161,7 @@ const resolve = (choices: ConflictChoices) => {
     }
   }
   base.value = next;
+  conflicts.value = undefined;
   void submit();
 };
 

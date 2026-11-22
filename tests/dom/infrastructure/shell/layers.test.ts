@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { afterEach, vi } from "vitest";
 import {
   Clipboard,
@@ -11,21 +11,28 @@ import {
 vi.mock("obsidian", () => import("@test/obsidian"));
 
 const { createTestPlugin, Plugin, recordedNotices } = await import("@test/obsidian");
-const { obsidianLayer, NOTICE_DURATION } =
+const { shellAdapters, NOTICE_DURATION } =
   await import("../../../../src/infrastructure/obsidian/shell/layers");
 
 class Bare extends Plugin {}
 
 const setup = (options: { data?: unknown; failLoadData?: boolean } = {}) => {
   const { plugin, registry, app } = createTestPlugin(Bare, options);
-  return { plugin, registry, app, layer: obsidianLayer(plugin as never, "de") };
+  const adapters = shellAdapters(plugin as never);
+  const layer = Layer.mergeAll(
+    adapters.settingsStore,
+    adapters.notifier,
+    adapters.clipboard,
+    adapters.hostInfo,
+  );
+  return { plugin, registry, app, layer };
 };
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("obsidianLayer", () => {
+describe("shellAdapters", () => {
   it.effect("saves through plugin.saveData", () => {
     const { registry, layer } = setup();
     return Effect.gen(function* () {

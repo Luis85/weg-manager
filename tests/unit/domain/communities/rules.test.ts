@@ -3,6 +3,7 @@ import {
   colorsInUse,
   communityValues,
   duplicateShortCodes,
+  editedValues,
   normalizeShortCode,
   validateCommunity,
   type CommunityInput,
@@ -52,6 +53,41 @@ describe("communityValues: what a form saves", () => {
       color: undefined,
       kind: undefined,
       unit_label: undefined,
+    });
+  });
+});
+
+describe("editedValues: what an edit saves", () => {
+  const LOADED = {
+    schema: "weg-manager.community/v1",
+    id: "community-3f2b8c1e-7a44-4d0b-9c2e-5b1f0a6d9e21",
+    name: "Ahornweg 12 ",
+    short_code: "AW",
+    color: "teal",
+    kind: " WEG",
+    unit_label: "Einheiten",
+  };
+
+  it("keeps a valid field as written while its input is the loaded text", () => {
+    const input = { ...INPUT, name: "Ahornweg 12 ", kind: "Haus " };
+    expect(editedValues(input, LOADED)).toEqual({ ...INPUT, name: "Ahornweg 12 ", kind: "Haus" });
+  });
+
+  it("makes every changed field what a form saves", () => {
+    const input = { ...INPUT, name: " Ahornweg 14 ", kind: " WEG " };
+    expect(editedValues(input, LOADED)).toEqual({ ...INPUT, name: "Ahornweg 14" });
+  });
+
+  it("repairs a broken field even when its input is the loaded text", () => {
+    const loaded = { ...LOADED, short_code: "aw", unit_label: "  " };
+    const input = { ...INPUT, short_code: "aw", unit_label: "  " };
+    expect(editedValues(input, loaded)).toEqual({ ...INPUT, unit_label: undefined });
+  });
+
+  it("reads a value of another kind as no text to keep", () => {
+    expect(editedValues({ ...INPUT, unit_label: "12" }, { ...LOADED, unit_label: 12 })).toEqual({
+      ...INPUT,
+      unit_label: "12",
     });
   });
 });

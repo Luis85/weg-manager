@@ -11,7 +11,13 @@ import {
 } from "../shell";
 import { NoteIndexReadError } from "./errors";
 import { awaitReady, collectBatch, forwardTo, type Command } from "./index-batches";
-import { contentsOf, entryOf, sameNotes, unindexedEntry, type Entry } from "./index-state";
+import {
+  contentsOf,
+  trackedNoteOf,
+  sameNotes,
+  trackedUnindexed,
+  type TrackedNote,
+} from "./index-state";
 import {
   NoteIndex,
   type IndexStatus,
@@ -20,7 +26,7 @@ import {
   type NoteTypeRegistry,
   type UnindexedSnapshot,
 } from "./note-index";
-import { isInFolder } from "./paths";
+import { isInFolder } from "./folders";
 import { NoteStore } from "./ports";
 
 const EMPTY = { ready: false, failure: undefined, notes: [] } as const;
@@ -71,7 +77,7 @@ export const noteIndexLayer = (registry: NoteTypeRegistry) =>
       }
       const unindexedRef = yield* SubscriptionRef.make<UnindexedSnapshot>(EMPTY);
       const queue = yield* Effect.acquireRelease(Queue.unbounded<Command>(), Queue.shutdown);
-      let entries = new Map<string, Entry>();
+      let trackedByPath = new Map<string, TrackedNote>();
       let status: IndexStatus = { ready: false, failure: undefined };
 
       const failed = () => {
@@ -79,7 +85,7 @@ export const noteIndexLayer = (registry: NoteTypeRegistry) =>
       };
 
       const publish = Effect.gen(function* () {
-        const contents = contentsOf(types, entries.values());
+        const contents = contentsOf(types, trackedByPath.values());
         for (const [name, ref] of refs) {
           yield* publishTo(ref, status, contents.records.get(name) ?? []);
         }
@@ -96,35 +102,38 @@ export const noteIndexLayer = (registry: NoteTypeRegistry) =>
           return yield* publish;
         }
         const [listed, broken] = read.success;
-        const next = new Map<string, Entry>();
+        const next = new Map<string, TrackedNote>();
         for (const note of listed) {
-          const entry = entryOf(types, note, entries.get(note.path));
-          if (entry !== undefined) next.set(note.path, entry);
+          const tracked = trackedNoteOf(types, note, trackedByPath.get(note.path));
+          if (tracked !== undefined) next.set(note.path, tracked);
         }
-        for (const path of broken) next.set(path, unindexedEntry(path, UNREADABLE));
-        entries = next;
+        for (const path of broken) next.set(path, trackedUnindexed(path, UNREADABLE));
+        trackedByPath = next;
         status = { ready: true, failure: undefined };
         yield* publish;
-        const records = [...next.values()].filter((entry) => entry.kind === "record").length;
+        const records = [...next.values()].filter((tracked) => tracked.kind === "record").length;
         const data = { records, unindexed: next.size - records };
         yield* logger.log({ level: "info", event: "notes.index.built", data });
       });
 
       /**
-       * Reads one path again and replaces its entry, or removes it when the note is gone or no
-       * record. Says whether the read failed, and whether the note may be an unreadable one.
+       * Reads one path again and replaces the note tracked there, or drops it when the note is gone
+       * or no record. Says whether the read failed, and whether the note may be an unreadable one.
        */
       const reread = (path: string, rootFolder: string) =>
         Effect.map(Effect.result(store.read(path)), (read) => {
           if (Result.isFailure(read)) {
             const gone = read.failure._tag === "NoteNotFoundError";
-            if (gone) entries.delete(path);
+            if (gone) trackedByPath.delete(path);
             return { failed: !gone, candidate: false };
           }
-          const entry = entryOf(types, read.success, entries.get(path));
-          if (entry === undefined) entries.delete(path);
-          else entries.set(path, entry);
-          return { failed: false, candidate: entry === undefined && isInFolder(path, rootFolder) };
+          const tracked = trackedNoteOf(types, read.success, trackedByPath.get(path));
+          if (tracked === undefined) trackedByPath.delete(path);
+          else trackedByPath.set(path, tracked);
+          return {
+            failed: false,
+            candidate: tracked === undefined && isInFolder(path, rootFolder),
+          };
         });
 
       /** Marks the candidates that `unreadable` lists; how many could not be checked. */
@@ -133,7 +142,7 @@ export const noteIndexLayer = (registry: NoteTypeRegistry) =>
           if (Result.isFailure(broken)) return candidates.length;
           const unreadable = new Set(broken.success);
           for (const path of candidates.filter((candidate) => unreadable.has(candidate))) {
-            entries.set(path, unindexedEntry(path, UNREADABLE));
+            trackedByPath.set(path, trackedUnindexed(path, UNREADABLE));
           }
           return 0;
         });

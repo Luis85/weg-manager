@@ -88,6 +88,32 @@ describe("deleting a community", () => {
     screen.notes.releaseWrites();
     await screen.until(() => expect(screen.q("delete-dialog")).toBeUndefined());
   });
+
+  it("keeps a delete cancelled while it runs out of the next community's dialog", async () => {
+    const screen = await openCommunities({ seed: TWO });
+    await screen.click(screen.button("Ahornweg 12 löschen"));
+    screen.notes.holdWrites();
+    await screen.click(screen.q("delete-confirm"));
+    await screen.click(screen.button("Abbrechen"));
+    await screen.click(screen.button("Tiefgarage löschen"));
+    const dialog = () => screen.root.querySelector("[role=dialog]");
+    expect(dialog()?.textContent).toContain("„Tiefgarage“ kommt in den Papierkorb");
+    expect((screen.q("delete-confirm") as HTMLButtonElement).disabled).toBe(false);
+    screen.notes.releaseWrites();
+    await screen.until(() => expect(screen.names()).toEqual(["Tiefgarage"]));
+    expect(dialog()?.textContent).toContain("„Tiefgarage“ kommt in den Papierkorb");
+  });
+
+  it("shows no earlier community's failure in the next dialog", async () => {
+    const screen = await openCommunities({ seed: TWO });
+    await screen.click(screen.button("Ahornweg 12 löschen"));
+    await screen.runtime.runPromise(NoteStore.use((store) => store.trash(`${FOLDER}/A.md`)));
+    await screen.click(screen.q("delete-confirm"));
+    expect(screen.root.querySelector("[role=dialog] [role=alert]")).not.toBeNull();
+    await screen.click(screen.button("Abbrechen"));
+    await screen.click(screen.button("Tiefgarage löschen"));
+    expect(screen.root.querySelector("[role=dialog] [role=alert]")).toBeNull();
+  });
 });
 
 describe("the community switch", () => {
@@ -158,5 +184,36 @@ describe("the community switch", () => {
       ["AW Ahornweg 12", "false"],
       ["TG Tiefgarage", "true"],
     ]);
+  });
+
+  it("marks the selected option with a check mark, not by colour alone", async () => {
+    const screen = await openCommunities({ seed: TWO });
+    const checks = () =>
+      options(screen.root).map(
+        (button) => button.querySelector("[data-testid=community-option-check]") !== null,
+      );
+    expect(checks()).toEqual([false, false]);
+    await screen.click(options(screen.root)[1]);
+    expect(checks()).toEqual([false, true]);
+    const check = options(screen.root)[1]?.querySelector("[data-testid=community-option-check]");
+    expect(check?.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("gives each option its full name as title, so a name cut off in the column stays readable", async () => {
+    const long = "Wohnungseigentümergemeinschaft Ahornweg 12–16 und Birkenallee 3, Vorderhaus";
+    const screen = await openCommunities({
+      seed: (notes) => {
+        TWO(notes);
+        notes.seed(`${FOLDER}/L.md`, communityNote(3, { name: long, short_code: "WEG" }));
+      },
+    });
+    expect(options(screen.root).map((button) => button.title)).toEqual([
+      "Ahornweg 12",
+      "Tiefgarage",
+      long,
+    ]);
+    const name = options(screen.root)[2]?.querySelector("[data-testid=community-option-name]");
+    expect(name?.classList.contains("wm:truncate")).toBe(true);
+    expect(name?.classList.contains("wm:min-w-0")).toBe(true);
   });
 });

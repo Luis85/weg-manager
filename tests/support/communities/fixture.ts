@@ -1,7 +1,8 @@
 import { Duration, Effect, Layer } from "effect";
 import { TestClock } from "effect/testing";
 import { communitySelectionLayer } from "../../../src/application/communities";
-import { INDEX_BATCH_QUIET, NoteStore } from "../../../src/application/notes";
+import { NoteStore } from "../../../src/application/notes";
+import { INDEX_BATCH_QUIET } from "../../../src/application/notes/index-batches";
 import { DeviceStore, type DeviceValue } from "../../../src/application/shell";
 import { communityType } from "../../../src/domain/communities";
 import { sequentialIdGenerator } from "../../../src/infrastructure/memory/notes";

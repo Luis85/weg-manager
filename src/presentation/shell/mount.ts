@@ -3,6 +3,7 @@ import { createApp, h, type Component } from "vue";
 import type { AppRuntime } from "../../application/app-services";
 import type { RouteLike } from "../../application/shell";
 import ShellApp from "./components/ShellApp.vue";
+import { keepIconsOffline } from "./icons-offline";
 import { provideRouting } from "./navigation";
 import { releaseAll } from "./release";
 import type { SurfaceDefinition, ViewNavigation } from "./routing";
@@ -53,6 +54,7 @@ export const mountSurface = <R extends RouteLike>(
   };
   provideRuntime(app, runtime);
   releases.push(provideRouting(app, options.surface, options.navigation));
+  keepIconsOffline();
   app.use(ui);
   // Attach first, so floating UI and focus handling measure a connected element on mount.
   root.append(host, portal);

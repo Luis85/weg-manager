@@ -18,6 +18,8 @@
   ],
   "rules": {
     "no-console": "error",
+    "eqeqeq": "error",
+    "typescript/no-non-null-assertion": "error",
     "no-underscore-dangle": [
       "error",
       {

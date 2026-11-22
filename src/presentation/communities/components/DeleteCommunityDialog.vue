@@ -8,6 +8,8 @@ import { ErrorNotice, useCommand, useMessages } from "../../shell";
 /**
  * Asks before a community's note goes to Obsidian's trash (PBI-56). The delete runs as a command:
  * it completes even if the view closes, and the dialog stays open with the reason if it fails.
+ * The screen mounts one dialog per community, so a delete cancelled while it runs ends as
+ * `useCommand` ends a run after its scope: silent on success, a notice on failure.
  */
 const props = defineProps<{ community: Community | undefined }>();
 const emit = defineEmits<{ close: [] }>();

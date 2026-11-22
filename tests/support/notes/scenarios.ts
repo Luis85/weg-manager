@@ -142,6 +142,45 @@ export const vaultFacts = async (
         fm["a"] = 1;
       }),
     ),
+    // An update writes through `vault.process`, which hands over and writes the file's own text:
+    // a BOM and CRLF included. `vault.read` drops the BOM; the metadata cache reads past it.
+    createBom: await step(async () => {
+      await app.vault.create("A/bom.md", "\uFEFF---\r\na: 1\r\n---\r\nbody\r\n");
+    }),
+    bomCache: app.metadataCache.getFileCache(file("A/bom.md"))?.frontmatter,
+    bomRead: (await text("A/bom.md")).slice(0, 4),
+    processBom: await step(async () => {
+      let seen = "";
+      const written = await app.vault.process(file("A/bom.md"), (data) => {
+        seen = data;
+        return data.replace("a: 1", "a: 2");
+      });
+      return [seen, written];
+    }),
+    processThrows: await step(() =>
+      app.vault.process(file("A/bom.md"), () => {
+        throw new TypeError("stop");
+      }),
+    ),
+    createGone: await step(async () => {
+      await app.vault.create("A/gone.md", "x");
+    }),
+    // A note deleted after it was looked up: `process` rejects without calling back.
+    processGone: await step(async () => {
+      const gone = file("A/gone.md");
+      await app.fileManager.trashFile(gone);
+      let called = false;
+      try {
+        await app.vault.process(gone, (data) => {
+          called = true;
+          return data;
+        });
+      } catch (error) {
+        const { message } = error as Error;
+        return { rejected: message.startsWith("ENOENT") ? "ENOENT" : message, called };
+      }
+      return { rejected: null, called };
+    }),
     renameOntoFile: await step(() => app.fileManager.renameFile(file("A/plain.md"), "A/n.md")),
     renameIntoMissingFolder: await step(() =>
       app.fileManager.renameFile(file("A/plain.md"), "Fehlt/plain.md"),

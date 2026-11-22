@@ -46,6 +46,8 @@ export const notesDe: NotesCatalog = {
           "Die „id“ der Notiz hat sich inzwischen geändert, sie ist also nicht mehr derselbe Datensatz. Öffne die Notiz erneut.",
         "migration-failed":
           "Die Notiz ließ sich nicht auf die aktuelle Schemaversion umstellen. Prüfe ihre Eigenschaften in Obsidian.",
+        layout:
+          "Die Eigenschaften der Notiz sind so geschrieben, dass WEG Manager sie nicht ändern kann, ohne auch andere Zeilen zu ändern. Schreibe in Obsidian jede Eigenschaft als eigene Zeile „schlüssel: wert“ zwischen zwei Zeilen „---“ und speichere dann erneut.",
       },
     },
     indexRead: {

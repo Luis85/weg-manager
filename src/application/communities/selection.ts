@@ -1,5 +1,10 @@
 import { Context, Effect, Equal, Layer, Semaphore, Stream, SubscriptionRef } from "effect";
-import { communityType, selectedCommunity, type CommunityFields } from "../../domain/communities";
+import {
+  communityType,
+  isCommunityChoice,
+  selectedCommunity,
+  type CommunityFields,
+} from "../../domain/communities";
 import { NoteIndex, type NoteSnapshot } from "../notes";
 import { DeviceStore } from "../shell";
 
@@ -46,9 +51,10 @@ const derive = (stored: unknown, snapshot: NoteSnapshot<CommunityFields>): Commu
 /**
  * The selection over the note index and the device store. It follows the index's communities and
  * applies the rule (`selectedCommunity`) to each snapshot. A community the rule selects by itself
- * (the only one) is stored too, once the index has read the vault without a failure, so adding a
- * second community keeps it selected. A stored community that is gone stays stored: it counts
- * again if its note comes back, as after Sync.
+ * (the only one) is stored too when no community's id is stored, once the index has read the vault
+ * without a failure, so adding a second community keeps it selected. A stored community that is
+ * gone stays stored, also while the rule selects another: it counts again if its note comes back,
+ * as after Sync. Only the user's choice (`select`) replaces it.
  */
 export const communitySelectionLayer = Layer.effect(
   CommunitySelectionService,
@@ -79,7 +85,7 @@ export const communitySelectionLayer = Layer.effect(
         Effect.gen(function* () {
           latest = snapshot;
           const { id } = derive(stored, snapshot);
-          if (snapshot.failure === undefined && id !== undefined && id !== stored) {
+          if (snapshot.failure === undefined && id !== undefined && !isCommunityChoice(stored)) {
             yield* store(id);
           }
           yield* publish;

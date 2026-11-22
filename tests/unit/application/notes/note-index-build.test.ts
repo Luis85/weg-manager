@@ -2,7 +2,8 @@ import { assert, describe, it } from "@effect/vitest";
 import { Effect, Exit, Layer, Stream } from "effect";
 import { TestClock } from "effect/testing";
 import { AppEvent } from "../../../../src/application/events";
-import { INDEX_BATCH_QUIET, NoteIndex } from "../../../../src/application/notes";
+import { NoteIndex } from "../../../../src/application/notes";
+import { INDEX_BATCH_QUIET } from "../../../../src/application/notes/index-batches";
 import {
   TYPES,
   built,

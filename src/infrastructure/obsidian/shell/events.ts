@@ -1,9 +1,9 @@
-import { Cause, Effect, Layer } from "effect";
+import { Effect, Layer } from "effect";
 import { TFile, type EventRef, type Events, type Plugin, type TAbstractFile } from "obsidian";
 import { AppEvent } from "../../../application/events";
 import {
   EventBus,
-  reportDefect,
+  reportUnexpected,
   type Incidents,
   type Logger,
   type Messages,
@@ -57,13 +57,7 @@ export const hostEventsLayer = (plugin: Plugin) =>
         const program = Effect.suspend(() => {
           const event = build();
           return event === undefined ? Effect.void : bus.publish(event);
-        }).pipe(
-          Effect.catchCause((cause) =>
-            Cause.hasInterruptsOnly(cause)
-              ? Effect.void
-              : Effect.asVoid(reportDefect(Cause.squash(cause))),
-          ),
-        );
+        }).pipe(Effect.catchCause(reportUnexpected));
         // The exit is dropped: it is a failure only if the defect path itself failed.
         Effect.runSyncExitWith(context)(program);
       };

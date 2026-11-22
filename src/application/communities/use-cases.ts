@@ -3,6 +3,7 @@ import {
   communityFileName,
   communityType,
   communityValues,
+  editedValues,
   followsName,
   validateCommunity,
   type CommunityInput,
@@ -11,6 +12,7 @@ import {
 import { clashName } from "../../domain/notes";
 import {
   NoteStore,
+  NoteWriteRefusedError,
   editChange,
   newRecordFrontmatter,
   noteChanges,
@@ -71,13 +73,22 @@ export const createCommunity = (input: CommunityInput) =>
     });
   });
 
-/** Where the community lives now: a note renamed meanwhile is found by its id (ADR 0007). */
+/**
+ * Where the community lives now: a note renamed meanwhile is found by its id (ADR 0007). An id
+ * that another note carries too (a copy made meanwhile) is read-only on every note that has it,
+ * so the write is refused rather than guessing which note the form loaded.
+ */
 const pathOf = (community: Community) =>
-  Effect.map(communityList, ({ communities }) => {
-    const found = communities.find(
+  Effect.flatMap(communityList, ({ communities }) => {
+    const found = communities.filter(
       (candidate) => candidate.id !== undefined && candidate.id === community.id,
     );
-    return found?.path ?? community.path;
+    const duplicated = found.some((candidate) =>
+      candidate.issues.some((issue) => issue.code === "id.duplicate"),
+    );
+    return duplicated
+      ? Effect.fail(new NoteWriteRefusedError({ reason: "identity" }))
+      : Effect.succeed(found[0]?.path ?? community.path);
   });
 
 /**
@@ -106,9 +117,11 @@ const followName = (note: Note, before: Community, values: CommunityValues) =>
 /**
  * Saves the form of `community` (as it was loaded) with `input` (PBI-56, ADR 0007). The rules run
  * against the other communities; the short code stays as loaded unless it may be repaired
- * (`canChangeShortCode`). The write merges per field with an outside edit; a field both changed
+ * (`canChangeShortCode`). A field left as loaded keeps the note's value as written, not even
+ * trimmed (`editedValues`). The write merges per field with an outside edit; a field both changed
  * is a conflict, a note that is no longer this record is refused, and a note that is gone is
- * `NoteNotFoundError`. Then the file follows the name.
+ * `NoteNotFoundError`. Then the file follows the name; save and rename run as one command, so an
+ * unload once the save has started waits for both.
  */
 export const updateCommunity = (community: Community, input: CommunityInput) =>
   Effect.gen(function* () {
@@ -117,17 +130,17 @@ export const updateCommunity = (community: Community, input: CommunityInput) =>
     const fixed = canChangeShortCode(community)
       ? input
       : { ...input, short_code: loaded.short_code ?? input.short_code };
-    const values = yield* checked(fixed, {
-      others: valuesOf(communities),
-      loaded,
-    });
+    yield* checked(fixed, { others: valuesOf(communities), loaded });
+    const values = editedValues(fixed, community.frontmatter) as CommunityValues;
     const path = yield* pathOf(community);
     const store = yield* NoteStore;
-    const written = yield* store.update(
-      path,
-      editChange(communityType, community.frontmatter, values),
+    // One command: an unload while the save is written still lets the file follow the name.
+    return yield* Effect.uninterruptible(
+      Effect.flatMap(
+        store.update(path, editChange(communityType, community.frontmatter, values)),
+        (written) => followName(written, community, values),
+      ),
     );
-    return yield* followName(written, community, values);
   });
 
 /** Moves the community's note to Obsidian's trash; one renamed meanwhile is found by its id. */

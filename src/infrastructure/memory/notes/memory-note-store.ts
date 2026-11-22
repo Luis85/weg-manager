@@ -5,17 +5,20 @@ import {
   NoteStore,
   NoteUnreadableError,
   applyPatch,
+  type Frontmatter,
+  type FrontmatterChange,
+  type NewNote,
+  type Note,
+} from "../../../application/notes";
+import {
+  asDefect,
   copyFrontmatter,
   createNote,
   pathsInFolder,
   recordNotes,
   planRename,
   writeCommand,
-  type Frontmatter,
-  type FrontmatterChange,
-  type NewNote,
-  type Note,
-} from "../../../application/notes";
+} from "../../../application/notes/adapter";
 import { EventBus, VaultReadError } from "../../../application/shell";
 import { normalizePath } from "./normalize-path";
 
@@ -66,7 +69,7 @@ const differs = (before: Frontmatter | undefined, after: Frontmatter): boolean =
  * passes the same contract suite (`tests/support/notes/contract.ts`). Reads see every write at
  * once, where Obsidian's metadata cache lags a moment behind.
  *
- * Its handles seed notes as an outside editor would, look behind the port, and switch failures
+ * Its handles seed and delete notes as an outside editor would, look behind the port, and switch failures
  * on: `setFailReads`, `setFailWrites`, and `holdWrites` to keep every write waiting, as a slow disk
  * would, until `releaseWrites`.
  *
@@ -139,12 +142,15 @@ export const memoryNoteStore = () => {
 
   const update = <E>(path: string, change: FrontmatterChange<E>) =>
     Effect.flatMap(find(path), (found) =>
-      write((): Result.Result<Note, E | NoteUnreadableError> => {
-        const current = notes.get(found.path) ?? found.stored;
+      write((): Result.Result<Note, E | NoteNotFoundError | NoteUnreadableError> => {
+        const current = notes.get(found.path);
+        // Deleted from outside while the write waited for the disk.
+        if (current === undefined) return Result.fail(new NoteNotFoundError());
         if (current.frontmatter === undefined) {
           return Result.fail(new NoteUnreadableError({ cause: madeUp("broken YAML") }));
         }
-        const decided = change(copyFrontmatter(current.frontmatter));
+        const frontmatter = current.frontmatter;
+        const decided = asDefect(() => change(copyFrontmatter(frontmatter)));
         if (Result.isFailure(decided)) return Result.fail(decided.failure);
         const next = { ...copyFrontmatter(current.frontmatter) };
         applyPatch(next, decided.success);
@@ -230,6 +236,10 @@ export const memoryNoteStore = () => {
       });
       if (existed) modified(path);
       else created(path);
+    },
+    /** Deletes a note as a person or Sync would, outside the plugin: no checks, no waiting. */
+    removeOutside: (path: string): void => {
+      if (notes.delete(path)) publish(AppEvent.FileDeleted(file(path)));
     },
     body: (path: string): string | undefined => notes.get(path)?.body,
     isFolder: (path: string): boolean => folders.has(path),

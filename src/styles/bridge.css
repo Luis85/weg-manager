@@ -2,6 +2,8 @@
  * Nuxt UI roles from plugin tokens. Listed for .light and .dark too, because Nuxt UI's own theme
  * blocks use those classes and would otherwise win by specificity. Nuxt UI's runtime colors
  * plugin is replaced by a no-op (scripts/no-head-plugins.mjs), so every colour role is set here.
+ * A role colour is the text shade of its hue (tokens.css): Nuxt UI paints it as text, as a tint
+ * behind that text and as an outline. Solid fills take the fill shade (below).
  */
 :root,
 .light,
@@ -16,17 +18,18 @@
   --ui-text-muted: var(--wm-text-muted);
   --ui-text-toned: var(--wm-text);
   --ui-text-highlighted: var(--wm-text);
-  --ui-text-inverted: var(--wm-text-on-accent);
+  --ui-text-inverted: var(--wm-on-fill);
   --ui-border: var(--wm-border);
   --ui-border-muted: var(--wm-border);
-  --ui-border-accented: var(--wm-border);
+  /* Form fields and outline buttons draw their boundary with it (ring-accented): 3:1. */
+  --ui-border-accented: var(--wm-line-strong);
   --ui-border-inverted: var(--wm-text);
-  --ui-primary: var(--wm-accent);
-  --ui-secondary: var(--wm-accent);
-  --ui-info: var(--wm-accent);
-  --ui-error: var(--wm-error);
-  --ui-success: var(--wm-success);
-  --ui-warning: var(--wm-warning);
+  --ui-primary: var(--wm-primary-fg);
+  --ui-secondary: var(--wm-primary-fg);
+  --ui-info: var(--wm-primary-fg);
+  --ui-error: var(--wm-bad-fg);
+  --ui-success: var(--wm-ok-fg);
+  --ui-warning: var(--wm-warn-fg);
   --ui-radius: var(--wm-radius);
   /* Chart roles: Obsidian's accent colours instead of Nuxt UI's literal fallbacks. */
   --ui-chart-1: var(--wm-accent);
@@ -37,6 +40,20 @@
   --ui-chart-6: var(--color-cyan);
   font-family: var(--wm-font);
   color: var(--wm-text);
+}
+
+/*
+ * Solid fills. Nuxt UI's solid variants (button, alert, badge) put `text-inverted` on `bg-<role>`;
+ * on that element the role colour is its fill shade, so on-accent text keeps 4.5:1, also at the
+ * variant's 75 % hover shade. Neutral solid (`bg-inverted`) is not used and not covered.
+ */
+.wm\:text-inverted {
+  --ui-primary: var(--wm-primary-fill);
+  --ui-secondary: var(--wm-primary-fill);
+  --ui-info: var(--wm-primary-fill);
+  --ui-error: var(--wm-bad-fill);
+  --ui-success: var(--wm-ok-fill);
+  --ui-warning: var(--wm-warn-fill);
 }
 
 /* Each surface's portal (see src/presentation/scope.ts): dialogs stack above later views. */
@@ -63,6 +80,68 @@ select,
 textarea {
   font: inherit;
   color: inherit;
+}
+
+/*
+ * Obsidian's base rules reach every element on the page (measured in 1.15.1): lists get markers,
+ * a 40 px indent and margins, headings its sizes and margins, paragraphs margins, a fieldset a
+ * border. Inside the plugin they start from zero, as under Tailwind's preflight, and the classes
+ * add what a component means. Scoped, these weigh (0,1,1): above Obsidian's element rules, below
+ * every utility (0,2,0).
+ */
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+p,
+blockquote,
+dl,
+dd,
+figure,
+pre {
+  margin: 0;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+/*
+ * Obsidian's button chrome (`button:not(.clickable-icon)`: background, shadow; `button`: height,
+ * padding, centring) would show wherever a Nuxt UI variant sets none, so ghost and soft buttons
+ * looked raised. `:not(svg)` only adds weight: scoped, (0,1,2) is above Obsidian's (0,1,1) button
+ * rules, hover and focus included, and below every utility (0,2,0).
+ */
+button:not(svg) {
+  height: auto;
+  padding: 0;
+  justify-content: normal;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
 }
 
 :focus-visible {

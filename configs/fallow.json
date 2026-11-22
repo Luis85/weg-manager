@@ -33,6 +33,17 @@
         "publicFiles": ["index.ts"]
       },
       {
+        "name": "application/notes-adapter",
+        "patterns": [
+          "src/application/notes/adapter.ts",
+          "src/application/notes/command.ts",
+          "src/application/notes/frontmatter.ts",
+          "src/application/notes/note-text.ts",
+          "src/application/notes/paths.ts"
+        ],
+        "publicFiles": ["src/application/notes/adapter.ts"]
+      },
+      {
         "name": "application",
         "autoDiscover": ["src/application"],
         "publicFiles": ["index.ts"]
@@ -106,9 +117,9 @@
         "allow": [
           "adapters/shell",
           "adapters/notes",
-          "adapters/communities",
           "infrastructure",
           "application",
+          "application/notes-adapter",
           "application-composition",
           "domain",
           "presentation/shell"
@@ -120,7 +131,7 @@
       },
       {
         "from": "memory",
-        "allow": ["application", "application-composition", "domain"]
+        "allow": ["application", "application/notes-adapter", "application-composition", "domain"]
       },
       {
         "from": "presentation",
@@ -168,6 +179,10 @@
         "allowTypeOnly": ["application-composition"]
       },
       {
+        "from": "application/notes-adapter",
+        "allow": ["domain/shell", "domain/notes", "application/shell", "application/notes"]
+      },
+      {
         "from": "adapters/shell",
         "allow": [
           "infrastructure",
@@ -184,6 +199,7 @@
           "infrastructure",
           "application/shell",
           "application/notes",
+          "application/notes-adapter",
           "domain/shell",
           "domain/notes",
           "presentation/shell"

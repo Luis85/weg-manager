@@ -2,11 +2,8 @@ import { assert, describe, it } from "@effect/vitest";
 import { Duration, Effect, Exit, Fiber, Layer, Scope } from "effect";
 import { TestClock } from "effect/testing";
 import { AppEvent } from "../../../../src/application/events";
-import {
-  INDEX_BATCH_QUIET,
-  NoteIndexReadError,
-  rebuildNoteIndex,
-} from "../../../../src/application/notes";
+import { NoteIndexReadError, rebuildNoteIndex } from "../../../../src/application/notes";
+import { INDEX_BATCH_QUIET } from "../../../../src/application/notes/index-batches";
 import { SettingsService } from "../../../../src/application/shell";
 import {
   built,

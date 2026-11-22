@@ -81,7 +81,9 @@ const gate = () => {
  * fires `create` before its promise resolves and refuses a taken path or a missing folder;
  * `createFolder` creates missing parents, one `create` each, parents first; `process` writes, and
  * fires `modify`, only when the text changes. Every content change is indexed by the metadata cache
- * a moment later. Paths are vault-relative; the double refuses a path that `normalizePath` would
+ * a moment later. `read` drops a BOM, `process` hands its callback the raw text, BOM and CRLF
+ * included, and rejects with ENOENT without calling back for a file deleted meanwhile; what the
+ * callback throws rejects unchanged. Paths are vault-relative; the double refuses a path that `normalizePath` would
  * change, so an adapter that skips it fails here.
  *
  * Test knobs: `failReads` (listing and the metadata cache throw), `failWrites` (every write
@@ -134,8 +136,9 @@ export class Vault extends Events {
     return this.getFiles().filter((file) => file.extension === "md");
   }
 
+  /** The text without a BOM, as Obsidian's `read` decodes it; `process` hands over the raw text. */
   read(file: TFile): Promise<string> {
-    return Promise.resolve(this.textOf(file));
+    return Promise.resolve(this.textOf(file).replace(/^\uFEFF/, ""));
   }
 
   cachedRead(file: TFile): Promise<string> {

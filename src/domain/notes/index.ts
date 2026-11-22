@@ -16,6 +16,13 @@ export type {
   RecordValues,
   UnindexedIssue,
 } from "./note-type";
+export {
+  editNoteText,
+  frontmatterYaml,
+  newNoteText,
+  splitNoteText,
+  type NoteText,
+} from "./note-text";
 export { NoteNameIssue, clashKey, clashName, isRecordFrontmatter, noteNameIssue } from "./notes";
 export { parseRecordId, recordId } from "./record-id";
 export { RECORD_SCHEMA_PREFIX, parseSchemaMarker } from "./schema-marker";

@@ -88,6 +88,16 @@ describe("scopeCss", () => {
     expect(await run(`${ROOT}.dark{}`)).toBe(`${ROOT}.dark{}`);
   });
 
+  // Unminified CSS (the dev server) keeps the line break before each selector of a list; the root
+  // must go before it, or `.light` becomes a descendant of the root (`.root .light`).
+  it("keeps the root on the same compound when a selector starts after a line break", async () => {
+    expect(await run(":root,\n.light,\n  .dark {--x:1}")).toBe(
+      `${ROOT},${ROOT}.light,${ROOT}.dark{--x:1}`,
+    );
+    expect(await run(".a,\n.b{}")).toBe(`${ROOT} .a,${ROOT} .b{}`);
+    expect(await run(".a,\nhtml .b{}")).toBe(`${ROOT} .a,${ROOT} .b{}`);
+  });
+
   it("scopes selectors inside @media, @supports and @container", async () => {
     expect(await run("@media (min-width:1px){.a{}}")).toBe(`@media (min-width:1px){${ROOT} .a{}}`);
     expect(await run("@supports (display:grid){.a{}}")).toBe(

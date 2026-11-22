@@ -72,7 +72,7 @@ describe("catalogs", () => {
       "Die Schemaversion muss eine positive ganze Zahl sein.",
       "Die Einstellungen aus Schemaversion 1 ließen sich nicht auf die aktuelle Version umstellen.",
       "Die Protokollstufe muss eine von error, warn, info, debug sein.",
-      'Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.',
+      'Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne Ordnernamen, die mit „.“ beginnen (solche Ordner blendet Obsidian aus), und ohne die Zeichen * " \\ < > : | ?.',
     ]);
     expect(ISSUES.map((issue) => describeIssue(issue, en.shell))).toEqual([
       "The settings file contains no valid settings.",
@@ -80,7 +80,7 @@ describe("catalogs", () => {
       "The schema version must be a positive whole number.",
       "The settings from schema version 1 couldn't be upgraded to the current version.",
       "The log level must be one of error, warn, info, debug.",
-      'The root folder must be a vault folder path of at most 100 characters, with "/" between folder names, without "." or ".." as folder names and without the characters * " \\ < > : | ?.',
+      'The root folder must be a vault folder path of at most 100 characters, with "/" between folder names, without folder names that start with "." (Obsidian hides such folders) and without the characters * " \\ < > : | ?.',
     ]);
     expect(describeIssues([], en.shell)).toBe("");
   });

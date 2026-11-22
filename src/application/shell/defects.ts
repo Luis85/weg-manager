@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Cause, Effect } from "effect";
 import { toLoggedError } from "./logged-error";
 import { Incidents, Logger, Messages, Notifier } from "./ports";
 import { describeDefect } from "./user-messages";
@@ -20,3 +20,13 @@ export const reportDefect = (cause: unknown) =>
     yield* (yield* Notifier).notify(message);
     return message;
   });
+
+/**
+ * The one policy for a cause no caller expected (ADR 0003): an interruption (an unload, a newer
+ * query, a closed view) stays silent; anything else is squashed to one value and reported once
+ * through `reportDefect`. Every boundary that ends an effect applies it: commands (`runSafely`),
+ * the host event adapter, and the presentation runtime (`useQuery`, `useCommand`, `useStream`).
+ * `Effect.catchCause(reportUnexpected)` ends a guarded effect with nothing.
+ */
+export const reportUnexpected = (cause: Cause.Cause<unknown>) =>
+  Cause.hasInterruptsOnly(cause) ? Effect.void : Effect.asVoid(reportDefect(Cause.squash(cause)));

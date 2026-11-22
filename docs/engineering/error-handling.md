@@ -41,6 +41,8 @@ Every boundary catches defects and calls `reportDefect`, once:
 - the host event adapter (`hostEventsLayer`) and the note index's builds and batches;
 - unload (`reportUnloadFailure`, used when the runtime itself is gone).
 
+The boundaries that end an effect (commands, the host event adapter, `useQuery`, `useCommand`, `useStream`) share one policy for a cause they did not expect: `reportUnexpected(cause)` (`src/application/shell/defects.ts`) stays silent for an interruption and reports anything else once, squashed to one value (`Cause.squash`). `Effect.catchCause(reportUnexpected)` guards an effect; the presentation runtime runs it on a run's `Exit`.
+
 `reportDefect` logs `defect.reported` at `error` level with the cause as a `LoggedError` (`toLoggedError`, see Logging) and a six-character incident id (0–9, A–Z), then notifies `describeDefect(id, messages)`. An interruption, for example an unload during a pending action, is not a defect and stays silent.
 
 ## Logging

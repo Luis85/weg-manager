@@ -12,7 +12,13 @@ import {
 import type { AppRuntime, AppServices } from "../../../application/app-services";
 import type { AppError } from "../../../application/errors";
 import type { Catalog } from "../../../application/messages";
-import { Messages, Notifier, reportDefect, type UserMessage } from "../../../application/shell";
+import {
+  Messages,
+  Notifier,
+  reportDefect,
+  reportUnexpected,
+  type UserMessage,
+} from "../../../application/shell";
 import { describeError } from "../../../application/user-messages";
 
 /**
@@ -40,12 +46,22 @@ export const useRuntime = (): AppRuntime => {
 export const useMessages = (): Catalog =>
   useRuntime().runSync(Messages.useSync((catalog) => catalog));
 
-/** Routes a defect to `reportDefect`; never rejects (the runtime may already be disposed). */
-export const reportVueError = (runtime: AppRuntime, cause: unknown): Promise<void> =>
-  runtime.runPromise(reportDefect(cause)).then(
+const settled = (run: Promise<unknown>): Promise<void> =>
+  run.then(
     () => undefined,
     () => undefined,
   );
+
+/** Routes a defect to `reportDefect`; never rejects (the runtime may already be disposed). */
+export const reportVueError = (runtime: AppRuntime, cause: unknown): Promise<void> =>
+  settled(runtime.runPromise(reportDefect(cause)));
+
+/**
+ * Applies the policy for an unexpected cause (`reportUnexpected`: an interruption is silent,
+ * anything else is reported once); never rejects (the runtime may already be disposed).
+ */
+export const reportCause = (runtime: AppRuntime, cause: Cause.Cause<unknown>): Promise<void> =>
+  settled(runtime.runPromise(reportUnexpected(cause)));
 
 /**
  * How one run of a use case ended, as `run` resolves it. The refs hold the same for templates;
@@ -98,13 +114,13 @@ const outcomeOf = async <A, E extends AppError>(
   exit: Exit.Exit<A, E>,
 ): Promise<RunOutcome<A, E>> => {
   if (Exit.isSuccess(exit)) return { _tag: "success", value: exit.value };
-  if (Cause.hasInterruptsOnly(exit.cause)) return INTERRUPTED;
   const error = Cause.findErrorOption(exit.cause);
   if (Option.isSome(error)) {
     return { _tag: "failure", error: error.value, message: describeError(error.value, messages) };
   }
-  await reportVueError(runtime, Cause.squash(exit.cause));
-  return DEFECT;
+  await reportCause(runtime, exit.cause);
+  // The policy above decided what to report; this only names what it decided.
+  return Cause.hasInterruptsOnly(exit.cause) ? INTERRUPTED : DEFECT;
 };
 
 /**

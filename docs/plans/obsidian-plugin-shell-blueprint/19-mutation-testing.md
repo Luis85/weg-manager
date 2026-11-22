@@ -1,6 +1,6 @@
 # Task 19 · Mutation testing
 
-Phase D. Needs: Task 18. (Configure it earlier if you like; the thresholds bind from here on.)
+Phase D. Needs: Task 18. (It may be configured right after Task 12 instead; the thresholds bind from here on.)
 
 **Goal.** Mutation testing shows that the tests of the inner layers fail when the code changes. A gated run covers `src/domain` and `src/application` with a threshold that is never lowered; a second, informational run covers the edge layers.
 
@@ -8,7 +8,7 @@ Phase D. Needs: Task 18. (Configure it earlier if you like; the thresholds bind 
 
 Create: `configs/stryker.config.mjs`, `configs/vitest.stryker.config.ts`, `configs/stryker.edge.config.mjs`, `configs/vitest.stryker.edge.config.ts`. Modify: `package.json` (scripts `test:mutation`, `test:mutation:full`, `test:mutation:edge`), `configs/fallow.config.mjs` (`ignoreDependencies` if fallow reports the Stryker packages).
 
-Install: `@stryker-mutator/core`, `@stryker-mutator/vitest-runner`, `@stryker-mutator/typescript-checker`.
+Install (`devDependencies`): `@stryker-mutator/core`, `@stryker-mutator/vitest-runner`, `@stryker-mutator/typescript-checker`.
 
 ## Steps
 
@@ -21,10 +21,10 @@ Install: `@stryker-mutator/core`, `@stryker-mutator/vitest-runner`, `@stryker-mu
   - **After adding tests, run with `--force`**: an incremental run does not re-test a survivor against a new test (L14).
   - A `// Stryker disable` needs its reason on the same line.
   - A timed-out mutant counts as killed; on a loaded machine slow tests turn survivors into timeouts, so read the "timed out" count beside the score.
-- [ ] **6. Per module.** Before pushing a change to one module, mutate its files only: `npx stryker run configs/stryker.config.mjs --mutate "src/domain/items/**/*.ts,src/application/items/**/*.ts"`.
+- [ ] **6. Per module.** Before pushing a change to one module, mutate its files only: `npx stryker run configs/stryker.config.mjs --mutate "src/domain/items/**/*.ts,src/application/items/**/*.ts"`. Run it now for `items` and, with Phase B, for `notes` (`src/domain/notes/**/*.ts,src/application/notes/**/*.ts`): the codec of Task 15 and the tracer of Task 18 leave no survivor that a hand-planted copy (step 5) does not also leave (L14).
 
 ## Done when
 
-`npm run test:mutation:full` exits 0 at or above 75 (aim for the source's level: 100 % on its feature module); `npm run test:mutation:edge` exits 0 and its score is recorded in the final report (no threshold); `npm run verify` exits 0. Commit `test: mutation testing, gated and edge`.
+`npm run test:mutation:full` exits 0 at or above 75 (aim for 100 % on the tracer's module; a record feature built on this kit has reached it); the per-module runs of step 6 are recorded; `npm run test:mutation:edge` exits 0 and its score is recorded in the final report (no threshold); `npm run verify` exits 0. Commit `test: mutation testing, gated and edge`.
 
-**Proven in the source repository:** the configs and the incremental caveat (an edge survivor stayed "Survived" in an incremental run although a hand-planted copy failed the new tests); the edge run took 25 to 41 minutes on four cores for about 990 mutants and scored 94.81 % after targeted tests (85.37 % before). **Not run there yet:** the nightly workflow that runs both (Task 21).
+What to expect: the edge run took 25 to 41 minutes on four cores for about 990 mutants and scored 94.81 % after targeted tests (85.37 % before). An edge survivor can stay "Survived" in an incremental run although a hand-planted copy fails the new tests (L14). The nightly workflow that runs both is Task 21.

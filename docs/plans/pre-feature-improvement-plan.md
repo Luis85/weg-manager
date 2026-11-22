@@ -4,7 +4,7 @@
 - Reviewed: PR #4 at `e10ce37` (branch `claude/upbeat-lovelace-v4rir1`), all of `src/`, `harness/`, `configs/`, `scripts/`, the workflows, `docs/engineering/`, ADR 0001–0005, the handoff, and the product backlog as the source of what features will demand.
 - Status (2026-11-21): every step of the plan has landed; this documentation step (4.1, PBI-59) is the last. Section 4 says where each step landed, section 5 which readiness criteria are met and what is still open. Sections 1 to 3 are the review as it was written; section 6 lists what the owner decided since.
 - Review round (2026-11-22): four independent reviews of the result and the fixes that followed are in section 8.
-- Blueprint (2026-11-22): the groundwork as built is written up as an implementation plan for other plugins, [obsidian-plugin-shell-blueprint.md](obsidian-plugin-shell-blueprint.md); it replaces the archived blueprint for that purpose.
+- Blueprint (2026-11-22): the groundwork as built is written up as an implementation plan for other plugins, [obsidian-plugin-shell-blueprint/](obsidian-plugin-shell-blueprint/README.md); it replaces the archived blueprint for that purpose. The folder is self-contained: it names neither this repository nor its backlog and is written to be copied into a new repository and executed there.
 
 ## Verdict
 

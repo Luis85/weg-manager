@@ -56,6 +56,43 @@ export const pluginProblems = async (): Promise<Captured[]> => {
   );
 };
 
+/**
+ * Waits until `read()` returns `expected` (compared as JSON), and fails showing the last value seen.
+ * For a read that follows a write: the index follows it about 100 ms later, so a bare read taken
+ * right after the write may still show the state before.
+ */
+export const eventually = async <T>(
+  read: () => Promise<T>,
+  expected: T,
+  what: string,
+): Promise<void> => {
+  let last: T | undefined;
+  try {
+    await browser.waitUntil(async () => {
+      last = await read();
+      return JSON.stringify(last) === JSON.stringify(expected);
+    });
+  } catch {
+    throw new Error(
+      `${what}: expected ${JSON.stringify(expected)}, last seen ${JSON.stringify(last)}`,
+    );
+  }
+};
+
+/** The text of every notice Obsidian shows in the main window or the active one. */
+export const noticeTexts = () =>
+  browser.executeObsidian(() =>
+    [document, activeDocument].flatMap((doc) =>
+      [...doc.querySelectorAll(".notice")].map((el) => el.textContent ?? ""),
+    ),
+  );
+
+/** Waits until Obsidian shows a notice that contains `text`. */
+export const expectNotice = (text: string) =>
+  browser.waitUntil(async () => (await noticeTexts()).some((shown) => shown.includes(text)), {
+    timeoutMsg: `no notice said ${text}`,
+  });
+
 export const openView = () => browser.executeObsidianCommand(`${PLUGIN_ID}:open-view`);
 
 export const leafCount = () =>
@@ -107,11 +144,12 @@ export const settingsTabContent = () =>
 /**
  * The log level dropdown of the plugin's real settings tab: its value and whether it is disabled.
  * With `choose`, it first picks that value as a user does (a `change` event). The settings window
- * is closed again afterwards.
+ * is closed again afterwards. The save runs after the change event: a caller that wants it waits
+ * for its effect (`data.json`, a notice).
  */
 export const logLevelControl = (choose?: string) =>
   browser.executeObsidian(
-    async ({ app }, id, value) => {
+    ({ app }, id, value) => {
       const setting = (
         app as unknown as {
           setting: {
@@ -128,7 +166,6 @@ export const logLevelControl = (choose?: string) =>
       if (select && value !== null) {
         select.value = value;
         select.dispatchEvent(new Event("change"));
-        await new Promise((resolve) => setTimeout(resolve, 200));
       }
       const state = { value: select?.value ?? null, disabled: select?.disabled ?? null };
       setting.close();

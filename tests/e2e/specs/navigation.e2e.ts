@@ -1,6 +1,7 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
 import { ROOT, VIEW_TYPE, installConsoleSpy, openView, pluginProblems } from "../support";
+import { de } from "../texts";
 
 const WORKSPACE_FILE = ".obsidian/workspace.json";
 /** The start route: the community settings. */
@@ -51,7 +52,7 @@ describe("navigation and view state in Obsidian", function () {
     });
     await expect(
       browser.$(ROOT).$("[data-testid=frame-navigation] li button[aria-current=page]"),
-    ).toHaveText("Einstellungen");
+    ).toHaveText(de.shell.frame.settings);
     // No step yet, so the frame shows no history controls.
     await expect(browser.$(ROOT).$("[data-testid=frame-history]")).not.toExist();
   });
@@ -156,16 +157,16 @@ describe("navigation and view state in Obsidian", function () {
     await expect(root.$("[data-testid=communities-screen]")).toBeDisplayed();
     expect(await probeRoute()).toEqual(COMMUNITIES);
 
-    await control("Zurück").click();
+    await control(de.shell.frame.back).click();
     await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
     expect(await probeRoute()).toEqual({ name: "probe" });
-    await control("Zurück").click();
+    await control(de.shell.frame.back).click();
     await expect(root.$("[data-testid=communities-screen]")).toBeDisplayed();
     // Nowhere to go back to: the control says so and keeps the focus, never `disabled`.
-    await expect(control("Zurück")).toHaveAttribute("aria-disabled", "true");
-    await expect(control("Zurück")).toBeEnabled();
-    await expect(control("Zurück")).toBeFocused();
-    await control("Vorwärts").click();
+    await expect(control(de.shell.frame.back)).toHaveAttribute("aria-disabled", "true");
+    await expect(control(de.shell.frame.back)).toBeEnabled();
+    await expect(control(de.shell.frame.back)).toBeFocused();
+    await control(de.shell.frame.forward).click();
     await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
     expect(await probeRoute()).toEqual({ name: "probe" });
 

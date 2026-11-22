@@ -149,9 +149,37 @@ export const useScheme = async (scheme: "light" | "dark") => {
       ),
     { timeoutMsg: `the root never turned ${scheme}` },
   );
-  // Nuxt UI's buttons fade their colours (transition-colors, 150 ms).
-  await browser.pause(400);
+  await transitionsSettled();
 };
+
+/**
+ * Waits until no CSS transition inside the plugin's root is running. Nuxt UI's buttons fade their
+ * colours (`transition-colors`, 150 ms) when the theme changes, and a computed colour read in the
+ * middle is neither the old nor the new one. A style change starts its transitions at the next
+ * style recalculation, so this lets two frames pass first, then waits for each running transition
+ * to finish.
+ */
+export const transitionsSettled = () =>
+  browser.execute(async (selector) => {
+    await new Promise<void>((done) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          done();
+        });
+      });
+    });
+    const root = document.querySelector(selector);
+    const running = document
+      .getAnimations()
+      .filter(
+        (animation) =>
+          animation instanceof CSSTransition &&
+          animation.effect instanceof KeyframeEffect &&
+          animation.effect.target !== null &&
+          root?.contains(animation.effect.target) === true,
+      );
+    await Promise.allSettled(running.map((animation) => animation.finished));
+  }, ROOT);
 
 /** Moves the pointer off the plugin, so no hover colour is measured. */
 export const parkPointer = () =>

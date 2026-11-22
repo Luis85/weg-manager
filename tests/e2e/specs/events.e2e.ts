@@ -74,8 +74,31 @@ describe("host events in Obsidian", function () {
       await app.fileManager.renameFile(file, "Events probe 2.md");
       await app.vault.delete(file);
     });
-    // Let the metadata cache and the event bus settle before reading the console.
-    await browser.pause(500);
+    // "No problem" is a negative check, and an event that arrives late would make it pass empty.
+    // So first make the plugin prove that it has handled what the vault and the metadata cache
+    // sent: a community note created afterwards (Obsidian's cache works through its queue in
+    // order) reaches the open view's list, and so does its deletion. Only then read the console.
+    await openView();
+    const empty = browser.$(ROOT).$("[data-testid=communities-empty]");
+    await expect(empty).toBeDisplayed();
+    await browser.executeObsidian(async ({ app }, text) => {
+      await app.vault.create("Events marker.md", text);
+    }, COMMUNITY);
+    await browser.waitUntil(
+      async () =>
+        (
+          await browser
+            .$(ROOT)
+            .$$("[data-testid=community-name]")
+            .map((el) => el.getText())
+        ).join() === "Neu",
+      { timeoutMsg: "the view never listed the marker note" },
+    );
+    await browser.executeObsidian(async ({ app }) => {
+      const file = app.vault.getFileByPath("Events marker.md");
+      if (file) await app.vault.delete(file);
+    });
+    await expect(empty).toBeDisplayed();
     expect(await pluginProblems()).toEqual([]);
   });
 

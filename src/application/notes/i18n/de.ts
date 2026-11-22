@@ -34,6 +34,10 @@ export const notesDe: NotesCatalog = {
       title: "Notiz nicht gelöscht",
       detail: "Obsidian konnte die Notiz nicht in den Papierkorb verschieben. Versuche es erneut.",
     },
+    open: {
+      title: "Notiz nicht geöffnet",
+      detail: "Obsidian konnte die Notiz nicht in einem Tab öffnen. Versuche es erneut.",
+    },
     editConflict: {
       title: "Notiz geändert, während du bearbeitet hast",
       detail:

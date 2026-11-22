@@ -12,6 +12,12 @@ describe("localDay", () => {
     expect(localDay(new Date("2026-11-23T07:30:00Z"), "America/Los_Angeles")).toBe("2026-11-22");
   });
 
+  it("is the day of the platform's default zone without one (UTC in the tests)", () => {
+    const time = new Date("2026-11-22T23:30:00Z");
+    expect(localDay(time, undefined)).toBe("2026-11-22");
+    expect(untilNextLocalMidnight(new Date("2026-11-22T12:00:00Z"), undefined)).toBe(12 * HOUR);
+  });
+
   it("writes YYYY-MM-DD, with leading zeros", () => {
     expect(localDay(new Date("2026-01-05T00:00:00Z"), "UTC")).toBe("2026-01-05");
     expect(localDay(new Date("2026-12-31T23:59:59.999Z"), "UTC")).toBe("2026-12-31");

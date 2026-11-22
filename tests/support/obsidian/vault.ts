@@ -62,6 +62,9 @@ const eacces = (path: string) =>
 const eexist = (path: string) =>
   new Error(`EEXIST: file already exists, open '${VAULT_ROOT}/${path}'`);
 
+/** Obsidian 1.15.1's `vault.cacheLimit`: the longest text it keeps for `cachedRead`. */
+const KEPT_TEXT_LIMIT = 64 * 1024;
+
 /** How a case-insensitive, normalising file system (Windows, macOS) compares two names. */
 const diskKey = (path: string) => path.normalize("NFC").toLowerCase();
 
@@ -108,7 +111,8 @@ const gate = () => {
  * them the file is still listed, and `process` rejects with ENOENT.
  *
  * Test knobs: `failReads` (listing and the metadata cache throw), `failWrites` (every write
- * rejects without changing anything), `holdWrites`/`releaseWrites`/`heldWrites`,
+ * rejects without changing anything), `adapter.trashSystem` (answer `false`: the system trash
+ * fails, and `fileManager.trashFile` resolves `false` as in Obsidian), `holdWrites`/`releaseWrites`/`heldWrites`,
  * `setMarkdownFileCount`, and `seedFile` for a file that appears from outside (Sync, another app),
  * also under a path that is not normalized.
  *
@@ -141,16 +145,33 @@ export class Vault
   failWrites = false;
   caseInsensitive = false;
   readonly root = new TFolder("/");
+  /**
+   * The one member of Obsidian's `DataAdapter` the double has: what `fileManager.trashFile` asks
+   * when the trash option is "system". It answers `true`; a test (or a fidelity scenario, as in
+   * Obsidian) replaces it with one that answers `false`, the system trash failing.
+   */
+  readonly adapter = { trashSystem: (_path: string): Promise<boolean> => Promise.resolve(true) };
+  private readonly config = new Map<string, unknown>([["trashOption", "system"]]);
   /** Double-internal: the metadata cache indexes each file whose text changed. */
   indexer: (file: TFile) => void = () => undefined;
   /** Double-internal: the metadata cache holds a file's metadata at once, as after a warm start. */
   indexedAtStartup: (file: TFile) => void = () => undefined;
   private readonly entries = new Map<string, TAbstractFile>();
   private readonly texts = new Map<TFile, string>();
+  private readonly kept = new WeakMap<TFile, string>();
   private readonly writes = gate();
 
   getRoot(): TFolder {
     return this.root;
+  }
+
+  /** Obsidian's vault settings; the double knows only `trashOption`, "system" as on desktop. */
+  getConfig(key: string): unknown {
+    return this.config.get(key) ?? null;
+  }
+
+  setConfig(key: string, value: unknown): void {
+    this.config.set(key, value);
   }
 
   getAbstractFileByPath(path: string): TAbstractFile | null {
@@ -181,11 +202,20 @@ export class Vault
    * file gone from the disk rejects with ENOENT.
    */
   async read(file: TFile): Promise<string> {
-    return this.textOf(file).replace(/^\uFEFF/, "");
+    const text = this.textOf(file).replace(/^\uFEFF/, "");
+    this.keep(file, text);
+    return text;
   }
 
+  /**
+   * The text Obsidian keeps of the file, else `read`. Obsidian keeps a Markdown file's text (up to
+   * 64 KiB) once it has read it: `read`, `process` and the metadata cache's indexing read do. So
+   * for an indexed note deleted outside, this gives the old text while `read` rejects
+   * (`vanishedScenario`).
+   */
   cachedRead(file: TFile): Promise<string> {
-    return this.read(file);
+    const kept = this.kept.get(file);
+    return kept === undefined ? this.read(file) : Promise.resolve(kept);
   }
 
   async create(path: string, data: string): Promise<TFile> {
@@ -227,6 +257,7 @@ export class Vault
     await this.beforeWrite(file.path);
     const next = fn(this.textOf(file));
     this.write(file, next);
+    this.keep(file, next);
     return next;
   }
 
@@ -266,6 +297,8 @@ export class Vault
     }
     const existing = this.getFileByPath(path);
     if (existing !== null) {
+      // The watcher's report of an outside change drops the kept text; the index reads it again.
+      this.kept.delete(existing);
       this.write(existing, text);
       return;
     }
@@ -369,8 +402,22 @@ export class Vault
   remove(entry: TAbstractFile): void {
     if (this.entries.get(entry.path) !== entry) throw enoent(entry.path, "unlink");
     this.unlink(entry);
-    if (entry instanceof TFile) this.texts.delete(entry);
+    if (entry instanceof TFile) {
+      this.texts.delete(entry);
+      this.kept.delete(entry);
+    }
     this.trigger("delete", entry);
+  }
+
+  /**
+   * Double-internal: what Obsidian keeps of a file's text for `cachedRead`, without a BOM (as
+   * `read` and the indexing read decode it), and nothing above 64 KiB. Which text `process`
+   * keeps for a note with a BOM until the index reads it again is not measured.
+   */
+  keep(file: TFile, text: string): void {
+    const stripped = text.replace(/^﻿/, "");
+    if (stripped.length <= KEPT_TEXT_LIMIT) this.kept.set(file, stripped);
+    else this.kept.delete(file);
   }
 
   /** On a case-insensitive disk: another entry already holds `path` in another case or form. */

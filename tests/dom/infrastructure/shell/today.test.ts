@@ -1,6 +1,6 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Context, Effect, Exit, Layer, Scope, Stream } from "effect";
-import { vi } from "vitest";
+import { afterEach, vi } from "vitest";
 import { Today } from "../../../../src/application/shell";
 import { START, todayContract } from "../../../support/shell/contract-today";
 import { manualClock } from "../../../support/shell/manual-clock";
@@ -26,6 +26,21 @@ const HOUR = 60 * MINUTE;
 
 /** Noon UTC of a `YYYY-MM-DD` day. */
 const noonOf = (day: string) => new Date(`${day}T12:00:00Z`);
+
+/** The day of `time` in the process's default zone, as `Intl` reads it without a zone. */
+const defaultDay = (time: Date) => time.toLocaleDateString("en-CA");
+
+/**
+ * The adapter without a clock handed in (`windowClock`, the plugin's), on a machine whose zone is
+ * `zone` and whose clock shows `at`; the test's `afterEach` puts both back.
+ */
+const onMachine = (zone: string, at: string) => {
+  process.env["TZ"] = zone;
+  vi.useFakeTimers({ now: new Date(at), toFake: ["Date"] });
+  const { plugin } = createTestPlugin(Bare);
+  plugin.load();
+  return todayLayer(asObsidianPlugin(plugin));
+};
 
 /** The adapter on a loaded plugin double, over a clock and a zone the test moves. */
 const setup = (start: Date, zone = "UTC") => {
@@ -153,6 +168,91 @@ describe("Today in Obsidian", () => {
       yield* advance(time, MINUTE);
       assert.deepStrictEqual(days, ["2026-03-28", "2026-03-29", "2026-03-30"]);
     });
+  });
+
+  describe("a time zone the platform rejects", () => {
+    // `Intl` refuses `Etc/Unknown` (Node 24); `resolvedOptions().timeZone` could still name it.
+    const REJECTED = "Etc/Unknown";
+
+    it.effect("falls back to the system's default zone, so the plugin still loads", () => {
+      const { time, layer } = setup(noonOf("2026-11-22"), REJECTED);
+      return Effect.gen(function* () {
+        const { today } = yield* started(layer);
+        assert.strictEqual(yield* today.current, defaultDay(noonOf("2026-11-22")));
+        assert.strictEqual(time.pending().length, 1);
+      });
+    });
+
+    it.effect("falls back as well when reading the zone throws", () => {
+      const { time, layer } = setup(noonOf("2026-11-22"));
+      time.clock.zone = () => {
+        throw new RangeError("no zone");
+      };
+      return Effect.gen(function* () {
+        const { today } = yield* started(layer);
+        assert.strictEqual(yield* today.current, defaultDay(noonOf("2026-11-22")));
+      });
+    });
+
+    it.effect("keeps looking at the clock when the zone turns bad while it runs", () => {
+      const { time, layer } = setup(noonOf("2026-11-22"), "Europe/Berlin");
+      return Effect.gen(function* () {
+        const { days } = yield* started(layer);
+        time.setZone(REJECTED);
+        yield* advance(time, MINUTE);
+        assert.strictEqual(time.pending().length, 1);
+        time.setZone("Europe/Berlin");
+        time.setClock(noonOf("2026-11-24"));
+        yield* advance(time, MINUTE);
+        assert.deepStrictEqual(days.at(-1), "2026-11-24");
+      });
+    });
+  });
+
+  it.effect("keeps its timer when a look at the clock throws, and reports the defect", () => {
+    const { time, layer } = setup(noonOf("2026-11-22"));
+    const logger = recordingLogger();
+    const withLogger = layer.pipe(Layer.provide(logger.layer));
+    return Effect.gen(function* () {
+      const { days } = yield* started(withLogger);
+      // An invalid date: every step of the look at the clock throws (`Invalid time value`).
+      time.setClock(new Date(Number.NaN));
+      yield* advance(time, MINUTE);
+      assert.strictEqual(time.pending().length, 1);
+      assert.isTrue(logger.entries().some((entry) => entry.level === "error"));
+      time.setClock(noonOf("2026-11-23"));
+      yield* advance(time, DAY_CHECK_MAX_MS);
+      assert.deepStrictEqual(days, ["2026-11-22", "2026-11-23"]);
+    });
+  });
+
+  describe("the machine's own clock and zone", () => {
+    // No clock handed in: `windowClock`, the one the plugin runs on. The process's zone is set
+    // to one far from UTC, so a UTC day in place of the local one fails here.
+    afterEach(() => {
+      vi.useRealTimers();
+      process.env["TZ"] = "UTC";
+    });
+
+    it.effect("is the local day east of UTC (Kiritimati, UTC+14)", () =>
+      Effect.gen(function* () {
+        const { today, scope } = yield* started(
+          onMachine("Pacific/Kiritimati", "2026-11-22T12:00:00Z"),
+        );
+        assert.strictEqual(yield* today.current, "2026-11-23");
+        yield* Scope.close(scope, Exit.void);
+      }),
+    );
+
+    it.effect("is the local day west of UTC (Los Angeles)", () =>
+      Effect.gen(function* () {
+        const { today, scope } = yield* started(
+          onMachine("America/Los_Angeles", "2026-11-22T03:00:00Z"),
+        );
+        assert.strictEqual(yield* today.current, "2026-11-21");
+        yield* Scope.close(scope, Exit.void);
+      }),
+    );
   });
 
   describe("unload", () => {

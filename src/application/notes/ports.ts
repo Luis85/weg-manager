@@ -5,6 +5,7 @@ import type { VaultReadError } from "../shell";
 import type {
   InvalidNoteNameError,
   NoteNotFoundError,
+  NoteOpenError,
   NotePathTakenError,
   NoteTrashError,
   NoteUnreadableError,
@@ -80,7 +81,14 @@ export class NoteStore extends Context.Service<
     >;
     /** Moves the note to the trash the user chose in Obsidian. */
     trash(path: string): Effect.Effect<void, NoteNotFoundError | NoteTrashError>;
-    /** Renames the note in its folder; Obsidian updates the links to it. */
+    /**
+     * Renames the note in its folder; Obsidian updates the links to it. Returns the note at its
+     * new path with its frontmatter as the store reads it after the move. Obsidian moves the file
+     * only once its metadata cache has indexed earlier writes, so that includes a write just
+     * before; but a rename that joined another rename in progress returns before its own move
+     * (measured in 1.15.1), with the cache's frontmatter of that moment. A caller that has just
+     * written keeps the frontmatter its write returned, as the record kit does.
+     */
     rename(
       path: string,
       newName: string,
@@ -94,11 +102,12 @@ export class NoteStore extends Context.Service<
 /**
  * Opens a note for the user in Obsidian, in a new tab beside the plugin's view, so a note the
  * plugin cannot write (read-only, unreadable, of no known type) can be repaired by hand. A path
- * that holds no Markdown note is `NoteNotFoundError`.
+ * that holds no Markdown note is `NoteNotFoundError`, also when the note leaves the vault while
+ * it opens; any other failure of Obsidian to open it is `NoteOpenError`.
  */
 export class NoteOpener extends Context.Service<
   NoteOpener,
-  { open(path: string): Effect.Effect<void, NoteNotFoundError> }
+  { open(path: string): Effect.Effect<void, NoteNotFoundError | NoteOpenError> }
 >()("weg-manager/application/NoteOpener") {}
 
 /**

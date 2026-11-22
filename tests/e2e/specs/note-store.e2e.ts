@@ -13,6 +13,10 @@ import { orderScenario } from "../../support/notes/order-scenario";
 import { vaultFacts } from "../../support/notes/scenarios";
 import { STORE_REPORT } from "../../support/notes/store-fidelity";
 import { storeScenario } from "../../support/notes/store-scenario";
+import {
+  TRASH_FAILURE_FACTS,
+  trashFailureScenario,
+} from "../../support/notes/trash-failure-scenario";
 import { cacheIdle, installConsoleSpy, pluginProblems } from "../support";
 
 /** The report in the expectation's order where Obsidian keeps none, and the expectation. */
@@ -55,5 +59,13 @@ describe("note store in Obsidian", function () {
     const [report, expected] = ordered(await browser.executeObsidian(storeScenario), STORE_REPORT);
     expect(report).toEqual(expected);
     expect(await pluginProblems()).toEqual([]);
+  });
+
+  it("resolves trashFile with false when the system trash fails, and the store reports it", async function () {
+    const [report, expected] = ordered(
+      await browser.executeObsidian(trashFailureScenario),
+      TRASH_FAILURE_FACTS,
+    );
+    expect(report).toEqual(expected);
   });
 });

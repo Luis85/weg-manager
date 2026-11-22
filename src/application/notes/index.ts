@@ -8,6 +8,7 @@ export {
   NoteNotFoundError,
   NotePathTakenError,
   NoteTrashError,
+  NoteOpenError,
   NoteUnreadableError,
   NoteWriteError,
   NoteWriteRefusedError,

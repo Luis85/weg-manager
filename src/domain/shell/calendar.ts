@@ -7,9 +7,12 @@ export type CalendarDay = string;
 /** Longer than any day in any time zone (25 hours across a daylight saving change, at most). */
 const LONGER_THAN_A_DAY_MS = 27 * 3_600_000;
 
-const dayFormat = (zone: string) =>
+/** An IANA time zone, or `undefined` for the platform's default zone. */
+export type TimeZone = string | undefined;
+
+const dayFormat = (zone: TimeZone) =>
   new Intl.DateTimeFormat("en-US", {
-    timeZone: zone,
+    ...(zone === undefined ? {} : { timeZone: zone }),
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -24,10 +27,10 @@ const dayIn = (format: Intl.DateTimeFormat, time: number): CalendarDay => {
 };
 
 /**
- * The calendar day of `time` in the IANA time zone `zone`; with the machine's own zone, the user's
- * local day, not UTC's.
+ * The calendar day of `time` in the IANA time zone `zone` (`undefined`: the platform's default);
+ * with the machine's own zone, the user's local day, not UTC's.
  */
-export const localDay = (time: Date, zone: string): CalendarDay =>
+export const localDay = (time: Date, zone: TimeZone): CalendarDay =>
   dayIn(dayFormat(zone), time.getTime());
 
 /**
@@ -35,7 +38,7 @@ export const localDay = (time: Date, zone: string): CalendarDay =>
  * midnight, 23 or 25 across a daylight saving change, and to 01:00 where a change skips midnight
  * itself. Found by halving, so it holds for every zone the platform knows.
  */
-export const untilNextLocalMidnight = (time: Date, zone: string): number => {
+export const untilNextLocalMidnight = (time: Date, zone: TimeZone): number => {
   const format = dayFormat(zone);
   const start = time.getTime();
   const today = dayIn(format, start);

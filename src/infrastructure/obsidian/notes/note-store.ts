@@ -127,7 +127,8 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
     );
 
   const trash = (path: string) =>
-    // Obsidian 1.15 resolves with `true` although its d.ts says `void`; the port promises void.
+    // Obsidian 1.15 resolves `true` although its d.ts says `void`, and `false`, without
+    // rejecting, when the system trash fails: `trashCommand` makes that a `NoteTrashError`.
     Effect.flatMap(find(path), (file) => trashCommand(() => fileManager.trashFile(file)));
 
   const rename = (path: string, newName: string) =>
@@ -169,14 +170,18 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
         // The cache shows a block of only comments or blank lines as it shows broken YAML
         // (measured in Obsidian 1.15.1, `tests/support/notes/difficult-fidelity.ts`), so the
         // note's text decides, read as `update` reads it: what `update` can write is readable.
-        // A candidate deleted outside while the vault still lists it is gone, not unreadable.
+        // It is read from the disk (`vault.read`), not from what Obsidian keeps (`cachedRead`):
+        // Obsidian keeps the text of every note it has indexed, also after the note is deleted
+        // outside (measured in 1.15.1, `vanishedScenario`), and a candidate deleted while the
+        // vault still lists it is gone, not unreadable. Candidates are only the notes whose
+        // block the cache could not read, so this costs a disk read for each of those alone.
         const unreadable = yield* Effect.filter(
           candidates.filter((file) => inFolder.has(file.path)),
           (file) =>
             Effect.tryPromise({
               try: async () =>
                 Result.isFailure(
-                  updateNoteText(await vault.cachedRead(file), () => Result.succeed({}), parseYaml),
+                  updateNoteText(await vault.read(file), () => Result.succeed({}), parseYaml),
                 ),
               catch: (cause) => cause,
             }).pipe(

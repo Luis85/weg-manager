@@ -34,6 +34,10 @@ export const notesEn: NotesCatalog = {
       title: "Note not deleted",
       detail: "Obsidian couldn't move the note to the trash. Try again.",
     },
+    open: {
+      title: "Note not opened",
+      detail: "Obsidian couldn't open the note in a tab. Try again.",
+    },
     editConflict: {
       title: "Note changed while you were editing",
       detail:

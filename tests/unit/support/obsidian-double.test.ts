@@ -20,6 +20,10 @@ import type { ScenarioProbe } from "../../support/notes/scenario-context";
 import { vaultFacts } from "../../support/notes/scenarios";
 import { STORE_REPORT } from "../../support/notes/store-fidelity";
 import { storeScenario } from "../../support/notes/store-scenario";
+import {
+  TRASH_FAILURE_FACTS,
+  trashFailureScenario,
+} from "../../support/notes/trash-failure-scenario";
 import { VANISHED_FACTS, vanishedScenario } from "../../support/notes/vanished-scenario";
 import { READINESS_FACTS, readinessScenario } from "../../support/readiness-scenario";
 
@@ -68,6 +72,10 @@ describe("the Obsidian double", () => {
   it("fires events in Obsidian's order around writes, renames and trashes", async () => {
     const [report, expected] = ordered(await orderScenario(onDouble()), ORDER_FACTS);
     expect(report).toEqual(expected);
+  });
+
+  it("resolves trashFile with false and keeps the note when the system trash fails", async () => {
+    expect(await trashFailureScenario(onDouble())).toEqual(TRASH_FAILURE_FACTS);
   });
 
   it("reads and writes notes with difficult frontmatter as Obsidian does", async () => {

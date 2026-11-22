@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { nextTick } from "vue";
 import { SELECTION_KEY } from "../../../../src/application/communities/selection";
 import { de } from "../../../../src/application/messages";
 import { DeviceStore } from "../../../../src/application/shell";
@@ -54,6 +55,10 @@ const storedSelection = (screen: OpenScreen) =>
 const key = (target: Element | undefined, name: string) => {
   target?.dispatchEvent(new KeyboardEvent("keydown", { key: name, bubbles: true }));
   return settle();
+};
+/** A key pressed on the focused element, without waiting for anything after it. */
+const press = (name: string) => {
+  document.activeElement?.dispatchEvent(new KeyboardEvent("keydown", { key: name, bubbles: true }));
 };
 
 describe("the community switch", () => {
@@ -168,6 +173,38 @@ describe("the community switch", () => {
     expect([at(), focused()]).toEqual([1, 1]);
     // The list is sorted by name: Ahornweg 12, Birke, Tiefgarage.
     expect(await storedSelection(screen)).toBe(communityId(3));
+  });
+
+  it("keeps the focus on the checked option when an arrow key comes while a choice is saved", async () => {
+    const screen = await openCommunities({
+      seed: THREE,
+      device: { [SELECTION_KEY]: communityId(1) },
+    });
+    const at = () =>
+      options(screen.root).findIndex((option) => option.getAttribute("aria-checked") === "true");
+    const focused = () => options(screen.root).indexOf(document.activeElement as HTMLButtonElement);
+    // A second view follows the same selection; it must not take the focus.
+    const second = document.createElement("div");
+    document.body.append(second);
+    const close = mountApp(second, screen.runtime, { navigation: memoryNavigation(appSurface) });
+    await settle();
+    options(screen.root)[0]?.focus();
+    // Two presses in a row: the second comes before the first choice is saved.
+    press("ArrowDown");
+    await nextTick();
+    press("ArrowDown");
+    expect(focused()).toBe(at());
+    await settle();
+    await screen.until(() => expect([at(), focused()]).toEqual([1, 1]));
+    await screen.until(() =>
+      expect(options(second).map((option) => option.getAttribute("aria-checked"))).toEqual([
+        "false",
+        "true",
+        "false",
+      ]),
+    );
+    expect(screen.root.contains(document.activeElement)).toBe(true);
+    close();
   });
 
   it("offers no community with an issue, and says when none can be chosen", async () => {

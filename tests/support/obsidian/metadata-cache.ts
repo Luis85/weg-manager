@@ -197,6 +197,8 @@ export class MetadataCache
     ) {
       const cache = indexOf(text);
       this.caches.set(file, cache);
+      // Obsidian indexes what `vault.readBinary` reads, which keeps the text for `cachedRead`.
+      this.vault.keep(file, text);
       this.trigger("changed", file, text, cache);
       this.trigger("resolve", file);
       this.trigger("resolved");

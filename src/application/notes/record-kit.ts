@@ -55,14 +55,16 @@ const confirm = (title: (notices: NotesCatalog["notices"]) => string) =>
 /**
  * Gives the note the file name `target`; a taken name gets ` (2)`, ` (3)`, … up to the hundredth.
  * A rename that fails keeps the note where it is and is logged (`<log>.rename.failed`, no data):
- * the record is saved, and the file name is only for people.
+ * the record is saved, and the file name is only for people. The note it returns is the one just
+ * written at the path of the rename: `NoteStore.rename` gives the frontmatter as the store reads
+ * it after the move, which in Obsidian can still be the state before the save.
  */
 const renameTo = (note: Note, target: string, log: string) =>
   Effect.gen(function* () {
     const store = yield* NoteStore;
     for (let attempt = 1; attempt <= MAX_NAME_ATTEMPTS; attempt += 1) {
       const renamed = yield* Effect.result(store.rename(note.path, clashName(target, attempt)));
-      if (Result.isSuccess(renamed)) return renamed.success;
+      if (Result.isSuccess(renamed)) return { ...note, path: renamed.success.path };
       if (renamed.failure._tag !== "NotePathTakenError") break;
     }
     yield* (yield* Logger).log({ level: "warn", event: `${log}.rename.failed` });

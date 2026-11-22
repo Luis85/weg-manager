@@ -166,7 +166,10 @@ export const useScheme = async (scheme: "light" | "dark") => {
  * not wait for frames or for time: it forces a style recalculation (reading a computed style
  * does), jumps each running transition and finite animation to its end (`finish()`), and repeats
  * until none is left, which also takes the ones the jump itself starts. Animations that never end
- * (a spinner) stay. It fails after 20 passes instead of hanging.
+ * (a spinner) stay, and so do finished ones: `getAnimations()` also lists an animation that has
+ * ended and still holds its last frame (`fill: forwards`), and `finish()` cannot remove it, which
+ * once made this fail on the CI runner with one such animation of the host. It fails after 20
+ * passes instead of hanging, and names what kept running.
  */
 export const settleColours = async () => {
   const left = await browser.execute(() => {
@@ -175,16 +178,33 @@ export const settleColours = async () => {
     const running = () => {
       // Reading a computed style recalculates the style of the whole document.
       getComputedStyle(document.documentElement).getPropertyValue("color");
-      return document
-        .getAnimations()
-        .filter(
-          (animation) =>
-            !stuck.has(animation) && animation.effect?.getComputedTiming().iterations !== Infinity,
-        );
+      return document.getAnimations().filter(
+        (animation) =>
+          !stuck.has(animation) &&
+          // Ended animations stay listed while they hold their last frame; they are at rest.
+          animation.playState !== "finished" &&
+          animation.playState !== "idle" &&
+          animation.effect?.getComputedTiming().iterations !== Infinity,
+      );
+    };
+    /** What an animation is and where, for the failure message. */
+    const describe = (animation: Animation): string => {
+      const target = animation.effect instanceof KeyframeEffect ? animation.effect.target : null;
+      const name =
+        animation instanceof CSSAnimation
+          ? `animation ${animation.animationName}`
+          : animation instanceof CSSTransition
+            ? `transition of ${animation.transitionProperty}`
+            : "script animation";
+      const where =
+        target === null
+          ? "no target"
+          : `${target.tagName.toLowerCase()}.${target.getAttribute("class") ?? ""}`;
+      return `${name} on ${where} (${animation.playState})`;
     };
     for (let pass = 0; pass < 20; pass += 1) {
       const current = running();
-      if (current.length === 0) return 0;
+      if (current.length === 0) return [];
       for (const animation of current) {
         try {
           animation.finish();
@@ -193,9 +213,11 @@ export const settleColours = async () => {
         }
       }
     }
-    return running().length;
+    return running().map(describe);
   });
-  if (left > 0) throw new Error(`${left} animations kept running after 20 passes`);
+  if (left.length > 0) {
+    throw new Error(`${left.length} animations kept running after 20 passes: ${left.join("; ")}`);
+  }
 };
 
 /** Moves the pointer off the plugin, so no hover colour is measured. */

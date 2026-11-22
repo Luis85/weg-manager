@@ -39,6 +39,7 @@ export {
 } from "./routes";
 export type { ShellServices } from "./services";
 export { SettingsService, SettingsServiceLive, type SettingsStatus } from "./settings-service";
+export { Today, makeToday, today, todayChanges } from "./today";
 export { copyDiagnostics, setLogLevel } from "./use-cases";
 export {
   describeDefect,

@@ -15,7 +15,8 @@ import {
   type UserMessage,
 } from "../src/application/shell";
 import { memoryNoteStore, sequentialIdGenerator } from "../src/infrastructure/memory/notes";
-import { deviceStoreInMemory } from "../src/infrastructure/memory/shell";
+import { localDay } from "../src/domain/shell";
+import { deviceStoreInMemory, memoryToday } from "../src/infrastructure/memory/shell";
 import { consoleSinkLayer } from "../src/infrastructure/logging/console-sink";
 import { incidentsLayer } from "../src/infrastructure/logging/incidents";
 
@@ -165,6 +166,8 @@ export const harnessLayer = (
       deviceStore: deviceStoreInMemory(),
       incidents: incidentsLayer,
       logSink: consoleSinkLayer,
+      // The browser's day when the page loads; the harness has no view open overnight.
+      today: memoryToday(localDay(new Date())).layer,
       noteStore: failingOnce(scenario).pipe(Layer.provideMerge(memory.layer)),
       idGenerator: sequentialIdGenerator().layer,
       noteOpener: memory.opener,

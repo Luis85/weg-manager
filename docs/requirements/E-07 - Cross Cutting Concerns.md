@@ -39,7 +39,7 @@ Gemeinsam benötigte technische Fähigkeiten und nichtfunktionale Anforderungen 
 
 Dieses Epic ist die vom Produktverantwortlichen gewünschte Ausnahme zum sonstigen Zuschnitt nach fachlichen Nutzerzielen. Features beschreiben wiederverwendbare Fähigkeiten; spätere PBIs bleiben User Stories mit konkret prüfbarem Nutzen. Ein externer Dienst ist ein Integrationsziel, kein zusätzliches Hierarchielevel.
 
-Die Zuordnung zum Epic bestimmt keinen Release. Die direkten Google-Versand-/Drive-Anbindungen und der MCP Server bleiben spätere Ausbaustufen. PBI-46 ergänzt den MVP um einen optional nutzbaren Gmail-Eingang über den bestehenden Claude-Connector; der lokale Kern bleibt ohne KI und Verbindung nutzbar. Nichtfunktionale Anforderungen werden organisatorisch unter F-21 in diesem Epic geführt und gelten weiterhin querschnittlich für den MVP. Ihre fachliche Geltung hängt nicht vom Eltern-Epic des betroffenen PBI ab.
+Die Zuordnung zum Epic bestimmt keinen Release. Die direkten Google-Versand-/Drive-Anbindungen und der MCP Server bleiben spätere Ausbaustufen. Nichtfunktionale Anforderungen werden organisatorisch unter F-21 in diesem Epic geführt und gelten weiterhin querschnittlich für den MVP. Ihre fachliche Geltung hängt nicht vom Eltern-Epic des betroffenen PBI ab.
 
 Fachliche Mehrpersonenarbeit und ein optionales Dienstangebot werden separat unter [[F-20 - Zusammenarbeit und Onlinedienst]] gepflegt. Ein MCP-Zugang ersetzt weder dieses Rollenmodell noch eine Google-Workspace-Anbindung.
 

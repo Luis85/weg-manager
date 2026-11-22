@@ -9,7 +9,7 @@ kind: Human
 
 ## Ziel
 
-Offene Punkte, bisherige Entscheidungen, Quellen und nächste Schritte ohne persönliches Hintergrundwissen verstehen.
+Offene Vorgänge, bisherige Entscheidungen, Quellen und nächste Schritte ohne persönliches Hintergrundwissen verstehen.
 
 ## Interaktion
 

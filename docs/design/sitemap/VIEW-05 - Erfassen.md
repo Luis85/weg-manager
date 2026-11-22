@@ -8,16 +8,16 @@ date: 2026-11-15
 navigation: global · Sheet
 requirements:
   - "[[PBI-01 - Gemeinschaftskontext wählen]]"
-  - "[[PBI-05 - Einen Punkt erfassen und wiederfinden]]"
-  - "[[PBI-10 - Eigene Folgeaufgabe nachhalten]]"
+  - "[[PBI-05 - Einen Vorgang erfassen und wiederfinden]]"
+  - "[[PBI-10 - Eigenes To-do nachhalten]]"
   - "[[PBI-11 - Nachricht und Original zuordnen]]"
   - "[[PBI-33 - Wochenarbeit auf dem Handy abschließen]]"
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-12 - Eigene Aufgabe]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-12 - To-do]]"
 business-rules:
   - "[[docs/business-rules/DF-04 - Fehlender Termin]]"
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
@@ -33,15 +33,15 @@ mockups:
 
 ## Felder
 
-1. **Art:** Notiz · Nachricht · Unterlage · Zusage · Aufgabe (bestimmt die Folgefelder). **Notiz** ist ein eigener Vermerk ohne Quelle: nur Gemeinschaft, mehrzeiliger Text und Punkt; im Verlauf als „Du notierst …“ (intern). Die Punktakte hat dafür eine eigene Schaltfläche „Notiz“ neben „Reaktion“.
+1. **Art:** Notiz · Nachricht · Unterlage · Zusage · To-do (bestimmt die Folgefelder). **Notiz** ist ein eigener Vermerk ohne Quelle: nur Gemeinschaft, mehrzeiliger Text und Vorgang; im Verlauf als „Du notierst …“ (intern). Die Vorgangsakte hat dafür eine eigene Schaltfläche „Notiz“ neben „Reaktion“.
 2. **Gemeinschaft:** Pflicht; bei Filter „Alle“ nie vorbelegt. Bis 3 Gemeinschaften als Segment, ab 4 als durchsuchbare Liste mit den Gruppen „Zuletzt“ und „Weitere“ (Komponente CommunityPicker).
-3. Für **Zusage:** Wer sagt zu? (Vorschläge aus den Kontakten der Gemeinschaft; unbekannter Name → „„Name“ als Kontakt anlegen“, danach zurück ins Erfassen) · Prüfbares Ergebnis · Bis wann? oder „kein Termin genannt“ (dann Prüfmerkmal „Termin fehlt“, DF-04).
-4. **Zu Punkt:** Vorschlag oder Auswahl; „Neuer Punkt“ möglich.
+3. Für **Zusage:** Wer sagt zu? (Vorschläge aus den Kontakten der Gemeinschaft; unbekannter Name → „„Name“ als Kontakt anlegen“, danach zurück ins Erfassen) · Prüfbares Ergebnis · Bis wann? oder „kein Termin genannt“ (dann Prüfvermerk „Termin fehlt“, DF-04).
+4. **Zu Vorgang:** Vorschlag oder Auswahl; „Neuer Vorgang“ möglich.
 5. **Quelle:** Datei/Foto anhängen (Original) oder „Telefonat“ (ohne Datei, mit Notiz).
    - „Dateien auswählen“ öffnet den Dateidialog des Systems mit Mehrfachauswahl und erlaubt auch Dateien außerhalb des Vaults (z. B. Download-Ordner). Gewählte Dateien erscheinen als Liste mit Größe und × je Datei; „Weitere Dateien“ ergänzt, gleiche Dateinamen werden nicht doppelt übernommen.
    - Wahl „In den Vault verschieben“ (Standard) oder „Kopie ablegen“.
    - Zielpfad sichtbar: `WEG Manager/Quellen/<Gemeinschaft>/<JJJJ-MM-TT> <Dateiname>`; bei Namenskonflikt Suffix ` (2)`.
-   - Verschieben/Kopieren gilt für alle gewählten Dateien. Beim Speichern wird jede Datei als eigene Quelle (Original) in der Notiz des Punkts bzw. Eingangseintrags verlinkt.
+   - Verschieben/Kopieren gilt für alle gewählten Dateien. Beim Speichern wird jede Datei als eigene Quelle (Original) in der Notiz des Vorgangs bzw. Eingangseintrags verlinkt.
    - Liegt die Datei schon im Vault, wird nur verlinkt.
 
 Regel: Ohne Zuordnung landet der Eintrag im Eingang (Schritt 1 der Wochenarbeit).
@@ -51,7 +51,7 @@ Regel: Ohne Zuordnung landet der Eintrag im Eingang (Schritt 1 der Wochenarbeit)
 ## Verhalten
 
 - Schließen ohne Speichern behält den Entwurf (Hinweis im Button-Label).
-- Sheet mit Griff und Schließen-Button, nie gestapelt; längere Bearbeitung wechselt in die Punktakte.
+- Sheet mit Griff und Schließen-Button, nie gestapelt; längere Bearbeitung wechselt in die Vorgangsakte.
 - Desktop: gleiches Formular als rechter Slideover.
 
 ## Weitere Bildschirme (Prototyp)

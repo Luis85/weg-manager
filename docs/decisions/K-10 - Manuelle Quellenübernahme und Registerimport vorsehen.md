@@ -39,7 +39,3 @@ O-03: Anonymisierten Export beschaffen. O-04: Aufwand manueller Eingangsübernah
 [[F-02 - Registerbestand übernehmen]], [[F-05 - Quellen und Verlauf zuordnen]], [[F-18 - Integrationen]].
 
 [Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`) · [[Product Backlog.base#Business Rules]].
-
-## Ergänzung durch den Claude-Skill-Eingang
-
-Die neuere Festlegung [[K-16 - Gmail-Eingang im MVP über Claude Skill bereitstellen]] ergänzt im MVP einen optionalen Gmail-Leseweg über den bereits vorhandenen Claude-Connector. Manuelle Erfassung und KI-unabhängige Kernarbeit bleiben erhalten; keine eigene native Google-OAuth-Integration oder automatische Postfachsynchronisation des Plugins wird vorausgesetzt.

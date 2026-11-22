@@ -1,0 +1,125 @@
+<!doctype html><html lang="de" data-theme="light"><head><meta charset="utf-8"><meta name="mockup" content="out=v2-00-Research-Prinzipien.png; width=1440; height=1000; scale=1.5"><title>v2-00-Research-Prinzipien</title><style>:root{
+  --bg:#F6F6F3;--surface:#FFFFFF;--surface2:#FAFAF8;--sunk:#EDEDE8;--line:#E4E4DF;--line2:#D4D4D8;
+  --fg:#18181B;--fg2:#52525B;--fg3:#5F5F67;--primary:#18181B;--on:#FFFFFF;--accent:#2563EB;
+  --aw:#0F766E;--awbg:#E3F3EF;--awfg:#0B5F55;--tg:#6D28D9;--tgbg:#F1EBFE;--tgfg:#5B21B6;
+  --warn:#B45309;--warnbg:#FEF3E2;--warnfg:#92400E;--bad:#B42318;--badbg:#FDECEA;--badfg:#9F1D14;
+  --ok:#15803D;--okbg:#ECFDF3;--okfg:#166534;--info:#4F46E5;--infobg:#EEF2FF;--infofg:#3730A3;
+  --judge:#6D28D9;--judgebg:#F5F3FF;--judgefg:#5B21B6;--mark:#FEF9C3;--scrim:rgba(24,24,27,.45);--pbar:#E7E7E3;
+  --sans:"Geist","Inter",ui-sans-serif,system-ui,sans-serif;
+  --mono:"Geist Mono","JetBrains Mono","DejaVu Sans Mono",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111113;--surface:#1A1A1D;--surface2:#1F1F22;--sunk:#232327;--line:#2C2C30;--line2:#3A3A3F;
+  --fg:#EDEDEF;--fg2:#A1A1AA;--fg3:#9A9AA3;--primary:#EDEDEF;--on:#18181B;--accent:#60A5FA;
+  --aw:#2BB3A3;--awbg:#0F2E2A;--awfg:#5EEAD4;--tg:#A78BFA;--tgbg:#2A1F45;--tgfg:#C4B5FD;
+  --warn:#F59E0B;--warnbg:#3A2A12;--warnfg:#FCD34D;--bad:#F87171;--badbg:#3B1A1A;--badfg:#FCA5A5;
+  --ok:#22C55E;--okbg:#11291C;--okfg:#86EFAC;--info:#818CF8;--infobg:#1E1B4B;--infofg:#A5B4FC;
+  --judge:#A78BFA;--judgebg:#2A1F45;--judgefg:#C4B5FD;--mark:#4A3F0B;--scrim:rgba(0,0,0,.6);--pbar:#0B0B0C;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111113;--surface:#1A1A1D;--surface2:#1F1F22;--sunk:#232327;--line:#2C2C30;--line2:#3A3A3F;
+  --fg:#EDEDEF;--fg2:#A1A1AA;--fg3:#9A9AA3;--primary:#EDEDEF;--on:#18181B;--accent:#60A5FA;
+  --aw:#2BB3A3;--awbg:#0F2E2A;--awfg:#5EEAD4;--tg:#A78BFA;--tgbg:#2A1F45;--tgfg:#C4B5FD;
+  --warn:#F59E0B;--warnbg:#3A2A12;--warnfg:#FCD34D;--bad:#F87171;--badbg:#3B1A1A;--badfg:#FCA5A5;
+  --ok:#22C55E;--okbg:#11291C;--okfg:#86EFAC;--info:#818CF8;--infobg:#1E1B4B;--infofg:#A5B4FC;
+  --judge:#A78BFA;--judgebg:#2A1F45;--judgefg:#C4B5FD;--mark:#4A3F0B;--scrim:rgba(0,0,0,.6);--pbar:#0B0B0C;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--fg2)}
+.ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:21px;padding:0 6px;border-radius:5px;font-size:11px;font-weight:600;color:var(--on);flex-shrink:0}
+.b-AW{background:var(--aw)}.b-TG{background:var(--tg)}.b-A14{background:#1D4ED8}.b-BH{background:#9A3412}.b-LS{background:#475569}.b-PN{background:#0E7490}
+select[data-on="true"]{border:1.5px solid var(--fg)!important;font-weight:600}
+.ftag{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 4px 0 6px;border-radius:999px;background:var(--surface);border:1.5px solid var(--fg);font-size:13px;font-weight:600}
+.ftag button{width:26px;height:26px;border:0;border-radius:50%;background:var(--sunk);display:inline-flex;align-items:center;justify-content:center;color:var(--fg)}
+.cpick{display:flex;flex-direction:column;border:1px solid var(--line2);border-radius:10px;overflow:hidden;background:var(--surface)}
+.cpick button{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left;font-size:14px}
+.cpick button[aria-checked="true"]{background:var(--sunk);font-weight:600}
+.cpick .sub{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);padding:8px 12px 4px;border-top:1px solid var(--line)}
+.filebox{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--surface2)}.b-none{background:transparent;border:1px dashed var(--line2);color:var(--fg2)}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.c-bad{background:var(--badbg);color:var(--badfg)}.c-warn{background:var(--warnbg);color:var(--warnfg)}.c-info{background:var(--infobg);color:var(--infofg)}
+.c-ok{background:var(--okbg);color:var(--okfg)}.c-n{background:var(--sunk);color:var(--fg)}.c-judge{background:var(--judgebg);color:var(--judgefg)}
+.pid{font-family:var(--mono);font-size:12px;color:var(--fg3)}
+.btn{min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;border-radius:10px;border:1px solid var(--line2);background:var(--surface);font-weight:500;text-decoration:none;color:var(--fg)}
+.btn:hover{background:var(--surface2)}
+.btn.pri{background:var(--primary);border-color:var(--primary);color:var(--on);font-weight:600}
+.btn.pri:hover{opacity:.92}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:var(--on);font-weight:600}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--sunk)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{min-height:34px;padding:0 11px;font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.lab{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .fl{font-size:13px;font-weight:600}
+.inp{min-height:42px;padding:0 12px;border:1px solid var(--line2);border-radius:9px;background:var(--surface);width:100%}
+textarea.inp{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5}
+.seg{display:flex;flex-wrap:wrap;gap:3px;padding:3px;border-radius:10px;background:var(--sunk)}
+.seg button{flex:1 1 auto;min-height:38px;padding:0 12px;border:0;border-radius:8px;background:transparent;font-size:13px;font-weight:500;color:var(--fg2);white-space:nowrap}
+@media (hover:hover){
+.seg button:not([aria-pressed="true"]):not(:disabled):hover{background:color-mix(in srgb,var(--surface) 55%,transparent);color:var(--fg)}
+.kpi:hover,.msg:hover,.opt:hover{border-color:var(--line2);background:var(--surface2)}
+.opt[aria-checked="true"]:hover{border-color:var(--fg)}
+.tabs button:not([aria-selected="true"]):hover{background:var(--sunk);color:var(--fg)}
+.cpick button:not([aria-checked="true"]):hover{background:var(--surface2)}
+.ftag button:hover{background:var(--line2)}
+.kpi,.msg,.opt,.seg button,.tabs button,.cpick button{transition:background-color .12s,border-color .12s,color .12s}
+}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.1),0 0 0 1px var(--line)}
+
+.opt{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);text-align:left;width:100%}
+.opt[aria-checked="true"]{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center}
+.opt[aria-checked="true"] .radio{border-color:var(--fg)}
+.opt[aria-checked="true"] .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--fg)}
+body{margin:0}
+.page{padding:46px 65px 0}
+.top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px}
+.kick{font-family:var(--mono);font-size:12px;color:var(--fg2)}
+h1{font-size:45px;font-weight:600;letter-spacing:-.02em;margin-top:6px}
+.cnt{display:flex;align-items:flex-start;gap:14px;margin-bottom:2px}
+.cnt b{display:block;font-size:40px;line-height:1;font-weight:600;letter-spacing:-.02em}
+.cnt s{color:var(--fg3);text-decoration-thickness:3px}
+.cnt small{display:block;font-family:var(--mono);font-size:12px;color:var(--fg2);margin-top:8px}
+.cnt .ar{font-size:32px;line-height:1.2;margin-top:4px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:17px}
+.c{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 20px 18px;height:254px;display:flex;flex-direction:column}
+.ch{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.no{width:28px;height:28px;border-radius:7px;background:var(--fg);color:var(--on);display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.src{font-family:var(--mono);font-size:11.5px;color:var(--fg2);text-align:right}
+.f{font-size:15px;line-height:1.42;color:var(--fg2);padding-bottom:10px;border-bottom:1px dashed var(--line2);margin-bottom:10px}
+.d{font-size:15px;line-height:1.42;font-weight:600}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:17px;margin-top:29px}
+.b{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 20px;height:233px;display:flex;flex-direction:column;gap:14px}
+.b p{font-size:15.5px;line-height:1.42;color:var(--fg2)}
+.cs{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;padding:4px 10px}
+.comm{display:inline-flex;align-items:center;gap:9px;padding:7px 12px 7px 7px;border-radius:9px;font-size:15px;font-weight:600}
+.sw{display:flex;gap:8px}.sw span{width:48px;height:44px;border-radius:8px}
+.tk{font-family:var(--mono);font-size:11.5px;color:var(--fg2);line-height:1.5}
+</style></head><body><div class="page">
+<div class="top"><div><div class="kick">WEG Manager · Konzept v2 · 15.11.2026</div><h1>Was die Recherche am Entwurf ändert</h1></div>
+<div class="cnt"><div><b><s>17</s></b><small>Pages v1</small></div><span class="ar">→</span><div><b>4 + 1</b><small>Ziele + geführte Woche</small></div></div></div>
+<div class="grid">
+<article class="c"><div class="ch"><span class="no">1</span><span class="src">FacileThings · Todoist</span></div><p class="f">Weekly Reviews funktionieren als Assistent: ein Schritt pro Bildschirm, feste Reihenfolge, 20–30 min.</p><p class="d">Wochenarbeit wird ein geführter Ablauf in 5 Schritten statt einer überladenen Seite.</p></article>
+<article class="c"><div class="ch"><span class="no">2</span><span class="src">Super Productivity · GTD</span></div><p class="f">„Warten auf“ braucht zugesagtes Datum und eigenes Prüfdatum getrennt – und bei jeder Prüfung genau eine Entscheidung.</p><p class="d">Nachhalten mit 4 Ein-Klick-Antworten: Eingegangen · Weiter warten · Nachfassen · Neu planen.</p></article>
+<article class="c"><div class="ch"><span class="no">3</span><span class="src">Linear Triage · saasui</span></div><p class="f">Triage: annehmen, als Dublette verbinden, ablehnen, zurückstellen. Nichts verschwindet still.</p><p class="d">Eingang als eigener erster Schritt: Zuordnen · Dublette · Verwerfen · Später – mit Rückweg.</p></article>
+<article class="c"><div class="ch"><span class="no">4</span><span class="src">saasui Activity-Log</span></div><p class="f">Gute Verläufe: Akteur + Verb + vorher→nachher, Tagestrenner, Mensch und System sichtbar getrennt.</p><p class="d">Vorgangsakte als Zeitleiste mit drei Formen: Fakt ○, Deine Bewertung ◆, Deine Handlung ●.</p></article>
+<article class="c"><div class="ch"><span class="no">5</span><span class="src">Sunsama Planning</span></div><p class="f">Die Überbuchungswarnung („Du bist 4 h überplant“) ist das stärkste Element des Tagesrituals.</p><p class="d">Entscheidungsbudget 7 als sichtbare Leiste; Dringendes läuft sichtbar darüber hinaus.</p></article>
+<article class="c"><div class="ch"><span class="no">6</span><span class="src">Obsidian Help · Forum 2026</span></div><p class="f">Mobil gibt es kein Ribbon; die Host-Navigation unten schwebt und blendet sich aus.</p><p class="d">Keine zweite Tabbar unten: Ziele als Segment oben, „Erfassen“ als Button über der Host-Leiste.</p></article>
+<article class="c"><div class="ch"><span class="no">7</span><span class="src">NN/g Bottom Sheets · Progressive Disclosure</span></div><p class="f">Sheets nur für kurze, temporäre Schritte; nie stapeln. Mehr als zwei Ebenen schaden.</p><p class="d">Sheets nur für Erfassen und „Als gesendet markieren“. Tiefe max.: Liste → Vorgangsakte.</p></article>
+<article class="c"><div class="ch"><span class="no">8</span><span class="src">VDIV · § 29 WEG</span></div><p class="f">Der Beirat unterstützt und überwacht, entscheidet aber nicht für die WEG; Nachweise schützen ihn.</p><p class="d">Sprache: „Deine Bewertung“, „Versand dokumentieren“. Verlauf ist unveränderlich, Korrekturen sind neue Einträge.</p></article>
+</div>
+<div class="row3">
+ <section class="b"><span class="lab">Visuelle Sprache · weniger Text</span><p>Status über Form + Farbe + Wort, Zahlen groß, Fließtext nur in der Akte.</p><div class="cs"><span class="chip c-bad">● überfällig</span><span class="chip c-warn">▲ Termin erfragen</span><span class="chip c-info">◷ wartet 18 T</span><span class="chip c-ok">✓ erledigt</span></div></section>
+ <section class="b"><span class="lab">Gemeinschaften immer erkennbar</span><p>Jede Gemeinschaft hat Kürzel + Farbe; beide Farben unterscheiden sich auch in der Helligkeit.</p><div class="cs"><span class="comm" style="background:var(--awbg);color:var(--awfg)"><span class="badge b-AW">AW</span>WEG Ahornweg 12</span><span class="comm" style="background:var(--tgbg);color:var(--tgfg)"><span class="badge b-TG">TG</span>Tiefgarage</span></div></section>
+ <section class="b"><span class="lab">Tokens</span><div class="sw"><span style="background:#18181B"></span><span style="background:#2563EB"></span><span style="background:var(--aw)"></span><span style="background:var(--tg)"></span><span style="background:var(--warn)"></span><span style="background:var(--bad)"></span><span style="background:var(--bg);border:1px solid var(--line)"></span></div><div class="tk">Geist / Geist Mono · Ink · Fokus · AW · TG · Warnung · Fehler · Grund</div></section>
+</div></div></body></html>

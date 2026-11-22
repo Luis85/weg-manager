@@ -9,7 +9,6 @@
   "ignorePatterns": [
     "docs/**",
     ".claude/**",
-    "skills/**",
     "dist/**",
     "release/**",
     "reports/**",

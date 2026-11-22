@@ -7,7 +7,7 @@ scope: mvp
 
 # DF-12 · Gemeinschaftstrennung
 
-Punkt, Entscheidung, Nachricht und einzelne Berichtsauswahl gehören eindeutig einer Gemeinschaft. Gesamtlage darf beide klar bezeichnet anzeigen. Gleicher Verwalter oder Titel erlaubt keine Mischung; ein Querverweis ist keine Zusammenführung.
+Vorgang, Entscheidung, Nachricht und einzelne Berichtsauswahl gehören eindeutig einer Gemeinschaft. Gesamtlage darf beide klar bezeichnet anzeigen. Gleicher Verwalter oder Titel erlaubt keine Mischung; ein Querverweis ist keine Zusammenführung.
 
 **Abnahmeanker:** Beleuchtung in WEG und Tiefgarage bleibt getrennt; WEG-Sammelnachricht enthält keine Tiefgaragenanlage.
 

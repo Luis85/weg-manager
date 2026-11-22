@@ -92,14 +92,14 @@ The Obsidian developer docs' self-critique checklist says "less is safer": every
 
 | Package | Why |
 | --- | --- |
-| `vue` | Reactive views for the planned screens (Lage, Wochenarbeit, Punktakte), which hand-built DOM would make hard to test and keep pop-out safe. |
+| `vue` | Reactive views for the planned screens (Lage, Wochenarbeit, Vorgangsakte), which hand-built DOM would make hard to test and keep pop-out safe. |
 | `@nuxt/ui` (pulls `reka-ui`, `@vueuse/core`, `tailwind-merge`, Iconify) | Accessible components (dialogs, forms, focus handling) instead of writing our own; the design handoff is specified in Nuxt UI terms. |
 | `@iconify/vue` | Not an addition: Nuxt UI draws its icons with it, so it is in `main.js` already. `src/presentation/shell/icons-offline.ts` configures it so that an icon missing from the bundle is never requested from Iconify's API (no network at runtime), which is why it is a direct dependency. |
 | `tailwindcss` | Build-time only: it generates the scoped `styles.css` and adds no runtime code. |
 | `effect` | Typed errors, services and resource scopes for the application layer (see `docs/engineering/architecture.md` and `error-handling.md`). |
 | `@tanstack/vue-form` | One form engine whose validators call the domain rules (`AGENTS.md`, Forms). |
 
-Cost on 2026-11-21: `main.js` is about 540 KB minified (169 KB gzip), `styles.css` about 60 KB, against the `check:dist` budgets of 1.5 MB and 250 KB. By source size, Effect is the largest share, then Vue's runtime, VueUse, reka-ui, TanStack Form, Nuxt UI and tailwind-merge (`docs/design/research/Plugin research - Obsidian best practices.md`, §Load time and bundle). Today all of it is evaluated when the plugin loads.
+Cost on 2026-11-21: `main.js` is about 540 KB minified (169 KB gzip), `styles.css` about 60 KB, against the `check:dist` budgets of 1.5 MB and 250 KB. By source size, Effect is the largest share, then Vue's runtime, VueUse, reka-ui, TanStack Form, Nuxt UI and tailwind-merge (`docs/research/Plugin research - Obsidian best practices.md`, §Load time and bundle). Today all of it is evaluated when the plugin loads.
 
 Rule: a new runtime dependency needs a row here and a reason that an existing one cannot cover. Before the plugin is submitted to the community directory, audit the runtime tree: `npm ls --omit=dev --all`, `npm audit --omit=dev`, a check of the bundle for `innerHTML`, `eval` and network calls (the scanner rules), and the `main.js` size against this record. Drop or replace any dependency that no longer pulls its weight.
 

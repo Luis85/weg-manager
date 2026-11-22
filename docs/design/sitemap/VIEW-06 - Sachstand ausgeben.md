@@ -5,15 +5,15 @@ status: entwurf
 scope: mvp
 version: "2.0"
 date: 2026-11-15
-navigation: aus Punkte
+navigation: aus Vorgänge
 requirements:
   - "[[PBI-26 - Unterlagen einstufen und korrigieren]]"
   - "[[PBI-28 - Empfängerbezogene Ausgabe prüfen]]"
   - "[[PBI-29 - Sachstand lesbar übergeben]]"
   - "[[PBI-33 - Wochenarbeit auf dem Handy abschließen]]"
 entities:
-  - "[[docs/design/entities/ENT-15 - Ausgabestand]]"
-  - "[[docs/design/entities/ENT-16 - Beiratsbewertung]]"
+  - "[[docs/entities/ENT-15 - Ausgabestand]]"
+  - "[[docs/entities/ENT-16 - Beiratsbewertung]]"
 business-rules:
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
   - "[[docs/business-rules/DF-11 - Sachstand und Bewertung]]"
@@ -33,8 +33,8 @@ mockups:
 1. **Für wen?** Eigentümer · Vertretung / Nachfolge · Verwaltung (bestimmt Vorbelegung und Ausschlüsse).
 2. **Gemeinschaft:** genau eine, fest.
 3. **Sprache:** Deutsch, optional + English.
-4. **Was gehört hinein?** Punkte mit Checkbox; je Punkt Bausteine als Chips: ✓ Sachstand, ✓ Termin, ✓ Anlage; durchgestrichen „Bewertung · intern“, „Notiz · intern“; rot „privat, gesperrt“; amber „Quelle ungeprüft“. Regel: nichts wird transitiv mitgenommen.
-5. **Vorschau:** lesbares Dokument mit Standdatum, Absender „Vom Beirat … ohne Rechtswirkung“, Abschnitten je Punkt und Hinweis auf Datenlücken. Export: Markdown · Kopieren · PDF. Exportiert, nicht gesendet.
+4. **Was gehört hinein?** Vorgänge mit Checkbox; je Vorgang Bausteine als Chips: ✓ Sachstand, ✓ Termin, ✓ Anlage; durchgestrichen „Bewertung · intern“, „Notiz · intern“; rot „privat, gesperrt“; amber „Quelle ungeprüft“. Regel: nichts wird transitiv mitgenommen.
+5. **Vorschau:** lesbares Dokument mit Standdatum, Absender „Vom Beirat … ohne Rechtswirkung“, Abschnitten je Vorgang und Hinweis auf Datenlücken. Export: Markdown · Kopieren · PDF. Exportiert, nicht gesendet.
 
 ![[v2-D7-Ausgabe.png]]
 

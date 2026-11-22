@@ -10,12 +10,12 @@ requirements:
   - "[[PBI-18 - Nachrichten je Gemeinschaft bündeln]]"
   - "[[PBI-19 - Eigentümertexte zweisprachig prüfen]]"
   - "[[PBI-20 - Tatsächlichen Versand dokumentieren]]"
-  - "[[PBI-21 - Begründeten Nachfassschritt prüfen]]"
+  - "[[PBI-21 - Begründeten Eskalationsschritt prüfen]]"
 entities:
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
-  - "[[docs/design/entities/ENT-11 - Versanddokumentation]]"
-  - "[[docs/design/entities/ENT-13 - Nachfassstand]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-11 - Versanddokumentation]]"
+  - "[[docs/entities/ENT-13 - Eskalation]]"
 business-rules:
   - "[[docs/business-rules/DF-07 - Wahl, Entwurf und Versand]]"
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
@@ -36,15 +36,15 @@ mockups:
 
 ## Aufbau
 
-- **Liste** gruppiert nach Gemeinschaft → Empfänger („AW · an Verwaltung“). Karte: Empfänger, Anzahl Punkte, enthaltene Themen, Status (Entwurf · ✓ geprüft · ▲ EN erneut prüfen). Darunter „Gesendet · wartet“ mit Versanddatum; der Nachrichtentitel ist Link auf den Punkt, bei mehreren Punkten stehen deren Titel als Links darunter.
-- **Editor:** Herkunft (aus Entscheidung …, Fassung N), An (Empfänger, öffnet das Kontakt-Modal), Betrifft (Titel jedes enthaltenen Punkts als Link direkt in die Punktakte), Betreff, Sprach-Tabs DE/EN mit Prüfstatus je Sprache, Text, Anlagen (nur geprüfte und freigegebene; interne Notizen und Bewertungen als „intern · ausgeschlossen“ markiert).
+- **Liste** gruppiert nach Gemeinschaft → Empfänger („AW · an Verwaltung“). Karte: Empfänger, Anzahl Vorgänge, enthaltene Themen, Status (Entwurf · ✓ geprüft · ▲ EN erneut prüfen). Darunter „Gesendet · wartet“ mit Versanddatum; der Nachrichtentitel ist Link auf den Vorgang, bei mehreren Vorgängen stehen deren Titel als Links darunter.
+- **Editor:** Herkunft (aus Entscheidung …, Fassung N), An (Empfänger, öffnet das Kontakt-Modal), Betrifft (Titel jedes enthaltenen Vorgangs als Link direkt in die Vorgangsakte), Betreff, Sprach-Tabs DE/EN mit Prüfstatus je Sprache, Text, Anlagen (nur geprüfte und freigegebene; interne Notizen und Bewertungen als „intern · ausgeschlossen“ markiert).
 - **Versandleiste:** Senden · Kopieren · In Mail-App öffnen · **Als gesendet markieren** (Versand erfolgt außerhalb des Plugins).
 
 ![[v2-P-D-07-Postausgang.png]]
 
 ## Als gesendet markieren (Sheet)
 
-Datum (Standard heute), Kanal (Mail, Portal, Brief, Telefon), Fassung (automatisch die geprüfte aktuelle, DE + EN), optional Bemerkung. Speichern legt ein Versand-Ereignis an und plant die Prüfung in Nachhalten (K-06). Keine Zustellungsbehauptung. Auf dem Desktop als Dialog, mobil als Sheet.
+Datum (Standard heute), Kanal (Mail, Portal, Brief, Telefon), Fassung (automatisch die geprüfte aktuelle, DE + EN), optional Bemerkung. Speichern legt einen Verlaufseintrag zum Versand an und plant die Prüfung in Nachhalten (K-06). Keine Zustellungsbehauptung. Auf dem Desktop als Dialog, mobil als Sheet.
 
 ![[v2-Dlg-Gesendet.png]]
 

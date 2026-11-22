@@ -1,7 +1,6 @@
 # not plugin code
 docs/
 .claude/
-skills/
 *.md
 *.base
 .obsidian/

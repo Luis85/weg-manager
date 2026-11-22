@@ -193,7 +193,6 @@ export default defineConfig(
     ignores: [
       "docs/**",
       ".claude/**",
-      "skills/**",
       "node_modules/**",
       "**/dist/**",
       "release/**",

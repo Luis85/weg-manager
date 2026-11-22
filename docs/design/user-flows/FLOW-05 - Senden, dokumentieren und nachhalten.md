@@ -12,8 +12,8 @@ requirements:
   - "[[PBI-18 - Nachrichten je Gemeinschaft bündeln]]"
   - "[[PBI-19 - Eigentümertexte zweisprachig prüfen]]"
   - "[[PBI-20 - Tatsächlichen Versand dokumentieren]]"
-  - "[[PBI-21 - Begründeten Nachfassschritt prüfen]]"
-  - "[[PBI-22 - Nachfasspaket begrenzen oder pausieren]]"
+  - "[[PBI-21 - Begründeten Eskalationsschritt prüfen]]"
+  - "[[PBI-22 - Eskalationen begrenzen oder aussetzen]]"
   - "[[PBI-23 - Reaktion richtig einordnen]]"
 ---
 
@@ -30,11 +30,11 @@ flowchart TD
   C -- nein --> E[Kopieren / Mail-App öffnen]
   E --> F[außerhalb menschlich senden]
   F --> G([Als gesendet markieren: Datum, Kanal, Fassung])
-  G --> H[Versand-Ereignis + Prüfdatum]
+  G --> H[Verlaufseintrag Versand + Prüfdatum]
   H --> I[Woche · Nachhalten am Prüfdatum]
   I --> J{Reaktion?}
   J -- Termin genannt --> K[neue Zusage, alter Termin bleibt im Verlauf]
-  J -- keine --> L[Nachfassen nächste Stufe oder Pause mit Grund]
+  J -- keine --> L[Nachfassen: nächste Eskalationsstufe oder Pause mit Grund]
 ```
 
-Testfall aus dem PRD (AT-B09): Versand 16.11., Antworttermin 30.11., eigene Prüfung 23.11. → am 23.11. kein Stufenwechsel; erst nach dem 30.11. wird Nachfassen vorgeschlagen.
+Testfall aus dem PRD (AT-B09): Versand 16.11., Antworttermin 30.11., eigene Prüfung 23.11. → am 23.11. kein Wechsel der Eskalationsstufe; erst nach dem 30.11. wird Nachfassen vorgeschlagen.

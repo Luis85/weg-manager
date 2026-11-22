@@ -5,7 +5,7 @@
 
 ## Context
 
-Every text the plugin showed was German and hard-wired: issue sentences in `src/domain/settings.ts`, messages in `src/application/user-messages.ts`, command names, the ribbon title, the settings tab and every Vue component. Nuxt UI's own labels (close buttons) were fixed to `de` in `ShellApp.vue`. Obsidian has had `getLanguage()` since 1.8.7, and its guidelines and lint rule `prefer-get-language` ask plugins to use it ([Plugin research](../design/research/Plugin%20research%20-%20Obsidian%20best%20practices.md) item 13). The owner decided: German for German Obsidian, English for every other language. The sample greeting's default follows the language as well, a greeting the user typed stays as typed, and files written by earlier versions that hold the old default "Hello from WEG Manager" count as not customised.
+Every text the plugin showed was German and hard-wired: issue sentences in `src/domain/settings.ts`, messages in `src/application/user-messages.ts`, command names, the ribbon title, the settings tab and every Vue component. Nuxt UI's own labels (close buttons) were fixed to `de` in `ShellApp.vue`. Obsidian has had `getLanguage()` since 1.8.7, and its guidelines and lint rule `prefer-get-language` ask plugins to use it ([Plugin research](../research/Plugin%20research%20-%20Obsidian%20best%20practices.md) item 13). The owner decided: German for German Obsidian, English for every other language. The sample greeting's default follows the language as well, a greeting the user typed stays as typed, and files written by earlier versions that hold the old default "Hello from WEG Manager" count as not customised.
 
 ## Decision
 

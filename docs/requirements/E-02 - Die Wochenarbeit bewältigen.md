@@ -26,7 +26,7 @@ Als Beirat kann ich aus einer aktuellen Lage Entscheidungen und kontrollierte nÃ
 ## Enthaltene FÃ¤higkeiten
 
 - [[F-06 - Wochenpaket vorbereiten]]
-- [[F-07 - Arbeitsentscheidungen treffen]]
+- [[F-07 - Entscheidungskarten entscheiden]]
 - [[F-08 - Kommunikation vorbereiten und Versand erfassen]]
 
 ## Erfolg und Grenze

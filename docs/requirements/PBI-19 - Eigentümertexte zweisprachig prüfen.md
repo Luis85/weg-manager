@@ -17,9 +17,9 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
-  - "[[docs/design/entities/ENT-15 - Ausgabestand]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-15 - Ausgabestand]]"
 business-rules:
   - "[[docs/business-rules/DF-07 - Wahl, Entwurf und Versand]]"
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"

@@ -7,24 +7,23 @@ actors:
   - "[[ACT-01-Beirat]]"
   - "[[ACT-11 - Offizielle Claude-Code-Laufzeit]]"
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-03 - Thema]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
-  - "[[docs/design/entities/ENT-09 - Arbeitsentscheidung]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
-  - "[[docs/design/entities/ENT-11 - Versanddokumentation]]"
-  - "[[docs/design/entities/ENT-12 - Eigene Aufgabe]]"
-  - "[[docs/design/entities/ENT-13 - Nachfassstand]]"
-  - "[[docs/design/entities/ENT-14 - Wochenübergabe]]"
-  - "[[docs/design/entities/ENT-15 - Ausgabestand]]"
-  - "[[docs/design/entities/ENT-16 - Beiratsbewertung]]"
-  - "[[docs/design/entities/ENT-21 - E-Mail-Quellnotiz]]"
-  - "[[docs/design/entities/ENT-22 - AI-Gespräch]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-03 - Thema]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-09 - Entscheidungskarte]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-11 - Versanddokumentation]]"
+  - "[[docs/entities/ENT-12 - To-do]]"
+  - "[[docs/entities/ENT-13 - Eskalation]]"
+  - "[[docs/entities/ENT-14 - Übergabe]]"
+  - "[[docs/entities/ENT-15 - Ausgabestand]]"
+  - "[[docs/entities/ENT-16 - Beiratsbewertung]]"
+  - "[[docs/entities/ENT-22 - AI-Gespräch]]"
 business-rules:
   - "[[docs/business-rules/DF-01 - Beiratsarbeit und Befugnis]]"
   - "[[docs/business-rules/DF-07 - Wahl, Entwurf und Versand]]"
@@ -33,7 +32,7 @@ business-rules:
   - "[[docs/business-rules/DF-11 - Sachstand und Bewertung]]"
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
   - "[[docs/business-rules/DF-13 - Historie und kontrollierte Entfernung]]"
-  - "[[docs/business-rules/DF-15 - Arbeitsentscheidung und Beschluss]]"
+  - "[[docs/business-rules/DF-15 - Entscheidungskarte und Beschluss]]"
   - "[[docs/business-rules/DF-22 - Notizen als maßgeblicher Datenbestand]]"
   - "[[docs/business-rules/DF-23 - Externe Bearbeitung ohne stilles Überschreiben]]"
   - "[[docs/business-rules/DF-27 - Abo-Nutzung ohne stillen Abrechnungswechsel]]"
@@ -67,7 +66,7 @@ Als Nutzer möchte ich direkt im Plugin einen AI-Chat mit der offiziellen Claude
 7. Ausgeführte Dateiaktionen entsprechen dem Nutzerauftrag und den tatsächlichen Runtime-Berechtigungen. Erforderliche Tool-/Schreibbestätigungen bleiben sichtbar und bedienbar; eine Integration darf sie nicht pauschal übergehen, nur um den Chat reibungsloser erscheinen zu lassen.
 8. Nach Änderungen liest das Plugin denselben Markdown-/Frontmatter-Bestand neu ein und schützt offene konkurrierende Eingaben. Bei Abbruch bleiben bereits ausgeführte Schritte nachvollziehbar; kein automatisches Rollback oder Nachrichtenrückruf wird behauptet.
 9. Aufbewahrter Plugin-Gesprächsinhalt und relevante Aktionsbezüge bleiben offen als Markdown mit dokumentiertem Frontmatter lesbar. Runtime-Sitzungsreferenzen enthalten keine Authgeheimnisse; eine nur externe undokumentierte Historie ersetzt nicht den lokalen Plugin-Gesprächsstand.
-10. Skills/Connectoren werden nach tatsächlich vorhandenen Fähigkeiten geprüft. Dieselbe Claude-Anmeldung allein garantiert keinen Gmail-Connector in Claude Code. Der Gmail-Skill bleibt nur bei erfüllten Voraussetzungen nutzbar und unverändert auf lesenden Import begrenzt.
+10. Skills/Connectoren werden nach tatsächlich vorhandenen Fähigkeiten geprüft. Dieselbe Claude-Anmeldung allein garantiert keine Connectoren in Claude Code.
 11. Der erste nachzuweisende Chatbetrieb ist Desktop. Ein mobiler Chatweg ist offen; die vollständige mobile Beirats-Kernreise muss weiterhin ohne Chat nutzbar sein. Ohne eigene mobile Spezifikation wird keine plattformübergreifende Chatabnahme behauptet.
 12. Vor Freigabe werden Integration, Auth-/Abrechnungsweg und Berechtigungsdialoge mit einer unterstützten offiziellen Runtime tatsächlich geprüft. Native Chat-UI, Streaming/Fortsetzung, Kontext, Limit, Abbruch, Dateiänderung und offener Gesprächsstand erhalten nachvollziehbare Tests. Kein Bestandteil davon wurde durch diese Anforderungsnote bereits implementiert oder live abgenommen.
 
@@ -75,4 +74,4 @@ Als Nutzer möchte ich direkt im Plugin einen AI-Chat mit der offiziellen Claude
 
 Direkte Nutzeranforderung, festgehalten in [[K-17 - Nativer AI-Chat über das Nutzerabo]]. Offizielle Quellen und Integrationsgrenzen in [[Integrationsresearch - Nativer AI-Chat mit Claude Code]]. Abhängigkeiten: [[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]], [[PBI-42 - AI-Agent direkt mit den Notizen arbeiten lassen]], [[PBI-31 - Konflikte ohne Datenverlust klären]].
 
-`pages` und `user-flows` bleiben bis zum konkreten Entwurf der nativen Chatansicht leer. Die bestehende externe Agentennutzung ist kein bereits fertiges Chatdesign. Diese Story ändert nicht die Abnahme der vorhandenen Gmail-Skill-Dateien.
+`pages` und `user-flows` bleiben bis zum konkreten Entwurf der nativen Chatansicht leer. Die bestehende externe Agentennutzung ist kein bereits fertiges Chatdesign.

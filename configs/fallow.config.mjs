@@ -44,7 +44,6 @@ export const fallowConfig = (folders) => ({
   ignorePatterns: [
     "docs/**",
     ".claude/**",
-    "skills/**",
     "reports/**",
     "release/**",
     ".stryker-tmp/**",

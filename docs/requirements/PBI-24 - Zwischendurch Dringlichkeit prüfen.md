@@ -16,11 +16,11 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-14 - Wochenübergabe]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-14 - Übergabe]]"
 business-rules:
   - "[[docs/business-rules/DF-03 - Terminbedeutung]]"
   - "[[docs/business-rules/DF-08 - Quellenabdeckung]]"
@@ -29,7 +29,7 @@ business-rules:
 decisions:
   - "[[docs/decisions/K-04 - Wochenpaket beim Einstieg aktualisieren]]"
   - "[[docs/decisions/K-05 - Sieben reguläre Entscheidungen mit sichtbarem Überlauf]]"
-  - "[[docs/decisions/K-06 - Nachfassen an Versand und Fristen ausrichten]]"
+  - "[[docs/decisions/K-06 - Eskalation an Versand und Fristen ausrichten]]"
   - "[[docs/decisions/K-09 - Vollständige mobile Wochenarbeit unterstützen]]"
   - "[[docs/decisions/K-10 - Manuelle Quellenübernahme und Registerimport vorsehen]]"
 hypotheses:
@@ -50,14 +50,14 @@ user-flows:
 
 ## User Story
 
-Als Beirat möchte ich seit der letzten Übergabe neue Ereignisse und zeitkritische Punkte sehen, damit ich gezielt vor der nächsten Wochenarbeit eingreife.
+Als Beirat möchte ich seit der letzten Übergabe neue Verlaufseinträge und zeitkritische Vorgänge sehen, damit ich gezielt vor der nächsten Wochenarbeit eingreife.
 
 ## Akzeptanzkriterien
 
-1. Letzte Übergabe, neue Ereignisse und nächster geplanter Wochenzeitpunkt sind erkennbar.
+1. Letzte Übergabe, neue Verlaufseinträge und nächster geplanter Wochenzeitpunkt sind erkennbar.
 2. Fristen vor diesem Zeitpunkt, nötige Unterschriften, akute Gebäudeprobleme und drohende Kosten können hervorgehoben und menschlich korrigiert werden.
 3. Ungeprüfte Portalnachricht erscheint als Lücke; daraus folgt weder keine Antwort noch alles kann warten.
-4. Nicht dringliche Punkte bleiben in der Wochenarbeit erhalten.
+4. Nicht dringliche Vorgänge bleiben in der Wochenarbeit erhalten.
 
 ## Herkunft und Regeln
 
@@ -65,7 +65,7 @@ P FR-A1/A2/E5; US-11; DF-08/09. Quellkürzel: 01-Quellabdeckung (historische Que
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-12 - Ereignisse nachvollziehen]], [[PBI-09 - Termin und Wiedervorlage trennen]]
+[[PBI-12 - Verlauf nachvollziehen]], [[PBI-09 - Termin und Wiedervorlage trennen]]
 
 ## Refinementgrenze
 

@@ -1,6 +1,6 @@
 ---
 type: PBI
-parent: "[[F-03 - Einzelne Punkte bearbeiten]]"
+parent: "[[F-03 - Einzelne Vorgänge bearbeiten]]"
 order: 11000
 actors:
   - "[[ACT-01-Beirat]]"
@@ -16,22 +16,22 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
 business-rules:
   - "[[docs/business-rules/DF-02 - Bearbeitung, Terminprüfung und Bewertung]]"
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
   - "[[docs/business-rules/DF-13 - Historie und kontrollierte Entfernung]]"
 decisions:
   - "[[docs/decisions/K-02 - Zwei Gemeinschaften für einen Bearbeiter]]"
-  - "[[docs/decisions/K-03 - Einzeln erledigbarer Punkt als Kerneinheit]]"
+  - "[[docs/decisions/K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]]"
 hypotheses:
-  - "[[docs/hypothesis/H-02 - Einzelne Punkte machen den Arbeitsstand verständlich]]"
+  - "[[docs/hypothesis/H-02 - Einzelne Vorgänge machen den Arbeitsstand verständlich]]"
   - "[[docs/hypothesis/H-05 - Manuelle Eingangsübernahme bleibt alltagstauglich]]"
 pages:
-  - "[[docs/design/sitemap/VIEW-03 - Punkte und Punktakte]]"
+  - "[[docs/design/sitemap/VIEW-03 - Vorgänge und Vorgangsakte]]"
 user-flows:
   - "[[docs/design/user-flows/FLOW-01 - Gesamtfluss des Beirats-MVP]]"
   - "[[docs/design/user-flows/FLOW-02 - Wochenarbeit geführt]]"
@@ -44,13 +44,13 @@ user-flows:
 
 ## User Story
 
-Als Beirat möchte ich doppelte Punkte innerhalb einer Gemeinschaft zusammenführen, damit ich einen Sachverhalt nur einmal nachhalte.
+Als Beirat möchte ich doppelte Vorgänge innerhalb einer Gemeinschaft zusammenführen, damit ich einen Sachverhalt nur einmal nachhalte.
 
 ## Akzeptanzkriterien
 
-1. Ein prüfbarer Zielpunkt erhält Verweise auf die Ursprünge; widersprüchliche Angaben werden zur Auswahl gezeigt.
+1. Ein prüfbarer Zielvorgang erhält Verweise auf die Ursprünge; widersprüchliche Angaben werden zur Auswahl gezeigt.
 2. Alte Referenzen bleiben auflösbar und als zusammengeführt erkennbar.
-3. Gleichnamige Punkte verschiedener Gemeinschaften werden nicht zusammengeführt.
+3. Gleichnamige Vorgänge verschiedener Gemeinschaften werden nicht zusammengeführt.
 
 ## Herkunft und Regeln
 
@@ -58,7 +58,7 @@ P FR-V3; US-03; DF-12/13. Quellkürzel: 01-Quellabdeckung (historische Quelle: G
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-05 - Einen Punkt erfassen und wiederfinden]]
+[[PBI-05 - Einen Vorgang erfassen und wiederfinden]]
 
 ## Refinementgrenze
 

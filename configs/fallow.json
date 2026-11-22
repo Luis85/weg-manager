@@ -13,7 +13,6 @@
   "ignorePatterns": [
     "docs/**",
     ".claude/**",
-    "skills/**",
     "reports/**",
     "release/**",
     ".stryker-tmp/**",

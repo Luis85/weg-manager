@@ -15,7 +15,7 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-17 - Produktfeedback]]"
+  - "[[docs/entities/ENT-17 - Produktfeedback]]"
 business-rules:
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
   - "[[docs/business-rules/DF-16 - Produktfeedback und externe Meldung]]"

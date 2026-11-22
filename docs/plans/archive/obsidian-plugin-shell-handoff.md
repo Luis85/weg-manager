@@ -241,7 +241,7 @@ Follow the blueprint, applying rulings 3–5, and write ADR 0002 and ADR 0003 to
 
 ## 8. After run 2: Obsidian 1.15.1 and e2e tests
 
-Decided by the owner on 2026-11-21, following [the testing research](../../design/research/Testing%20research%20-%20Obsidian%20end-to-end%20tests.md):
+Decided by the owner on 2026-11-21, following [the testing research](../../research/Testing%20research%20-%20Obsidian%20end-to-end%20tests.md):
 
 - **`minAppVersion` is 1.15.1** (`manifest.json`, `versions.json`, the test double). The `obsidian` types stay at 1.14.4, because no 1.15.x types have been published. ADR 0001 records the exception.
 - **E2e suite.** `npm run test:e2e` runs three specs in the real Obsidian 1.15.1 app, on installers 1.5.8 and 1.15.1, using `wdio-obsidian-service` 3.5.0 and WebdriverIO 10.2.0. Details are in `docs/engineering/testing.md`.
@@ -306,7 +306,7 @@ A fresh-eyes code review of the shell produced the fixes below. Each has a test 
 
 ## 10. Run 4: best-practice items and owner decisions (2026-11-21)
 
-Source: `docs/design/research/Plugin research - Obsidian best practices.md`.
+Source: `docs/research/Plugin research - Obsidian best practices.md`.
 
 **Owner decisions:**
 - **Agent tooling:** stays in the repo; the community scan is dealt with at submission time. Meanwhile an informational `lint:scanner` runs in CI.

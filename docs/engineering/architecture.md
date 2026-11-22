@@ -490,7 +490,6 @@ The tracer slice (PBI-56): module `communities` in every layer. The worked examp
 | `scripts/` | build, check and release scripts run by npm scripts |
 | `configs/` | tool configs that take an explicit path: Vite (plugin, harness, probe, shared), Vitest (+ Stryker variant), Stryker, fallow, the scanner lint, `tsconfig.{app,node,base}.json`. Each resolves paths from the repository root. |
 | `docs/` | product concept, backlog, contracts, ADRs and these guides (see `docs/README_DOCS.md`) |
-| `skills/` | the distributable Claude skills, not part of the plugin |
 | root | files a tool or Obsidian only finds there |
 
 These files stay at the root on purpose:

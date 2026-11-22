@@ -11,7 +11,7 @@ pages:
   - "[[VIEW-01 - Lage]]"
 requirements:
   - "[[PBI-01 - Gemeinschaftskontext wählen]]"
-  - "[[PBI-02 - Ansprechpartner zuordnen]]"
+  - "[[PBI-02 - Personen und Rollen zuordnen]]"
   - "[[PBI-03 - Registerimport prüfen]]"
   - "[[PBI-04 - Geprüften Bestand übernehmen]]"
   - "[[PBI-30 - Bestand sichern und wiederherstellen]]"
@@ -22,6 +22,9 @@ requirements:
 ---
 
 # FLOW-06 · Einrichten, Import und Datenerhalt
+
+> [!note] Erststart abgelöst
+> Erststart, Einrichtung und Einführung stehen seit 22.11.2026 in [[FLOW-09 - Erststart, Einrichtung und Einführung]]. Die Einrichtung fragt dort nur Gemeinschaften ab; Kontakte und Registerimport folgen über die Karte „Erste Schritte“. Import und Datenerhalt gelten hier weiter.
 
 ```mermaid
 flowchart TD
@@ -46,8 +49,11 @@ Wiederholter Import erkennt Zeilen über Gemeinschaft + Altnummer + Herkunft und
 
 ## Kontakte pflegen
 
-Im laufenden Betrieb über [[VIEW-08 - Kontakte]]: Kontakt suchen oder aus Punktakte bzw. Postausgang öffnen (Modal) → Bearbeiten → Speichern, zurück im Kontakt-Modal; neue Entwürfe nutzen die geänderten Daten, gesendete Nachrichten bleiben unverändert. Ein ausgeschiedener Kontakt wird auf „nicht mehr verwendet“ gesetzt statt gelöscht.
+Im laufenden Betrieb über [[VIEW-08 - Kontakte]]: Kontakt suchen oder aus Vorgangsakte bzw. Postausgang öffnen (Modal) → Bearbeiten → Speichern, zurück im Kontakt-Modal; neue Entwürfe nutzen die geänderten Daten, gesendete Nachrichten bleiben unverändert. Ein ausgeschiedener Kontakt wird auf „nicht mehr verwendet“ gesetzt statt gelöscht.
 
 ## Einführungstour
+
+> [!note] Abgelöst
+> Seit 22.11.2026 gibt es keine Tour, sondern Hinweise im Kontext ([[FLOW-09 - Erststart, Einrichtung und Einführung]]). Der folgende Stand v2 bleibt als Referenz.
 
 Nach dem Erststart öffnet die Lage einmalig den Willkommensdialog: „Tour starten“ führt durch 7 Schritte (Kennzahlen, Wochenarbeit, Erfassen, Navigation, Gemeinschaftsfilter, Kontakte, Einstellungen), „Überspringen“ beendet sie. Neustart über Einstellungen › Hilfe oder den Befehl „Einführungstour starten“ ([[VIEW-07 - Einstellungen und Einrichtung]]).

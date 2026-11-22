@@ -19,10 +19,10 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
 business-rules:
   - "[[docs/business-rules/DF-08 - Quellenabdeckung]]"
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
@@ -36,7 +36,7 @@ hypotheses:
   - "[[docs/hypothesis/H-05 - Manuelle Eingangsübernahme bleibt alltagstauglich]]"
 pages:
   - "[[docs/design/sitemap/VIEW-02 - Wochenarbeit]]"
-  - "[[docs/design/sitemap/VIEW-03 - Punkte und Punktakte]]"
+  - "[[docs/design/sitemap/VIEW-03 - Vorgänge und Vorgangsakte]]"
   - "[[docs/design/sitemap/VIEW-05 - Erfassen]]"
 user-flows:
   - "[[docs/design/user-flows/FLOW-01 - Gesamtfluss des Beirats-MVP]]"
@@ -50,7 +50,7 @@ user-flows:
 
 ## User Story
 
-Als Beirat möchte ich relevante Nachrichten und Unterlagen einem Punkt zuordnen, damit ich Aussagen später belegen kann.
+Als Beirat möchte ich relevante Nachrichten und Unterlagen einem Vorgang zuordnen, damit ich Aussagen später belegen kann.
 
 ## Akzeptanzkriterien
 
@@ -59,7 +59,7 @@ Als Beirat möchte ich relevante Nachrichten und Unterlagen einem Punkt zuordnen
 3. Umbenennen erhält Beziehungen oder meldet Reparaturbedarf; Dateiinhalte werden nicht still verändert.
 4. Der Erfassungsweg verlangt keinen Mail-Connector und behauptet keinen vollständigen Postfacheingang.
 5. Dateien außerhalb des Vaults können gewählt werden; sie werden nach Wahl in den Quellenordner verschoben oder kopiert, der Zielpfad ist vor dem Speichern sichtbar. Mehrere Dateien je Erfassung sind möglich.
-6. Quellen sind aus der Punktakte mit Vorschau, Vault-Pfad und Öffnen in Obsidian einsehbar.
+6. Quellen sind aus der Vorgangsakte mit Vorschau, Vault-Pfad und Öffnen in Obsidian einsehbar.
 
 ## Herkunft und Regeln
 
@@ -69,7 +69,7 @@ P FR-E1/E2; US-05; Alt FR-17. Quellkürzel: 01-Quellabdeckung (historische Quell
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-05 - Einen Punkt erfassen und wiederfinden]]
+[[PBI-05 - Einen Vorgang erfassen und wiederfinden]]
 
 ## Refinementgrenze
 

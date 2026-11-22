@@ -11,7 +11,7 @@ date: 2026-11-22
 
 **Auf den Stand vom 22.11.2026 gebracht** nach [ADR 0007](../../adr/0007-vault-data-access.md) (Notizen als Datensätze, Speichern je Feld, Konflikt) und den Entscheidungen vom 22.11.2026. Keiner der Zustandsautomaten unten ist gebaut; sie gelten wie geplant. Gebaut ist nur der Abschnitt „Speichern und Fehler“.
 
-Zustandsnamen sind fachliche Vorschläge. Das technische Schema folgt je Datensatz mit seinem Dateivertrag (`docs/contracts/`): Schlüssel und Wertcodes sind englisch, ein Zustand steht als Code in einem flachen Schlüssel der Notiz (ADR 0007). Jeder Übergang erzeugt ein Ereignis (ENT-06) mit Ereignis- und Erfassungszeit.
+Zustandsnamen sind fachliche Vorschläge. Das technische Schema folgt je Datensatz mit seinem Dateivertrag (`docs/contracts/`): Schlüssel und Wertcodes sind englisch, ein Zustand steht als Code in einem flachen Schlüssel der Notiz (ADR 0007). Jeder Übergang erzeugt einen Verlaufseintrag (ENT-06) mit Ereignis- und Erfassungszeit.
 
 ## Wochensitzung
 
@@ -32,8 +32,8 @@ Gespeichert: Schritt (1–5), Position im Schritt, aktive Minuten (nur bei sicht
 ```mermaid
 stateDiagram-v2
   [*] --> ungeprueft
-  ungeprueft --> zugeordnet: Zu Punkt
-  ungeprueft --> neuer_punkt: Neuer Punkt
+  ungeprueft --> zugeordnet: Zu Vorgang
+  ungeprueft --> neuer_vorgang: Neuer Vorgang
   ungeprueft --> dublette: Dublette
   ungeprueft --> spaeter: Später
   ungeprueft --> verworfen: Nicht relevant (Grund)
@@ -57,9 +57,9 @@ stateDiagram-v2
   eingegangen --> wartet: nur Antwort, keine Erfüllung
 ```
 
-Stufe (1 Termin erfragen → 2 Antwortfrist → 3 förmlich → 4 Bericht/ETV) wird nur nach dokumentiertem Versand und Ablauf der kommunizierten Frist vorgeschlagen. Ein Entwurf startet keinen Zeitanker.
+Die Eskalationsstufe (1 Termin erfragen → 2 Antwortfrist → 3 förmlich → 4 Bericht/ETV) wird nur nach dokumentiertem Versand und Ablauf der kommunizierten Frist vorgeschlagen. Ein Entwurf startet keinen Zeitanker.
 
-## Arbeitsentscheidung
+## Entscheidungskarte
 
 ```mermaid
 stateDiagram-v2
@@ -70,7 +70,7 @@ stateDiagram-v2
   zurueckgestellt --> vorgeschlagen: nächste Wochenarbeit (A7)
 ```
 
-Bestätigen erzeugt Folgen idempotent: Schlüssel (Entscheidung, Option, Empfänger, Sprache) für Entwürfe; (Entscheidung, Option) für Aufgaben.
+Bestätigen erzeugt Folgen idempotent: Schlüssel (Entscheidung, Option, Empfänger, Sprache) für Entwürfe; (Entscheidung, Option) für To-dos.
 
 ## Nachricht (gebündelter Entwurf)
 

@@ -17,26 +17,26 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-13 - Nachfassstand]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-13 - Eskalation]]"
 business-rules:
   - "[[docs/business-rules/DF-02 - Bearbeitung, Terminprüfung und Bewertung]]"
   - "[[docs/business-rules/DF-03 - Terminbedeutung]]"
-  - "[[docs/business-rules/DF-05 - Nachfassfristen und Stufen]]"
+  - "[[docs/business-rules/DF-05 - Eskalationsleiter und Fristen]]"
   - "[[docs/business-rules/DF-06 - Reaktion und Pause]]"
   - "[[docs/business-rules/DF-08 - Quellenabdeckung]]"
 decisions:
-  - "[[docs/decisions/K-03 - Einzeln erledigbarer Punkt als Kerneinheit]]"
-  - "[[docs/decisions/K-06 - Nachfassen an Versand und Fristen ausrichten]]"
+  - "[[docs/decisions/K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]]"
+  - "[[docs/decisions/K-06 - Eskalation an Versand und Fristen ausrichten]]"
 hypotheses:
-  - "[[docs/hypothesis/H-02 - Einzelne Punkte machen den Arbeitsstand verständlich]]"
+  - "[[docs/hypothesis/H-02 - Einzelne Vorgänge machen den Arbeitsstand verständlich]]"
   - "[[docs/hypothesis/H-08 - Der Pilot kann den Kernablauf selbstständig fortführen]]"
 pages:
   - "[[docs/design/sitemap/VIEW-02 - Wochenarbeit]]"
-  - "[[docs/design/sitemap/VIEW-03 - Punkte und Punktakte]]"
+  - "[[docs/design/sitemap/VIEW-03 - Vorgänge und Vorgangsakte]]"
 user-flows:
   - "[[docs/design/user-flows/FLOW-01 - Gesamtfluss des Beirats-MVP]]"
   - "[[docs/design/user-flows/FLOW-02 - Wochenarbeit geführt]]"
@@ -55,7 +55,7 @@ Als Beirat möchte ich eine Antwort oder einen akzeptierten neuen Termin einordn
 ## Akzeptanzkriterien
 
 1. Wir kümmern uns ohne Datum erzeugt weder verbindlichen Termin noch Erledigung.
-2. Ein menschlich akzeptierter neuer Termin beendet aktuelles Terminnachfragen, erhält aber den offenen Punkt und den bisherigen Verlauf.
+2. Ein menschlich akzeptierter neuer Termin beendet aktuelles Terminnachfragen, erhält aber den offenen Vorgang und den bisherigen Verlauf.
 3. Bei erneuter Überschreitung wird ein begründeter neuer Vorschlag sichtbar; Teillieferung erledigt nur belegte Teile.
 4. Erfüllung wird anhand des erwarteten Ergebnisses bewusst bestätigt.
 
@@ -65,7 +65,7 @@ P FR-L4; US-10; DF-02/06. Quellkürzel: 01-Quellabdeckung (historische Quelle: G
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-21 - Begründeten Nachfassschritt prüfen]], [[PBI-12 - Ereignisse nachvollziehen]]
+[[PBI-21 - Begründeten Eskalationsschritt prüfen]], [[PBI-12 - Verlauf nachvollziehen]]
 
 ## Refinementgrenze
 

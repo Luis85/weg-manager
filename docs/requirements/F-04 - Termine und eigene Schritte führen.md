@@ -26,7 +26,7 @@ Fremdtermine, eigene Arbeit und Wiedervorlage bleiben unterscheidbar und offene 
 ## User Stories
 
 - [[PBI-09 - Termin und Wiedervorlage trennen]]
-- [[PBI-10 - Eigene Folgeaufgabe nachhalten]]
+- [[PBI-10 - Eigenes To-do nachhalten]]
 
 ## Abnahme und Abgrenzung
 

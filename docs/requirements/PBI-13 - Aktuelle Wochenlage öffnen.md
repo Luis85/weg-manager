@@ -16,13 +16,13 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
-  - "[[docs/design/entities/ENT-12 - Eigene Aufgabe]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-12 - To-do]]"
 business-rules:
   - "[[docs/business-rules/DF-03 - Terminbedeutung]]"
   - "[[docs/business-rules/DF-04 - Fehlender Termin]]"
@@ -55,11 +55,11 @@ user-flows:
 
 ## User Story
 
-Als Beirat möchte ich eine vorbereitete kurze Lage mit Fristen und Aufgaben öffnen, damit ich ohne verstreute Listen beginnen kann.
+Als Beirat möchte ich eine vorbereitete kurze Lage mit Fristen und To-dos öffnen, damit ich ohne verstreute Listen beginnen kann.
 
 ## Akzeptanzkriterien
 
-1. Lage bis sieben Sätze, Fristen der nächsten 14 Tage und eigene Aufgaben sind quellenbezogen verfügbar.
+1. Lage bis sieben Sätze, Fristen der nächsten 14 Tage und eigene To-dos sind quellenbezogen verfügbar.
 2. Zeitpunkt, berücksichtigte Quellen, ungeprüfte Unterlagen und bekannte Lücken sind sichtbar.
 3. Einstieg aktualisiert fällige Arbeit; ein geschlossener Client wird nicht als gelaufener Hintergrunddienst ausgegeben.
 4. Die Vorbereitung verwendet vorhandene Daten und bearbeitbare Texte; notwendige manuelle Ergänzung zählt zur späteren Wochenzeit.
@@ -73,7 +73,7 @@ P FR-W1/E5; US-06; DF-08. Quellkürzel: 01-Quellabdeckung (historische Quelle: G
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-09 - Termin und Wiedervorlage trennen]], [[PBI-10 - Eigene Folgeaufgabe nachhalten]], [[PBI-12 - Ereignisse nachvollziehen]]
+[[PBI-09 - Termin und Wiedervorlage trennen]], [[PBI-10 - Eigenes To-do nachhalten]], [[PBI-12 - Verlauf nachvollziehen]]
 
 ## Refinementgrenze
 

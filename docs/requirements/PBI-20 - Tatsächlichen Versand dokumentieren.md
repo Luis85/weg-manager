@@ -19,18 +19,18 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
-  - "[[docs/design/entities/ENT-11 - Versanddokumentation]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-11 - Versanddokumentation]]"
 business-rules:
-  - "[[docs/business-rules/DF-05 - Nachfassfristen und Stufen]]"
+  - "[[docs/business-rules/DF-05 - Eskalationsleiter und Fristen]]"
   - "[[docs/business-rules/DF-07 - Wahl, Entwurf und Versand]]"
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
 decisions:
-  - "[[docs/decisions/K-06 - Nachfassen an Versand und Fristen ausrichten]]"
+  - "[[docs/decisions/K-06 - Eskalation an Versand und Fristen ausrichten]]"
   - "[[docs/decisions/K-10 - Manuelle Quellenübernahme und Registerimport vorsehen]]"
 hypotheses:
   - "[[docs/hypothesis/H-03 - Wochenarbeit bleibt innerhalb einer Stunde]]"
@@ -72,4 +72,4 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 
 ## Business Rules
 
-[[DF-05 - Nachfassfristen und Stufen]], [[DF-07 - Wahl, Entwurf und Versand]].
+[[DF-05 - Eskalationsleiter und Fristen]], [[DF-07 - Wahl, Entwurf und Versand]].

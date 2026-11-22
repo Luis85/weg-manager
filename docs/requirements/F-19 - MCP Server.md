@@ -24,7 +24,7 @@ Ein MCP Server soll geeigneten Clients einen ausdrücklich freigegebenen Zugang 
 
 ## Geplanter fachlicher Umfang
 
-- Freigegebene Punkte, Quellenbezüge und Bearbeitungsstände im gewählten Gemeinschaftskontext bereitstellen.
+- Freigegebene Vorgänge, Quellenbezüge und Bearbeitungsstände im gewählten Gemeinschaftskontext bereitstellen.
 - Unterstützende Clients können auf dieser Grundlage Wochenarbeit oder Folgeaktionen vorbereiten.
 - Ob und welche Änderungen ein Client anstoßen darf, wird gesondert festgelegt. Ein Lesezugang erteilt keine Schreib- oder Versandberechtigung.
 
@@ -33,7 +33,7 @@ Ein MCP Server soll geeigneten Clients einen ausdrücklich freigegebenen Zugang 
 - Freigegebener Client, Gemeinschaft und erlaubte Operationen sind erkennbar; nicht freigegebene Daten bleiben ausgeschlossen.
 - Fachregeln für Termine, Entscheidungen, Vertraulichkeit und Datenerhalt gelten auch für Operationen über diese Schnittstelle.
 - Herkunft und Urheber unterstützter Änderungen sind nachvollziehbar. Wiederholung einer freigegebenen Aktion erzeugt keine stillen Dubletten.
-- Persönliche Arbeitsentscheidung, Entwurf und tatsächlicher menschlicher Versand bleiben getrennt. Der MCP Server führt keinen automatischen Versand ein.
+- Persönliche Entscheidung, Entwurf und tatsächlicher menschlicher Versand bleiben getrennt. Der MCP Server führt keinen automatischen Versand ein.
 - Der lokale Kern bleibt ohne MCP-Client und ohne verpflichtende KI nutzbar.
 
 ## Offene Entscheidungen und User Stories

@@ -11,7 +11,7 @@ scope: mvp
 
 **Abnahmeanker:** Ungeprüfte Portalnachricht bei altem Registerstand: Lücke und Prüfbedarf anzeigen, weder nichts Dringendes noch nicht eingehalten behaupten.
 
-**PBIs:** [[PBI-11 - Nachricht und Original zuordnen]], [[PBI-13 - Aktuelle Wochenlage öffnen]], [[PBI-15 - Eine Entscheidungsvorlage prüfen]], [[PBI-21 - Begründeten Nachfassschritt prüfen]], [[PBI-24 - Zwischendurch Dringlichkeit prüfen]]
+**PBIs:** [[PBI-11 - Nachricht und Original zuordnen]], [[PBI-13 - Aktuelle Wochenlage öffnen]], [[PBI-15 - Eine Entscheidungsvorlage prüfen]], [[PBI-21 - Begründeten Eskalationsschritt prüfen]], [[PBI-24 - Zwischendurch Dringlichkeit prüfen]]
 
 ## Herkunft und Pflege
 

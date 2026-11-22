@@ -1,0 +1,158 @@
+<!doctype html><html lang="de" data-theme="light"><head><meta charset="utf-8"><meta name="mockup" content="out=v2-Sitemap.png; width=3168; height=468; scale=1"><title>v2-Sitemap</title><style>:root{
+  --bg:#F6F6F3;--surface:#FFFFFF;--surface2:#FAFAF8;--sunk:#EDEDE8;--line:#E4E4DF;--line2:#D4D4D8;
+  --fg:#18181B;--fg2:#52525B;--fg3:#5F5F67;--primary:#18181B;--on:#FFFFFF;--accent:#2563EB;
+  --aw:#0F766E;--awbg:#E3F3EF;--awfg:#0B5F55;--tg:#6D28D9;--tgbg:#F1EBFE;--tgfg:#5B21B6;
+  --warn:#B45309;--warnbg:#FEF3E2;--warnfg:#92400E;--bad:#B42318;--badbg:#FDECEA;--badfg:#9F1D14;
+  --ok:#15803D;--okbg:#ECFDF3;--okfg:#166534;--info:#4F46E5;--infobg:#EEF2FF;--infofg:#3730A3;
+  --judge:#6D28D9;--judgebg:#F5F3FF;--judgefg:#5B21B6;--mark:#FEF9C3;--scrim:rgba(24,24,27,.45);--pbar:#E7E7E3;
+  --sans:"Geist","Inter",ui-sans-serif,system-ui,sans-serif;
+  --mono:"Geist Mono","JetBrains Mono","DejaVu Sans Mono",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111113;--surface:#1A1A1D;--surface2:#1F1F22;--sunk:#232327;--line:#2C2C30;--line2:#3A3A3F;
+  --fg:#EDEDEF;--fg2:#A1A1AA;--fg3:#9A9AA3;--primary:#EDEDEF;--on:#18181B;--accent:#60A5FA;
+  --aw:#2BB3A3;--awbg:#0F2E2A;--awfg:#5EEAD4;--tg:#A78BFA;--tgbg:#2A1F45;--tgfg:#C4B5FD;
+  --warn:#F59E0B;--warnbg:#3A2A12;--warnfg:#FCD34D;--bad:#F87171;--badbg:#3B1A1A;--badfg:#FCA5A5;
+  --ok:#22C55E;--okbg:#11291C;--okfg:#86EFAC;--info:#818CF8;--infobg:#1E1B4B;--infofg:#A5B4FC;
+  --judge:#A78BFA;--judgebg:#2A1F45;--judgefg:#C4B5FD;--mark:#4A3F0B;--scrim:rgba(0,0,0,.6);--pbar:#0B0B0C;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111113;--surface:#1A1A1D;--surface2:#1F1F22;--sunk:#232327;--line:#2C2C30;--line2:#3A3A3F;
+  --fg:#EDEDEF;--fg2:#A1A1AA;--fg3:#9A9AA3;--primary:#EDEDEF;--on:#18181B;--accent:#60A5FA;
+  --aw:#2BB3A3;--awbg:#0F2E2A;--awfg:#5EEAD4;--tg:#A78BFA;--tgbg:#2A1F45;--tgfg:#C4B5FD;
+  --warn:#F59E0B;--warnbg:#3A2A12;--warnfg:#FCD34D;--bad:#F87171;--badbg:#3B1A1A;--badfg:#FCA5A5;
+  --ok:#22C55E;--okbg:#11291C;--okfg:#86EFAC;--info:#818CF8;--infobg:#1E1B4B;--infofg:#A5B4FC;
+  --judge:#A78BFA;--judgebg:#2A1F45;--judgefg:#C4B5FD;--mark:#4A3F0B;--scrim:rgba(0,0,0,.6);--pbar:#0B0B0C;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--fg2)}
+.ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:21px;padding:0 6px;border-radius:5px;font-size:11px;font-weight:600;color:var(--on);flex-shrink:0}
+.b-AW{background:var(--aw)}.b-TG{background:var(--tg)}.b-A14{background:#1D4ED8}.b-BH{background:#9A3412}.b-LS{background:#475569}.b-PN{background:#0E7490}
+select[data-on="true"]{border:1.5px solid var(--fg)!important;font-weight:600}
+.ftag{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 4px 0 6px;border-radius:999px;background:var(--surface);border:1.5px solid var(--fg);font-size:13px;font-weight:600}
+.ftag button{width:26px;height:26px;border:0;border-radius:50%;background:var(--sunk);display:inline-flex;align-items:center;justify-content:center;color:var(--fg)}
+.cpick{display:flex;flex-direction:column;border:1px solid var(--line2);border-radius:10px;overflow:hidden;background:var(--surface)}
+.cpick button{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left;font-size:14px}
+.cpick button[aria-checked="true"]{background:var(--sunk);font-weight:600}
+.cpick .sub{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);padding:8px 12px 4px;border-top:1px solid var(--line)}
+.filebox{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--surface2)}.b-none{background:transparent;border:1px dashed var(--line2);color:var(--fg2)}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.c-bad{background:var(--badbg);color:var(--badfg)}.c-warn{background:var(--warnbg);color:var(--warnfg)}.c-info{background:var(--infobg);color:var(--infofg)}
+.c-ok{background:var(--okbg);color:var(--okfg)}.c-n{background:var(--sunk);color:var(--fg)}.c-judge{background:var(--judgebg);color:var(--judgefg)}
+.pid{font-family:var(--mono);font-size:12px;color:var(--fg3)}
+.btn{min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;border-radius:10px;border:1px solid var(--line2);background:var(--surface);font-weight:500;text-decoration:none;color:var(--fg)}
+.btn:hover{background:var(--surface2)}
+.btn.pri{background:var(--primary);border-color:var(--primary);color:var(--on);font-weight:600}
+.btn.pri:hover{opacity:.92}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:var(--on);font-weight:600}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--sunk)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{min-height:34px;padding:0 11px;font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.lab{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .fl{font-size:13px;font-weight:600}
+.inp{min-height:42px;padding:0 12px;border:1px solid var(--line2);border-radius:9px;background:var(--surface);width:100%}
+textarea.inp{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5}
+.seg{display:flex;flex-wrap:wrap;gap:3px;padding:3px;border-radius:10px;background:var(--sunk)}
+.seg button{flex:1 1 auto;min-height:38px;padding:0 12px;border:0;border-radius:8px;background:transparent;font-size:13px;font-weight:500;color:var(--fg2);white-space:nowrap}
+@media (hover:hover){
+.seg button:not([aria-pressed="true"]):not(:disabled):hover{background:color-mix(in srgb,var(--surface) 55%,transparent);color:var(--fg)}
+.kpi:hover,.msg:hover,.opt:hover{border-color:var(--line2);background:var(--surface2)}
+.opt[aria-checked="true"]:hover{border-color:var(--fg)}
+.tabs button:not([aria-selected="true"]):hover{background:var(--sunk);color:var(--fg)}
+.cpick button:not([aria-checked="true"]):hover{background:var(--surface2)}
+.ftag button:hover{background:var(--line2)}
+.kpi,.msg,.opt,.seg button,.tabs button,.cpick button{transition:background-color .12s,border-color .12s,color .12s}
+}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.1),0 0 0 1px var(--line)}
+
+.opt{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);text-align:left;width:100%}
+.opt[aria-checked="true"]{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center}
+.opt[aria-checked="true"] .radio{border-color:var(--fg)}
+.opt[aria-checked="true"] .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--fg)}
+html,body{height:auto}
+body{margin:0;background:#fff;color:#27272A;font:14px/1.3 var(--sans);width:3168px;height:468px;position:relative;overflow:hidden}
+.n{position:absolute;transform:translateX(-50%);height:34px;padding:0 14px;display:flex;align-items:center;white-space:nowrap;background:#EEEEEE;border:1px solid #A8A8A8;z-index:1}
+.n.r{border-radius:999px}
+.n.root{height:42px;font-weight:600;padding:0 20px}
+.n.lst{transform:none;height:28px;font-size:13px}
+.n.start{background:#fff;border-style:dashed}
+#edges{position:absolute;inset:0;width:3168px;height:468px;overflow:visible}
+.e{fill:none;stroke:#6B6B6B;stroke-width:1.3}
+.e.dash{stroke-dasharray:4 4;stroke:#8A8A8A}
+.legend{position:absolute;left:24px;top:400px;display:flex;gap:22px;align-items:center;font-size:13px;color:#52525B}
+.legend i{display:inline-block;width:30px;height:16px;background:#EEEEEE;border:1px solid #A8A8A8;margin-right:7px;vertical-align:-3px}
+.legend i.r{border-radius:999px}
+.legend i.l{height:0;border:0;border-top:1.5px dashed #8A8A8A;background:none;vertical-align:4px}
+</style></head><body><svg id="edges" aria-hidden="true"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#6B6B6B"/></marker></defs></svg>
+<div class="n root" id="R" style="left:1584px;top:12px">WEG Manager · eigener Obsidian-Tab</div>
+<div class="n start" id="E0" style="left:140px;top:100px">Erststart ohne Gemeinschaft</div>
+<div class="n" id="E1" style="left:390px;top:100px">Einrichtung · VIEW-09</div>
+<div class="n" id="L" style="left:640px;top:100px">Lage · Start</div>
+<div class="n" id="L1" style="left:110px;top:186px">Neu seit Übergabe</div>
+<div class="n" id="L2" style="left:300px;top:186px">Dringend &amp; Datenlücken</div>
+<div class="n" id="L3" style="left:480px;top:186px">Nächste 14 Tage</div>
+<div class="n" id="L4" style="left:660px;top:186px">Deine 3 Schwerpunkte</div>
+<div class="n" id="W" style="left:900px;top:100px">Woche · geführt</div>
+<div class="n r" id="G" style="left:1085px;top:100px">+ Erfassen · überall</div>
+<div class="n" id="W1" style="left:900px;top:186px">1 Eingang sichten</div>
+<div class="n" id="W2" style="left:900px;top:240px">2 Nachhalten</div>
+<div class="n" id="W3" style="left:900px;top:294px">3 Entscheiden</div>
+<div class="n" id="W4" style="left:900px;top:348px">4 Senden</div>
+<div class="n" id="W5" style="left:900px;top:402px">5 Übergabe</div>
+<div class="n" id="P" style="left:1390px;top:100px">Vorgänge</div>
+<div class="n" id="P1" style="left:1160px;top:186px">Vorgänge · To-dos · Filter · Themen</div>
+<div class="n" id="P2" style="left:1385px;top:186px">Vorgangsakte</div>
+<div class="n" id="P5" style="left:1550px;top:186px">Sachstand ausgeben</div>
+<div class="n r" id="P3" style="left:1270px;top:276px">Aufteilen / Zusammenführen</div>
+<div class="n r" id="P4" style="left:1480px;top:276px">Bewertung setzen</div>
+<div class="n" id="O" style="left:1900px;top:100px">Postausgang</div>
+<div class="n" id="O1" style="left:1800px;top:186px">Entwürfe je Gemeinschaft und Empfänger</div>
+<div class="n" id="O2" style="left:2070px;top:186px">Entwurf prüfen DE/EN</div>
+<div class="n" id="O4" style="left:2250px;top:186px">Gesendet · wartet</div>
+<div class="n r" id="O3" style="left:2070px;top:276px">Als gesendet markieren</div>
+<div class="n" id="K" style="left:2560px;top:100px">Kontakte · Nebenbereich</div>
+<div class="n" id="K1" style="left:2520px;top:186px">Gruppen nach Rolle · Personen und Firmen</div>
+<div class="n" id="K2" style="left:2745px;top:186px">Verteiler</div>
+<div class="n r" id="K4" style="left:2520px;top:276px">Kontakt · Modal</div>
+<div class="n r" id="K3" style="left:2520px;top:346px">Kontakt bearbeiten</div>
+<div class="n" id="S" style="left:3010px;top:72px">Einstellungen · Nebenbereich</div>
+<div class="n lst" id="S1" style="left:2950px;top:124px">Gemeinschaften</div>
+<div class="n lst" id="S2" style="left:2950px;top:160px">Wochenrhythmus</div>
+<div class="n lst" id="S3" style="left:2950px;top:196px">Register-Import</div>
+<div class="n lst" id="S4" style="left:2950px;top:232px">Sicherung</div>
+<div class="n lst" id="S5" style="left:2950px;top:268px">Datenprobleme</div>
+<div class="n lst" id="S6" style="left:2950px;top:304px">Hilfe</div>
+<div class="n lst" id="S8" style="left:2950px;top:340px">Eigene Angaben</div>
+<div class="n lst" id="S9" style="left:2950px;top:376px">Arten von Gemeinschaften</div>
+<div class="n lst" id="S10" style="left:2950px;top:412px">Ablage</div>
+<div class="legend"><span><i></i>Ansicht oder Bereich</span><span><i class="r"></i>Sheet oder Dialog</span><span><i class="l"></i>Nebenbereich oder jederzeit erreichbar</span></div>
+<script>const T=x=>({f:"S",fs:"b:-80",t:x,ts:"l",trunk:1});const EDGES=[
+{f:"R",t:"L"},{f:"R",t:"W"},{f:"R",t:"P"},{f:"R",t:"O"},{f:"R",t:"K",dash:1},{f:"R",fs:"r",t:"S",ts:"l",dash:1},
+{f:"E0",fs:"r",t:"E1",ts:"l"},{f:"E1",fs:"r",t:"L",ts:"l"},
+{f:"L",t:"L1"},{f:"L",t:"L2"},{f:"L",t:"L3"},{f:"L",t:"L4"},
+{f:"W",t:"W1"},{f:"W1",t:"W2"},{f:"W2",t:"W3"},{f:"W3",t:"W4"},{f:"W4",t:"W5"},{f:"G",t:"W1",ts:"r",dash:1},
+{f:"P",t:"P1"},{f:"P",t:"P2"},{f:"P",t:"P5"},{f:"P2",t:"P3"},{f:"P2",t:"P4"},
+{f:"O",t:"O1"},{f:"O",t:"O2"},{f:"O",t:"O4"},{f:"O2",t:"O3"},
+{f:"K",t:"K1"},{f:"K",t:"K2"},{f:"K1",t:"K4"},{f:"K4",t:"K3"},
+T("S1"),T("S2"),T("S3"),T("S4"),T("S5"),T("S6"),T("S8"),T("S9"),T("S10")];</script><script>// Zeichnet die Kanten aus EDGES als SVG-Kurven zwischen den Knoten (ids). Seiten: t, b, l, r, optional ":Versatz".
+(()=>{const ns="http://www.w3.org/2000/svg",svg=document.getElementById("edges");
+const R=id=>document.getElementById(id).getBoundingClientRect();
+const P=(r,s)=>{const[k,o]=s.split(":"),v=+o||0;return k==="t"?[r.left+r.width/2+v,r.top,0,-1]:k==="b"?[r.left+r.width/2+v,r.bottom,0,1]:k==="l"?[r.left,r.top+r.height/2+v,-1,0]:[r.right,r.top+r.height/2+v,1,0]};
+for(const e of EDGES){const a=P(R(e.f),e.fs||"b"),b=P(R(e.t),e.ts||"t");let d;
+ if(e.trunk){d=`M${a[0]} ${a[1]} V${b[1]} H${b[0]}`}else{const k=e.k??Math.max(18,(a[3]||b[3]?Math.abs(b[1]-a[1]):Math.abs(b[0]-a[0]))*.55);
+ const c1=e.c1||[a[0]+a[2]*k,a[1]+a[3]*k],c2=e.c2||[b[0]+b[2]*k,b[1]+b[3]*k];d=`M${a[0]} ${a[1]} C${c1} ${c2} ${b[0]} ${b[1]}`;
+ if(e.label){const t=.5,m=(p,q,r,s)=>(1-t)**3*p+3*(1-t)**2*t*q+3*(1-t)*t*t*r+t**3*s;const x=m(a[0],c1[0],c2[0],b[0])+(e.lx||0),y=m(a[1],c1[1],c2[1],b[1])+(e.ly||0);
+  const l=document.createElement("span");l.className="elab";l.textContent=e.label;l.style.left=x+"px";l.style.top=y+"px";document.body.appendChild(l)}}
+ const p=document.createElementNS(ns,"path");p.setAttribute("d",d);p.setAttribute("class",e.dash?"e dash":"e");p.setAttribute("marker-end","url(#arr)");svg.appendChild(p)}})();
+</script></body></html>

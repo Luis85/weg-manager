@@ -8,7 +8,7 @@ date: 2026-11-15
 pages:
   - "[[VIEW-01 - Lage]]"
   - "[[VIEW-02 - Wochenarbeit]]"
-  - "[[VIEW-03 - Punkte und Punktakte]]"
+  - "[[VIEW-03 - Vorgänge und Vorgangsakte]]"
   - "[[VIEW-04 - Postausgang]]"
   - "[[VIEW-05 - Erfassen]]"
   - "[[VIEW-06 - Sachstand ausgeben]]"
@@ -21,21 +21,22 @@ flows:
   - "[[FLOW-06 - Einrichten, Import und Datenerhalt]]"
   - "[[FLOW-07 - Sachstand gezielt ausgeben]]"
   - "[[FLOW-08 - Zwischen Plugin und direkter Dateibearbeitung wechseln]]"
+  - "[[FLOW-09 - Erststart, Einrichtung und Einführung]]"
 mockups:
   - "[[docs/design/sitemap/assets/v2-Flows.png]]"
 requirements:
   - "[[PBI-01 - Gemeinschaftskontext wählen]]"
-  - "[[PBI-02 - Ansprechpartner zuordnen]]"
+  - "[[PBI-02 - Personen und Rollen zuordnen]]"
   - "[[PBI-03 - Registerimport prüfen]]"
   - "[[PBI-04 - Geprüften Bestand übernehmen]]"
-  - "[[PBI-05 - Einen Punkt erfassen und wiederfinden]]"
-  - "[[PBI-06 - Sammelpunkte aufteilen]]"
+  - "[[PBI-05 - Einen Vorgang erfassen und wiederfinden]]"
+  - "[[PBI-06 - Sammelvorgänge aufteilen]]"
   - "[[PBI-07 - Dubletten zusammenführen]]"
   - "[[PBI-08 - Bearbeitungsstand bewusst ändern]]"
   - "[[PBI-09 - Termin und Wiedervorlage trennen]]"
-  - "[[PBI-10 - Eigene Folgeaufgabe nachhalten]]"
+  - "[[PBI-10 - Eigenes To-do nachhalten]]"
   - "[[PBI-11 - Nachricht und Original zuordnen]]"
-  - "[[PBI-12 - Ereignisse nachvollziehen]]"
+  - "[[PBI-12 - Verlauf nachvollziehen]]"
   - "[[PBI-13 - Aktuelle Wochenlage öffnen]]"
   - "[[PBI-14 - Entscheidungsauswahl und Überlauf prüfen]]"
   - "[[PBI-15 - Eine Entscheidungsvorlage prüfen]]"
@@ -44,8 +45,8 @@ requirements:
   - "[[PBI-18 - Nachrichten je Gemeinschaft bündeln]]"
   - "[[PBI-19 - Eigentümertexte zweisprachig prüfen]]"
   - "[[PBI-20 - Tatsächlichen Versand dokumentieren]]"
-  - "[[PBI-21 - Begründeten Nachfassschritt prüfen]]"
-  - "[[PBI-22 - Nachfasspaket begrenzen oder pausieren]]"
+  - "[[PBI-21 - Begründeten Eskalationsschritt prüfen]]"
+  - "[[PBI-22 - Eskalationen begrenzen oder aussetzen]]"
   - "[[PBI-23 - Reaktion richtig einordnen]]"
   - "[[PBI-24 - Zwischendurch Dringlichkeit prüfen]]"
   - "[[PBI-25 - Nächste Wochenarbeit vorbereiten]]"
@@ -74,7 +75,7 @@ Drei Rhythmen tragen das Produkt: **einmal pro Woche** geführt arbeiten, **zwis
 ```mermaid
 flowchart LR
   A[Plugin öffnen] --> B{Eingerichtet?}
-  B -- nein --> E[FLOW-06 Einrichten]
+  B -- nein --> E[FLOW-09 Einrichten]
   E --> L
   B -- ja --> L[Lage]
   L -->|Wochentag| W[FLOW-02 Woche starten]
@@ -85,7 +86,7 @@ flowchart LR
   X([+ Erfassen · FLOW-04]) -.-> W1
   W4 -.-> S[FLOW-05 Versand dokumentieren]
   S -.-> W2
-  L -.-> P[Punktakte] -.-> O[FLOW-07 Sachstand ausgeben]
+  L -.-> P[Vorgangsakte] -.-> O[FLOW-07 Sachstand ausgeben]
   L -.-> K[Kontakte pflegen · FLOW-06]
   P -.-> F[FLOW-08 Dateien direkt bearbeiten]
 ```
@@ -93,6 +94,6 @@ flowchart LR
 ## Prinzipien
 
 - Jede Handlung hat eine Gemeinschaft (DF-12); „Alle“ ist nur Übersicht.
-- Entscheidung, Entwurf, Versand, Antwort und Erfüllung sind getrennte Ereignisse (DF-07).
+- Entscheidung, Entwurf, Versand, Antwort und Erfüllung sind getrennte Verlaufseinträge (DF-07).
 - Unterbrechen ist überall erlaubt; Rückkehr an dieselbe Stelle.
 - Keine automatische Aktion nach außen.

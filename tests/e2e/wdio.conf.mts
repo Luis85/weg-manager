@@ -3,7 +3,7 @@ import { env } from "node:process";
 import { parseObsidianVersions } from "wdio-obsidian-service";
 
 /**
- * End-to-end tests in a real Obsidian app (docs/design/research/Testing research - Obsidian
+ * End-to-end tests in a real Obsidian app (docs/research/Testing research - Obsidian
  * end-to-end tests.md). Runs `dist/` as installed plugin, beside the test-only note store probe
  * (`tests/e2e/probe-plugin/`); `npm run test:e2e` builds both first.
  */

@@ -17,28 +17,28 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-03 - Thema]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
-  - "[[docs/design/entities/ENT-09 - Arbeitsentscheidung]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
-  - "[[docs/design/entities/ENT-11 - Versanddokumentation]]"
-  - "[[docs/design/entities/ENT-12 - Eigene Aufgabe]]"
-  - "[[docs/design/entities/ENT-13 - Nachfassstand]]"
-  - "[[docs/design/entities/ENT-14 - Wochenübergabe]]"
-  - "[[docs/design/entities/ENT-15 - Ausgabestand]]"
-  - "[[docs/design/entities/ENT-16 - Beiratsbewertung]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-03 - Thema]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-09 - Entscheidungskarte]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-11 - Versanddokumentation]]"
+  - "[[docs/entities/ENT-12 - To-do]]"
+  - "[[docs/entities/ENT-13 - Eskalation]]"
+  - "[[docs/entities/ENT-14 - Übergabe]]"
+  - "[[docs/entities/ENT-15 - Ausgabestand]]"
+  - "[[docs/entities/ENT-16 - Beiratsbewertung]]"
 business-rules:
   - "[[docs/business-rules/DF-01 - Beiratsarbeit und Befugnis]]"
   - "[[docs/business-rules/DF-02 - Bearbeitung, Terminprüfung und Bewertung]]"
   - "[[docs/business-rules/DF-03 - Terminbedeutung]]"
   - "[[docs/business-rules/DF-04 - Fehlender Termin]]"
-  - "[[docs/business-rules/DF-05 - Nachfassfristen und Stufen]]"
+  - "[[docs/business-rules/DF-05 - Eskalationsleiter und Fristen]]"
   - "[[docs/business-rules/DF-06 - Reaktion und Pause]]"
   - "[[docs/business-rules/DF-07 - Wahl, Entwurf und Versand]]"
   - "[[docs/business-rules/DF-08 - Quellenabdeckung]]"
@@ -48,7 +48,7 @@ business-rules:
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
   - "[[docs/business-rules/DF-13 - Historie und kontrollierte Entfernung]]"
   - "[[docs/business-rules/DF-14 - Kennzahlen]]"
-  - "[[docs/business-rules/DF-15 - Arbeitsentscheidung und Beschluss]]"
+  - "[[docs/business-rules/DF-15 - Entscheidungskarte und Beschluss]]"
 decisions:
   - "[[docs/decisions/K-01 - Beirat als erster Produkteinstieg]]"
   - "[[docs/decisions/K-04 - Wochenpaket beim Einstieg aktualisieren]]"
@@ -75,7 +75,7 @@ Als Beirat möchte ich mit verständlicher Hilfe ohne KI meinen ersten Wochenabl
 
 ## Akzeptanzkriterien
 
-1. Einführung führt von Gemeinschaft und optionalem Registerimport zum ersten Punkt und nächsten Schritt; keine echten Daten imitierenden Beispielakten werden automatisch angelegt.
+1. Einführung führt von Gemeinschaft und optionalem Registerimport zum ersten Vorgang und nächsten Schritt; keine echten Daten imitierenden Beispielakten werden automatisch angelegt.
 2. Lokale Hilfe erklärt Kernreise, externen Versand, Datenlücken, Sicherung und Wiederherstellung.
 3. Gesamter lokaler Ablauf funktioniert ohne Netzwerk, eigenes Konto und KI; externe Mailzustellung ist gesondert.
 4. Diagnosebericht ist lokal prüfbar und standardmäßig ohne Akteninhalte; es wird nichts automatisch übertragen.
@@ -95,3 +95,8 @@ Alt FR-19; P NFR-3/4/8; US-15. Quellkürzel: 01-Quellabdeckung (historische Quel
 ## Refinementgrenze
 
 Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe sind offen. Anwendbare Qualitätsanforderungen und offene Entscheidungen im [[02-MVP-PRD]] gehören zur Abnahme.
+
+## Kommentare
+
+- 22.11.2026: Kriterium 1 (Einführung zum ersten Vorgang) und Kriterium 5 (Einführungstour) werden durch [[F-25 - Onboarding und Einführung]] konkretisiert, vor allem [[PBI-75 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-76 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]] und [[PBI-77 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]. Hilfe, Offline-Betrieb, Diagnose und die Hinweise in der Wochenarbeit bleiben hier. Siehe [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]].
+- 22.11.2026: Kriterium 5 wird ohne Tour erfüllt. Statt einer Einführungstour erklären einzelne Hinweise beim ersten Benutzen die Bereiche; „Hinweise erneut zeigen“ ersetzt den Neustart der Tour ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]).

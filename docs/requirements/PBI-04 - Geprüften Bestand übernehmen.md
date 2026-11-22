@@ -17,15 +17,15 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-03 - Thema]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-12 - Eigene Aufgabe]]"
-  - "[[docs/design/entities/ENT-16 - Beiratsbewertung]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-03 - Thema]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-12 - To-do]]"
+  - "[[docs/entities/ENT-16 - Beiratsbewertung]]"
 business-rules:
   - "[[docs/business-rules/DF-02 - Bearbeitung, Terminprüfung und Bewertung]]"
   - "[[docs/business-rules/DF-04 - Fehlender Termin]]"
@@ -33,7 +33,7 @@ business-rules:
   - "[[docs/business-rules/DF-13 - Historie und kontrollierte Entfernung]]"
 decisions:
   - "[[docs/decisions/K-02 - Zwei Gemeinschaften für einen Bearbeiter]]"
-  - "[[docs/decisions/K-03 - Einzeln erledigbarer Punkt als Kerneinheit]]"
+  - "[[docs/decisions/K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]]"
   - "[[docs/decisions/K-10 - Manuelle Quellenübernahme und Registerimport vorsehen]]"
 hypotheses:
   - "[[docs/hypothesis/H-05 - Manuelle Eingangsübernahme bleibt alltagstauglich]]"
@@ -58,7 +58,7 @@ Als Beirat möchte ich geprüfte Registerdaten übernehmen und denselben Export 
 1. Nur bestätigte Zuordnungen werden übernommen; unklare Zeilen bleiben zur Klärung sichtbar.
 2. Alte Nummer und Herkunft bleiben erhalten; gleiche Nummern verschiedener Gemeinschaften kollidieren nicht.
 3. Erneute Übernahme desselben Bestands erzeugt keine stillen Dubletten; geänderte Zeilen erfordern prüfbare Behandlung.
-4. Ein Abbruch erlaubt nachvollziehbare Fortsetzung ohne doppelte Punkte.
+4. Ein Abbruch erlaubt nachvollziehbare Fortsetzung ohne doppelte Vorgänge.
 
 ## Herkunft und Regeln
 
@@ -66,7 +66,7 @@ P FR-V8; US-02; DF-12/13. Quellkürzel: 01-Quellabdeckung (historische Quelle: G
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-03 - Registerimport prüfen]], [[PBI-05 - Einen Punkt erfassen und wiederfinden]]
+[[PBI-03 - Registerimport prüfen]], [[PBI-05 - Einen Vorgang erfassen und wiederfinden]]
 
 ## Refinementgrenze
 

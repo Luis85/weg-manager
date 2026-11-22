@@ -9,11 +9,11 @@ One association the board member works for, such as a WEG or its underground car
 _Avoid_: WEG (one kind of community), association, property, tenant
 
 **Short code** (German: Kürzel):
-The two to five characters that name a community wherever its full name does not fit. It is unique and fixed once given.
+The two to five characters that name a community wherever its full name does not fit. It is unique. It can be changed later; references use the record's id, never the short code (K-20, PBI-78).
 _Avoid_: abbreviation, slug, key, id
 
 **Kind** (German: Art):
-What sort of community it is, in the user's own words, such as WEG or Tiefgarage. It implies no legal form and no powers.
+What sort of community it is, in the user's own words, such as WEG, Tiefgarage or Viertel (offered as suggestions, never a closed list). It implies no legal form and no powers.
 _Avoid_: type, category, legal form
 
 **Unit label** (German: Einheitenbezeichnung):
@@ -68,6 +68,21 @@ _Avoid_: locked, disabled, invalid
 A field that the user changed in a form and someone else changed in the note meanwhile, to another value. Nothing is saved until the user chooses which value applies.
 _Avoid_: collision, clash, merge error
 
+**Setup** (German: Einrichtung):
+The guided steps on the first start in a vault without a community, ending with the communities written as notes. Whether setup is needed follows from the vault, never from a stored flag.
+_Avoid_: onboarding (the whole path), wizard (the UI pattern), installation (happens in Obsidian)
+
+**First steps** (German: Erste Schritte):
+The card on the overview that lists the next things to do after setup. Each step counts as done when the vault shows it, not when the user ticks it.
+_Avoid_: checklist, to-do, task (a task is a record)
+
+**Contextual hint** (German: Hinweis im Kontext):
+A single note shown beside an element the first time the user works in an area, closed with one click and remembered per device. Hints never chain, never block and never write notes. There is no tour.
+_Avoid_: tour, tutorial, coach mark, tooltip (a tooltip shows on hover every time)
+
+**Matter** (German: Vorgang):
+One thing the board member follows up until it has one checkable result: a promise, a deadline, a question or a task. It belongs to exactly one community, has a number that runs across all communities and is never deleted. Routes say `vorgang`, command ids and code say `matter`.
+_Avoid_: point, item, ticket, issue (an issue is a broken note), task (a to-do is the board member's own step)
 **Settings section** (German: Bereich der Einstellungen):
 One area of the plugin's settings screen, such as the communities or the data issues, contributed by one module and reached through the screen's own navigation. Its id (`communities`, `data-issues`) is the `section` of the settings route.
 _Avoid_: tab, page, panel, category
@@ -82,4 +97,4 @@ _Avoid_: walking skeleton, demo, prototype
 
 ## Not yet named
 
-Punkt, Thema, Ansprechpartner, Termin, Ereignis, Quelle and the other entities in `docs/design/entities/` get their English term when their slice is planned.
+The domain model follows the WCS data dictionary (K-20); its German terms and fields are in `docs/entities/00 - Fachliches Domänenmodell.md`. Verlaufseintrag, Eskalation, Entscheidungskarte, To-do, Übergabe, Prüfvermerk, Person und Rolle, Thema, Termin, Quelle and the other entities in `docs/entities/` get their English term here when their slice is planned. The keys in the entity notes are proposals until then. Host and vault events keep the name event; they are not the domain's Verlaufseintrag.

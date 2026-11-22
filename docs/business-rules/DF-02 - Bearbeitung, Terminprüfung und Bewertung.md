@@ -9,9 +9,9 @@ scope: mvp
 
 Offen, ungeklärt, erledigt und hinfällig sind Bearbeitungsstände. Überfällig und Termin erfragen sind Prüfhinweise. Nicht eingehalten ist eine bewusste menschliche Bewertung mit Begründung und Bezug zur Zusageversion. Aufgeteilt/zusammengeführt kennzeichnen die Herkunft, nicht eine erfüllte Leistung.
 
-**Abnahmeanker:** Alter Termin 10.11., neuer akzeptierter Termin 20.11.: alte Bewertung bleibt, aktueller Punkt bleibt offen.
+**Abnahmeanker:** Alter Termin 10.11., neuer akzeptierter Termin 20.11.: alte Bewertung bleibt, aktueller Vorgang bleibt offen.
 
-**PBIs:** [[PBI-06 - Sammelpunkte aufteilen]], [[PBI-07 - Dubletten zusammenführen]], [[PBI-08 - Bearbeitungsstand bewusst ändern]], [[PBI-09 - Termin und Wiedervorlage trennen]]
+**PBIs:** [[PBI-06 - Sammelvorgänge aufteilen]], [[PBI-07 - Dubletten zusammenführen]], [[PBI-08 - Bearbeitungsstand bewusst ändern]], [[PBI-09 - Termin und Wiedervorlage trennen]]
 
 ## Herkunft und Pflege
 

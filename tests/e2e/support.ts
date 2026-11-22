@@ -11,7 +11,12 @@ export const VIEW_TYPE = "weg-manager-view";
 export const ROOT = ".weg-manager-root";
 export const DATA_FILE = ".obsidian/plugins/weg-manager/data.json";
 
-type Captured = { readonly kind: string; readonly text: string };
+type Captured = {
+  readonly kind: string;
+  readonly text: string;
+  /** For an unhandled rejection: the reason's stack, when it has one. */
+  readonly stack?: string;
+};
 
 /** Records console errors/warnings and uncaught errors from now on, in the main window. */
 export const installConsoleSpy = () =>
@@ -39,7 +44,12 @@ export const installConsoleSpy = () =>
       captured.push({ kind: "uncaught", text: String(event.message) });
     });
     window.addEventListener("unhandledrejection", (event) => {
-      captured.push({ kind: "unhandledrejection", text: String(event.reason) });
+      const stack = (event.reason as { stack?: unknown } | null)?.stack;
+      captured.push({
+        kind: "unhandledrejection",
+        text: String(event.reason),
+        ...(typeof stack === "string" ? { stack } : {}),
+      });
     });
   });
 

@@ -36,7 +36,7 @@ Als Beirat möchte ich, dass eine Ansicht, die mehrere Arten von Notizen zusamme
 
 ## Ausgangslage
 
-**Befund 1 (C3): Stand je Typ.** Der Index veröffentlicht je Notiztyp einen eigenen Stand und setzt sie nacheinander (`src/application/notes/index-live.ts`, Funktion `publish`). Eine Ansicht, die Punkte mit Ansprechpartnern verbindet, kann kurz den einen Typ aktualisiert sehen und den anderen noch nicht. Außerdem wird eine abgeleitete Liste für jeden Abonnenten neu berechnet: `communityListChanges` ist ein `Stream.map`, den der Gemeinschaftswechsel und der Bildschirm je für sich durchlaufen. Der Reviewer konnte keinen sichtbaren Fehler nachweisen; es gibt heute nur einen Typ.
+**Befund 1 (C3): Stand je Typ.** Der Index veröffentlicht je Notiztyp einen eigenen Stand und setzt sie nacheinander (`src/application/notes/index-live.ts`, Funktion `publish`). Eine Ansicht, die Vorgänge mit Personen verbindet, kann kurz den einen Typ aktualisiert sehen und den anderen noch nicht. Außerdem wird eine abgeleitete Liste für jeden Abonnenten neu berechnet: `communityListChanges` ist ein `Stream.map`, den der Gemeinschaftswechsel und der Bildschirm je für sich durchlaufen. Der Reviewer konnte keinen sichtbaren Fehler nachweisen; es gibt heute nur einen Typ.
 
 **Befund 2 (C4): ungenutzte Bausteine.** Am Stand vom 22.11.2026 nutzt nichts in `src` diese Teile:
 

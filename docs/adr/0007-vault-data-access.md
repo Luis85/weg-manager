@@ -60,7 +60,7 @@ unit_label: Einheiten
 - **A service in module `notes`** holds the decoded records and their issues per type and gives each feature a stream to follow.
 - **It builds after a readiness event.** The workspace layout being ready is not enough: Obsidian may still be reading frontmatter. A new `AppEvent`, `VaultReady`, is published once per load, when the layout is ready and every Markdown file has its entry in the metadata cache. Measured on 2026-11-21 in Obsidian 1.15.1 on the reference vault: on a cold start the layout is ready with 1 of 2,200 notes cached, and `resolved` fires once per indexed note, the first time before the layout is ready; on a warm restart and in a running app the cache is complete at once and `resolved` fires once or never. So `resolved` alone is no signal, and the adapter checks the cache itself ([ADR 0004](0004-event-system.md), amendment of the same day). An e2e spec on a cold vault proves it.
 - **Then it follows file events** (metadata changed, deleted, renamed), in debounced batches. A rebuild is always possible and is a use case.
-- **Budget:** the reference vault of F-21 (2,000 notes, 200 Punkte) within B-NFR-04, checked by a timing test.
+- **Budget:** the reference vault of F-21 (2,000 notes, 200 Vorgänge) within B-NFR-04, checked by a timing test.
 
 ## Consequences
 
@@ -68,7 +68,7 @@ unit_label: Einheiten
 - Ids are not readable. Lists and texts show names, short codes and numbers.
 - A conflict costs the user a choice instead of costing data. Forms need the loaded state and a per-field conflict view.
 - The file names differ from the code: German folders and UI, English keys. `GLOSSARY.md` and each type's contract page carry the mapping.
-- Each type needs its contract documented when it is built (K-14): one German page per type and version under `docs/`, German text around the English keys and codes, as the Gmail skill's contract is written. How the contract reaches a user's vault is a product question under PBI-41.
+- Each type needs its contract documented when it is built (K-14): one German page per type and version under `docs/`, German text around the English keys and codes. How the contract reaches a user's vault is a product question under PBI-41.
 - The Obsidian test double grows by the vault, metadata-cache and file-manager calls named above, and one in-memory `NoteStore` serves both the tests and the browser harness.
 
 ## Amendment, 2026-11-21: what was built
@@ -89,7 +89,7 @@ unit_label: Einheiten
 - **Failures.** What the plugin's own code throws inside the write (the merge, the serialiser) is a defect, not a `NoteWriteError` the user could retry (`asDefect`, `writeCommand`). A note deleted between the lookup and the write makes `vault.process` reject with ENOENT without calling back; the adapter reports `NoteNotFoundError` when the file is no longer at its path (and, since the amendment of 2026-11-22 below, also when the rejection's `code` is `ENOENT`, because Obsidian may still list the file).
 - `fileManager.processFrontMatter` is no longer called by the plugin. The Obsidian double keeps it, because the fidelity scenarios still record what it does.
 
-## Amendment, 2026-11-22: a contact's role stays flat
+## Amendment, 2026-11-22: a contact's role stays flat (superseded the same day)
 
 - **Decision (owner, O-D10).** A contact has one role, and a list of the communities it is responsible for. The same person with a different role in another community is a remark in the contact's note for now.
 - **What it means here.** The contact record needs no nested value: one key for the role (a code) and one key with the list of community `id`s. The rule "flat keys only" stands, and no assignment record type, parallel lists or coded list entries are introduced.
@@ -153,3 +153,9 @@ The merge of "Writing" compares a form's saved values with the loaded ones. Unti
 - **An untouched field keeps the note's value as written.** `editedValues` compares the form value with the loaded value mapped the same way (`Equal.equals`); while they are equal and the value is valid, the save hands the loaded value itself to the merge, which then writes nothing for it, so its bytes stay. This holds for a reference to a missing target too (amendment above).
 - **`parse(values)`** on the codec gives the type's values once its field rules hold, else the issues, so a use case hands typed values to the record kit without a cast.
 - **Not changed:** the merge, its conflicts and guards, the line edit and the serialiser.
+
+## Amendment, 2026-11-22 (later): a role per community, as coded list entries
+
+- **Decision (owner, after the WCS data model was adopted, K-20).** A person has a role per community, as in the WCS data dictionary: the same person can be on the board of the WEG and an owner in the car park. This supersedes the amendment above.
+- **Storage.** One list key in the person's note, `roles`, each entry `<community id>:<role code>`, e.g. `community-3f2b…:board`. The keys stay flat and editable in Obsidian's properties panel. The entry uses the community's `id`, never its short code, because the short code can change (PBI-78). The codec reads each entry, reports a malformed entry or an unknown community as an issue and never repairs it silently.
+- **Rejected.** An assignment record type (one note per person and community: clean, but many small notes) and parallel lists (flat, but easy to break by hand).

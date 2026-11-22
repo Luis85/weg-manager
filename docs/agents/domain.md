@@ -11,7 +11,7 @@ If any of these files don't exist, **proceed silently**. Don't flag their absenc
 
 ## Product decisions and rules
 
-- `docs/decisions/` (K-xx) holds product and concept decisions; `docs/business-rules/` (DF-xx) holds domain rules; `docs/design/entities/` holds the domain objects. Read the ones touching your area and treat a `festgelegt` decision like an ADR: flag conflicts, don't override silently.
+- `docs/decisions/` (K-xx) holds product and concept decisions; `docs/business-rules/` (DF-xx) holds domain rules; `docs/entities/` holds the domain objects. Read the ones touching your area and treat a `festgelegt` decision like an ADR: flag conflicts, don't override silently.
 - Technical architecture decisions go in `docs/adr/`. Do not write new K-xx notes for them.
 
 ## File structure

@@ -26,6 +26,7 @@ Als Beirat kann ich ohne KI und nach Unterbrechungen mit meinen Daten weiterarbe
 ## Enthaltene Fähigkeiten
 
 - [[F-12 - Daten erhalten und selbstständig starten]]
+- [[F-25 - Onboarding und Einführung]]
 - [[F-13 - Mobile Wochenarbeit]] (nach dem MVP)
 
 ## Erfolg und Grenze

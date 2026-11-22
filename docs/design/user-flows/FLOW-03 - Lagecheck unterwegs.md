@@ -7,10 +7,10 @@ version: "2.0"
 date: 2026-11-15
 pages:
   - "[[VIEW-01 - Lage]]"
-  - "[[VIEW-03 - Punkte und Punktakte]]"
+  - "[[VIEW-03 - Vorgänge und Vorgangsakte]]"
   - "[[VIEW-04 - Postausgang]]"
 requirements:
-  - "[[PBI-12 - Ereignisse nachvollziehen]]"
+  - "[[PBI-12 - Verlauf nachvollziehen]]"
   - "[[PBI-23 - Reaktion richtig einordnen]]"
   - "[[PBI-24 - Zwischendurch Dringlichkeit prüfen]]"
   - "[[PBI-33 - Wochenarbeit auf dem Handy abschließen]]"
@@ -26,7 +26,7 @@ requirements:
 flowchart LR
   A[Lage öffnen] --> B{Dringend oder neu?}
   B -- nein --> F[Fertig, nichts verpasst]
-  B -- ja --> P[Punktakte]
+  B -- ja --> P[Vorgangsakte]
   P --> C{Was ist zu tun?}
   C --> R[Reaktion erfassen · Antwort ≠ Erfüllung]
   C --> N[Nachfassen vorziehen → Entwurf]

@@ -5,9 +5,9 @@
 
 ## Context
 
-The shell has one file per concern in each layer: `ports.ts`, `errors.ts`, `events.ts`, `use-cases.ts`, `user-messages.ts`, the catalogs, `app-services.ts`, `obsidian/layers.ts`, and `domain/settings.ts` as the only domain file. The MVP has 18 entities and 36 stories. With a 400-line limit and agents working in parallel, every feature would edit the same files.
+The shell has one file per concern in each layer: `ports.ts`, `errors.ts`, `events.ts`, `use-cases.ts`, `user-messages.ts`, the catalogs, `app-services.ts`, `obsidian/layers.ts`, and `domain/settings.ts` as the only domain file. The MVP has 17 entities and 35 stories (18 and 37 when this was decided, before the Gmail skill was removed and mobile moved after the MVP). With a 400-line limit and agents working in parallel, every feature would edit the same files.
 
-The product's words are German (Gemeinschaft, Punkt, Kürzel). The one file contract already shipped, the Gmail skill's, is English (`community_id`, `review_status: unreviewed`). The owner decided on 2026-11-21: frontmatter keys, value codes and code identifiers are English; German stays in the UI and in `docs/`.
+The product's words are German (Gemeinschaft, Vorgang, Kürzel). The one file contract shipped at the time, that of the since removed Gmail skill, was English (`community_id`, `review_status: unreviewed`). The owner decided on 2026-11-21: frontmatter keys, value codes and code identifiers are English; German stays in the UI and in `docs/`.
 
 ## Decision
 

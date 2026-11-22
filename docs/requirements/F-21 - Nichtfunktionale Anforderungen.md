@@ -46,7 +46,7 @@ Alle B-NFR sind geplante Releasekriterien. Obsidian-Version und Desktop-Ziele we
 | B-NFR-13 Offener Notizvertrag | Gespeicherte Fachinformationen liegen maßgeblich in Markdown mit dokumentiertem YAML-Frontmatter und zugeordneten Originaldateien. Lokal verfügbare Schema-/Regelbeschreibung erklärt IDs, Felder, Beziehungen, Zustände und externe Schreiboperationen. Kein nur plugininterner Index oder Obsidian-Laufzeitzustand ist exklusiver Fachbestand; optionale Caches sind rekonstruierbar. AT-B15 prüft dies ohne Plugin, Obsidian oder MCP. |
 | B-NFR-14 Externe Agentenbearbeitung | Ein vom Nutzer zugelassener dateifähiger Agent kann den aktuellen Notizbestand ohne MCP lesen und vertragskonform ändern. Das Plugin berücksichtigt gültige externe Änderungen beim Start/Wiederaufnehmen und während der Nutzung; vor eigenem Schreiben wird eine veränderte Grundlage geprüft. Konflikte, ungültige oder unvollständige Dateien werden erkennbar behandelt, ohne stille Überschreibung oder Datenlöschung. AT-B16 prüft externe Änderung, Wiederaufnahme und Erhalt unbekannter Felder. |
 
-Desktop-Referenzprofil als fortgeführter Vorschlag: Windows 11, SSD, 16 GB RAM, dokumentierte CPU und Obsidian-Version; **zwei Gemeinschaften**, insgesamt 200 Punkte, 2.000 Fachnotizen und 1.000 Originalanhänge, davon zehn mit 20 MiB. Listenaufbau liest nicht alle Originale vollständig. Ergebnisse und Messverfahren werden später dokumentiert. Mobile Hardware, Eingangsvolumen und Grenzen werden nach dem MVP anhand O-02 ergänzt. 97 berichtete Punkte sind kein technisches Limit.
+Desktop-Referenzprofil als fortgeführter Vorschlag: Windows 11, SSD, 16 GB RAM, dokumentierte CPU und Obsidian-Version; **zwei Gemeinschaften**, insgesamt 200 Vorgänge, 2.000 Fachnotizen und 1.000 Originalanhänge, davon zehn mit 20 MiB. Listenaufbau liest nicht alle Originale vollständig. Ergebnisse und Messverfahren werden später dokumentiert. Mobile Hardware, Eingangsvolumen und Grenzen werden nach dem MVP anhand O-02 ergänzt. 97 berichtete Vorgänge sind kein technisches Limit.
 
 Ein menschlicher Bearbeiter kann Plugin und externe Dateiwerkzeuge einschließlich AI-Agent auf demselben Bestand verwenden. Unabhängige Schreibvorgänge verlangen erkennbare Konfliktbehandlung; die bisherige Begrenzung unkoordinierter Schreibvorgänge über mehrere Geräte bleibt bestehen. Die technische Konzeption muss den tatsächlichen Gerätewechsel klären; ein neuer Syncdienst ist nicht vorgegeben. Dateimarkierungen und private Ordner ersetzen keine Zugriffsisolation gegenüber anderen Nutzern oder Plugins desselben Vaults. Es wird keine pauschale Verschlüsselung oder revisionssichere Archivierung zugesagt.
 
@@ -61,7 +61,7 @@ Dieses Feature führt Qualitätsbedingungen, keine zusätzlichen Funktionsstorie
 - Fachkorrektheit: die anwendbaren Regeln in [[Product Backlog.base#Business Rules]] und die jeweiligen PBI-Akzeptanzkriterien.
 - Reaktions- und Speicherzeiten: Messungen am hier beschriebenen Referenzbestand über die betroffenen Ansichten und Bearbeitungsschritte.
 
-Der interne Abnahmeplan AT-B01 bis AT-B12 sowie AT-B15/16 steht im [[02-MVP-PRD]]; AT-B13 (mobil) folgt nach dem MVP; AT-B14 bestätigt erst die öffentliche Installierbarkeit. Die Prüfziele sind Anforderungen, keine bereits gemessenen Ergebnisse. Eigene zusätzliche PBIs werden erst angelegt, wenn ein eigenständiges Nutzerergebnis vorliegt; ein Mess- oder Technikschritt allein wird nicht künstlich zur User Story gemacht.
+Der interne Abnahmeplan AT-B01 bis AT-B12, AT-B15/16 und AT-B18 steht im [[02-MVP-PRD]]; AT-B13 (mobil) folgt nach dem MVP; AT-B14 bestätigt erst die öffentliche Installierbarkeit. Die Prüfziele sind Anforderungen, keine bereits gemessenen Ergebnisse. Eigene zusätzliche PBIs werden erst angelegt, wenn ein eigenständiges Nutzerergebnis vorliegt; ein Mess- oder Technikschritt allein wird nicht künstlich zur User Story gemacht.
 
 ## Herkunft und Pflege
 
@@ -70,10 +70,6 @@ Aus dem Abschnitt „Qualitätsanforderungen“ des MVP-PRD 1.1 übernommen. Nut
 ## Direkter Agentenzugriff ohne MCP
 
 [[K-14 - Markdown und Frontmatter als offene Datengrundlage]], [[F-22 - Offene Notizen und direkter Agentenzugriff]], [[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]] und [[PBI-42 - AI-Agent direkt mit den Notizen arbeiten lassen]] konkretisieren B-NFR-10/13/14. Der externe Agent ist optional; sein Modelldienst gehört nicht zur Offline-Systemgrenze des Plugins. Der Dateizugriff selbst benötigt weder Backend noch MCP. UI-interne Kennzeichnungen sind keine Rechteverwaltung für andere Prozesse mit Ordnerzugriff.
-
-## Optionaler Claude-Gmail-Eingang
-
-[[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] ist ein bewusst gewählter externer Connectorweg. Gmail-Abfrage und Claude-Ausführung benötigen die dortigen Fähigkeiten und gegebenenfalls Netzwerk; die lokale Plugin-Kernreise und die gespeicherten Notizen bleiben davon unabhängig. AT-B17 prüft diesen Integrationsweg zusätzlich technisch vor Veröffentlichung. Die bestehenden Offline-/Datenerhaltungsanforderungen werden nicht still aufgehoben.
 
 ## Optionaler nativer AI-Chat
 

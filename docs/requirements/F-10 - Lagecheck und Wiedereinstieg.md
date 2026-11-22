@@ -21,7 +21,7 @@ iteration: ""
 
 ## Fähigkeit und Ergebnis
 
-Zwischen Wochenstunden sind neue Ereignisse, Dringlichkeit und die letzte Übergabe verfügbar.
+Zwischen Wochenstunden sind neue Verlaufseinträge, Dringlichkeit und die letzte Übergabe verfügbar.
 
 ## User Stories
 

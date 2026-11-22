@@ -19,13 +19,13 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
-  - "[[docs/design/entities/ENT-12 - Eigene Aufgabe]]"
-  - "[[docs/design/entities/ENT-15 - Ausgabestand]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-12 - To-do]]"
+  - "[[docs/entities/ENT-15 - Ausgabestand]]"
 business-rules:
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
   - "[[docs/business-rules/DF-11 - Sachstand und Bewertung]]"
@@ -55,7 +55,7 @@ Als Beirat möchte ich einen ausgewählten Stand mit Quellen lesbar übergeben, 
 
 ## Akzeptanzkriterien
 
-1. Ausgabe nennt Gemeinschaft, Standdatum, offene Punkte, nächste Schritte und bewusst ausgewählte Quellen.
+1. Ausgabe nennt Gemeinschaft, Standdatum, offene Vorgänge, nächste Schritte und bewusst ausgewählte Quellen.
 2. Fehlende Anlagen sind erkennbar; Lesen erfordert weder KI noch das Plugin.
 3. Interne Vertretungsübergabe ist ausdrücklich von externer Sachstandsausgabe und vollständiger Sicherung unterschieden.
 4. Es entsteht kein paralleler Bearbeitungszugang und kein behaupteter Zugriffsschutz für andere Vault-Nutzer.

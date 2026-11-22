@@ -37,7 +37,7 @@ Stand 21.11.2026: Dieser Abschnitt beschreibt den mobilen Ausbau nach dem MVP, n
 | Kontext | Tasten |
 | --- | --- |
 | Global | Befehle über Command Palette; `Esc` schließt Sheet |
-| Woche 1 Eingang | `1` Vorschlag zuordnen, `N` neuer Punkt, `D` Dublette, `S` später, `X` nicht relevant |
+| Woche 1 Eingang | `1` Vorschlag zuordnen, `N` neuer Vorgang, `D` Dublette, `S` später, `X` nicht relevant |
 | Woche 2 Nachhalten | `E` eingegangen, `W` weiter warten, `F` nachfassen, `P` neu planen (aktive Karte) |
 | Woche 3 Entscheiden | `↑/↓` Option, `Ctrl/Cmd+Enter` bestätigen, `Z` zurückstellen |
 | Listen | `↑/↓` Zeile, `Enter` öffnen |

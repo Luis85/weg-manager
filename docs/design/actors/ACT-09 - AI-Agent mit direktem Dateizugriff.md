@@ -12,13 +12,13 @@ scope: mvp
 
 Ein vom Nutzer gewählter externer AI-Agent liest den freigegebenen Vault beziehungsweise Ordner, erfasst den fachlichen Kontext aus Markdown, YAML-Frontmatter und dokumentierten Beziehungen und bearbeitet erlaubte Notizen direkt. Das Plugin muss dazu nicht laufen; Obsidian oder MCP sind keine Voraussetzung.
 
-Der Agent kann innerhalb der Nutzerfreigabe beispielsweise Punkte, Quellenbezüge, Aufgaben und vorbereitete Texte anlegen oder ändern. Er folgt dem mitgelieferten Notizvertrag und den Fachregeln; unbekannte Zusatzfelder und nicht betroffene Inhalte bleiben erhalten. Angegebene Urheberschaft ist Dokumentation, keine technisch authentifizierte Identität allein durch ein Frontmatter-Feld.
+Der Agent kann innerhalb der Nutzerfreigabe beispielsweise Vorgänge, Quellenbezüge, To-dos und vorbereitete Texte anlegen oder ändern. Er folgt dem mitgelieferten Notizvertrag und den Fachregeln; unbekannte Zusatzfelder und nicht betroffene Inhalte bleiben erhalten. Angegebene Urheberschaft ist Dokumentation, keine technisch authentifizierte Identität allein durch ein Frontmatter-Feld.
 
 ## Grenze
 
 Dies ist kein eingebauter Agentendienst und kein automatisch freigegebener Cloudzugang. Die konkrete Agentensoftware, deren Dateirechte und eine mögliche Übertragung an einen Modelldienst werden vom Nutzer gewählt. Das Plugin überträgt dafür nicht selbst automatisch Akten. Es kann direkte Dateischreibrechte außerhalb seiner Oberfläche nicht durch UI-Rollen kontrollieren.
 
-Ein Schreibvorgang erzeugt keine tatsächlich erfolgte menschliche Bestätigung, Sendung, Beauftragung oder Zahlung. Bereits erfolgte externe Handlungen können mit ihrer tatsächlichen Quelle dokumentiert werden; der Agent darf deren Ereignisse nicht aus bloßem Speichern ableiten. Mensch und Agent können denselben Bestand bearbeiten; bei konkurrierenden Änderungen gelten Erhalt und erkennbare Klärung statt stiller Überschreibung.
+Ein Schreibvorgang erzeugt keine tatsächlich erfolgte menschliche Bestätigung, Sendung, Beauftragung oder Zahlung. Bereits erfolgte externe Handlungen können mit ihrer tatsächlichen Quelle dokumentiert werden; der Agent darf deren Verlaufseinträge nicht aus bloßem Speichern ableiten. Mensch und Agent können denselben Bestand bearbeiten; bei konkurrierenden Änderungen gelten Erhalt und erkennbare Klärung statt stiller Überschreibung.
 
 ## Anforderungen
 
@@ -27,10 +27,6 @@ Ein Schreibvorgang erzeugt keine tatsächlich erfolgte menschliche Bestätigung,
 ## Grundlagen
 
 [[K-14 - Markdown und Frontmatter als offene Datengrundlage]], [[Datenkonzept - Offene Notizen und Agentenzugriff]], [[DF-22 - Notizen als maßgeblicher Datenbestand]], [[DF-23 - Externe Bearbeitung ohne stilles Überschreiben]]. Der eigene spätere [[F-19 - MCP Server]] ist hierfür nicht erforderlich. Die externe Verwalterrolle oder ein Mehrbenutzerportal entsteht dadurch ebenfalls nicht.
-
-## Konkreter MVP-Workflow mit Claude
-
-[[PBI-46 - Gmail-Nachrichten mit Claude als Vault-Notizen übernehmen]] nutzt Claude mit vorhandenem Gmail-Connector und tatsächlich freigegebenem Nutzervault. Der gebündelte Skill liest ausgewählte Nachrichten und legt neue E-Mail-Quellnotizen an; er überschreibt keine bestehenden Notes und ändert das Postfach nicht. Allgemeiner direkter Dateizugriff ist breiter als dieser bewusst begrenzte Importworkflow.
 
 ## Konkrete Laufzeit für den nativen Chat
 

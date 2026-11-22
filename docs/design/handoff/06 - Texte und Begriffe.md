@@ -27,7 +27,7 @@ Jeder sichtbare Text kommt aus den getippten Katalogen, je Modul ein Teil in Deu
    - Texte zu Programmfehlern und zum Diagnosebericht verweisen auf die GitHub-Seite des Plugins (Issues), nicht auf „den Support“. Der Bericht enthält keine Inhalte von Notizen.
 7. Kein „KI“, „automatisch“ oder „intelligent“ in Labels.
 
-- Links tragen den Titel des Ziels (Punkttitel, Nachrichtentitel), nicht nur eine ID.
+- Links tragen den Titel des Ziels (Vorgangstitel, Nachrichtentitel), nicht nur eine ID.
 
 - Einstellungen erklären sich: je Bereich ein kurzer Einleitungsabsatz, je Option eine Beschreibung von ein bis zwei Sätzen, was sie bewirkt (Obsidian-Muster „Name + Beschreibung“). Das ist keine Ausnahme von der Regel gegen Beruhigungstexte, sondern Funktionsbeschreibung.
 
@@ -36,14 +36,15 @@ Jeder sichtbare Text kommt aus den getippten Katalogen, je Modul ein Teil in Deu
 | Begriff DE | EN (Eigentümertexte, Doku) | Bedeutung | Nicht verwenden |
 | --- | --- | --- | --- |
 | Gemeinschaft | community | WEG, Tiefgarage … | Mandant, Objekt |
-| Punkt | item | einzeln erledigbares Anliegen mit prüfbarem Ergebnis | Ticket, Vorgang, Aufgabe |
-| Thema | topic | Zusammenhang mehrerer Punkte | Projekt |
+| Vorgang | matter | einzeln erledigbares Anliegen mit prüfbarem Ergebnis | Ticket, Punkt, Aufgabe |
+| Thema | topic | Zusammenhang mehrerer Vorgänge | Projekt |
 | Zusage | commitment | Ankündigung eines Dritten mit oder ohne Termin | Versprechen |
 | Fremdtermin | stated date | von Dritten genannter Termin | Deadline |
 | Wiedervorlage | follow-up date | eigenes Prüfdatum | Erinnerung |
-| Nachfassen | follow up | dokumentierter nächster Kommunikationsschritt | Mahnen, Eskalieren |
-| Eigene Aufgabe | own task | Handlung des Beirats | To-do |
-| Entscheidung | decision | persönliche Arbeitsentscheidung des Beirats | Beschluss |
+| Nachfassen | follow up | eine Eskalation vorbereiten: dokumentierter nächster Kommunikationsschritt | Mahnen |
+| Eskalation | escalation | Stufe der Eskalationsleiter nach abgelaufener Frist | Mahnung |
+| To-do | to-do | Handlung des Beirats | eigene Aufgabe |
+| Entscheidung | decision | persönliche Wahl des Beirats auf einer Entscheidungskarte | Beschluss, Arbeitsentscheidung |
 | Bewertung | assessment | interne Beurteilung (◆), z. B. „nicht eingehalten“ | Verstoß, Mahnung |
 | Entwurf | draft | vorbereiteter Text, nicht gesendet | Mail |
 | Als gesendet markieren | mark as sent | Dokumentation eines externen Versands | Senden |
@@ -67,7 +68,7 @@ Jeder sichtbare Text kommt aus den getippten Katalogen, je Modul ein Teil in Deu
 
 ## Statuswörter
 
-offen · ungeklärt · erledigt · hinfällig (Punkt) — offen · in Arbeit · wartet · erledigt · entfallen (Aufgabe) — überfällig · Termin fehlt · Zusage überschritten (Prüfmerkmale) — Entwurf · EN prüfen · geprüft · gesendet (Nachricht) — Vorschlag (Option) — dringend (Auswahl).
+offen · ungeklärt · erledigt · hinfällig (Vorgang) — offen · erledigt · entfallen (To-do) — überfällig · Termin fehlt · Zusage überschritten (Prüfvermerke) — Entwurf · EN prüfen · geprüft · gesendet (Nachricht) — Vorschlag (Option) — dringend (Auswahl).
 
 ## Formate
 

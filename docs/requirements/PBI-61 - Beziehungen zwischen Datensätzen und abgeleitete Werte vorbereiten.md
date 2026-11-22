@@ -32,22 +32,22 @@ triage: ""
 
 ## User Story
 
-Als Beirat möchte ich, dass Punkte und Ansprechpartner zuverlässig zu ihrer Gemeinschaft gehören und Fristen richtig als überfällig erkannt werden, damit ich mich auf Listen und Hinweise verlassen kann.
+Als Beirat möchte ich, dass Vorgänge und Personen zuverlässig zu ihrer Gemeinschaft gehören und Fristen richtig als überfällig erkannt werden, damit ich mich auf Listen und Hinweise verlassen kann.
 
 ## Ausgangslage
 
 Befund des Architektur-Reviews (C2), geprüft am Code des Durchstichs:
 
 - **Kein Verweis-Feld.** Der Codec (`defineNoteType`) kennt keine Feldart für einen Verweis auf einen anderen Datensatz. `community_id` wäre heute einfacher Text. Dass das Ziel fehlt, müsste jede Funktion als eigene Regel über mehrere Datensätze schreiben, so wie `duplicateShortCodes` heute.
-- **Keine Suche nach `id`.** Ein Stand des Index hält die Notizen eines Typs als Liste. Die Route `punkt/<id>` und jede Verknüpfung müssten die Liste durchsuchen.
+- **Keine Suche nach `id`.** Ein Stand des Index hält die Notizen eines Typs als Liste. Die Route `vorgang/<id>` und jede Verknüpfung müssten die Liste durchsuchen.
 - **Kein „heute“.** Abgeleitete Werte wie „überfällig“ haben keine Quelle für das aktuelle Datum, die zur lokalen Mitternacht weiterschaltet.
-- **Flache Schlüssel.** ADR 0007 erlaubt nur flache Schlüssel aus fünf Arten. Die Rolle eines Ansprechpartners je Gemeinschaft ([[docs/design/entities/ENT-02 - Ansprechpartner]], offener Punkt O-D10 in `docs/design/handoff/09 - Offene Punkte vor Implementierung.md`) ist eine Liste von Paaren und passt so nicht hinein.
+- **Flache Schlüssel.** ADR 0007 erlaubt nur flache Schlüssel aus fünf Arten. Die Rolle eines Ansprechpartners je Gemeinschaft ([[docs/entities/ENT-02 - Person und Rolle]], offener Punkt O-D10 in `docs/design/handoff/09 - Offene Punkte vor Implementierung.md`) ist eine Liste von Paaren und passt so nicht hinein.
 
 ## Entscheidung (22.11.2026)
 
-Zur Wahl standen für eine Rolle je Gemeinschaft: ein eigener Notiztyp für die Zuordnung, parallele Listen oder kodierte Texte in einer Liste. Der Produktverantwortliche hat die Frage davor entschieden (O-D10): **Ein Ansprechpartner hat eine Rolle**, dazu die Liste der Gemeinschaften, für die er zuständig ist. Hat dieselbe Person in zwei Gemeinschaften verschiedene Rollen, steht das in der Notiz des Ansprechpartners. Eine Rolle je Gemeinschaft kann später mit einer neuen Schemaversion folgen.
+Zur Wahl standen für eine Rolle je Gemeinschaft: ein eigener Notiztyp für die Zuordnung, parallele Listen oder kodierte Texte in einer Liste. Zuerst hatte der Produktverantwortliche entschieden, dass ein Kontakt eine Rolle hat (O-D10). Nach der Übernahme des WCS-Datenmodells hat er das am selben Tag geändert: **Eine Person hat je Gemeinschaft eine Rolle** ([[K-20 - WCS-Datenmodell als fachliche Grundlage]], [[ENT-02 - Person und Rolle]]).
 
-Damit bleibt die Notiz eines Ansprechpartners flach: ein Schlüssel für die Rolle (Code), ein Schlüssel mit der Liste der `id`s der Gemeinschaften. ADR 0007 bleibt bei flachen Schlüsseln; der Nachtrag vom 22.11.2026 hält das fest.
+Gespeichert wird das als **kodierte Liste**: ein Schlüssel `roles` in der Notiz der Person, je Eintrag `<id der Gemeinschaft>:<Rolle>`. Die Schlüssel bleiben flach und im Eigenschaften-Bereich von Obsidian bearbeitbar. Ein Eintrag nennt die `id` der Gemeinschaft, nie das Kürzel, weil das Kürzel änderbar wird. Ein fehlerhafter Eintrag oder eine unbekannte Gemeinschaft erscheint als Problem. Der Nachtrag zu ADR 0007 hält das fest.
 
 ## Akzeptanzkriterien
 

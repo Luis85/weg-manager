@@ -25,7 +25,7 @@ Every message exists in German and English ([ADR 0005](../adr/0005-ui-language.m
 | | Title | Detail |
 | --- | --- | --- |
 | Good | Notizen nicht lesbar | Die Dateien im Vault konnten nicht gelesen werden. Versuche es erneut. |
-| Bad | Fehler | ENOENT: no such file or directory, open '/vault/Ahornweg/Punkt 12.md' |
+| Bad | Fehler | ENOENT: no such file or directory, open '/vault/Ahornweg/Vorgang 12.md' |
 | Bad | Keine Sorge! | Deine Daten sind sicher. Etwas ist schiefgelaufen. |
 
 A detail that speaks of the view the user typed in ("Deine Eingabe ist erhalten. Speichere erneut.") is only true while that view is open. Such a message also carries `detailAfterClose`, what is true once the view is gone (for a failed save: the input was lost with the view, open it again and repeat the change), in both languages. `useCommand` passes a failure that comes after its scope ended through `forClosedView` (`src/application/shell/user-messages.ts`), which swaps the text in and drops the retry action, because that button belonged to the view. A message that does not speak of the view needs nothing; today only the failed save has the second text.

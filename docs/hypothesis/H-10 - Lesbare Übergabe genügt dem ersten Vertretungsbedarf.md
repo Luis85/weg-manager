@@ -29,7 +29,7 @@ Die für den ersten Einsatz benötigten Vertretungsaufgaben lassen sich mit der 
 
 ## Gegenbelege und Auswertungsgrenze
 
-Die Vertretung muss im ersten Einsatz selbst Punkte oder Entscheidungen im Produkt weiterbearbeiten und kann die Aufgabe mit bloßem Lesen nicht übernehmen.
+Die Vertretung muss im ersten Einsatz selbst Vorgänge oder Entscheidungen im Produkt weiterbearbeiten und kann die Aufgabe mit bloßem Lesen nicht übernehmen.
 
 ## Konsequenz für die Produktarbeit
 
@@ -37,7 +37,7 @@ Eigenen Umfang für aktive Übernahme klären; lesbare Ausgabe nicht mit vollst�
 
 ## Bezüge
 
-[[K-08 - Vertretung zunächst durch lesbare Übergabe unterstützen]], [[F-11 - Vertraulichkeit und gezielte Übergabe]].
+[[K-08 - Vertretung zunächst durch lesbare Übergabe unterstützen]], [[F-11 - Vertraulichkeit und gezielte Übergabe]], [[JTBD - Verwaltungsbeirat]] (Job J-H1 „Übergabefähig bleiben“ als Prüfmaßstab aus Nutzersicht).
 
 [Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`).
 

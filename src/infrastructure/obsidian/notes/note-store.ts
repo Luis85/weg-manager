@@ -169,6 +169,7 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
         // The cache shows a block of only comments or blank lines as it shows broken YAML
         // (measured in Obsidian 1.15.1, `tests/support/notes/difficult-fidelity.ts`), so the
         // note's text decides, read as `update` reads it: what `update` can write is readable.
+        // A candidate deleted outside while the vault still lists it is gone, not unreadable.
         const unreadable = yield* Effect.filter(
           candidates.filter((file) => inFolder.has(file.path)),
           (file) =>
@@ -177,8 +178,14 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
                 Result.isFailure(
                   updateNoteText(await vault.cachedRead(file), () => Result.succeed({}), parseYaml),
                 ),
-              catch: (cause) => new VaultReadError({ cause }),
-            }),
+              catch: (cause) => cause,
+            }).pipe(
+              Effect.catch((cause) =>
+                isFileGone(cause)
+                  ? Effect.succeed(false)
+                  : Effect.fail(new VaultReadError({ cause })),
+              ),
+            ),
         );
         return [...inFolder].filter((path) => unreadable.some((file) => file.path === path));
       }),

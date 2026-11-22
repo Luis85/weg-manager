@@ -1,7 +1,6 @@
 // @ts-check
 import { spawn as nodeSpawn } from "node:child_process";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { isCli } from "./is-cli.mjs";
 
 /** @typedef {{ name: string; command: string; args: string[] }} Step */
 /** @typedef {Step[]} Stage steps that start together; the next stage starts when all of them ended */
@@ -149,8 +148,6 @@ export const runGate = async (stages, io = { spawn: spawnStep, print: printToStd
   return exitCode(results);
 };
 
-const isCli =
-  process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isCli) {
+if (isCli(import.meta.url)) {
   process.exitCode = await runGate(process.argv.includes("--full") ? FULL_STAGES : STAGES);
 }

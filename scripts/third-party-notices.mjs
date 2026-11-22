@@ -1,9 +1,9 @@
 // @ts-check
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { OVERRIDES } from "./notice-overrides.mjs";
+import { isCli } from "./is-cli.mjs";
 
 /** Generated from the packages in `dist/main.js` and `dist/styles.css`; see `npm run notices`. */
 export const NOTICES_FILE = "THIRD-PARTY-NOTICES.txt";
@@ -293,9 +293,7 @@ export const runNotices = ({ root, check }) => {
   return { ok: true, message: `${NOTICES_FILE} is current (${entries.length} packages)` };
 };
 
-const isCli =
-  process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isCli) {
+if (isCli(import.meta.url)) {
   const check = process.argv.includes("--check");
   const { ok, message } = runNotices({ root: ".", check });
   if (ok) console.log(`notices ✓ ${message}`);

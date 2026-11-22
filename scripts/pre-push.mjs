@@ -1,9 +1,8 @@
 // @ts-check
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { FORMAT_STAGES, STAGES, runGate } from "./verify.mjs";
+import { isCli } from "./is-cli.mjs";
 
 /** @typedef {{ localRef: string; localSha: string; remoteRef: string; remoteSha: string }} PushLine */
 /**
@@ -137,9 +136,7 @@ export const realGit = (remote, cwd) => ({
   },
 });
 
-const isCli =
-  process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isCli) {
+if (isCli(import.meta.url)) {
   const remote = process.argv[2] ?? "origin";
   const choice = chooseGate(parsePushLines(readFileSync(0, "utf8")), realGit(remote));
   console.log(

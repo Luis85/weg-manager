@@ -219,10 +219,19 @@ After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its 
 | #60 | Release workflow, CI, gate scripts and notices after review round 2: the versions are checked before the install, the staged files are hashed and checked again after the e2e run, one CLI guard for every script, `check:versions` in the gate, a CI run for every push to `main`, a wider nightly cache key with a full run on Sundays (PBI-69). |
 | #61 | A failed trash is reported, `unreadable` reads the disk, a note that will not open is no defect, the double models the rename queue (PBI-68). |
 | #62 | E2e negative checks get a positive sign; the four write-failure cases of the `NoteStore` contract run for real in Obsidian as a user that is not root (PBI-70). |
+| #63 | The blueprint synced with what review round 2 changed and measured; PBI-70 finished. |
+| #64 | The owner decisions of the fourth interview, recorded in the plan, the backlog notes and ADR 0007. |
+| #65 | Record forms carry every field kind: one mapping per kind in the domain, an untouched field keeps its bytes, the conflict dialog shows lists and references; feature services are folded in module order (PBI-71). |
+| #66 | A record form asks before unsaved input is discarded, built once in the record kit (PBI-72). |
 
 ### The 0.2.0 pre-release
 
 Everything the owner asked for before the tag is on `main` (PRs #39 to #46). The version bump to 0.2.0 went through its own pull request (#47). Version 0.2.0 was released on 2026-11-22 as a pre-release through the release workflow, started by hand on `main` (#49: the workflow creates the tag itself, because the agent session may not push tags). Both jobs passed on the first run; the release carries `main.js`, `manifest.json`, `styles.css` and `THIRD-PARTY-NOTICES.txt`, and the attestation step passed. The start by a pushed tag has not run yet. The plugin-shell blueprint for other plugins was written beside it (#48, #50) and did not hold the tag.
+
+
+### Version 0.2.1
+
+The version in `package.json`, `manifest.json` and `versions.json` is 0.2.1 (the pull request after #66). It holds everything merged since 0.2.0: the fixes of both review rounds (#51 to #62), record forms for every field kind (#65) and the question before unsaved input is discarded (#66). The release has not been started yet. Its run will be the first real run of the release workflow as changed in #60.
 
 ### Owner decisions (2026-11-22)
 
@@ -296,8 +305,8 @@ As the notes under `docs/requirements/` say it (2026-11-22).
 | PBI-68 | Finished (PR #61): the findings on the note store and the test double (a failed system trash, reads of a note deleted outside, a typed error for a note that does not open, `Today` guarded, one frame context area). The queued rename was measured and the double models it; the adapter stays as it is, a decision taken in the review of that step and recorded in the note and in ADR 0007. |
 | PBI-69 | Open, `ready-for-agent`: the fixes to release, CI and scripts are merged (#60); the changed release and nightly workflows have not run yet. |
 | PBI-70 | Finished (PR #62): e2e negative checks, the outside edit, the probe's outcome, the pinned contract. The four write-failure cases ran and passed in real Obsidian on the CI runner, which is not root (run 45071294408, 2026-11-22). |
-| PBI-71 | Open, `ready-for-agent`: record forms for every field kind, now, before the first feature (fourth interview); a record with a missing target saves and the field is marked. |
-| PBI-72 | Open, `ready-for-agent`: typed input is lost on Escape or a click outside; decided in the fourth interview: every record form asks before discarding, built once in the record kit. Version 0.2.1 is released after PBI-71 and PBI-72 are merged and green. |
+| PBI-71 | Finished (PR #65). Input components for numbers, flags, lists and reference pickers are built with the first record type that needs one. |
+| PBI-72 | Finished (PR #66). Not built, as decided: restoring input after the whole view closes, and a question on a route change. |
 
 ### Review round 2 (2026-11-22)
 

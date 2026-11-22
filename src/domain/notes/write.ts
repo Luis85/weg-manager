@@ -1,25 +1,27 @@
 import { Equal, Result, Schema } from "effect";
 import { migrate, readFields } from "./decode";
-import type { Frontmatter, NoteFields, NoteTypeSpec } from "./note-type";
+import type { Frontmatter, FrontmatterPatch, NoteFields, NoteTypeSpec } from "./note-type";
 import { recordIdIssue } from "./record-id";
 import { parseSchemaMarker, schemaMarker } from "./schema-marker";
 
 /**
- * What a save writes: keys to set (in their place, or appended) and keys to remove. The same shape
- * as the `NoteStore`'s `FrontmatterPatch`, so the merge plugs into `update`.
+ * What a save writes: a `FrontmatterPatch` with both parts, so the merge plugs into
+ * `NoteStore.update`.
  */
-export type NotePatch = { readonly set: Frontmatter; readonly remove: readonly string[] };
+export type NotePatch = Required<FrontmatterPatch>;
 
 /**
  * A field both the user and an outside edit changed, to different values: the value the form
  * loaded, the user's and the note's now, each in the current version's form (`undefined` = unset).
+ * A schema, because `NoteEditConflictError` carries it; the form shows it as it is.
  */
-export type FieldConflict = {
-  readonly key: string;
-  readonly base: unknown;
-  readonly edited: unknown;
-  readonly current: unknown;
-};
+export const FieldConflict = Schema.Struct({
+  key: Schema.String,
+  base: Schema.Unknown,
+  edited: Schema.Unknown,
+  current: Schema.Unknown,
+});
+export type FieldConflict = typeof FieldConflict.Type;
 
 /**
  * Why a note may not be written at all: it is no longer the record the form loaded, another note

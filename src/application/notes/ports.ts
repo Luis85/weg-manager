@@ -1,5 +1,6 @@
 // Stryker disable StringLiteral: the only string here is a service key; it only has to be unique and tests cannot observe its text.
 import { Context, type Effect, type Result } from "effect";
+import type { Frontmatter, FrontmatterPatch } from "../../domain/notes";
 import type { VaultReadError } from "../shell";
 import type {
   InvalidNoteNameError,
@@ -11,8 +12,8 @@ import type {
   NoteWriteRefusedError,
 } from "./errors";
 
-/** A note's frontmatter as plain data: what Obsidian's YAML parser makes of it. */
-export type Frontmatter = Readonly<Record<string, unknown>>;
+// One definition of each, in the domain; the port speaks it.
+export type { Frontmatter, FrontmatterPatch } from "../../domain/notes";
 
 /**
  * A note as the store hands it out: its vault path and a copy of its frontmatter. The frontmatter is
@@ -28,15 +29,6 @@ export type NewNote = {
   readonly name: string;
   readonly frontmatter: Frontmatter;
   readonly body?: string;
-};
-
-/**
- * What an update writes. Keys in `set` are written in their place or appended; keys in `remove` are
- * deleted unless `set` has them too. Every other key, known or not, stays as it is, in its order.
- */
-export type FrontmatterPatch = {
-  readonly set?: Frontmatter;
-  readonly remove?: readonly string[];
 };
 
 /**

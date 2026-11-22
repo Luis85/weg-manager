@@ -7,6 +7,16 @@ import type { SchemaMarker } from "./schema-marker";
 export type Frontmatter = Readonly<Record<string, unknown>>;
 
 /**
+ * What a write changes: keys to set (in their place, or appended in this order) and keys to remove
+ * unless `set` has them too. Every other key, known or not, stays as it is, in its order. The
+ * merge, the line edit and `NoteStore.update` share this one shape.
+ */
+export type FrontmatterPatch = {
+  readonly set?: Frontmatter;
+  readonly remove?: readonly string[];
+};
+
+/**
  * The fields of one note type, by their frontmatter key: English snake_case (ADR 0007). The record
  * uses the same keys, so the file, its contract page and the code share one name per field.
  */

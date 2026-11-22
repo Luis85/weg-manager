@@ -108,7 +108,8 @@ const gate = () => {
  * them the file is still listed, and `process` rejects with ENOENT.
  *
  * Test knobs: `failReads` (listing and the metadata cache throw), `failWrites` (every write
- * rejects without changing anything), `holdWrites`/`releaseWrites`/`heldWrites`,
+ * rejects without changing anything), `adapter.trashSystem` (answer `false`: the system trash
+ * fails, and `fileManager.trashFile` resolves `false` as in Obsidian), `holdWrites`/`releaseWrites`/`heldWrites`,
  * `setMarkdownFileCount`, and `seedFile` for a file that appears from outside (Sync, another app),
  * also under a path that is not normalized.
  *
@@ -141,6 +142,13 @@ export class Vault
   failWrites = false;
   caseInsensitive = false;
   readonly root = new TFolder("/");
+  /**
+   * The one member of Obsidian's `DataAdapter` the double has: what `fileManager.trashFile` asks
+   * when the trash option is "system". It answers `true`; a test (or a fidelity scenario, as in
+   * Obsidian) replaces it with one that answers `false`, the system trash failing.
+   */
+  readonly adapter = { trashSystem: (_path: string): Promise<boolean> => Promise.resolve(true) };
+  private readonly config = new Map<string, unknown>([["trashOption", "system"]]);
   /** Double-internal: the metadata cache indexes each file whose text changed. */
   indexer: (file: TFile) => void = () => undefined;
   /** Double-internal: the metadata cache holds a file's metadata at once, as after a warm start. */
@@ -151,6 +159,15 @@ export class Vault
 
   getRoot(): TFolder {
     return this.root;
+  }
+
+  /** Obsidian's vault settings; the double knows only `trashOption`, "system" as on desktop. */
+  getConfig(key: string): unknown {
+    return this.config.get(key) ?? null;
+  }
+
+  setConfig(key: string, value: unknown): void {
+    this.config.set(key, value);
   }
 
   getAbstractFileByPath(path: string): TAbstractFile | null {

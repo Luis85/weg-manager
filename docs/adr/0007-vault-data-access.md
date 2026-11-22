@@ -127,3 +127,9 @@ Review round 2 of 2026-11-22. The decision's line "checked by a timing test" is 
 
 - **Unit test.** `tests/unit/application/notes/note-index-budget.test.ts` builds the reference vault's records over the in-memory store and asserts reads and decodes, not time: a build decodes each record once and reads no file twice, a rebuild reads and decodes nothing unchanged, and one edit costs one read and one decode.
 - **E2e.** `tests/e2e/specs/note-index.e2e.ts` bounds only the outside edit, from the edit to the snapshot (1 s). The first build after `VaultReady` on a cold start and on a warm restart is recorded in `reports/e2e/`, not asserted.
+
+## Amendment, 2026-11-22: what the second review round measured (PBI-68)
+
+Each point measured in Obsidian 1.15.1 with a shared scenario that the double is held to as well.
+
+- **A failed system trash does not reject.** With the trash option "system" (the desktop default), `fileManager.trashFile` asks `vault.adapter.trashSystem`; when that answers `false`, Obsidian shows its own notice and resolves `false`, and the note stays (`trash-failure-scenario.ts`). `trash` now reports `NoteTrashError` for a `false` as for a rejection (`trashCommand`). Only `false` counts: Obsidian resolves `true` on success, and an adapter that keeps to the d.ts (`void`) resolves `undefined`, which is no failure. The user sees Obsidian's notice beside the plugin's.

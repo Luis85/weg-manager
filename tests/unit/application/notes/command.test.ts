@@ -4,6 +4,7 @@ import {
   asDefect,
   createNote,
   isFileGone,
+  trashCommand,
   writeCommand,
 } from "../../../../src/application/notes/command";
 import type { PlannedNote } from "../../../../src/application/notes/paths";
@@ -169,5 +170,29 @@ describe("createNote", () => {
         );
         assert.deepStrictEqual([failed._tag, calls], ["NoteWriteError", 1]);
       }),
+  );
+});
+
+describe("trashCommand", () => {
+  it.effect("succeeds when the move resolves true, or nothing as the d.ts promises", () =>
+    Effect.gen(function* () {
+      yield* trashCommand(() => Promise.resolve(true));
+      yield* trashCommand(() => Promise.resolve());
+    }),
+  );
+
+  it.effect("fails with NoteTrashError when the move resolves false: Obsidian's failed trash", () =>
+    Effect.gen(function* () {
+      const error = yield* Effect.flip(trashCommand(() => Promise.resolve(false)));
+      assert.strictEqual(error._tag, "NoteTrashError");
+    }),
+  );
+
+  it.effect("fails with NoteTrashError and the cause when the move rejects", () =>
+    Effect.gen(function* () {
+      const cause = new Error("EACCES");
+      const error = yield* Effect.flip(trashCommand(() => Promise.reject(cause)));
+      assert.deepStrictEqual([error._tag, error.cause], ["NoteTrashError", cause]);
+    }),
   );
 });

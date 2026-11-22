@@ -20,7 +20,10 @@ import { parseYaml, stringifyYaml } from "./yaml";
  * - `trashFile` fires, for each file, the metadata cache's `deleted` and the vault's `delete`, for
  *   a folder its contents in the vault's order and the folder last; once the promise has resolved
  *   (with `true`, although the d.ts says `Promise<void>`), one `resolved`. Which trash the user
- *   chose makes no difference to that.
+ *   chose makes no difference to that, except that with "system" (the default) it first asks
+ *   `vault.adapter.trashSystem`: when that answers `false`, nothing is deleted, no event fires and
+ *   the promise resolves `false`, without rejecting (`trash-failure-scenario.ts`; Obsidian also
+ *   shows its own notice, which the double leaves out).
  *
  * "The vault's order" is the order entries joined the vault, a renamed entry joining again: that
  * is how Obsidian 1.15.1 lists them (`vaultFacts`' `trashFolder`, `folderScenario`).
@@ -61,6 +64,12 @@ export class FileManager implements Uses<
     await this.vault.beforeWrite(file.path);
     if (file instanceof TFile) this.vault.textOf(file);
     else if (this.vault.getAbstractFileByPath(file.path) !== file) throw new Error("ENOENT");
+    if (
+      this.vault.getConfig("trashOption") === "system" &&
+      !(await this.vault.adapter.trashSystem(file.path))
+    ) {
+      return false;
+    }
     const entries = file instanceof TFolder ? [...this.vault.contentsOf(file), file] : [file];
     for (const entry of entries) {
       if (entry instanceof TFile) this.metadataCache.forget(entry);

@@ -71,16 +71,26 @@ export const writeCommand = <A, E>(
     }),
   );
 
+/** What `NoteTrashError.cause` holds for a move to the trash that reported its own failure. */
+const TRASH_REPORTED_FAILURE = "the host reported that the move to the trash failed";
+
 /**
  * `NoteStore.trash` for any adapter: runs `write` (the move to the trash) as a command; a rejected
  * move is a `NoteTrashError`, so the user reads that the note was not deleted, not that it was not
- * saved. What came through `asDefect` stays a defect.
+ * saved. A move that resolves `false` failed too: Obsidian 1.15.1's `fileManager.trashFile` does
+ * so, without rejecting, when the system trash fails (`trash-failure-scenario.ts`). Only `false`
+ * counts: Obsidian resolves `true` on success while its d.ts promises `void`, so `undefined` (an
+ * adapter that keeps to the d.ts) is a success. What came through `asDefect` stays a defect.
  */
 export const trashCommand = (write: () => Promise<unknown>): Effect.Effect<void, NoteTrashError> =>
   writeCommand(async () => {
-    await write();
-    return Result.succeed(undefined);
-  }).pipe(Effect.mapError(({ cause }) => new NoteTrashError({ cause })));
+    const moved = await write();
+    return moved === false ? Result.fail(TRASH_REPORTED_FAILURE) : Result.succeed(undefined);
+  }).pipe(
+    Effect.mapError(
+      (failed) => new NoteTrashError({ cause: typeof failed === "string" ? failed : failed.cause }),
+    ),
+  );
 
 /**
  * `NoteStore.create` for any adapter: checks the name, finds the folder in the vault's spelling

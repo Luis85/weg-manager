@@ -127,7 +127,8 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
     );
 
   const trash = (path: string) =>
-    // Obsidian 1.15 resolves with `true` although its d.ts says `void`; the port promises void.
+    // Obsidian 1.15 resolves `true` although its d.ts says `void`, and `false`, without
+    // rejecting, when the system trash fails: `trashCommand` makes that a `NoteTrashError`.
     Effect.flatMap(find(path), (file) => trashCommand(() => fileManager.trashFile(file)));
 
   const rename = (path: string, newName: string) =>

@@ -8,7 +8,7 @@ Versions are bare `x.y.z`. Tags carry no `v`; `.npmrc` sets `tag-version-prefix=
    - it stages both files.
 
    The bump refuses a version that is not greater than the current one. Commit `package.json`, `package-lock.json`, `manifest.json` and `versions.json` (`chore: release 0.3.0`) and bring the commit to `main` through a pull request, like every change.
-2. When the pull request is merged and CI on `main` is green, start the release. A release publishes, so start it only when the owner asked for it. Either way works:
+2. When the pull request is merged and CI on `main` is green, start the release. A release publishes, so start it only when the owner asked for it. There is no further approval click: no protected `release` environment (owner decision, 2026-11-22), so a started release publishes when its checks pass. Either way works:
    - **By hand, the way for an agent:** run the workflow `Release` on `main` with the input `version` set to the new version. In the browser: Actions, Release, "Run workflow". With the GitHub CLI: `gh workflow run release.yml --ref main -f version=0.3.0`. An agent with the GitHub tools starts `release.yml` on the ref `main` with the input `version`. No tag has to be pushed: the workflow creates the tag on the commit it built, together with the release. It refuses a ref other than `main`, a version that is not a bare `x.y.z`, a version that differs from `manifest.json`, and a version that already has a tag.
    - **By tag:** `git tag 0.3.0 origin/main && git push origin 0.3.0`.
 

@@ -40,7 +40,7 @@ Die Befunde des UX-Reviews zu Kontrast, Rücksetzen der Grundstile, langen Namen
 
 **Von einem Menschen zu prüfen (mit der Vorabversion 0.2.0):**
 
-- Bedienung mit einem echten Screenreader. Geprüft ist bisher nur, was Tests messen können (Rollen, Namen, Fokusziele, `aria-modal`, `inert`).
+- Bedienung mit einem echten Screenreader. Geprüft ist bisher nur, was Tests messen können (Rollen, Namen, Fokusziele, `aria-modal`, `inert`). **Als nicht geplant geschlossen am 22.11.2026 (viertes Interview):** ohne Prüfer entfällt die Prüfung; die automatischen Prüfungen genügen vorerst.
 - Obsidians eigener Zoom. Die Aussage „bei 200 % erreichbar“ beruht auf Bildschirmfotos mit doppelter Pixeldichte.
 - Community-Themes. Die Farbformeln nutzen nur Variablen des Hosts, getestet sind aber nur Obsidians helles und dunkles Standard-Theme.
 - Die Liste in `docs/engineering/testing.md` (Abschnitt „Manual checks in Obsidian“).
@@ -68,7 +68,7 @@ Die Befunde des UX-Reviews zu Kontrast, Rücksetzen der Grundstile, langen Namen
 
 ## Akzeptanzkriterien
 
-1. Ein Mensch hat die manuelle Prüfliste mit der Vorabversion durchlaufen (Tastatur, Screenreader, Zoom, ein Community-Theme, weitere Plugins); die Ergebnisse stehen als Kommentar in dieser Note, Fehler als eigene Notes.
+1. Ein Mensch hat die manuelle Prüfliste mit der Vorabversion durchlaufen (Zoom, ein Community-Theme, weitere Plugins; die Bedienung nur mit der Tastatur und der Screenreader sind am 22.11.2026 als nicht geplant geschlossen); die Ergebnisse stehen als Kommentar in dieser Note, Fehler als eigene Notes.
 2. Bei fokussiertem Eingabefeld ist genau ein Fokuszeichen sichtbar, und es erreicht 3:1 gegen Feld und Hintergrund; `appearance.e2e.ts` misst das fokussierte Feld in hell und dunkel.
 3. Für `teal` und `cyan` ist entschieden, ob eine der Farben ersetzt wird. Eine Änderung braucht einen Nachtrag im Dateivertrag, weil der Farbname in den Notizen steht.
 4. Die Handoff-Notes 01, 02 und 03 beschreiben die Auswahl ohne „Alle“ und die Akzentfarbe, oder sie verweisen auf ADR 0008 und die Entscheidung vom 22.11.2026.
@@ -88,3 +88,4 @@ UX-Review vom 22.11.2026 (Abschnitte C und D), Berichte zu PR #31 und PR #34. [[
 - 22.11.2026 (Interview nach der Review-Runde): Entscheidungen eingetragen: `cyan` wird `amber`; Handoff-Dokumente und Diagramme werden neu geschrieben. Drei kleine UX-Punkte aus PR #34 ergänzt. Die manuellen Prüfungen bleiben beim Produktverantwortlichen, deshalb weiter `ready-for-human`.
 - 22.11.2026: `cyan` ist durch `amber` ersetzt (PR #42); im hellen Theme wirkt der Farbton wie dunkle Bronze, weil weiße Schrift bei 4,5:1 eine dunkle Fläche verlangt. Der Produktverantwortliche sieht ihn in der manuellen Prüfung von 0.2.0 an. Die Handoff-Dokumente 00 bis 09 und das Ablaufdiagramm der Ereignisse sind auf den heutigen Stand gebracht; das Architekturdiagramm folgt nach dem Modulmanifest. Offen bleiben: die manuellen Prüfungen, der Fokusring an Eingabefeldern, die Silbentrennung, die drei kleinen UX-Punkte.
 - 22.11.2026 (zweites Interview am selben Tag): Schrift entschieden: die des Hosts, Geist entfällt (O-D12, Nachtrag in K-13). Von den manuellen Prüfungen übernimmt der Produktverantwortliche mit 0.2.0 unter Windows: sein Theme hell und dunkel und Obsidians Zoom. Offen bleiben mangels Prüfer: Bedienung nur mit der Tastatur, Screenreader, Zusammenspiel mit anderen Plugins und vorhandenen Notizen.
+- 22.11.2026 (viertes Interview): Die beiden manuellen Prüfungen der Barrierefreiheit, für die es keinen Prüfer gibt, sind als nicht geplant geschlossen: die Bedienung nur mit der Tastatur und die Bedienung mit einem echten Screenreader. Die automatischen Prüfungen (Rollen, Namen, Fokusziele, `aria-modal`, `inert`, Kontrast) gelten vorerst als ausreichend. Alles andere in dieser Note bleibt offen und die Note bleibt `ready-for-human`, ohne `finished`: Obsidians Zoom und das Theme des Produktverantwortlichen mit 0.2.0 unter Windows (Kriterium 1), das Zusammenspiel mit anderen Plugins und vorhandenen Notizen (Kriterium 1), Community-Themes, die Liste in `docs/engineering/testing.md`, der Fokusring an Eingabefeldern (Kriterium 2), die Silbentrennung, die drei kleinen UX-Punkte aus PR #34, und was die Note zu den Dokumenten (Kriterien 4 und 5) bisher nicht als erledigt vermerkt.

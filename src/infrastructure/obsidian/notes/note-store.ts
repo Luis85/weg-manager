@@ -1,25 +1,27 @@
 import { Effect, Layer, Result } from "effect";
-import { normalizePath, stringifyYaml, type App, type CachedMetadata, type TFile } from "obsidian";
+import { normalizePath, parseYaml, type App, type CachedMetadata, type TFile } from "obsidian";
 import {
   NoteNotFoundError,
   NoteStore,
-  NoteUnreadableError,
-  applyPatch,
+  asDefect,
   copyFrontmatter,
   createNote,
+  newNoteText,
   pathsInFolder,
   recordNotes,
   planRename,
+  updateNoteText,
   writeCommand,
   type FrontmatterChange,
   type NewNote,
   type Note,
+  type NoteUnreadableError,
+  type NoteWriteRefusedError,
 } from "../../../application/notes";
 import { VaultReadError } from "../../../application/shell";
 
-/** Obsidian's parser throws this when a note's YAML is broken. */
-const isYamlError = (cause: unknown): boolean =>
-  cause instanceof Error && cause.name === "YAMLParseError";
+/** How an update fails besides the change's own failure and a failed write (`NoteWriteError`). */
+type UpdateError = NoteNotFoundError | NoteUnreadableError | NoteWriteRefusedError;
 
 const vaultRead = <A>(read: () => A) =>
   Effect.try({ try: read, catch: (cause) => new VaultReadError({ cause }) });
@@ -36,16 +38,14 @@ const hasUnreadableFrontmatter = (cache: CachedMetadata | null): boolean => {
   return block !== undefined && block.position.end.line > block.position.start.line + 1;
 };
 
-/** A new note's text: the frontmatter as Obsidian writes YAML, then the body. */
-const noteText = (frontmatter: Readonly<Record<string, unknown>>, body: string): string =>
-  Object.keys(frontmatter).length === 0 ? body : `---\n${stringifyYaml(frontmatter)}---\n${body}`;
-
 /**
  * The `NoteStore` on Obsidian (ADR 0007): the only code that changes vault files. It reads
  * frontmatter from the metadata cache and writes only through `vault.create`,
- * `vault.createFolder`, `fileManager.processFrontMatter`, `fileManager.trashFile` and
- * `fileManager.renameFile`, every path through `normalizePath`. No `vault.modify`, no
- * `vault.adapter`.
+ * `vault.createFolder`, `vault.process`, `fileManager.trashFile` and `fileManager.renameFile`,
+ * every path through `normalizePath`. No `vault.modify`, no `vault.adapter`, and no
+ * `fileManager.processFrontMatter`: it parses and rewrites the whole block, so comments, quoting
+ * and number forms (`01067`, `1.10`) of keys the plugin does not know would change. An update
+ * edits the file's text line by line instead (`updateNoteText`).
  */
 const obsidianNoteStore = (app: App): NoteStore["Service"] => {
   const { vault, metadataCache, fileManager } = app;
@@ -72,36 +72,41 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
       if (folder !== "/" && vault.getFolderByPath(folder) === null) {
         await vault.createFolder(folder);
       }
-      await vault.create(path, noteText(frontmatter, body));
+      await vault.create(
+        path,
+        asDefect(() => newNoteText(frontmatter, body)),
+      );
     });
 
   /**
-   * `change` decides inside `processFrontMatter`, on the frontmatter Obsidian has just read from
-   * the file. To abort, the callback throws, so Obsidian writes nothing; `refusal` keeps why.
+   * `change` decides inside `vault.process`, on the frontmatter parsed from the text Obsidian has
+   * just read from the file, and only lines of keys the patch changes are rewritten. Returning the
+   * text unchanged writes nothing. A note deleted after `find` makes `vault.process` reject
+   * (ENOENT) without calling back: that is `NoteNotFoundError`, not a write to retry.
    */
   const update = <E>(path: string, change: FrontmatterChange<E>) =>
-    Effect.flatMap(find(path), (file) => {
-      let refusal: Result.Result<never, E> | undefined;
-      let written: Note = { path: file.path, frontmatter: {} };
-      return writeCommand(async (): Promise<Result.Result<Note, E | NoteUnreadableError>> => {
+    Effect.flatMap(find(path), (file) =>
+      writeCommand(async (): Promise<Result.Result<Note, E | UpdateError>> => {
+        const decided: { outcome?: ReturnType<typeof updateNoteText<E>> } = {};
         try {
-          await fileManager.processFrontMatter(file, (frontmatter: Record<string, unknown>) => {
-            const decided = change(copyFrontmatter(frontmatter));
-            if (Result.isFailure(decided)) {
-              refusal = Result.fail(decided.failure);
-              throw new Error("change refused");
-            }
-            applyPatch(frontmatter, decided.success);
-            written = { path: file.path, frontmatter: copyFrontmatter(frontmatter) };
+          await vault.process(file, (text) => {
+            const outcome = asDefect(() => updateNoteText(text, change, parseYaml));
+            decided.outcome = outcome;
+            return Result.isSuccess(outcome) ? outcome.success.text : text;
           });
         } catch (cause) {
-          if (refusal !== undefined) return refusal;
-          if (isYamlError(cause)) return Result.fail(new NoteUnreadableError({ cause }));
+          if (decided.outcome === undefined && vault.getFileByPath(file.path) !== file) {
+            return Result.fail(new NoteNotFoundError());
+          }
           throw cause;
         }
-        return Result.succeed(written);
-      });
-    });
+        if (decided.outcome === undefined) throw new Error("vault.process did not call back");
+        return Result.map(decided.outcome, ({ frontmatter }): Note => ({
+          path: file.path,
+          frontmatter,
+        }));
+      }),
+    );
 
   const trash = (path: string) =>
     Effect.flatMap(find(path), (file) =>

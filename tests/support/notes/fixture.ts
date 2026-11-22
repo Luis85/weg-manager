@@ -8,6 +8,8 @@ export type NoteStoreFixture = {
   readonly layer: Layer.Layer<NoteStore>;
   /** A note written from outside the plugin, as a person, Sync or an agent would. */
   seed(path: string, frontmatter: Frontmatter | "none" | "broken", body?: string): Promise<void>;
+  /** Deletes a note from outside the plugin (a person, Sync), as Obsidian then sees it. */
+  removeOutside(path: string): void;
   /** Waits until reads see every write; Obsidian's metadata cache catches up a moment later. */
   settle(): Promise<void>;
   /** The note's body (text after the frontmatter), or `undefined` when there is no such note. */

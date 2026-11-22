@@ -1,7 +1,7 @@
 import { assert, describe, expect, it } from "@effect/vitest";
 import { Effect, Result } from "effect";
 import { vi } from "vitest";
-import { NoteStore } from "../../../../src/application/notes";
+import { NoteStore, NoteWriteRefusedError } from "../../../../src/application/notes";
 import { noteStoreLayer } from "../../../../src/infrastructure/obsidian/notes";
 import { App, TFile, normalizePath, stringifyYaml } from "../../../support/obsidian";
 import { splitFrontmatter } from "../../../support/obsidian/metadata-cache";
@@ -21,6 +21,12 @@ const onDouble = (app = new App()): NoteStoreFixture => ({
   layer: noteStoreLayer(app as never),
   seed: (path, frontmatter, body) =>
     Promise.resolve(app.vault.seedFile(path, textOf(frontmatter, body))),
+  removeOutside: (path) => {
+    const file = app.vault.getFileByPath(path);
+    if (file === null) throw new Error(`no file at ${path}`);
+    app.metadataCache.forget(file);
+    app.vault.remove(file);
+  },
   settle: () => app.metadataCache.whenIndexed(),
   body: async (path) => {
     const file = app.vault.getFileByPath(path);
@@ -49,6 +55,29 @@ const onCaseInsensitiveDisk = () => {
 
 noteStoreContract("Obsidian adapter on the double", () => onDouble());
 noteStoreContract("Obsidian adapter on a case-insensitive disk", onCaseInsensitiveDisk);
+
+/** The reviewer's note: a comment and unknown keys that a full YAML round trip would change. */
+const REVIEWED = [
+  "---",
+  "# Kommentar des Beirats",
+  "plz: 01067",
+  "version: 1.10",
+  "iban_nr: 12345678901234567890",
+  "flow: [a, b]",
+  "quoted: 'yes'",
+  "schema: weg-manager.community/v1",
+  "kind: WEG",
+  "---",
+  "Body",
+  "",
+].join("\n");
+
+/** The file's bytes as text, BOM included (`vault.read` drops a BOM, as Obsidian's does). */
+const rawText = (app: App, path: string): string => {
+  const file = app.vault.getFileByPath(path);
+  if (file === null) throw new Error(`no file at ${path}`);
+  return app.vault.textOf(file);
+};
 
 const run = <A, E>(app: App, use: (store: NoteStore["Service"]) => Effect.Effect<A, E>) =>
   NoteStore.use(use).pipe(Effect.provide(noteStoreLayer(app as never)));
@@ -107,6 +136,70 @@ describe("Obsidian NoteStore adapter", () => {
       app.vault.on("modify", modified);
       yield* run(app, (notes) => notes.update("A.md", () => Result.succeed({ set: { a: 1 } })));
       assert.strictEqual(modified.mock.calls.length, 0);
+    }),
+  );
+
+  it.effect("changes only the line of the key it sets, byte for byte", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      app.vault.seedFile("A.md", REVIEWED);
+      const note = yield* run(app, (notes) =>
+        notes.update("A.md", () => Result.succeed({ set: { kind: "Haus" } })),
+      );
+      assert.strictEqual(rawText(app, "A.md"), REVIEWED.replace("kind: WEG", "kind: Haus"));
+      assert.deepStrictEqual(note.frontmatter, {
+        plz: 1067,
+        version: 1.1,
+        iban_nr: 12345678901234567000,
+        flow: ["a", "b"],
+        quoted: "yes",
+        schema: "weg-manager.community/v1",
+        kind: "Haus",
+      });
+    }),
+  );
+
+  it.effect("saves a note that starts with a BOM and keeps the BOM and its line breaks", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      const text = "\uFEFF---\r\nschema: weg-manager.community/v1\r\nkind: WEG\r\n---\r\nBody\r\n";
+      app.vault.seedFile("A.md", text);
+      yield* Effect.promise(() => app.metadataCache.whenIndexed());
+      const read = yield* run(app, (notes) => notes.read("A.md"));
+      assert.deepStrictEqual(read.frontmatter, { schema: "weg-manager.community/v1", kind: "WEG" });
+      yield* run(app, (notes) =>
+        notes.update("A.md", () => Result.succeed({ set: { kind: "Haus", tags: ["a"] } })),
+      );
+      assert.strictEqual(
+        rawText(app, "A.md"),
+        "\uFEFF---\r\nschema: weg-manager.community/v1\r\nkind: Haus\r\ntags:\r\n  - a\r\n---\r\nBody\r\n",
+      );
+    }),
+  );
+
+  it.effect(
+    "refuses a note whose frontmatter it cannot edit line by line, and writes nothing",
+    () =>
+      Effect.gen(function* () {
+        const app = new App();
+        app.vault.seedFile("A.md", "---\na: 1\n----\nbody\n");
+        const modified = vi.fn<() => void>();
+        app.vault.on("modify", modified);
+        const error = yield* Effect.flip(
+          run(app, (notes) => notes.update("A.md", () => Result.succeed({ set: { a: 2 } }))),
+        );
+        assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "layout" }));
+        assert.strictEqual(modified.mock.calls.length, 0);
+      }),
+  );
+
+  it.effect("writes a new note's values as an update writes them", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      yield* run(app, (notes) =>
+        notes.create({ folder: "", name: "A", frontmatter: { plz: "01067", word: "yes" } }),
+      );
+      assert.strictEqual(rawText(app, "A.md"), '---\nplz: "01067"\nword: "yes"\n---\n');
     }),
   );
 

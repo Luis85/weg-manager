@@ -1,6 +1,6 @@
 import { assert, describe, it } from "@effect/vitest";
-import { Effect, Fiber, Result } from "effect";
-import { createNote, writeCommand } from "../../../../src/application/notes/command";
+import { Cause, Effect, Exit, Fiber, Result } from "effect";
+import { asDefect, createNote, writeCommand } from "../../../../src/application/notes/command";
 import type { PlannedNote } from "../../../../src/application/notes/paths";
 
 const normalize = (path: string) => path.replace(/\/+/g, "/").replace(/^\/|\/$/g, "") || "/";
@@ -29,6 +29,29 @@ describe("writeCommand", () => {
       assert.strictEqual(error.cause, cause);
     }),
   );
+
+  it.effect("dies with what plugin code threw through asDefect, a bug and no failed write", () =>
+    Effect.gen(function* () {
+      const bug = new TypeError("bug in the merge");
+      const exit = yield* Effect.exit(
+        writeCommand<number, never>(async () => {
+          await Promise.resolve();
+          return asDefect(() => {
+            throw bug;
+          });
+        }),
+      );
+      assert.isTrue(Exit.isFailure(exit) && Cause.hasDies(exit.cause));
+      assert.strictEqual(Exit.isFailure(exit) && Cause.squash(exit.cause), bug);
+    }),
+  );
+
+  it("asDefect returns what the code returns", () => {
+    assert.strictEqual(
+      asDefect(() => 3),
+      3,
+    );
+  });
 
   it.effect("waits for a started write when interrupted", () =>
     Effect.gen(function* () {

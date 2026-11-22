@@ -1,7 +1,12 @@
 import { assert, describe, it } from "@effect/vitest";
-import { Effect, Exit, Result } from "effect";
+import { Cause, Effect, Exit, Fiber, Result } from "effect";
 import { vi } from "vitest";
-import type { Frontmatter, FrontmatterChange, Note } from "../../../src/application/notes";
+import {
+  NoteNotFoundError,
+  type Frontmatter,
+  type FrontmatterChange,
+  type Note,
+} from "../../../src/application/notes";
 import { COMMUNITY, interruptWhileHeld, promise, run, type NoteStoreFixture } from "./fixture";
 
 const seedForUpdate = async (fixture: NoteStoreFixture) => {
@@ -154,6 +159,47 @@ export const writeContract = (make: () => NoteStoreFixture) => {
         yield* promise(() => fixture.settle());
         const read = yield* run(fixture, (store) => store.read("F/A.md"));
         assert.isFalse("a" in read.frontmatter);
+      }),
+    );
+
+    it.effect("dies with what the change throws, a bug, and writes nothing", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        yield* promise(() => seedForUpdate(fixture));
+        const bug = new Error("bug in the merge");
+        const exit = yield* Effect.exit(
+          run(fixture, (store) =>
+            store.update("F/A.md", () => {
+              throw bug;
+            }),
+          ),
+        );
+        assert.isTrue(Exit.isFailure(exit) && Cause.hasDies(exit.cause));
+        assert.strictEqual(Exit.isFailure(exit) && Cause.squash(exit.cause), bug);
+        yield* promise(() => fixture.settle());
+        const read = yield* run(fixture, (store) => store.read("F/A.md"));
+        assert.strictEqual(read.frontmatter["name"], "Alt");
+      }),
+    );
+
+    it.effect("fails with NoteNotFoundError when the note is deleted before the write", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        yield* promise(() => seedForUpdate(fixture));
+        fixture.holdWrites();
+        const fiber = yield* Effect.forkChild(
+          run(fixture, (store) => store.update("F/A.md", () => Result.succeed({ set: { a: 1 } }))),
+        );
+        yield* promise(() =>
+          vi.waitFor(() => {
+            if (fixture.heldWrites() !== 1) throw new Error("the write is not waiting yet");
+          }),
+        );
+        fixture.removeOutside("F/A.md");
+        fixture.releaseWrites();
+        const error = yield* Effect.flip(Fiber.join(fiber));
+        assert.instanceOf(error, NoteNotFoundError);
+        assert.isUndefined(yield* promise(() => fixture.body("F/A.md")));
       }),
     );
 

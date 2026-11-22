@@ -45,6 +45,8 @@ export const notesEn: NotesCatalog = {
           "The note's id changed meanwhile, so it's no longer the same record. Open the note again.",
         "migration-failed":
           "The note couldn't be converted to the current schema version. Check its properties in Obsidian.",
+        layout:
+          "The note's properties are written in a form WEG Manager can't change without changing other lines too. In Obsidian, write each property on a line of its own as key: value between two --- lines, then save again.",
       },
     },
     indexRead: {

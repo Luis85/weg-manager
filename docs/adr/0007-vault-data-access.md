@@ -1,6 +1,6 @@
 # ADR 0007 · Vault notes as records
 
-- Status: accepted; adapter calls, the unreadable lookup and the conflict form amended on 2026-11-21, the update write path amended again on 2026-11-21; a contact's role, closing lines and folders, references with lookup by id, and the wording of the budget amended on 2026-11-22 (see the notes at the end)
+- Status: accepted; adapter calls, the unreadable lookup and the conflict form amended on 2026-11-21, the update write path amended again on 2026-11-21; a contact's role, closing lines and folders, references with lookup by id, the wording of the budget and what the second review round measured (PBI-68) amended on 2026-11-22 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context

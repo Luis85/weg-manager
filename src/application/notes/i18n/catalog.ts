@@ -109,6 +109,16 @@ export type NotesCatalog = {
     readonly cancel: string;
   };
   /**
+   * The question before a record's form closes with unsaved input (PBI-72): discard it, or keep
+   * editing, the safe choice.
+   */
+  readonly discard: {
+    readonly title: string;
+    readonly detail: string;
+    readonly confirm: string;
+    readonly keep: string;
+  };
+  /**
    * The settings section of the notes the plugin cannot read or assign to a record type
    * (glossary: data issues): its name in the navigation and as its heading.
    */

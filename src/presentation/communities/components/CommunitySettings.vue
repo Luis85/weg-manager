@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import UButton from "@nuxt/ui/components/Button.vue";
 import USkeleton from "@nuxt/ui/components/Skeleton.vue";
-import USlideover from "@nuxt/ui/components/Slideover.vue";
 import { computed, shallowRef } from "vue";
 import {
   communityList,
@@ -13,7 +12,7 @@ import {
   type Community,
 } from "../../../application/communities";
 import { communityType } from "../../../domain/communities";
-import { DeleteRecordDialog, cardKey, useRecordScreen } from "../../notes";
+import { DeleteRecordDialog, RecordSheet, cardKey, useRecordScreen } from "../../notes";
 import { ErrorNotice, useMessages, useStream } from "../../shell";
 import CommunityCard from "./CommunityCard.vue";
 import CommunityForm from "./CommunityForm.vue";
@@ -31,6 +30,11 @@ const t = useMessages().communities;
 const list = useStream(communityList, communityListChanges);
 const selection = useStream(communitySelection, communitySelectionChanges);
 const root = shallowRef<HTMLElement>();
+const screen = useRecordScreen({
+  type: communityType,
+  list: () => list.value,
+  root: () => root.value,
+});
 const {
   folder,
   loading,
@@ -41,8 +45,6 @@ const {
   editing,
   deleting,
   deletingKey,
-  sheetOpen,
-  sheet,
   dialog,
   create,
   edit,
@@ -51,7 +53,7 @@ const {
   remove,
   removed,
   closeDelete,
-} = useRecordScreen({ type: communityType, list: () => list.value, root: () => root.value });
+} = screen;
 
 const sheetTitle = computed(() =>
   editing.value?.record === undefined ? t.form.createTitle : t.form.editTitle,
@@ -126,12 +128,7 @@ const isSelected = (community: Community) =>
         @remove="remove(community)"
       />
     </ul>
-    <USlideover
-      v-model:open="sheetOpen"
-      :title="sheetTitle"
-      :content="sheet"
-      :ui="{ body: 'wm:p-0 wm:sm:p-0' }"
-    >
+    <RecordSheet :title="sheetTitle" :state="screen">
       <template #body>
         <CommunityForm
           v-if="editing"
@@ -141,7 +138,7 @@ const isSelected = (community: Community) =>
           @cancel="close"
         />
       </template>
-    </USlideover>
+    </RecordSheet>
     <DeleteRecordDialog
       :key="deletingKey"
       :record="deleting"

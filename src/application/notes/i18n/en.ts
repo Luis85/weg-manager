@@ -86,6 +86,12 @@ export const notesEn: NotesCatalog = {
     confirm: "Move to trash",
     cancel: "Cancel",
   },
+  discard: {
+    title: "Discard your input?",
+    detail: "Your input in this form isn't saved yet. If you discard it, it's lost.",
+    confirm: "Discard",
+    keep: "Keep editing",
+  },
   dataIssues: {
     title: "Data issues",
     intro:

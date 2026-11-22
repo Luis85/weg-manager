@@ -4,6 +4,32 @@ import { describeError } from "../../application/user-messages";
 import type { NoteFields, NoteType } from "../../domain/notes";
 import { useCommand, useDelayed, useMessages, useModal, useSettings } from "../shell";
 import { cardKey, useFocusAfter } from "./focus-after";
+import { provideSheetGuard } from "./sheet-guard";
+
+/**
+ * The element that has the focus in `root`'s document. Checked against that document's own
+ * `HTMLElement`: the global one fails for an element in a pop-out window.
+ */
+const focusedIn = (root: HTMLElement | undefined): HTMLElement | undefined => {
+  const focused = root?.ownerDocument.activeElement;
+  const view = root?.ownerDocument.defaultView;
+  return view !== null && view !== undefined && focused instanceof view.HTMLElement
+    ? focused
+    : undefined;
+};
+
+/** What `RecordSheet` takes of a record screen: the sheet and the question before discarding. */
+export type RecordSheetState = Pick<
+  ReturnType<typeof useRecordScreen>,
+  | "sheetOpen"
+  | "sheet"
+  | "sheetDismissible"
+  | "discarding"
+  | "discardDialog"
+  | "requestClose"
+  | "keep"
+  | "discard"
+>;
 
 /** What the screen needs to know of a record: its identity, for its card and the focus. */
 type ScreenRecord = Parameters<typeof cardKey>[0];
@@ -16,6 +42,11 @@ type ScreenRecord = Parameters<typeof cardKey>[0];
  * it, after a create or save to the saved card, after a delete to the create action
  * (`useFocusAfter`). The feature keeps the markup: cards marked with `data-card-key` and
  * `data-focus`, the sheet and the dialog bound to `sheet` and `dialog`.
+ *
+ * A sheet whose form holds unsaved input does not close by itself (PBI-72): Escape, a pointer-down
+ * outside, its close control and the form's cancel (`close`) ask first (`discarding`), with keep
+ * editing as the safe choice; `RecordSheet` shows the sheet and the question. A save closes it at
+ * once, and so does every way without unsaved input.
  */
 export const useRecordScreen = <F extends NoteFields, Row extends ScreenRecord>(options: {
   readonly type: NoteType<F>;
@@ -42,14 +73,42 @@ export const useRecordScreen = <F extends NoteFields, Row extends ScreenRecord>(
     return error === undefined ? undefined : describeError(error, catalog);
   });
   const empty = computed(() => options.list().ready && options.list().records.length === 0);
+  /** The open form holds unsaved input, as it reports (`useRecordForm`). */
+  const dirty = shallowRef(false);
+  provideSheetGuard((next) => {
+    dirty.value = next;
+  });
+  /** The question whether to discard that input is open. */
+  const discarding = shallowRef(false);
+  /** Where the focus was when the question opened: keep editing returns it there. */
+  let returnTo: HTMLElement | undefined;
+  const shut = () => {
+    discarding.value = false;
+    editing.value = undefined;
+  };
+  /** Every way to close the sheet: at once without unsaved input, else the question first. */
+  const requestClose = () => {
+    if (editing.value === undefined || discarding.value) return;
+    if (!dirty.value) return shut();
+    returnTo = focusedIn(options.root());
+    discarding.value = true;
+  };
   const sheetOpen = computed({
     get: () => editing.value !== undefined,
     set: (open: boolean) => {
-      if (!open) editing.value = undefined;
+      if (!open) requestClose();
     },
   });
   const sheet = useModal(() => sheetOpen.value, focus.closed);
   const dialog = useModal(() => deleting.value !== undefined, focus.closed);
+  const discardDialog = useModal(
+    () => discarding.value,
+    () => {
+      // Kept: back to where the focus was. Discarded: the sheet's close decides.
+      if (editing.value !== undefined && returnTo?.isConnected === true) returnTo.focus();
+      returnTo = undefined;
+    },
+  );
 
   return {
     folder,
@@ -64,6 +123,17 @@ export const useRecordScreen = <F extends NoteFields, Row extends ScreenRecord>(
     sheetOpen,
     sheet,
     dialog,
+    /** The sheet closes by itself only without unsaved input; else it asks. */
+    sheetDismissible: computed(() => !dirty.value),
+    discarding,
+    discardDialog,
+    requestClose,
+    /** Keep editing: the question closes, the input stays. */
+    keep: () => {
+      discarding.value = false;
+    },
+    /** Discard the input: the question and the sheet close. */
+    discard: shut,
     create: () => {
       focus.opened({ add: true });
       editing.value = { record: undefined };
@@ -75,11 +145,10 @@ export const useRecordScreen = <F extends NoteFields, Row extends ScreenRecord>(
     /** The sheet saved the record with `id`: it closes, and the focus goes to its card. */
     saved: (id: string) => {
       focus.after({ card: `id:${id}` });
-      editing.value = undefined;
+      shut();
     },
-    close: () => {
-      editing.value = undefined;
-    },
+    /** The form's cancel: closes, or asks first while the form holds unsaved input. */
+    close: requestClose,
     remove: (record: Row) => {
       focus.opened({ card: cardKey(record), control: "remove" });
       deleting.value = record;

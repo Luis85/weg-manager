@@ -1,7 +1,7 @@
 ---
 type: PBI
 parent: "[[F-25 - Onboarding und Einführung]]"
-order: 90000
+order: 98000
 actors:
   - "[[ACT-01-Beirat]]"
   - "[[ACT-05-Obsidian]]"
@@ -34,7 +34,7 @@ dependsOn:
 triage: ""
 ---
 
-# PBI-61 · Beim ersten Aktivieren in die Einrichtung geführt werden
+# PBI-69 · Beim ersten Aktivieren in die Einrichtung geführt werden
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP, siehe [[F-25 - Onboarding und Einführung]]
 

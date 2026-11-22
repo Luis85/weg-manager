@@ -23,16 +23,21 @@ export const notesEn: NotesCatalog = {
     },
     unreadable: {
       title: "Can't read properties",
-      detail: "The note's properties aren't valid YAML. Fix them in Obsidian, then try again.",
+      detail:
+        "The properties at the top of the note are malformed, so WEG Manager can't change them. Open the note, fix its properties, then save again.",
     },
     write: {
       title: "Note not saved",
       detail: "Obsidian couldn't write the note. Try again.",
     },
+    trash: {
+      title: "Note not deleted",
+      detail: "Obsidian couldn't move the note to the trash. Try again.",
+    },
     editConflict: {
-      title: "Note changed meanwhile",
+      title: "Note changed while you were editing",
       detail:
-        "The note was changed outside the form, also in fields you edited. Choose the value to keep for each of those fields, then save again.",
+        "The note was also changed outside this form, in fields you edited. Choose the value to keep for each, then save again.",
     },
     writeRefused: {
       title: "Can't save the note",
@@ -40,36 +45,37 @@ export const notesEn: NotesCatalog = {
         "other-type":
           "The note is no longer a record of this type. Check its schema property in Obsidian.",
         "newer-version":
-          "A newer plugin version saved the note meanwhile. Update WEG Manager, then open the note again.",
+          "The note was saved by a newer version of WEG Manager in the meantime, for example on another device. Update WEG Manager, then open the note again.",
         identity:
-          "The note's id changed meanwhile, so it's no longer the same record. Open the note again.",
+          "The note's id was changed, so it now belongs to another record. Close the form and open it again.",
+        "duplicate-id":
+          "Another note has the same id, so it's unclear which one is meant. Delete the duplicate note in Obsidian, then try again.",
         "migration-failed":
-          "The note couldn't be converted to the current schema version. Check its properties in Obsidian.",
+          "The note couldn't be converted to the current version. Open the note and check its properties.",
         layout:
           "The note's properties are written in a form WEG Manager can't change without changing other lines too. In Obsidian, write each property on a line of its own as key: value between two --- lines, then save again.",
       },
     },
     indexRead: {
-      title: "Notes may be out of date",
-      detail:
-        "Obsidian couldn't read every note, so the list may be out of date. Read the notes again.",
+      title: "Couldn't read notes",
+      detail: "Obsidian couldn't read every note, so the list may be incomplete. Try again.",
     },
   },
   recordIssues: {
     "schema.malformed": () =>
-      "The schema property can't be read, so the note is read-only. Fix it in Obsidian as the file contract describes.",
-    "schema.newer": ({ version }) =>
-      `The note comes from a newer plugin version (schema version ${version}), so it's read-only. Update WEG Manager to edit it.`,
-    "migration.failed": ({ from }) =>
-      `The note couldn't be converted from schema version ${from} to the current one, so it's read-only. Check its properties in Obsidian.`,
+      "The schema property is malformed, so the note is read-only. Open the note and fix its schema property.",
+    "schema.newer": () =>
+      "The note was saved by a newer version of WEG Manager, for example on another device, so it's read-only here. Update WEG Manager to edit it.",
+    "migration.failed": () =>
+      "The note couldn't be converted to the current version, so it's read-only. Open the note and check its properties.",
     "id.missing": () =>
       "The note has no id property, so it's read-only. Restore the id in Obsidian, for example from a backup.",
     "id.malformed": () =>
       "The note's id property isn't valid, so it's read-only. Restore the original id in Obsidian.",
     "id.other-type": () =>
       "The note's id belongs to another type, so it's read-only. Check schema and id in Obsidian.",
-    "id.duplicate": () =>
-      "Another note has the same id, so both are read-only. Delete the duplicate note in Obsidian.",
+    "id.duplicate": ({ other }) =>
+      `The note “${other}” has the same id, so both are read-only. Delete the duplicate note in Obsidian.`,
   },
   fieldIssues: {
     "field.missing": (label) => `“${label}” is missing. Enter a value.`,
@@ -81,10 +87,10 @@ export const notesEn: NotesCatalog = {
   },
   unindexedIssues: {
     "schema.malformed": () =>
-      "The schema property can't be read, so WEG Manager can't tell the note's type. Fix it in Obsidian as the file contract describes.",
+      "The schema property is malformed, so WEG Manager can't tell the note's type. Open the note and fix its schema property.",
     "schema.unknown-type": ({ type }) =>
       `The note is marked as type “${type}”, which this version of WEG Manager doesn't know. Update WEG Manager or fix the schema property in Obsidian.`,
     "frontmatter.unreadable": () =>
-      "The note's properties aren't valid YAML, so WEG Manager can't read them. Fix them in Obsidian.",
+      "The properties at the top of the note are malformed, so WEG Manager can't read them. Open the note and fix its properties.",
   },
 };

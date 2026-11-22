@@ -7,6 +7,7 @@ import {
   rebuildNoteIndex,
   type IndexStatus,
 } from "../../../../src/application/notes";
+import { de } from "../../../../src/application/messages";
 import { describeError } from "../../../../src/application/user-messages";
 import {
   ErrorNotice,
@@ -70,11 +71,11 @@ describe("a view that follows the note index", () => {
     expect(root.textContent).toBe("…");
     await test.vaultReady();
     await vi.waitFor(() => {
-      expect(root.querySelector("[role=alert]")?.textContent).toContain("Notizen nicht aktuell");
+      expect(root.querySelector("[role=alert]")?.textContent).toContain(
+        de.notes.errors.indexRead.title,
+      );
     });
-    expect(root.textContent).toContain(
-      "Obsidian konnte nicht alle Notizen lesen, deshalb zeigt die Liste vielleicht einen älteren Stand. Lies die Notizen erneut ein.",
-    );
+    expect(root.textContent).toContain(de.notes.errors.indexRead.detail);
     test.notes.setFailReads(false);
     const retry = [...root.querySelectorAll("button")].find(
       (button) => button.textContent === "Erneut versuchen",

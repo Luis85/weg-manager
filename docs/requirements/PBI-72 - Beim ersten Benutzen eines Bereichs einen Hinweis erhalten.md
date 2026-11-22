@@ -1,7 +1,7 @@
 ---
 type: PBI
 parent: "[[F-25 - Onboarding und Einführung]]"
-order: 93000
+order: 101000
 actors:
   - "[[ACT-01-Beirat]]"
 release: ""
@@ -27,11 +27,11 @@ pages:
 user-flows:
   - "[[docs/design/user-flows/FLOW-09 - Erststart, Einrichtung und Einführung]]"
 dependsOn:
-  - "[[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]"
+  - "[[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]"
 triage: ""
 ---
 
-# PBI-64 · Beim ersten Benutzen eines Bereichs einen Hinweis erhalten
+# PBI-72 · Beim ersten Benutzen eines Bereichs einen Hinweis erhalten
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** nach dem MVP, siehe [[F-25 - Onboarding und Einführung]]
 

@@ -1,7 +1,7 @@
 ---
 type: PBI
 parent: "[[F-25 - Onboarding und Einführung]]"
-order: 89000
+order: 97000
 actors:
   - "[[ACT-01-Beirat]]"
   - "[[ACT-05-Obsidian]]"
@@ -31,7 +31,7 @@ dependsOn: []
 triage: ""
 ---
 
-# PBI-60 · Plugin im Community-Verzeichnis finden und installieren
+# PBI-68 · Plugin im Community-Verzeichnis finden und installieren
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP, siehe [[F-25 - Onboarding und Einführung]]
 
@@ -47,7 +47,7 @@ Obsidian zeigt Community-Plugins erst, wenn der eingeschränkte Modus ausgeschal
 
 1. Name und Kurzbeschreibung im Manifest sagen in einem Satz, für wen das Plugin ist und was es tut. Die Suche nach „WEG“ und „Beirat“ findet es.
 2. Die README beginnt mit einem Absatz für Nutzer: was das Plugin leistet, was es nicht tut (kein Konto, keine KI, keine Verwaltungssoftware), dass es nur auf dem Desktop läuft und dass alle Daten als Notizen im eigenen Vault liegen.
-3. Die README nennt die Schritte bis zum ersten Start: eingeschränkten Modus ausschalten, Plugin suchen, installieren, aktivieren. Danach öffnet sich die Einrichtung von selbst ([[PBI-61 - Beim ersten Aktivieren in die Einrichtung geführt werden]]).
+3. Die README nennt die Schritte bis zum ersten Start: eingeschränkten Modus ausschalten, Plugin suchen, installieren, aktivieren. Danach öffnet sich die Einrichtung von selbst ([[PBI-69 - Beim ersten Aktivieren in die Einrichtung geführt werden]]).
 4. Die README zeigt einen Screenshot der Einrichtung und einen der Lage, beide mit synthetischen Daten.
 5. Die README nennt, welche Ordner und Notizen das Plugin im Vault anlegt und wann: erst nach Bestätigung in der Einrichtung.
 6. Das Plugin funktioniert in einem neu angelegten, leeren Vault ohne weitere Plugins.

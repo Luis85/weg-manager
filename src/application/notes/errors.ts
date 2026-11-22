@@ -33,6 +33,11 @@ export class NoteWriteError extends Schema.TaggedError<NoteWriteError>()("NoteWr
   cause: Schema.Defect(),
 }) {}
 
+/** Obsidian could not move the note to the trash: the disk, the file system or the trash folder. */
+export class NoteTrashError extends Schema.TaggedError<NoteTrashError>()("NoteTrashError", {
+  cause: Schema.Defect(),
+}) {}
+
 /** One field both the user and an outside edit changed: loaded, saved and current value. */
 const FieldConflict = Schema.Struct({
   key: Schema.String,
@@ -72,6 +77,7 @@ export type NotesError =
   | InvalidNoteNameError
   | NoteUnreadableError
   | NoteWriteError
+  | NoteTrashError
   | NoteEditConflictError
   | NoteWriteRefusedError
   | NoteIndexReadError;
@@ -83,6 +89,7 @@ const NOTES_ERROR_TAG_KEYS = {
   InvalidNoteNameError: true,
   NoteUnreadableError: true,
   NoteWriteError: true,
+  NoteTrashError: true,
   NoteEditConflictError: true,
   NoteWriteRefusedError: true,
   NoteIndexReadError: true,

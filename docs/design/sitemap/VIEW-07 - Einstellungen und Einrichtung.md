@@ -18,7 +18,7 @@ requirements:
   - "[[PBI-33 - Wochenarbeit auf dem Handy abschließen]]"
   - "[[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]]"
   - "[[PBI-42 - AI-Agent direkt mit den Notizen arbeiten lassen]]"
-  - "[[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]"
+  - "[[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]"
 entities:
   - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
   - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
@@ -87,7 +87,7 @@ Drei Schritte: Gemeinschaften (Name, Kürzel, Art, Farbe aus geprüfter Palette;
 ## Einführungstour
 
 > [!note] Abgelöst
-> Seit 22.11.2026 gibt es keine Tour mehr. Stattdessen erscheint beim ersten Benutzen eines Bereichs ein einzelner, nichtmodaler Hinweis am Element; der Befehl „Hinweise erneut zeigen“ setzt sie zurück ([[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]], [[VIEW-09 - Einrichtung]], [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]). Der folgende Stand v2 bleibt als Referenz.
+> Seit 22.11.2026 gibt es keine Tour mehr. Stattdessen erscheint beim ersten Benutzen eines Bereichs ein einzelner, nichtmodaler Hinweis am Element; der Befehl „Hinweise erneut zeigen“ setzt sie zurück ([[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]], [[VIEW-09 - Einrichtung]], [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]). Der folgende Stand v2 bleibt als Referenz.
 
 Startet einmalig nach dem Erststart auf der Lage; danach über Einstellungen › Hilfe oder den Befehl „Einführungstour starten“. Willkommensdialog mit „Tour starten“ und „Überspringen“, dann 7 Schritte als Spotlight mit Hinweiskarte (Punkte, „n / 7“, Zurück, Weiter bzw. Fertig, × zum Beenden):
 

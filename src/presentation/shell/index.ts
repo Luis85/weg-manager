@@ -6,3 +6,5 @@ export { mountSurface } from "./mount";
 export { useHistory, useNavigate, useRoute } from "./navigation";
 export { useCommand, useMessages, useQuery } from "./runtime/use-runtime";
 export { useAppEvents, useSettings, useSettingsStatus, useStream } from "./runtime/use-stream";
+export { useDelayed } from "./delay";
+export { useModal } from "./modal";

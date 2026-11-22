@@ -10,12 +10,12 @@ pages:
   - "[[VIEW-01 - Lage]]"
   - "[[VIEW-07 - Einstellungen und Einrichtung]]"
 requirements:
-  - "[[PBI-60 - Plugin im Community-Verzeichnis finden und installieren]]"
-  - "[[PBI-61 - Beim ersten Aktivieren in die Einrichtung geführt werden]]"
-  - "[[PBI-62 - Gemeinschaften im Einrichtungsassistenten anlegen]]"
-  - "[[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]"
-  - "[[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]"
-  - "[[PBI-65 - Kürzel einer Gemeinschaft nachträglich ändern]]"
+  - "[[PBI-68 - Plugin im Community-Verzeichnis finden und installieren]]"
+  - "[[PBI-69 - Beim ersten Aktivieren in die Einrichtung geführt werden]]"
+  - "[[PBI-70 - Gemeinschaften im Einrichtungsassistenten anlegen]]"
+  - "[[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]"
+  - "[[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]"
+  - "[[PBI-73 - Kürzel einer Gemeinschaft nachträglich ändern]]"
   - "[[PBI-32 - Ohne KI selbstständig beginnen]]"
 ---
 
@@ -48,7 +48,7 @@ flowchart TD
   R -- Verstanden oder Element benutzt --> S[Weiterarbeiten]
 ```
 
-Bis die Lage existiert ([[PBI-13 - Aktuelle Wochenlage öffnen]]), führt das Anlegen in die Gemeinschaftsverwaltung; die Karte „Erste Schritte“ folgt mit der Lage. Die Hinweise im Kontext folgen nach dem MVP ([[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]). Es gibt keine Tour ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]).
+Bis die Lage existiert ([[PBI-13 - Aktuelle Wochenlage öffnen]]), führt das Anlegen in die Gemeinschaftsverwaltung; die Karte „Erste Schritte“ folgt mit der Lage. Die Hinweise im Kontext folgen nach dem MVP ([[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]). Es gibt keine Tour ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]).
 
 ## Abbrüche und Sonderfälle
 

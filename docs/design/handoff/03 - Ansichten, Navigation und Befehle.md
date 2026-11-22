@@ -50,8 +50,8 @@ Ohne Standard-Hotkeys (Obsidian-Richtlinie); Namen in Satzanfang-Großschreibung
 | `open-point` | Punkt öffnen … (Suche) |
 | `backup-now` | Jetzt sichern |
 | `open-settings` | Einstellungen öffnen |
-| `reset-hints` | Hinweise erneut zeigen (ohne Tastenkürzel, [[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]) |
-| `show-first-steps` | Erste Schritte wieder einblenden (ohne Tastenkürzel, [[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]) |
+| `reset-hints` | Hinweise erneut zeigen (ohne Tastenkürzel, [[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]) |
+| `show-first-steps` | Erste Schritte wieder einblenden (ohne Tastenkürzel, [[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]) |
 
 ## Navigationsregeln
 

@@ -16,6 +16,18 @@ import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
 const PATH = `${FOLDER}/Ahornweg 12.md`;
 const ID = /^id: (community-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/m;
 
+/** Waits until Obsidian shows a notice with `text`. */
+const expectNotice = (text: string) =>
+  browser.waitUntil(
+    async () =>
+      (
+        await browser.executeObsidian(() =>
+          [...document.querySelectorAll(".notice")].map((el) => el.textContent ?? ""),
+        )
+      ).some((shown) => shown.includes(text)),
+    { timeoutMsg: `no notice said ${text}` },
+  );
+
 /** PBI-56: a community is created, edited and deleted as a note, in real Obsidian. */
 describe("communities: create, edit and delete", function () {
   let id = "";
@@ -38,6 +50,7 @@ describe("communities: create, edit and delete", function () {
     await saveForm();
     await expectFormClosed();
     await expectListed(["Ahornweg 12"]);
+    await expectNotice("„Ahornweg 12“ angelegt");
     const text = (await fileText(PATH)) ?? "";
     id = ID.exec(text)?.[1] ?? "";
     expect(id).not.toBe("");
@@ -65,12 +78,14 @@ describe("communities: create, edit and delete", function () {
     await saveForm();
     const form = root.$("[data-testid=community-form]");
     await expect(form).toHaveText(
-      expect.stringContaining(
-        "„Kürzel“ hat nicht 2 bis 5 Zeichen aus A–Z und 0–9. Gib ein solches Kürzel ein.",
-      ),
+      expect.stringContaining("Das Kürzel braucht 2 bis 5 Buchstaben (A–Z) oder Ziffern."),
     );
-    await expect(form).toHaveText(expect.stringContaining("„Farbe“ fehlt. Gib einen Wert ein."));
+    await expect(root.$("[data-testid=form-summary]")).toHaveText(
+      expect.stringContaining("Gemeinschaft nicht gespeichert"),
+    );
+    // Teal is Ahornweg 12's: it is offered no more, and the form started on the next free one.
     await expect(root.$("input[type=radio][value=teal]")).toBeDisabled();
+    await expect(root.$("input[type=radio][value=violet]")).toBeSelected();
     await browser.keys("Escape");
     await expectFormClosed();
     expect(await filesIn("WEG Manager")).toEqual([PATH]);
@@ -91,6 +106,7 @@ describe("communities: create, edit and delete", function () {
     await saveForm();
     await expectFormClosed();
     await expectListed(["Ahornweg 12a"]);
+    await expectNotice("„Ahornweg 12a“ gespeichert");
     expect(await fileText(PATH)).toBeNull();
     expect(await fileText(`${FOLDER}/Ahornweg 12a.md`)).toBe(
       [
@@ -115,11 +131,15 @@ describe("communities: create, edit and delete", function () {
     await root.$("button[aria-label='Ahornweg 12a löschen']").click();
     await expect(root.$("[role=dialog]")).toHaveText(
       expect.stringContaining(
-        "„Ahornweg 12a“ kommt in den Papierkorb, den du in Obsidian eingestellt hast.",
+        "„Ahornweg 12a“ wird in Obsidians Papierkorb verschoben. Dort kannst du die Notiz wiederherstellen.",
       ),
+    );
+    await expect(root.$("[data-testid=delete-confirm]")).toHaveText(
+      "In den Papierkorb verschieben",
     );
     await root.$("[data-testid=delete-confirm]").click();
     await expect(root.$("[data-testid=communities-empty]")).toBeDisplayed();
+    await expectNotice("„Ahornweg 12a“ in den Papierkorb verschoben");
     expect(await filesIn("WEG Manager")).toEqual([]);
     expect(await fileText(".trash/Ahornweg 12a.md")).toContain(`id: ${id}`);
   });

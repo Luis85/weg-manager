@@ -1,6 +1,6 @@
 import type { SettingsIssue } from "../../domain/shell";
 import type { ShellError } from "./errors";
-import type { ShellCatalog } from "./i18n/catalog";
+import { ISSUES_URL, type ShellCatalog } from "./i18n/catalog";
 import { describeIssues } from "./i18n/describe";
 
 export type UserMessageAction = "retry" | "open-settings" | "copy-diagnostics";
@@ -14,6 +14,8 @@ export type UserMessage = {
   readonly title: string;
   readonly detail: string;
   readonly action?: UserMessageAction;
+  /** A web page that helps with the message, shown as a link: the plugin's issues (`ISSUES_URL`). */
+  readonly link?: string;
 };
 
 /** The text of a shell error. `describeError` (`src/application/user-messages.ts`) hands it here. */
@@ -28,6 +30,7 @@ export const describeShellError = (error: ShellError, messages: ShellCatalog): U
         title: errors.readOnly.title,
         detail: errors.readOnly.detail[error.reason],
         action: "copy-diagnostics",
+        ...(error.reason === "unreadable" ? { link: ISSUES_URL } : {}),
       };
     case "InvalidSettingsError":
       return {
@@ -47,6 +50,7 @@ export const describeDefect = (incidentId: string, messages: ShellCatalog): User
   title: messages.defect.title,
   detail: messages.defect.detail(incidentId),
   action: "copy-diagnostics",
+  link: ISSUES_URL,
 });
 
 export const describeSettingsIssues = (

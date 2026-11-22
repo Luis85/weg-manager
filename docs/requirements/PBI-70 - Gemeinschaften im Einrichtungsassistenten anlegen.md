@@ -1,7 +1,7 @@
 ---
 type: PBI
 parent: "[[F-25 - Onboarding und Einführung]]"
-order: 91000
+order: 99000
 actors:
   - "[[ACT-01-Beirat]]"
   - "[[ACT-05-Obsidian]]"
@@ -33,12 +33,12 @@ user-flows:
   - "[[docs/design/user-flows/FLOW-09 - Erststart, Einrichtung und Einführung]]"
 dependsOn:
   - "[[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]"
-  - "[[PBI-61 - Beim ersten Aktivieren in die Einrichtung geführt werden]]"
-  - "[[PBI-65 - Kürzel einer Gemeinschaft nachträglich ändern]]"
+  - "[[PBI-69 - Beim ersten Aktivieren in die Einrichtung geführt werden]]"
+  - "[[PBI-73 - Kürzel einer Gemeinschaft nachträglich ändern]]"
 triage: ""
 ---
 
-# PBI-62 · Gemeinschaften im Einrichtungsassistenten anlegen
+# PBI-70 · Gemeinschaften im Einrichtungsassistenten anlegen
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP, siehe [[F-25 - Onboarding und Einführung]]
 
@@ -48,7 +48,7 @@ Als neuer Beirat möchte ich in zwei kurzen Schritten meine Gemeinschaften anleg
 
 ## Ausgangslage
 
-Gemeinschaften lassen sich heute in der Gemeinschaftsverwaltung anlegen ([[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]). Jede Gemeinschaft hat Name, Kürzel, Art, Farbe und Einheitenbezeichnung. Das Kürzel ist heute nach dem Anlegen fest und wird mit [[PBI-65 - Kürzel einer Gemeinschaft nachträglich ändern]] änderbar. Der Assistent nutzt dieselben Regeln und Anwendungsfälle und führt nur durch sie hindurch.
+Gemeinschaften lassen sich heute in der Gemeinschaftsverwaltung anlegen ([[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]). Jede Gemeinschaft hat Name, Kürzel, Art, Farbe und Einheitenbezeichnung. Das Kürzel ist heute nach dem Anlegen fest und wird mit [[PBI-73 - Kürzel einer Gemeinschaft nachträglich ändern]] änderbar. Der Assistent nutzt dieselben Regeln und Anwendungsfälle und führt nur durch sie hindurch.
 
 ## Akzeptanzkriterien
 
@@ -60,7 +60,7 @@ Gemeinschaften lassen sich heute in der Gemeinschaftsverwaltung anlegen ([[PBI-5
 6. **Fehler:** Ungültige Angaben, etwa ein vergebenes Kürzel oder eine schon vorhandene gleichnamige Notiz, zeigt der Assistent am Feld mit Ursache und Ausweg, in Deutsch oder Englisch je nach Sprache von Obsidian. Ein Fehler in einer vorbelegten Angabe öffnet dort das Formular mit dem betroffenen Feld. Schlägt das Schreiben fehl, bleiben die Eingaben erhalten und schon angelegte Gemeinschaften werden genannt.
 7. **Abbrechen und Fortsetzen:** Bis zum Anlegen entsteht keine Datei und kein Ordner, und nichts landet in den Plugin-Daten. Schließt der Nutzer die Ansicht vorher, behält das Plugin die Eingaben im Arbeitsspeicher; beim nächsten Öffnen geht es dort weiter. Nach einem Neustart von Obsidian beginnt die Einrichtung leer. Zurück ist in jedem Schritt möglich, ohne Eingaben zu verlieren.
 8. **Fortschritt:** Ein Stepper zeigt zwei Schritte, „Gemeinschaften“ und „Prüfen“. Der Fokus springt bei jedem Schritt auf dessen Überschrift; alles ist per Tastatur bedienbar.
-9. **Ohne Kontakte und Register:** Der Assistent fragt weder Kontakte noch einen Registerimport ab. Diese erscheinen danach in der Karte „Erste Schritte“ ([[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]).
+9. **Ohne Kontakte und Register:** Der Assistent fragt weder Kontakte noch einen Registerimport ab. Diese erscheinen danach in der Karte „Erste Schritte“ ([[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]).
 10. **Formulare:** Formulare nutzen TanStack Form, die Prüfungen rufen die Regeln aus dem Domänenmodell der Gemeinschaften auf.
 
 ## Herkunft und Bezüge

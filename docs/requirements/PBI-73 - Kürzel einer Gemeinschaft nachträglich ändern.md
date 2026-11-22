@@ -1,7 +1,7 @@
 ---
 type: PBI
 parent: "[[F-01 - Gemeinschaften und Ansprechpartner]]"
-order: 94000
+order: 102000
 actors:
   - "[[ACT-01-Beirat]]"
 release: "[[MVP - Beirat Support]]"
@@ -33,7 +33,7 @@ dependsOn:
 triage: ""
 ---
 
-# PBI-65 · Kürzel einer Gemeinschaft nachträglich ändern
+# PBI-73 · Kürzel einer Gemeinschaft nachträglich ändern
 
 **Planungsstand:** Entscheidung des Produktverantwortlichen vom 22.11.2026 · **Umfang:** MVP
 
@@ -56,6 +56,6 @@ Seit [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]] is
 
 ## Herkunft und Bezüge
 
-Revidiert die Festlegung „nach dem Anlegen nicht änderbar“ aus den Kommentaren von [[PBI-01 - Gemeinschaftskontext wählen]] (21.11.2026) und Kriterium 3 von [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]. Voraussetzung für [[PBI-62 - Gemeinschaften im Einrichtungsassistenten anlegen]]. Dateivertrag: `docs/contracts/DV-01 - Gemeinschaft v1.md`.
+Revidiert die Festlegung „nach dem Anlegen nicht änderbar“ aus den Kommentaren von [[PBI-01 - Gemeinschaftskontext wählen]] (21.11.2026) und Kriterium 3 von [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]. Voraussetzung für [[PBI-70 - Gemeinschaften im Einrichtungsassistenten anlegen]]. Dateivertrag: `docs/contracts/DV-01 - Gemeinschaft v1.md`.
 
 ## Kommentare

@@ -1,7 +1,7 @@
 ---
 type: PBI
 parent: "[[F-25 - Onboarding und Einführung]]"
-order: 92000
+order: 100000
 actors:
   - "[[ACT-01-Beirat]]"
 release: "[[MVP - Beirat Support]]"
@@ -31,11 +31,11 @@ user-flows:
   - "[[docs/design/user-flows/FLOW-09 - Erststart, Einrichtung und Einführung]]"
 dependsOn:
   - "[[PBI-13 - Aktuelle Wochenlage öffnen]]"
-  - "[[PBI-62 - Gemeinschaften im Einrichtungsassistenten anlegen]]"
+  - "[[PBI-70 - Gemeinschaften im Einrichtungsassistenten anlegen]]"
 triage: ""
 ---
 
-# PBI-63 · Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen
+# PBI-71 · Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP, siehe [[F-25 - Onboarding und Einführung]]
 

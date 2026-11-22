@@ -22,13 +22,15 @@ export type FieldConflict = {
 };
 
 /**
- * Why a note may not be written at all: it is no longer the record the form loaded, or (`layout`)
+ * Why a note may not be written at all: it is no longer the record the form loaded, another note
+ * carries the same id (`duplicate-id`: which one the form loaded cannot be told), or (`layout`)
  * its frontmatter is written in a form the store cannot change without changing other lines.
  */
 export const WriteRefusal = Schema.Literals([
   "other-type",
   "newer-version",
   "identity",
+  "duplicate-id",
   "migration-failed",
   "layout",
 ]);

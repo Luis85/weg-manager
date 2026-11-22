@@ -244,13 +244,13 @@ export const writeContract = (make: () => NoteStoreFixture) => {
       }),
     );
 
-    it.effect("fails with NoteWriteError when the vault rejects it, and keeps the note", () =>
+    it.effect("fails with NoteTrashError when the vault rejects it, and keeps the note", () =>
       Effect.gen(function* () {
         const fixture = make();
         yield* promise(() => fixture.seed("A.md", COMMUNITY, "text\n"));
         fixture.setFailWrites(true);
         const error = yield* Effect.flip(run(fixture, (store) => store.trash("A.md")));
-        assert.strictEqual(error._tag, "NoteWriteError");
+        assert.strictEqual(error._tag, "NoteTrashError");
         assert.strictEqual(yield* promise(() => fixture.body("A.md")), "text\n");
       }),
     );

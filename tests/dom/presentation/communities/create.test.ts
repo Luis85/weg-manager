@@ -1,3 +1,4 @@
+import { de } from "../../../../src/application/messages";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   FOLDER,
@@ -10,6 +11,8 @@ import {
 } from "../../../support/communities/screen";
 
 afterEach(closeAll);
+
+const t = de.communities;
 
 const VALID = {
   name: "Ahornweg 12",
@@ -50,16 +53,54 @@ describe("creating a community", () => {
           text.startsWith(label),
         ),
       );
-    expect(labels.map((text) => text.replace(/\s*\*$/, ""))).toEqual([
-      "Name",
-      "Kürzel",
-      "Farbe",
-      "Art",
-      "Einheitenbezeichnung",
+    // Every field is required: the inputs say so, no asterisk joins their names.
+    expect(labels).toEqual(["Name", "Kürzel", "Farbe", "Art", "Einheitenbezeichnung"]);
+    expect(
+      ["name", "short_code", "kind", "unit_label"].map((key) =>
+        screen.input(`field-${key}`).getAttribute("aria-required"),
+      ),
+    ).toEqual(["true", "true", "true", "true"]);
+    const colors = screen.q("color-field");
+    expect([colors?.getAttribute("role"), colors?.getAttribute("aria-required")]).toEqual([
+      "radiogroup",
+      "true",
     ]);
     expect(screen.input("field-short_code").readOnly).toBe(false);
-    expect(screen.q("community-form")?.textContent).toContain(
-      "2 bis 5 Zeichen aus A–Z und 0–9, nach dem Anlegen fest.",
+    expect(screen.q("community-form")?.textContent).toContain(t.shortCodeHint);
+    expect(screen.q("community-form")?.textContent).toContain(t.unitLabelHelp);
+  });
+
+  it("starts with the first free colour, shows whose the taken ones are and previews the badge", async () => {
+    const screen = await openCommunities({
+      seed: (notes) =>
+        notes.seed(
+          `${FOLDER}/A.md`,
+          communityNote(1, { name: "A", short_code: "AW", color: "teal" }),
+        ),
+    });
+    await openForm(screen);
+    const radio = (color: string) =>
+      screen.root.querySelector<HTMLInputElement>(`input[type=radio][value=${color}]`);
+    expect([radio("teal")?.checked, radio("violet")?.checked]).toEqual([false, true]);
+    const swatches = screen.all("color-swatch").map((swatch) => swatch.textContent.trim());
+    expect(swatches.slice(0, 3)).toEqual(["AW", "", ""]);
+    expect(screen.q("color-preview")).toBeUndefined();
+    await fill(screen, { short_code: "tg" });
+    const preview = screen
+      .q("color-preview")
+      ?.querySelector<HTMLElement>("[data-testid=community-badge]");
+    expect([preview?.textContent, preview?.dataset["communityColor"]]).toEqual(["TG", "violet"]);
+    expect(screen.text("color-preview")).toBe(`${t.preview} TG`);
+  });
+
+  it("keeps the short code's hint in view beside its issue", async () => {
+    const screen = await openCommunities();
+    await openForm(screen);
+    await fill(screen, { short_code: "a" });
+    const form = screen.q("community-form")?.textContent ?? "";
+    expect(form).toContain(t.shortCodeHint);
+    expect(form).toContain(
+      t.issues["short-code.invalid"]({ key: "short_code", code: "short-code.invalid" }, "Kürzel"),
     );
   });
 
@@ -94,12 +135,12 @@ describe("creating a community", () => {
     await screen.type("field-name", "");
     await save(screen);
     const form = screen.q("community-form")?.textContent ?? "";
-    expect(form).toContain("„Name“ fehlt. Gib einen Wert ein.");
+    expect(form).toContain(t.missing.name);
     expect(form).toContain(
-      "„Kürzel“ hat nicht 2 bis 5 Zeichen aus A–Z und 0–9. Gib ein solches Kürzel ein.",
+      t.issues["short-code.invalid"]({ key: "short_code", code: "short-code.invalid" }, "Kürzel"),
     );
-    expect(form).toContain("„Farbe“ fehlt. Gib einen Wert ein.");
-    expect(form).toContain("„Art“ fehlt. Gib einen Wert ein.");
+    expect(form).not.toContain(t.missing.color);
+    expect(form).toContain(t.missing.kind);
     expect(await paths(screen)).toEqual([]);
   });
 
@@ -114,13 +155,16 @@ describe("creating a community", () => {
     await openForm(screen);
     await fill(screen, { short_code: "aw" });
     expect(screen.q("community-form")?.textContent).toContain(
-      "Eine andere Gemeinschaft hat dieses Kürzel schon. Wähle ein anderes.",
+      t.issues["short-code.taken"](
+        { key: "short_code", code: "short-code.taken", value: "AW", other: "A" },
+        "Kürzel",
+      ),
     );
     const teal = screen.root.querySelector<HTMLInputElement>("input[type=radio][value=teal]");
     const blue = screen.root.querySelector<HTMLInputElement>("input[type=radio][value=blue]");
     expect([teal?.disabled, teal?.getAttribute("aria-label")]).toEqual([
       true,
-      "Petrol, schon vergeben",
+      t.colorTaken(t.colors.teal),
     ]);
     expect([blue?.disabled, blue?.getAttribute("aria-label")]).toEqual([false, "Blau"]);
     expect(screen.q("color-field")?.querySelector("legend")?.textContent).toBe("Farbe");
@@ -140,7 +184,9 @@ describe("creating a community", () => {
     });
     await openForm(screen);
     const suggestions = screen.q("kind-suggestions");
-    expect(suggestions?.getAttribute("aria-label")).toBe("Vorschläge");
+    const caption = suggestions?.querySelector("span");
+    expect(caption?.textContent.trim()).toBe(t.suggestions);
+    expect(suggestions?.getAttribute("aria-labelledby")).toBe(caption?.id);
     expect(
       [...(suggestions?.querySelectorAll("button") ?? [])].map((button) =>
         button.textContent.trim(),
@@ -163,14 +209,16 @@ describe("creating a community", () => {
     expect(screen.input("field-unit_label").value).toBe("Wohnungen");
   });
 
-  it("disables saving while the write runs", async () => {
+  it("ignores Save while the write runs, without taking its focus", async () => {
     const screen = await openCommunities();
     await openForm(screen);
     await fill(screen, VALID);
     screen.notes.holdWrites();
-    await save(screen);
     const button = screen.q("community-save") as HTMLButtonElement;
-    expect(button.disabled).toBe(true);
+    button.focus();
+    await save(screen);
+    expect([button.disabled, button.getAttribute("aria-disabled")]).toEqual([false, "true"]);
+    expect(document.activeElement).toBe(button);
     expect(screen.notes.heldWrites()).toBe(1);
     await save(screen);
     expect(screen.notes.heldWrites()).toBe(1);
@@ -179,18 +227,19 @@ describe("creating a community", () => {
     expect(await paths(screen)).toEqual([`${FOLDER}/Ahornweg 12.md`]);
   });
 
-  it("shows a failed write with a retry and keeps the input", async () => {
+  it("shows a failed write, keeps the input and lets Save try again", async () => {
     const screen = await openCommunities();
     await openForm(screen);
     await fill(screen, VALID);
     screen.notes.setFailWrites(true);
     await save(screen);
-    expect(screen.q("community-form")?.querySelector("[role=alert]")?.textContent).toContain(
-      "Notiz nicht gespeichert",
-    );
+    const alert = screen.q("community-form")?.querySelector("[role=alert]");
+    expect(alert?.textContent).toContain(de.notes.errors.write.title);
+    // One way to try again: Save. The alert offers no second one.
+    expect(alert?.querySelector("button")).toBeNull();
     expect(screen.input("field-name").value).toBe("Ahornweg 12");
     screen.notes.setFailWrites(false);
-    await screen.click(screen.button("Erneut versuchen"));
+    await save(screen);
     await screen.until(() => expect(screen.q("community-form")).toBeUndefined());
   });
 

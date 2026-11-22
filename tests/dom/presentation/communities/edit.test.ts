@@ -1,3 +1,4 @@
+import { de } from "../../../../src/application/messages";
 import { afterEach, describe, expect, it } from "vitest";
 import { NoteStore } from "../../../../src/application/notes";
 import {
@@ -11,6 +12,8 @@ import {
 } from "../../../support/communities/screen";
 
 afterEach(closeAll);
+
+const t = de.communities;
 
 const PATH = `${FOLDER}/Ahornweg 12.md`;
 const AW = communityNote(1, { name: "Ahornweg 12", short_code: "AW" });
@@ -42,9 +45,7 @@ describe("editing a community", () => {
       ["name", "short_code", "kind", "unit_label"].map((key) => screen.input(`field-${key}`).value),
     ).toEqual(["Ahornweg 12", "AW", "WEG", "Einheiten"]);
     expect(screen.input("field-short_code").readOnly).toBe(true);
-    expect(screen.q("community-form")?.textContent).toContain(
-      "Das Kürzel ist nach dem Anlegen fest.",
-    );
+    expect(screen.q("community-form")?.textContent).toContain(t.shortCodeFixed);
     const teal = screen.root.querySelector<HTMLInputElement>("input[type=radio][value=teal]");
     expect([teal?.checked, teal?.disabled]).toEqual([true, false]);
   });
@@ -83,14 +84,23 @@ describe("editing a community", () => {
     await fill(screen, { kind: "Haus", unit_label: "Wohnungen" });
     await save(screen);
     const conflict = screen.q("community-conflict");
-    expect(conflict?.querySelector("h3")?.textContent.trim()).toBe("Notiz inzwischen geändert");
+    expect(conflict?.querySelector("h3")?.textContent.trim()).toBe(t.conflict.title);
     expect(
       [...(screen.q("conflict-kind")?.querySelectorAll("legend, p, label") ?? [])].map((part) =>
         part.textContent.trim(),
       ),
-    ).toEqual(["Art", "Beim Öffnen: WEG", "Deine Eingabe: Haus", "In der Notiz: Tiefgarage"]);
+    ).toEqual([
+      "Art",
+      t.conflict.loaded("WEG"),
+      t.conflict.mine("Haus"),
+      t.conflict.theirs("Tiefgarage"),
+    ]);
     expect(screen.all("conflict-kind")).toHaveLength(1);
-    expect((screen.q("community-save") as HTMLButtonElement).disabled).toBe(true);
+    const saveButton = screen.q("community-save") as HTMLButtonElement;
+    expect([saveButton.disabled, saveButton.getAttribute("aria-disabled")]).toEqual([
+      false,
+      "true",
+    ]);
     expect((await read(screen)).frontmatter).toEqual({ ...AW, kind: "Tiefgarage" });
     await screen.click(
       screen.q("conflict-kind")?.querySelector("[data-testid=choose-theirs]") ?? undefined,
@@ -126,9 +136,9 @@ describe("editing a community", () => {
     await screen.click(screen.q("conflict-apply"));
     expect(screen.q("community-conflict")).toBeUndefined();
     expect(screen.input("field-kind").value).toBe("");
-    expect(screen.q("community-form")?.textContent).toContain("„Art“ fehlt. Gib einen Wert ein.");
+    expect(screen.q("community-form")?.textContent).toContain(t.missing.kind);
     const saveButton = () => screen.q("community-save") as HTMLButtonElement;
-    expect(saveButton().disabled).toBe(false);
+    expect(saveButton().getAttribute("aria-disabled")).toBeNull();
     expect((await read(screen)).frontmatter).toEqual({ ...AW, kind: null });
     await fill(screen, { kind: "Reihenhaus" });
     await save(screen);
@@ -156,13 +166,21 @@ describe("editing a community", () => {
     expect(screen.input("field-unit_label").value).toBe("12");
     const form = () => screen.q("community-form")?.textContent ?? "";
     expect(form()).toContain(
-      "„Kürzel“ hat nicht 2 bis 5 Zeichen aus A–Z und 0–9. Gib ein solches Kürzel ein.",
+      t.issues["short-code.invalid"]({ key: "short_code", code: "short-code.invalid" }, "Kürzel"),
     );
     expect(form()).toContain(
-      "„Einheitenbezeichnung“ ist leer, länger als 50 Zeichen oder mehrzeilig.",
+      t.issues["unit-label.invalid"](
+        { key: "unit_label", code: "unit-label.invalid" },
+        "Einheitenbezeichnung",
+      ),
     );
     await fill(screen, { short_code: "a1b", unit_label: "Einheiten" });
-    expect(form()).not.toContain("„Einheitenbezeichnung“ ist leer");
+    expect(form()).not.toContain(
+      t.issues["unit-label.invalid"](
+        { key: "unit_label", code: "unit-label.invalid" },
+        "Einheitenbezeichnung",
+      ),
+    );
     await save(screen);
     await screen.until(() => expect(screen.q("community-form")).toBeUndefined());
     expect((await read(screen)).frontmatter).toEqual({ ...AW, short_code: "A1B" });

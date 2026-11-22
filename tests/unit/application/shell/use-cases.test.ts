@@ -121,7 +121,9 @@ describe("copyDiagnostics", () => {
       assert.deepStrictEqual(notifier.messages().at(-1), {
         severity: "info",
         title: "Diagnose kopiert",
-        detail: "Füge den Bericht in deine Support-Anfrage ein.",
+        detail:
+          "Hänge den Bericht an deine Meldung auf der GitHub-Seite des Plugins an. Er enthält keine Inhalte deiner Notizen.",
+        link: "https://github.com/Luis85/weg-manager/issues",
       });
     }).pipe(Effect.provide(layer));
   });
@@ -133,7 +135,9 @@ describe("copyDiagnostics", () => {
       assert.deepStrictEqual(notifier.messages().at(-1), {
         severity: "info",
         title: "Diagnostics copied",
-        detail: "Paste the report into your support request.",
+        detail:
+          "Attach the report to your issue on the plugin's GitHub page. It contains no content of your notes.",
+        link: "https://github.com/Luis85/weg-manager/issues",
       });
     }).pipe(Effect.provide(layer));
   });

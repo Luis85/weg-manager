@@ -21,11 +21,14 @@ describe("markDuplicateIds", () => {
     const alone = item("c.md", { ...FULL, id: OTHER_ID });
     const marked = markDuplicateIds([first, second, alone]);
     expect(marked).toEqual([
-      { ...first, kind: "read-only", issues: [{ code: "id.duplicate" }] },
+      { ...first, kind: "read-only", issues: [{ code: "id.duplicate", other: "b.md" }] },
       {
         ...second,
         kind: "read-only",
-        issues: [{ code: "field.number", key: "count" }, { code: "id.duplicate" }],
+        issues: [
+          { code: "field.number", key: "count" },
+          { code: "id.duplicate", other: "a.md" },
+        ],
       },
       alone,
     ]);
@@ -36,8 +39,27 @@ describe("markDuplicateIds", () => {
     const newer = item("a.md", { ...FULL, schema: "weg-manager.test-item/v4" });
     const current = item("b.md", FULL);
     expect(markDuplicateIds([newer, current])).toEqual([
-      { ...newer, issues: [{ code: "schema.newer", version: 4 }, { code: "id.duplicate" }] },
-      { ...current, kind: "read-only", issues: [{ code: "id.duplicate" }] },
+      {
+        ...newer,
+        issues: [
+          { code: "schema.newer", version: 4 },
+          { code: "id.duplicate", other: "b.md" },
+        ],
+      },
+      { ...current, kind: "read-only", issues: [{ code: "id.duplicate", other: "a.md" }] },
+    ]);
+  });
+
+  it("names the first other note that carries the id", () => {
+    const notes = ["a.md", "b.md", "c.md"].map((path) => item(path, FULL));
+    expect(
+      markDuplicateIds(notes).map((note) =>
+        note.kind === "not-this-type" ? undefined : note.issues,
+      ),
+    ).toEqual([
+      [{ code: "id.duplicate", other: "b.md" }],
+      [{ code: "id.duplicate", other: "a.md" }],
+      [{ code: "id.duplicate", other: "a.md" }],
     ]);
   });
 

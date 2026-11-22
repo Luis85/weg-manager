@@ -5,6 +5,7 @@ import type {
   InvalidNoteNameError,
   NoteNotFoundError,
   NotePathTakenError,
+  NoteTrashError,
   NoteUnreadableError,
   NoteWriteError,
   NoteWriteRefusedError,
@@ -79,7 +80,7 @@ export class NoteStore extends Context.Service<
       E | NoteNotFoundError | NoteUnreadableError | NoteWriteRefusedError | NoteWriteError
     >;
     /** Moves the note to the trash the user chose in Obsidian. */
-    trash(path: string): Effect.Effect<void, NoteNotFoundError | NoteWriteError>;
+    trash(path: string): Effect.Effect<void, NoteNotFoundError | NoteTrashError>;
     /** Renames the note in its folder; Obsidian updates the links to it. */
     rename(
       path: string,
@@ -90,6 +91,16 @@ export class NoteStore extends Context.Service<
     >;
   }
 >()("weg-manager/application/NoteStore") {}
+
+/**
+ * Opens a note for the user in Obsidian, in a new tab beside the plugin's view, so a note the
+ * plugin cannot write (read-only, unreadable, of no known type) can be repaired by hand. A path
+ * that holds no Markdown note is `NoteNotFoundError`.
+ */
+export class NoteOpener extends Context.Service<
+  NoteOpener,
+  { open(path: string): Effect.Effect<void, NoteNotFoundError> }
+>()("weg-manager/application/NoteOpener") {}
 
 /**
  * Makes the UUID of a new record's `id` (`<type>-<uuid>`, ADR 0007): a fresh lower-case UUID per

@@ -50,9 +50,11 @@ describe("communities: an outside edit while the form is open", function () {
     await fillForm({ kind: "Haus" });
     await saveForm();
     const conflict = browser.$(ROOT).$("[data-testid=conflict-kind]");
+    // The conflict takes the focus to its heading: Save, which held it, does nothing now.
+    await expect(browser.$(ROOT).$("[data-testid=community-conflict] h3")).toBeFocused();
     await expect(conflict).toHaveText(expect.stringContaining("Beim Öffnen: WEG"));
     await expect(conflict).toHaveText(expect.stringContaining("Deine Eingabe: Haus"));
-    await expect(conflict).toHaveText(expect.stringContaining("In der Notiz: Tiefgarage"));
+    await expect(conflict).toHaveText(expect.stringContaining("Jetzt in der Notiz: Tiefgarage"));
     expect(await fileText(PATH)).toBe(text({ kind: "Tiefgarage" }));
     await conflict.$("[data-testid=choose-theirs]").click();
     await browser.$(ROOT).$("[data-testid=conflict-apply]").click();

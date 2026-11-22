@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   isCommunityChoice,
   kindSuggestions,
+  selectableIds,
   selectedCommunity,
 } from "../../../../src/domain/communities";
 
@@ -68,6 +69,29 @@ describe("selectedCommunity: the selection rule", () => {
   it("selects none when there is no community", () => {
     expect(selectedCommunity(undefined, [])).toBeUndefined();
     expect(selectedCommunity(A, [])).toBeUndefined();
+  });
+});
+
+/** A community without issues. */
+const ok = (id: string | undefined) => ({ id, issues: [] });
+
+describe("selectableIds: the communities the rule may select", () => {
+  it("is each community without an issue, once, in the list's order", () => {
+    expect(selectableIds([ok("community-b"), ok("community-a"), ok("community-b")])).toEqual([
+      "community-b",
+      "community-a",
+    ]);
+  });
+
+  it("leaves out a community with any issue and one without an id", () => {
+    expect(
+      selectableIds([
+        ok("community-a"),
+        { id: "community-b", issues: [{ code: "color.unknown", key: "color" }] },
+        { id: "community-c", issues: [{ code: "schema.newer", version: 2 }] },
+        ok(undefined),
+      ]),
+    ).toEqual(["community-a"]);
   });
 });
 

@@ -1,6 +1,6 @@
 # ADR 0008 · One view, typed routes
 
-- Status: accepted; history and the place of the selection amended on 2026-11-21 (see the notes at the end)
+- Status: accepted; history and the place of the selection amended on 2026-11-21, the selectable communities on 2026-11-22 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -51,3 +51,16 @@ Consequences: Obsidian's own back and forward buttons in the view header do noth
 - **The stored choice.** A community the rule selects by itself (the only one) is stored too when no community's id is stored, once the index has read the vault without a failure, so a second community does not drop it. A stored community that is gone stays stored, also while the rule selects the only other one, and counts again when its note returns, as after Sync or a moment of broken YAML; only the user's choice replaces it. The price: when the stored community is gone for good and a second one is added later, the frame asks for a choice once.
 - **Not enforced yet.** With two or more communities and none selected, the switch shows the prompt, but no screen is gated by it: the only screen edits communities themselves. The first screen that edits a record belonging to a community has to refuse editing until one is selected.
 - **Not-found.** `NotFoundState` serves a route without a screen. No route has a record parameter yet, so a route to a missing record is untested until the first one.
+
+## Amendment, 2026-11-22: only communities without issues can be selected
+
+Context: a UX review in Obsidian 1.15.1 found the switch offering every community with an id, also a read-only one (a newer version, a duplicate id) and one with a broken field (an unknown colour, a duplicate short code). A view could then work in a community whose note the plugin cannot or should not write, and two switch entries could carry the same short code.
+
+Decision (owner, 22.11.2026):
+
+- The candidates of the selection rule are the communities without any issue (`selectableIds` in `src/domain/communities/selection.ts`). A read-only note always has an issue, so it is never a candidate. A community with an issue is still listed on the settings screen, with its issue, but the switch does not offer it and it cannot be the selection.
+- The issues between communities count too: `CommunitySelectionService` applies the rule to the communities as `toCommunityList` makes them, which adds `short-code.duplicate`.
+- A stored community that has an issue now is treated like one that is gone for a moment: it stays stored, the rule falls back to the only other candidate or to none (and asks for a choice among two or more), and it counts again once its note is repaired. Only the user's choice replaces it.
+- With communities listed but none without issues, nothing is selected and nothing is asked; the switch says that no community can be chosen until one is repaired.
+
+Consequences: the choice prompt counts candidates, not notes. A note that breaks for a moment while someone edits it in Obsidian drops the selection for that moment, as a note that is gone does.

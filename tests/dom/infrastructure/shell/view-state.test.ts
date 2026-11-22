@@ -64,6 +64,17 @@ const control = (view: TestView, label: string): HTMLButtonElement => {
   return found;
 };
 
+/**
+ * Whether a history control can go somewhere: the frame hides both while there is no step, and a
+ * shown one with nowhere to go is `aria-disabled`, never `disabled`.
+ */
+const canGo = (view: TestView, label: string): boolean => {
+  const found = view.contentEl.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`);
+  if (found === null) return false;
+  expect(found.disabled).toBe(false);
+  return found.getAttribute("aria-disabled") !== "true";
+};
+
 afterEach(async () => {
   document.body.replaceChildren();
   await disposeAll();
@@ -115,11 +126,11 @@ describe("ShellView state", () => {
     const { app, open } = workspace();
     const { view } = await open();
     const saves = app.workspace.layoutSaves;
-    expect(control(view, "Zurück").disabled).toBe(true);
+    expect(canGo(view, "Zurück")).toBe(false);
     button(view, "open item").click();
     await settle();
     expect(view.getState()).toEqual({ route: { name: "item", id: "42" } });
-    expect(control(view, "Zurück").disabled).toBe(false);
+    expect(canGo(view, "Zurück")).toBe(true);
     expect(app.workspace.layoutSaves).toBe(saves + 1);
   });
 
@@ -142,10 +153,7 @@ describe("ShellView state", () => {
     await settle();
     expect(shown(view)).toBe("Second screen");
     expect(app.workspace.layoutSaves).toBe(saves + 3);
-    expect([control(view, "Zurück").disabled, control(view, "Vorwärts").disabled]).toEqual([
-      false,
-      false,
-    ]);
+    expect([canGo(view, "Zurück"), canGo(view, "Vorwärts")]).toEqual([true, true]);
   });
 
   it("records nothing when the route does not change, and never asks Obsidian to", async () => {
@@ -157,7 +165,7 @@ describe("ShellView state", () => {
     const same = { history: false };
     await view.setState({ route: { name: "first" } }, same);
     expect(app.workspace.layoutSaves).toBe(saves);
-    expect(control(view, "Zurück").disabled).toBe(true);
+    expect(canGo(view, "Zurück")).toBe(false);
     const changed = { history: false };
     await view.setState({ route: { name: "second" } }, changed);
     expect([same.history, changed.history]).toEqual([false, false]);
@@ -167,7 +175,7 @@ describe("ShellView state", () => {
     const { open } = workspace();
     const { view } = await open({ route: { name: "second" } });
     expect(shown(view)).toBe("Second screen");
-    expect(control(view, "Zurück").disabled).toBe(true);
+    expect(canGo(view, "Zurück")).toBe(false);
   });
 
   it("treats a state set on an open view as a navigation", async () => {
@@ -258,7 +266,7 @@ describe("openRoute", () => {
     await settle();
     const view = app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)[0]?.view as unknown as TestView;
     expect(shown(view)).toBe("Second screen");
-    expect(control(view, "Zurück").disabled).toBe(true);
+    expect(canGo(view, "Zurück")).toBe(false);
   });
 
   it("without a route, opens a view on the start route or reveals the open one as it is", async () => {

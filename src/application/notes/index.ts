@@ -7,6 +7,7 @@ export {
   NoteIndexReadError,
   NoteNotFoundError,
   NotePathTakenError,
+  NoteTrashError,
   NoteUnreadableError,
   NoteWriteError,
   NoteWriteRefusedError,
@@ -17,10 +18,12 @@ export type { NotesCatalog } from "./i18n/catalog";
 export { describeNoteIssue, describeUnindexedIssue } from "./i18n/describe";
 export { notesDe } from "./i18n/de";
 export { notesEn } from "./i18n/en";
+export { openNote } from "./open-note";
 export { applyPatch } from "./patch";
 export { editChange, newRecordFrontmatter } from "./records";
 export {
   IdGenerator,
+  NoteOpener,
   NoteStore,
   type Frontmatter,
   type FrontmatterChange,

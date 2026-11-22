@@ -156,15 +156,20 @@ const control = (root: ParentNode, label: string) => {
   if (found === null) throw new Error(`no control "${label}"`);
   return found;
 };
-const enabled = (root: ParentNode) => [
-  !control(root, "Zurück").disabled,
-  !control(root, "Vorwärts").disabled,
-];
+/** Whether each control can go somewhere: never `disabled`, only `aria-disabled` (WCAG 2.4.3). */
+const enabled = (root: ParentNode) =>
+  ["Zurück", "Vorwärts"].map((label) => {
+    const button = control(root, label);
+    expect(button.disabled).toBe(false);
+    return button.getAttribute("aria-disabled") !== "true";
+  });
+const historyShown = (root: ParentNode) =>
+  root.querySelector("[data-testid=frame-history]") !== null;
 
 describe("history in a surface", () => {
-  it("goes back and forward with the frame's controls", async () => {
+  it("goes back and forward with the frame's controls, shown once there is a step", async () => {
     const { root, navigation } = await mounted();
-    expect(enabled(root)).toEqual([false, false]);
+    expect(historyShown(root)).toBe(false);
     buttonNamed(root, "Second").click();
     await settle();
     buttonNamed(root, "open item").click();
@@ -177,6 +182,12 @@ describe("history in a surface", () => {
     await settle();
     expect(shown(root)).toBe("First screen");
     expect(enabled(root)).toEqual([false, true]);
+    // A control with nowhere to go keeps its focus and ignores the click.
+    control(root, "Zurück").focus();
+    control(root, "Zurück").click();
+    await settle();
+    expect(shown(root)).toBe("First screen");
+    expect(document.activeElement).toBe(control(root, "Zurück"));
     control(root, "Vorwärts").click();
     await settle();
     expect(shown(root)).toBe("Second screen");
@@ -191,7 +202,7 @@ describe("history in a surface", () => {
     const { root, navigation } = await mounted();
     buttonNamed(root, "First").click();
     await settle();
-    expect(enabled(root)).toEqual([false, false]);
+    expect(historyShown(root)).toBe(false);
     expect(navigation.history().back).toEqual([]);
   });
 
@@ -207,8 +218,10 @@ describe("history in a surface", () => {
 
   it("labels the controls in English", async () => {
     const { root } = await mounted({ language: "en" });
-    expect(control(root, "Back").disabled).toBe(true);
-    expect(control(root, "Forward").disabled).toBe(true);
+    buttonNamed(root, "Second").click();
+    await settle();
+    expect(control(root, "Back").getAttribute("aria-disabled")).toBeNull();
+    expect(control(root, "Forward").getAttribute("aria-disabled")).toBe("true");
   });
 });
 

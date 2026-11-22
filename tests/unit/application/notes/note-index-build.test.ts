@@ -101,8 +101,8 @@ describe("the note index's build", () => {
       assert.deepStrictEqual(
         snapshot.notes.map((note) => [note.path, note.kind, note.issues]),
         [
-          ["A.md", "read-only", [{ code: "id.duplicate" }]],
-          ["B.md", "read-only", [{ code: "id.duplicate" }]],
+          ["A.md", "read-only", [{ code: "id.duplicate", other: "B.md" }]],
+          ["B.md", "read-only", [{ code: "id.duplicate", other: "A.md" }]],
           ["C.md", "editable", []],
         ],
       );

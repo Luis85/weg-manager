@@ -24,16 +24,20 @@ export const notesDe: NotesCatalog = {
     unreadable: {
       title: "Eigenschaften nicht lesbar",
       detail:
-        "Die Eigenschaften der Notiz sind kein gültiges YAML. Korrigiere sie in Obsidian und versuche es dann erneut.",
+        "Die Eigenschaften oben in der Notiz sind fehlerhaft geschrieben, deshalb kann WEG Manager sie nicht ändern. Öffne die Notiz, korrigiere die Eigenschaften und speichere dann erneut.",
     },
     write: {
       title: "Notiz nicht gespeichert",
       detail: "Obsidian konnte die Notiz nicht schreiben. Versuche es erneut.",
     },
+    trash: {
+      title: "Notiz nicht gelöscht",
+      detail: "Obsidian konnte die Notiz nicht in den Papierkorb verschieben. Versuche es erneut.",
+    },
     editConflict: {
-      title: "Notiz inzwischen geändert",
+      title: "Notiz geändert, während du bearbeitet hast",
       detail:
-        "Die Notiz wurde außerhalb des Formulars geändert, auch in Feldern, die du bearbeitet hast. Wähle für jedes dieser Felder den Wert, der gelten soll, und speichere erneut.",
+        "Die Notiz wurde auch außerhalb dieses Formulars geändert, in Angaben, die du bearbeitet hast. Wähle je Angabe den Wert, der gelten soll, und speichere erneut.",
     },
     writeRefused: {
       title: "Speichern nicht möglich",
@@ -41,36 +45,38 @@ export const notesDe: NotesCatalog = {
         "other-type":
           "Die Notiz ist inzwischen kein Datensatz dieses Typs mehr. Prüfe ihre Eigenschaft „schema“ in Obsidian.",
         "newer-version":
-          "Eine neuere Plugin-Version hat die Notiz inzwischen gespeichert. Aktualisiere WEG Manager und öffne sie dann erneut.",
+          "Die Notiz wurde inzwischen mit einer neueren Version von WEG Manager gespeichert, etwa auf einem anderen Gerät. Aktualisiere WEG Manager und öffne sie dann erneut.",
         identity:
-          "Die „id“ der Notiz hat sich inzwischen geändert, sie ist also nicht mehr derselbe Datensatz. Öffne die Notiz erneut.",
+          "Die Kennung („id“) der Notiz wurde geändert, sie gehört jetzt zu einem anderen Datensatz. Schließe das Formular und öffne es erneut.",
+        "duplicate-id":
+          "Eine andere Notiz hat dieselbe Kennung („id“), deshalb ist unklar, welche gemeint ist. Lösche die doppelte Notiz in Obsidian und versuche es dann erneut.",
         "migration-failed":
-          "Die Notiz ließ sich nicht auf die aktuelle Schemaversion umstellen. Prüfe ihre Eigenschaften in Obsidian.",
+          "Die Notiz ließ sich nicht auf die aktuelle Version umstellen. Öffne die Notiz und prüfe ihre Eigenschaften.",
         layout:
           "Die Eigenschaften der Notiz sind so geschrieben, dass WEG Manager sie nicht ändern kann, ohne auch andere Zeilen zu ändern. Schreibe in Obsidian jede Eigenschaft als eigene Zeile „schlüssel: wert“ zwischen zwei Zeilen „---“ und speichere dann erneut.",
       },
     },
     indexRead: {
-      title: "Notizen nicht aktuell",
+      title: "Notizen nicht gelesen",
       detail:
-        "Obsidian konnte nicht alle Notizen lesen, deshalb zeigt die Liste vielleicht einen älteren Stand. Lies die Notizen erneut ein.",
+        "Obsidian konnte nicht alle Notizen lesen, deshalb ist die Liste vielleicht unvollständig. Versuche es erneut.",
     },
   },
   recordIssues: {
     "schema.malformed": () =>
-      "Die Eigenschaft „schema“ ist nicht lesbar, deshalb ist die Notiz schreibgeschützt. Korrigiere sie in Obsidian nach dem Dateivertrag.",
-    "schema.newer": ({ version }) =>
-      `Die Notiz stammt aus einer neueren Plugin-Version (Schemaversion ${version}), deshalb ist sie schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.`,
-    "migration.failed": ({ from }) =>
-      `Die Notiz ließ sich nicht von Schemaversion ${from} auf die aktuelle Version umstellen, deshalb ist sie schreibgeschützt. Prüfe ihre Eigenschaften in Obsidian.`,
+      "Die Eigenschaft „schema“ ist falsch geschrieben, deshalb ist die Notiz schreibgeschützt. Öffne die Notiz und korrigiere „schema“.",
+    "schema.newer": () =>
+      "Die Notiz wurde mit einer neueren Version von WEG Manager gespeichert, etwa auf einem anderen Gerät, deshalb ist sie hier schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.",
+    "migration.failed": () =>
+      "Die Notiz ließ sich nicht auf die aktuelle Version umstellen, deshalb ist sie schreibgeschützt. Öffne die Notiz und prüfe ihre Eigenschaften.",
     "id.missing": () =>
       "Die Notiz hat keine Eigenschaft „id“, deshalb ist sie schreibgeschützt. Stelle die „id“ in Obsidian wieder her, etwa aus einer Sicherung.",
     "id.malformed": () =>
       "Die Eigenschaft „id“ der Notiz ist ungültig, deshalb ist sie schreibgeschützt. Stelle die ursprüngliche „id“ in Obsidian wieder her.",
     "id.other-type": () =>
       "Die „id“ der Notiz gehört zu einem anderen Typ, deshalb ist sie schreibgeschützt. Prüfe „schema“ und „id“ in Obsidian.",
-    "id.duplicate": () =>
-      "Eine andere Notiz hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.",
+    "id.duplicate": ({ other }) =>
+      `Die Notiz „${other}“ hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.`,
   },
   fieldIssues: {
     "field.missing": (label) => `„${label}“ fehlt. Gib einen Wert ein.`,
@@ -84,10 +90,10 @@ export const notesDe: NotesCatalog = {
   },
   unindexedIssues: {
     "schema.malformed": () =>
-      "Die Eigenschaft „schema“ ist nicht lesbar, deshalb kann WEG Manager die Notiz keinem Typ zuordnen. Korrigiere sie in Obsidian nach dem Dateivertrag.",
+      "Die Eigenschaft „schema“ ist falsch geschrieben, deshalb kann WEG Manager die Notiz keinem Typ zuordnen. Öffne die Notiz und korrigiere „schema“.",
     "schema.unknown-type": ({ type }) =>
       `Die Notiz ist als Typ „${type}“ markiert, den diese Version von WEG Manager nicht kennt. Aktualisiere WEG Manager oder korrigiere „schema“ in Obsidian.`,
     "frontmatter.unreadable": () =>
-      "Die Eigenschaften der Notiz sind kein gültiges YAML, deshalb kann WEG Manager sie nicht lesen. Korrigiere sie in Obsidian.",
+      "Die Eigenschaften oben in der Notiz sind fehlerhaft geschrieben, deshalb kann WEG Manager sie nicht lesen. Öffne die Notiz und korrigiere die Eigenschaften.",
   },
 };

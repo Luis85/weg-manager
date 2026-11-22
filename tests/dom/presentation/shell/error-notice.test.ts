@@ -1,6 +1,7 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
+import { ISSUES_URL } from "../../../../src/application/shell";
 import type { UserMessage } from "../../../../src/application/shell/user-messages";
 import { ErrorNotice } from "../../../../src/presentation/shell";
 import { mountApp } from "../../../support/surface";
@@ -37,6 +38,18 @@ describe("ErrorNotice", () => {
     expect(notice.root.querySelector("[role=alert]")?.textContent).toContain("Titel");
     expect(notice.root.textContent).toContain("Was tun.");
     expect(notice.buttons()).toHaveLength(0);
+  });
+
+  it("shows a message's link as a link that opens outside Obsidian", async () => {
+    const notice = await show({ ...base, link: ISSUES_URL });
+    const link = notice.root.querySelector("[role=alert] a");
+    expect([
+      link?.getAttribute("href"),
+      link?.textContent.trim(),
+      link?.getAttribute("target"),
+      link?.getAttribute("rel"),
+    ]).toEqual([ISSUES_URL, ISSUES_URL, "_blank", "noopener"]);
+    expect((await show(base)).root.querySelector("a")).toBeNull();
   });
 
   it("copies diagnostics by itself", async () => {

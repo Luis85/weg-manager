@@ -9,13 +9,17 @@ import {
 } from "../../../application/communities";
 import { useMessages } from "../../shell";
 import CommunityBadge from "./CommunityBadge.vue";
+import OpenNoteButton from "./OpenNoteButton.vue";
 
 /**
  * One community in the list (VIEW-07): badge, name, kind and unit label, and its issues as text. An
- * editable note offers edit and delete; a read-only one says so and offers nothing. A long name
- * wraps, hyphenated in the frame's language, and breaks inside a word only when nothing else fits.
+ * editable note offers edit and delete; a read-only one says so and offers to open the note in
+ * Obsidian, where the user can repair it. The selected community (glossary: community selection)
+ * says "Aktuell" in words and with a mark, not by colour. A long name wraps, hyphenated in the
+ * frame's language, and breaks inside a word only when nothing else fits. The name heading can
+ * take the focus (`tabindex="-1"`), for the screen to land on a card without an edit button.
  */
-const props = defineProps<{ community: Community }>();
+const props = defineProps<{ community: Community; selected: boolean }>();
 const emit = defineEmits<{ edit: []; remove: [] }>();
 
 const catalog = useMessages();
@@ -41,10 +45,19 @@ const issues = computed(() =>
     <div class="wm:flex wm:min-w-40 wm:flex-1 wm:flex-col wm:gap-1">
       <h3
         class="wm:text-base wm:font-semibold wm:wrap-break-word wm:hyphens-auto"
+        tabindex="-1"
         data-testid="community-name"
       >
         {{ name }}
       </h3>
+      <p
+        v-if="selected"
+        class="wm:flex wm:w-fit wm:items-center wm:gap-1 wm:rounded wm:border wm:border-primary wm:px-1.5 wm:text-xs wm:font-semibold wm:text-primary"
+        data-testid="community-selected"
+      >
+        <UIcon name="i-lucide-circle-check" class="wm:size-3.5" aria-hidden="true" />
+        {{ t.screen.selected }}
+      </p>
       <p
         v-if="summary"
         class="wm:text-sm wm:text-muted wm:wrap-break-word wm:hyphens-auto"
@@ -68,6 +81,7 @@ const issues = computed(() =>
         <li v-for="issue in issues" :key="issue">{{ issue }}</li>
       </ul>
     </div>
+    <OpenNoteButton v-if="!community.editable" :path="community.path" :name="name" />
     <div v-if="community.editable" class="wm:flex wm:gap-2">
       <UButton
         type="button"

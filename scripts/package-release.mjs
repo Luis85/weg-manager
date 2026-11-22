@@ -3,16 +3,24 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync } from "node:
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { CSS_PREFIX, checkDist } from "./check-dist.mjs";
+import { NOTICES_FILE } from "./third-party-notices.mjs";
 
 export const RELEASE_FILES = ["main.js", "manifest.json", "styles.css"];
 
+/** @param {string} file the checked-in notices file; `npm run verify` checks that it is current */
+const assertNotices = (file) => {
+  if (!existsSync(file)) throw new Error(`${NOTICES_FILE} is missing (run "npm run notices")`);
+  if (readFileSync(file, "utf8").trim() === "") throw new Error(`${NOTICES_FILE} is empty`);
+};
+
 /**
- * Stages `<outDir>/<plugin-id>/` with exactly the files Obsidian loads. Before it copies anything
- * it re-runs the `check:dist` invariants on `distDir` (a stale or development build must not be
+ * Stages `<outDir>/<plugin-id>/` with exactly the files Obsidian loads, and the third-party notices
+ * file beside that folder (`<outDir>/THIRD-PARTY-NOTICES.txt`), so that the folder a user copies
+ * into a vault stays the three plugin files. Before it copies anything it re-runs the `check:dist` invariants on `distDir` (a stale or development build must not be
  * packaged) and checks that `<rootDir>/versions.json` has the manifest version, mapped to its
  * `minAppVersion`. A tag, when given, must equal the manifest version (bare x.y.z, no `v`).
  * @param {{ distDir: string; outDir: string; rootDir: string; tag?: string | undefined }} options
- * @returns {{ folder: string; version: string }}
+ * @returns {{ folder: string; notices: string; version: string }}
  */
 export const packageRelease = ({ distDir, outDir, rootDir, tag }) => {
   const missing = RELEASE_FILES.filter((file) => !existsSync(join(distDir, file)));
@@ -41,11 +49,15 @@ export const packageRelease = ({ distDir, outDir, rootDir, tag }) => {
       `versions.json maps ${manifest.version} to "${minAppVersion}", but manifest.json has minAppVersion "${manifest.minAppVersion}"`,
     );
   }
+  const noticesSource = join(rootDir, NOTICES_FILE);
+  assertNotices(noticesSource);
   const folder = join(outDir, manifest.id);
   rmSync(folder, { recursive: true, force: true });
   mkdirSync(folder, { recursive: true });
   for (const file of RELEASE_FILES) copyFileSync(join(distDir, file), join(folder, file));
-  return { folder, version: manifest.version };
+  const notices = join(outDir, NOTICES_FILE);
+  copyFileSync(noticesSource, notices);
+  return { folder, notices, version: manifest.version };
 };
 
 const isCli =
@@ -53,11 +65,11 @@ const isCli =
 if (isCli) {
   const index = process.argv.indexOf("--tag");
   const tag = index === -1 ? undefined : process.argv[index + 1];
-  const { folder, version } = packageRelease({
+  const { folder, notices, version } = packageRelease({
     distDir: "dist",
     outDir: "release",
     rootDir: ".",
     tag,
   });
-  console.log(`release ✓ ${version} staged in ${folder}`);
+  console.log(`release ✓ ${version} staged in ${folder}, notices in ${notices}`);
 }

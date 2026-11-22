@@ -1,8 +1,9 @@
-import { existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { packageRelease } from "../../../scripts/package-release.mjs";
+import { NOTICES_FILE } from "../../../scripts/third-party-notices.mjs";
 
 const dirs: string[] = [];
 const temp = () => {
@@ -29,11 +30,18 @@ const dist = (files = Object.keys(CONTENT), overrides: Record<string, string> = 
   return dir;
 };
 
-/** The repository root's `manifest.json` and `versions.json`. */
-const root = (manifest: object = MANIFEST, versions: object = { "0.2.0": "1.15.1" }) => {
+const NOTICES = "Third-party notices\n";
+
+/** The repository root's `manifest.json`, `versions.json` and notices file. */
+const root = (
+  manifest: object = MANIFEST,
+  versions: object = { "0.2.0": "1.15.1" },
+  notices: string | null = NOTICES,
+) => {
   const dir = temp();
   writeFileSync(join(dir, "manifest.json"), JSON.stringify(manifest));
   writeFileSync(join(dir, "versions.json"), JSON.stringify(versions));
+  if (notices !== null) writeFileSync(join(dir, NOTICES_FILE), notices);
   return dir;
 };
 
@@ -45,12 +53,39 @@ describe("packageRelease", () => {
   it("stages exactly the three plugin files under the plugin id", () => {
     const outDir = temp();
     const result = packageRelease({ distDir: dist(), outDir, rootDir: root(), tag: "0.2.0" });
-    expect(result).toEqual({ folder: join(outDir, "weg-manager"), version: "0.2.0" });
+    expect(result).toEqual({
+      folder: join(outDir, "weg-manager"),
+      notices: join(outDir, NOTICES_FILE),
+      version: "0.2.0",
+    });
     expect(readdirSync(result.folder).toSorted()).toEqual([
       "main.js",
       "manifest.json",
       "styles.css",
     ]);
+  });
+
+  it("stages the notices file beside the plugin folder, so the folder stays what Obsidian loads", () => {
+    const outDir = temp();
+    const { notices } = packageRelease({ distDir: dist(), outDir, rootDir: root(), tag: "0.2.0" });
+    expect(readFileSync(notices, "utf8")).toBe(NOTICES);
+    expect(readdirSync(outDir).toSorted()).toEqual([NOTICES_FILE, "weg-manager"]);
+  });
+
+  it("rejects a repository without the notices file, and stages nothing", () => {
+    const outDir = temp();
+    const rootDir = root(MANIFEST, { "0.2.0": "1.15.1" }, null);
+    expect(() => packageRelease({ distDir: dist(), outDir, rootDir })).toThrow(
+      `${NOTICES_FILE} is missing (run "npm run notices")`,
+    );
+    expect(existsSync(join(outDir, "weg-manager"))).toBe(false);
+  });
+
+  it("rejects an empty notices file", () => {
+    const rootDir = root(MANIFEST, { "0.2.0": "1.15.1" }, "  \n");
+    expect(() => packageRelease({ distDir: dist(), outDir: temp(), rootDir })).toThrow(
+      `${NOTICES_FILE} is empty`,
+    );
   });
 
   it("works without a tag", () => {

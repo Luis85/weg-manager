@@ -171,7 +171,7 @@ Checked on 2026-11-21 against `71e39c4`. "Met" means the code and a test in the 
 
 ## 8. Review round (2026-11-22)
 
-After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its own: architecture and design, correctness and robustness, UX and accessibility in real Obsidian 1.15.1, and tests, tooling and release readiness. Their findings were checked against the code before anything was changed. Clear defects were fixed by implementers, one pull request per step, each merged after the gate, the real-Obsidian suite and mutation testing were green. What is not fixed is in the backlog (PBI-60 to PBI-67).
+After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its own: architecture and design, correctness and robustness, UX and accessibility in real Obsidian 1.15.1, and tests, tooling and release readiness. Their findings were checked against the code before anything was changed. Clear defects were fixed by implementers, one pull request per step, each merged after the gate, the real-Obsidian suite and mutation testing were green. What stays open is in the backlog: PBI-62, PBI-66 and PBI-67 (PBI-60, PBI-61, PBI-63, PBI-64 and PBI-65 are finished).
 
 ### What the reviews found
 
@@ -194,6 +194,7 @@ After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its 
 | #34 | The communities screen: focus and modality, only communities without issues selectable, texts in plain words that name their data, notices after writes, notes the plugin cannot write open in Obsidian. |
 | #35 | The backlog notes PBI-60 to PBI-67 and the owner decisions of the first interview; an e2e spec waits for the list before it clicks. |
 | #37 | Tests for the edge layers where planted mutations survived, a shared wait budget and counted work instead of wall-clock bounds, a second, non-gating mutation run for those layers with its own nightly job; the diagnostics name an iOS or Android app correctly. |
+| #38 | The owner decisions of the second interview: the 0.2.0 scope, the module manifest, the third-party notices, a contact's role and the palette. |
 | #39 | Generic record handling moved from `communities` into `notes` in every layer (`defineRecords`, `useRecordForm`, `useRecordScreen`); the settings screen belongs to the shell and has one section per module, with the new section "Datenprobleme". |
 | #40 | Third-party notices generated from the bundle (26 packages: 25 MIT, 1 ISC), checked by the gate, staged and attested as a fourth release asset. |
 | #41 | The unhandled events `ActiveFileChanged` and `ColorSchemeChanged`, `isMarkdown` and the event bus's unused subscription are deleted (PBI-62, criterion 3). |
@@ -213,6 +214,7 @@ After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its 
 | #55 | Reference fields with a missing-target issue, lookup by id in the index, and a `Today` service; nothing uses them yet (PBI-61). |
 | #56 | The e2e job runs without a window manager and installs nothing per run (PBI-64, criterion 3). |
 | #57 | The Obsidian double agrees with the real app: difficult frontmatter, tabs and deferred views, event orders on a fence instead of settle times, each double class checked against `obsidian.d.ts`, and the `NoteStore` contract run in real Obsidian (40 of 51 cases, 11 skipped with their reason); a block of only comments is no longer unreadable (PBI-63, criteria 1 to 5). |
+| #58 | The blueprint in line with the code, this plan up to #57, PBI-64 finished. |
 
 ### The 0.2.0 pre-release
 
@@ -270,3 +272,20 @@ As the notes under `docs/requirements/` say it (2026-11-22).
 | PBI-65 | Finished (PRs #46, #53). |
 | PBI-66 | Open, `ready-for-human`: the manual checks (the owner checks theme and zoom with 0.2.0 on Windows; keyboard only, screen reader and other plugins have no tester), the focus ring on inputs, hyphenation, three small points from the UX step. |
 | PBI-67 | Open, `ready-for-human`. Criterion 1 (0.2.0 through the release workflow) and criterion 4 (third-party notices) are met; criterion 2 is partly met (a scheduled run passed; a second run that uses the first one's results and the failure issue are not shown yet); criterion 3 (the first Dependabot run) is open; criterion 5 (`CI / e2e` required) is postponed. |
+| PBI-68 to PBI-70 | Review round 2, in work: the note store and the test double (PBI-68), release, CI and scripts (PBI-69), e2e checks (PBI-70). |
+| PBI-71 | Open, `ready-for-agent`: record forms for every field kind, before the second record type. |
+| PBI-72 | Open, `needs-triage`: typed input in the community sheet is lost on Escape or a click outside; the owner decides. |
+
+### Review round 2 (2026-11-22)
+
+After #58 four independent reviewers looked at `65eb006`, each on its own: the product code, the tests, CI and release, and the blueprint with this repository's documents. Their findings were checked against the code before they were sorted below. Nothing in `src/` changed in this round; the document corrections are in the pull request that carries this section, the rest is filed in the backlog. PBI-68, PBI-69 and PBI-70 are written by other steps of this round.
+
+| Finding | Where it goes |
+| --- | --- |
+| The record kit's forms handle text fields only: a list or reference value is deleted, and a number or a checkbox is written back as text, when the user saves another field. No current type is affected; a second record type is. Also: feature services cannot depend on an earlier feature's services, and each feature would build the shown name of a referenced record on its own. | PBI-71 |
+| Typed input in the community sheet is lost on Escape or a click outside, without a question. The owner decides whether to ask before discarding or to wait for a draft store. | PBI-72 |
+| `rename` returns the metadata cache's frontmatter, so a write does not return the note as written; the double's `trashFile`, `cachedRead` and `renameFile` do not model what Obsidian does (a failed trash resolves `false`, `cachedRead` of a deleted file returns the cached text, a rename waits behind link updates); real write failures are never produced in the e2e contract; opening a note labels a host failure as a defect. | PBI-68 |
+| The release job is not tied to `main` or to the owner by anything but the workflow file; the attestation check in the release guide is weaker than its sentence; the released files are built after the e2e run; a half-failed run can leave a draft release; the nightly cache key misses shared inputs; the CLI guard of the scripts fails open through a symlink; the concurrency comment is too strong; the tag check treats any API error as "no tag"; cheap version checks run last. | PBI-69 |
+| E2e negative checks that pass empty or start from the state they check (the two pauses of `vault-ready-fallback.e2e.ts`, the badge check in `communities-invalid.e2e.ts`, the fallback checks of `settings-sections` and `navigation`); `note-index.e2e.ts` calls an edit through `vault.process` an outside edit; the probe reports a defect as a failure with a tag; the contract's pass count is pinned without its total. | PBI-70 |
+| The blueprint claimed more than had been run or measured (the plugin without note data, the example feature, sizes, one pause, the ribbon, the diagnostics language, the Nuxt UI locale, the inputs a fresh project decides first). `AGENTS.md` pointed a new note type at the derived `appNoteTypes`; the index budget was described as a timing test; four pauses stay in the e2e suite, not one; ADR 0001 lacked `yaml`; "listeners through `this.register*`" was listed as if lint checked it; the glossary gave a German route for a settings section; this section lacked #38 and #58 and a wrong list of open notes. | This pull request |
+| `appSurface` keeps only the first module's frame `context`; a time zone that `Intl` rejects would stop the plugin from loading through `Today`, and the real clock of `Today` has no test; an arrow key pressed while a community selection is saving moves the focus but not the choice. | PBI-68 |

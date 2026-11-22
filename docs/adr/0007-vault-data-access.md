@@ -1,6 +1,6 @@
 # ADR 0007 · Vault notes as records
 
-- Status: accepted; adapter calls, the unreadable lookup and the conflict form amended on 2026-11-21, the update write path amended again on 2026-11-21; a contact's role, closing lines and folders, and references with lookup by id amended on 2026-11-22 (see the notes at the end)
+- Status: accepted; adapter calls, the unreadable lookup and the conflict form amended on 2026-11-21, the update write path amended again on 2026-11-21; a contact's role, closing lines and folders, references with lookup by id, and the wording of the budget amended on 2026-11-22 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -120,3 +120,10 @@ PBI-61, criteria 2 and 3; built for the first feature after `communities` (conta
 - **A missing target is an issue of the domain, added by the index.** The codec reads one note and cannot see the others, so the index marks it over the records of every type, beside the duplicate ids (`markMissingReferences`): each id a record names and no record carries is `reference.missing` with its key and the id. A list with one missing target yields one issue for that id and keeps its whole value. The record stays as it was, editable or not, because Sync may bring the target back; nothing blocks a save. The id is shown to the user and never logged. A feature writes no rule for it: the record kit's rows carry it, and the notes catalog words it. A reference to a type no module registers is a defect at build.
 - **A snapshot of the index has a lookup by id** (`byId`), built once when the snapshot is published, so a route such as `item/<id>` or a reference finds its record without a scan. An id several notes carry gives the first of them by path; like each of them it is read-only with `id.duplicate`, so a write through it is refused, as before. The record kit finds a renamed record through it.
 - **Not built.** A choice of records in a form, a reference to a record of another vault, and a check of references in `check` (a form's validators): the first feature decides how it offers its targets.
+
+## Amendment, 2026-11-22: the budget counts work
+
+Review round 2 of 2026-11-22. The decision's line "checked by a timing test" is not what was built: the budget is counted work, because a time bound fails on a loaded machine (`docs/engineering/testing.md`, "No wall-clock assertion").
+
+- **Unit test.** `tests/unit/application/notes/note-index-budget.test.ts` builds the reference vault's records over the in-memory store and asserts reads and decodes, not time: a build decodes each record once and reads no file twice, a rebuild reads and decodes nothing unchanged, and one edit costs one read and one decode.
+- **E2e.** `tests/e2e/specs/note-index.e2e.ts` bounds only the outside edit, from the edit to the snapshot (1 s). The first build after `VaultReady` on a cold start and on a warm restart is recorded in `reports/e2e/`, not asserted.

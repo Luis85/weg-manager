@@ -65,7 +65,7 @@ A field that the user changed in a form and someone else changed in the note mea
 _Avoid_: collision, clash, merge error
 
 **Settings section** (German: Bereich der Einstellungen):
-One area of the plugin's settings screen, such as the communities or the data issues, contributed by one module and reached through the screen's own navigation. Its id is part of the route (`einstellungen/<bereich>`).
+One area of the plugin's settings screen, such as the communities or the data issues, contributed by one module and reached through the screen's own navigation. Its id (`communities`, `data-issues`) is the `section` of the settings route.
 _Avoid_: tab, page, panel, category
 
 **Data issues** (German: Datenprobleme):

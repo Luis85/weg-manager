@@ -72,8 +72,9 @@ export type AppServicesOptions = LoggerOptions & {
 /**
  * Every application service of one load, built from the host's adapters (ADR 0006): the shell's
  * services first (settings, then the logger on them, the event bus, today on the logger), the notes
- * module's on them,
- * the feature modules' Layers from their manifests on both, the host event adapter last. Typed
+ * module's on them, the feature modules' Layers from their manifests folded on both in
+ * `APP_MODULES` order (a feature's services may use an earlier feature's), the host event adapter
+ * last. Typed
  * `Layer<AppServices>`: a feature service that needs a service no module built before it fails
  * typecheck here, in one place.
  */
@@ -102,6 +103,6 @@ export const appServicesLayer = (
       ),
     ),
   );
-  const features = servicesLayerOf(APP_MODULES).pipe(Layer.provideMerge(notes));
+  const features = servicesLayerOf(APP_MODULES, notes);
   return adapters.hostEvents.pipe(Layer.provideMerge(features));
 };

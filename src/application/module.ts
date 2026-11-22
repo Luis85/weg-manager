@@ -178,17 +178,32 @@ export const commandsOf = <const M extends readonly AnyModule[]>(modules: M) =>
   >[number][];
 
 /**
- * The modules' service Layers merged into one; a module without services adds nothing. It needs
- * what the Layers need: `appServicesLayer` builds it on the core modules' services.
+ * The Layer of `base` with the services of `modules` folded on, in their order: what a module
+ * after `Done` adds, and what it still needs that neither the base nor an earlier module builds.
  */
-export const servicesLayerOf = <const M extends readonly AnyModule[]>(modules: M) =>
-  Layer.mergeAll(
-    Layer.empty,
-    ...(modules.flatMap((module) =>
-      module.services === undefined ? [] : [module.services],
-    ) as Layer.Layer<never>[]),
-  ) as unknown as Layer.Layer<
-    ServicesOf<M[number]>,
-    Layer.Error<NonNullable<M[number]["services"]>>,
-    Layer.Services<NonNullable<M[number]["services"]>>
-  >;
+type FoldServices<M extends readonly AnyModule[], Out, Err, In> = M extends readonly [
+  infer Head extends AnyModule,
+  ...infer Rest extends readonly AnyModule[],
+]
+  ? Head extends { readonly services?: Layer.Layer<infer HeadOut, infer HeadErr, infer HeadIn> }
+    ? FoldServices<Rest, Out | HeadOut, Err | HeadErr, In | Exclude<HeadIn, Out>>
+    : FoldServices<Rest, Out, Err, In>
+  : Layer.Layer<Out, Err, In>;
+
+/**
+ * The modules' service Layers folded onto `base` in module order (PBI-71): each module's Layer is
+ * built on `base` and on every earlier module's services (`Layer.provideMerge` on the fold so
+ * far), so a feature's service may use an earlier feature's (contacts on the community
+ * selection). A module without services adds nothing. By type, a module that needs a service only
+ * a later module builds leaves it among the Layer's requirements, and `appServicesLayer`'s type
+ * `Layer<AppServices>` fails there.
+ */
+export const servicesLayerOf = <const M extends readonly AnyModule[], Out, Err, In>(
+  modules: M,
+  base: Layer.Layer<Out, Err, In>,
+): FoldServices<M, Out, Err, In> =>
+  modules.reduce<Layer.Layer<never, unknown, unknown>>(
+    (done, module) =>
+      module.services === undefined ? done : Layer.provideMerge(module.services, done),
+    base,
+  ) as unknown as FoldServices<M, Out, Err, In>;

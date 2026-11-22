@@ -15,10 +15,10 @@ import { cacheCompleteness } from "./cache-completeness";
  * How long the metadata cache may stay silent, with files still missing from it, before
  * `VaultReady` is published anyway. It runs from the layout being ready and starts again at every
  * `resolved`, which Obsidian fires after each file it indexes: a cold start on the reference vault
- * fires one about every millisecond (`reports/e2e/vault-ready-timings.json`: 2,200 notes in about
- * 2.6 s), so a vault that is still being indexed never reaches it, however large; one file that
- * Obsidian does not get to is what it waits for. Ten seconds is many times the longest gap of a
- * working indexer, and a view that waits for the index costs the user no more than that.
+ * fires one about every millisecond (`vault-ready.e2e.ts`: 2,200 notes in about 2.6 s), so a vault
+ * that is still being indexed never reaches it, however large; one file that Obsidian does not get
+ * to is what it waits for. Ten seconds is many times the gap between two files of a working
+ * indexer, and a view that waits for the index costs the user no more than that.
  */
 export const VAULT_READY_DEADLINE = Duration.seconds(10);
 
@@ -70,7 +70,7 @@ export const hostEventsLayer = (plugin: Plugin) =>
         const program = Effect.suspend(() => {
           const event = build();
           return event === undefined ? Effect.void : bus.publish(event);
-        }).pipe(Effect.catchCause(reportUnexpected), Effect.provideContext(context));
+        }).pipe(Effect.catchCause(reportUnexpected));
         // The exit is dropped: it is a failure only if the defect path itself failed.
         Effect.runSyncExitWith(context)(program);
       };

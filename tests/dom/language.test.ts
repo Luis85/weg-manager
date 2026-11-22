@@ -134,7 +134,7 @@ describe("UI language follows Obsidian", () => {
       "Communities",
     );
     expect(root.querySelector("nav li button[aria-current=page]")?.textContent.trim()).toBe(
-      "Communities",
+      "Settings",
     );
     [...root.querySelectorAll("button")]
       .find((b) => b.textContent.includes("Add community"))

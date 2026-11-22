@@ -16,7 +16,7 @@ import { ROOT, installConsoleSpy, leafCount, openView, pluginProblems } from "..
 
 const NOTES: Readonly<Record<string, string>> = {
   "Gut.md": communityText(community(1, { name: "Gut", short_code: "GUT" })),
-  "Farbe.md": communityText(community(2, { name: "Farbe", short_code: "FA", color: "amber" })),
+  "Farbe.md": communityText(community(2, { name: "Farbe", short_code: "FA", color: "cyan" })),
   "Kürzel A.md": communityText(community(3, { name: "Kürzel A", short_code: "KZ", color: "blue" })),
   "Kürzel B.md": communityText(community(4, { name: "Kürzel B", short_code: "KZ", color: "rust" })),
   "Kopie A.md": communityText(community(5, { name: "Kopie A", short_code: "KA", color: "pink" })),
@@ -55,7 +55,7 @@ describe("communities: notes that break the file contract", function () {
     await expectListed(["Farbe", "Gut", "Kopie A", "Kopie B", "Kürzel A", "Kürzel B"]);
     expect(await issuesOf("Gut")).toEqual([]);
     expect(await issuesOf("Farbe")).toEqual([
-      "Die gespeicherte Farbe „amber“ gibt es nicht. Wähle eine Farbe.",
+      "Die gespeicherte Farbe „cyan“ gibt es nicht. Wähle eine Farbe.",
     ]);
     expect(await issuesOf("Kürzel A")).toEqual([duplicateCode("Kürzel B")]);
     expect(await issuesOf("Kürzel B")).toEqual([duplicateCode("Kürzel A")]);
@@ -88,11 +88,11 @@ describe("communities: notes that break the file contract", function () {
       communityText(community(1, { name: "Gut", short_code: "GUT", kind: "Haus" })),
     );
     await root.$("button[aria-label='Farbe bearbeiten']").click();
-    await fillForm({ color: "cyan" });
+    await fillForm({ color: "amber" });
     await saveForm();
     await expectFormClosed();
     expect(await fileText(`${FOLDER}/Farbe.md`)).toBe(
-      communityText(community(2, { name: "Farbe", short_code: "FA", color: "cyan" })),
+      communityText(community(2, { name: "Farbe", short_code: "FA", color: "amber" })),
     );
     // The list follows the write a moment later and the card loses its issue line, which moves
     // everything below it; a click sent before that lands where a button used to be.

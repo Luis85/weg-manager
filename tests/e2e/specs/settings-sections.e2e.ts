@@ -69,6 +69,10 @@ describe("the settings screen's sections in Obsidian", function () {
     expect(await route()).toEqual({ name: "settings", section: "data-issues" });
     expect(await focused()).toContain("Datenprobleme");
     await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).not.toExist();
+    // The frame's one entry, "Einstellungen", is the current page on every section.
+    await expect(
+      browser.$(ROOT).$("[data-testid=frame-navigation] li button[aria-current=page]"),
+    ).toHaveText("Einstellungen");
     // The frame's back control returns to the section before.
     await browser.$(ROOT).$("[data-testid=frame-navigation] button[aria-label='Zurück']").click();
     await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();

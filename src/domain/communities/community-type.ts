@@ -11,7 +11,7 @@ export const COMMUNITY_COLORS = [
   "blue",
   "rust",
   "slate",
-  "cyan",
+  "amber",
   "pink",
   "olive",
 ] as const;

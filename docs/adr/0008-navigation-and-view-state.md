@@ -78,3 +78,7 @@ Decision (owner, 22.11.2026):
 - **Saved states keep working.** A stored `{ name: "settings", section: "communities" }` opens the communities section; an unknown section decodes as no route and falls back to the start route, as every unknown state does. The frame's navigation entry ("Gemeinschaften", the community settings) and the start route are unchanged.
 
 Consequences: a module adds a settings area with its id in `SETTINGS_SECTIONS` and its part in `appSurface`'s `sections`, nothing in the shell. Another screen with several areas of its own would need the same keying in the route outlet; today the settings screen is the only one. The frame marks its entry as the current page only on the communities section; whether the entry should become "Einstellungen" once more sections exist is the owner's to decide.
+
+## Amendment, 2026-11-22: the frame's entry is "Einstellungen" and is current on every settings section
+
+The frame's one entry is labelled "Einstellungen" / "Settings" (shell catalog `frame.settings`, icon `lucide:settings`) and opens the communities section; it is the current page on every section, "Datenprobleme" included: the frame compares an entry with the route by name (the screen), not by value. This resolves the open point of the amendment above (no entry current on "Datenprobleme").

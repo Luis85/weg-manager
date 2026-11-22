@@ -35,7 +35,7 @@ describe("toCommunityList", () => {
       ready: true,
       failure: undefined,
       notes: [
-        decoded("A.md", communityNote(1, { name: "A", color: "amber", short_code: "a" })),
+        decoded("A.md", communityNote(1, { name: "A", color: "cyan", short_code: "a" })),
         decoded("B.md", communityNote(2, { name: "B", color: true })),
         decoded("C.md", communityNote(3, { name: "C", color: ["teal"] })),
       ],
@@ -45,7 +45,7 @@ describe("toCommunityList", () => {
       [
         [
           { key: "short_code", code: "short-code.invalid" },
-          { key: "color", code: "color.unknown", value: "amber" },
+          { key: "color", code: "color.unknown", value: "cyan" },
         ],
         [{ key: "color", code: "color.unknown", value: "true" }],
         [{ key: "color", code: "color.unknown", value: "" }],
@@ -113,7 +113,7 @@ const community = (extra: Record<string, unknown>, others: Record<string, unknow
 
 describe("canChangeShortCode", () => {
   it("is false for a valid, unique short code, also beside another field's issue", () => {
-    for (const found of [community({}), community({ color: "amber" })]) {
+    for (const found of [community({}), community({ color: "cyan" })]) {
       assert.isFalse(found !== undefined && canChangeShortCode(found));
     }
   });

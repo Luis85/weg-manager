@@ -39,7 +39,7 @@ export const communitiesDe: CommunitiesCatalog = {
     blue: "Blau",
     rust: "Rostrot",
     slate: "Schiefergrau",
-    cyan: "Cyan",
+    amber: "Bernstein",
     pink: "Pink",
     olive: "Oliv",
   },

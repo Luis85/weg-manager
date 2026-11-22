@@ -5,6 +5,7 @@ import { memoryNavigation } from "../../../../src/presentation/shell/host";
 import { useRoute } from "../../../../src/presentation/shell";
 import { runtimes } from "../../../support/composable";
 import { preloadSurface } from "../../../support/preload";
+import { appSurface } from "../../../../src/presentation/app-surface";
 import { mountApp, mountTest, testSurface, type TestRoute } from "../../../support/surface";
 import { eventually } from "../../../support/wait";
 
@@ -72,6 +73,36 @@ describe("navigation in a surface", () => {
     expect(navButtons(root).map((button) => button.getAttribute("aria-current"))).toEqual([
       null,
       "page",
+    ]);
+  });
+
+  it("marks an entry as the current page on every route of its screen, whatever the parameters", async () => {
+    const surface = testSurface({
+      menu: [
+        { route: { name: "first" }, label: () => "First", icon: "i-lucide-info" },
+        { route: { name: "item", id: "1" }, label: () => "Items", icon: "i-lucide-info" },
+      ],
+    });
+    const { runtime } = make();
+    const root = newRoot();
+    const navigation = memoryNavigation(surface, { name: "item", id: "7" });
+    closes.push(mountTest(root, runtime, surface, navigation).close);
+    await settle();
+    expect(navButtons(root).map((button) => button.getAttribute("aria-current"))).toEqual([
+      null,
+      "page",
+    ]);
+    navigation.navigate({ name: "item", id: "8" });
+    await settle();
+    expect(navButtons(root).map((button) => button.getAttribute("aria-current"))).toEqual([
+      null,
+      "page",
+    ]);
+    navigation.navigate({ name: "second" });
+    await settle();
+    expect(navButtons(root).map((button) => button.getAttribute("aria-current"))).toEqual([
+      null,
+      null,
     ]);
   });
 
@@ -323,12 +354,12 @@ describe("the app frame", () => {
     expect(without.querySelector("[data-testid=frame-context]")).toBeNull();
   });
 
-  it("starts on the community settings, its one entry, with the switch in the context area", async () => {
+  it("starts on the settings, the frame's one entry, with the switch in the context area", async () => {
     const { runtime } = make();
     const root = newRoot();
     closes.push(mountApp(root, runtime));
     await settle();
-    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Gemeinschaften"]);
+    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Einstellungen"]);
     expect(navButtons(root)[0]?.getAttribute("aria-current")).toBe("page");
     await eventually(() =>
       expect(root.querySelector("section [data-testid=communities-screen]")).not.toBeNull(),
@@ -340,5 +371,31 @@ describe("the app frame", () => {
     await eventually(() =>
       expect(navButtons(root)[0]?.querySelector("svg")?.innerHTML ?? "").not.toBe(""),
     );
+  });
+
+  it("keeps the settings entry current on every section, and opens the communities from another", async () => {
+    const { runtime } = make();
+    const root = newRoot();
+    const navigation = memoryNavigation(appSurface, {
+      name: "settings",
+      section: "data-issues",
+    } as const);
+    closes.push(mountApp(root, runtime, { navigation }));
+    await settle();
+    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Einstellungen"]);
+    expect(navButtons(root)[0]?.getAttribute("aria-current")).toBe("page");
+    expect(barred(navButtons(root)[0] as HTMLButtonElement)).toBe(true);
+    navButtons(root)[0]?.click();
+    await settle();
+    expect(navigation.current()).toEqual({ name: "settings", section: "communities" });
+    expect(navButtons(root)[0]?.getAttribute("aria-current")).toBe("page");
+  });
+
+  it("words the settings entry in English", async () => {
+    const { runtime } = make({ language: "en" });
+    const root = newRoot();
+    closes.push(mountApp(root, runtime));
+    await settle();
+    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Settings"]);
   });
 });

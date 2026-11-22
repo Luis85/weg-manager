@@ -93,7 +93,7 @@ export const difficultScenario = async (
   const facts: DifficultFacts[] = await Promise.all(
     read.map(async (before, index) => ({
       ...before,
-      update: updates[index] ?? { ok: false, tag: "no update" },
+      update: updates[index] ?? { ok: false, kind: "die", tag: "no update" },
       written: await raw(before.name),
       frontmatterAfter: app.metadataCache.getFileCache(file(before.name))?.frontmatter ?? null,
     })),

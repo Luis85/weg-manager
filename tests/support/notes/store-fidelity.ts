@@ -78,8 +78,8 @@ export const STORE_REPORT = {
     result: { ok: true, value: { path: "Archiv/Fremd.md", frontmatter: UPDATED } },
     events: ["done"],
   },
-  refused: { result: { ok: false, tag: "Conflict" }, events: ["done"] },
-  broken: { result: { ok: false, tag: "NoteUnreadableError" }, events: ["done"] },
+  refused: { result: { ok: false, kind: "fail", tag: "Conflict" }, events: ["done"] },
+  broken: { result: { ok: false, kind: "fail", tag: "NoteUnreadableError" }, events: ["done"] },
   rename: {
     result: { ok: true, value: { path: "Archiv/Umbenannt.md", frontmatter: UPDATED } },
     events: ["vault:rename Archiv/Fremd.md -> Archiv/Umbenannt.md", "done"],
@@ -90,12 +90,12 @@ export const STORE_REPORT = {
     result: { ok: true, value: { path: "Archiv/UMBENANNT.md", frontmatter: UPDATED } },
     events: ["vault:rename Archiv/Umbenannt.md -> Archiv/UMBENANNT.md", "done"],
   },
-  renameTaken: { result: { ok: false, tag: "NotePathTakenError" }, events: ["done"] },
+  renameTaken: { result: { ok: false, kind: "fail", tag: "NotePathTakenError" }, events: ["done"] },
   trash: {
     result: { ok: true },
     events: [`metadataCache:deleted ${SECOND}`, `vault:delete ${SECOND}`, "done"],
   },
-  readTrashed: { result: { ok: false, tag: "NoteNotFoundError" }, events: ["done"] },
+  readTrashed: { result: { ok: false, kind: "fail", tag: "NoteNotFoundError" }, events: ["done"] },
   finalList: {
     result: {
       ok: true,

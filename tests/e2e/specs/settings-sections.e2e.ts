@@ -101,6 +101,10 @@ describe("the settings screen's sections in Obsidian", function () {
     await expect(browser.$(ROOT).$("[data-testid=data-issues-screen]")).toBeDisplayed();
     await restore({ route: { name: "settings", section: "communities" } });
     await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();
+    // The fallback is checked from another section, so a saved section that is ignored (the view
+    // staying where it was) would show as the wrong route instead of passing by chance.
+    await restore({ route: { name: "settings", section: "data-issues" } });
+    await expect(browser.$(ROOT).$("[data-testid=data-issues-screen]")).toBeDisplayed();
     await restore({ route: { name: "settings", section: "contacts" } });
     await eventually(route, { name: "settings", section: "communities" }, "the route");
     await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();

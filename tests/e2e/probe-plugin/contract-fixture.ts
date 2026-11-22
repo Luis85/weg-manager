@@ -9,11 +9,18 @@ export class SkipCase extends Error {
   override readonly name = "SkipCase";
 }
 
+type NodeEntry = { readonly name: string; isDirectory(): boolean };
 type NodeFs = {
   mkdirSync(path: string, options: { readonly recursive: true }): void;
   writeFileSync(path: string, text: string): void;
   unlinkSync(path: string): void;
+  readdirSync(path: string, options: { readonly withFileTypes: true }): readonly NodeEntry[];
+  statSync(path: string): { readonly mode: number };
+  chmodSync(path: string, mode: number): void;
 };
+
+/** The note the recorder's fence edits; it stays writable, because a case may settle while locked. */
+const FENCE_NOTE = "Zaun.md";
 
 const textOf = (frontmatter: Parameters<NoteStoreFixture["seed"]>[1], body = ""): string => {
   if (frontmatter === "none") return body;
@@ -51,6 +58,49 @@ export const obsidianFixture = (app: App): NoteStoreFixture & { dispose(): void 
     `${(vault.adapter as unknown as { basePath: string }).basePath}/${path}`;
   const skip = (reason: string) => () => {
     throw new SkipCase(reason);
+  };
+  /** The modes the vault had before `setFailWrites(true)`, to put back. */
+  let locked: readonly (readonly [string, number])[] = [];
+  /** The vault's trash option before the lock, which moves the trash into the vault. */
+  let trashOption: unknown;
+  const config = vault as unknown as {
+    getConfig(key: string): unknown;
+    setConfig(key: string, value: unknown): void;
+  };
+  const unlock = (): void => {
+    for (const [path, mode] of locked.toReversed()) fs.chmodSync(path, mode);
+    if (locked.length > 0) config.setConfig("trashOption", trashOption);
+    locked = [];
+  };
+  /**
+   * Writes fail for real: every folder of the vault (its root too) loses its write bit, which
+   * stops `create`, `rename` and the local trash, and every note loses its own, which stops
+   * `process`. `.obsidian` and other dot folders stay as they are, because Obsidian keeps its own
+   * files there. This works for any user but root, who passes through permissions. The trash goes
+   * to the vault's `.trash` meanwhile (as in `communities-crud.e2e.ts`), so that it is a move
+   * the locked folder stops; what the system trash does with a locked file is the desktop's own.
+   */
+  const lock = (): void => {
+    const host = (window as unknown as { process?: { getuid?(): number } }).process;
+    if (host?.getuid === undefined || host.getuid() === 0) {
+      throw new SkipCase(SKIP_REASONS.failWritesAsRoot);
+    }
+    const found: (readonly [string, number])[] = [];
+    const walk = (dir: string): void => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (entry.name.startsWith(".") || entry.name === FENCE_NOTE) continue;
+        const path = `${dir}/${entry.name}`;
+        if (entry.isDirectory()) walk(path);
+        else found.push([path, fs.statSync(path).mode]);
+      }
+      found.push([dir, fs.statSync(dir).mode]);
+    };
+    walk(onDisk("").replace(/\/$/, ""));
+    // Recorded first, so that a lock that fails half way is still undone by `dispose`.
+    locked = found;
+    trashOption = config.getConfig("trashOption");
+    config.setConfig("trashOption", "local");
+    for (const [path, mode] of found) fs.chmodSync(path, mode & ~0o222);
   };
   return {
     layer: noteStoreLayer(app),
@@ -90,11 +140,14 @@ export const obsidianFixture = (app: App): NoteStoreFixture & { dispose(): void 
     },
     isFolder: (path) => vault.getFolderByPath(path) !== null,
     setFailReads: skip(SKIP_REASONS.failReads),
-    setFailWrites: skip(SKIP_REASONS.failWrites),
+    setFailWrites: (fail) => (fail ? lock() : unlock()),
     holdWrites: skip(SKIP_REASONS.holdWrites),
     releaseWrites: skip(SKIP_REASONS.holdWrites),
     heldWrites: skip(SKIP_REASONS.holdWrites),
-    dispose: () => recorder.dispose(),
+    dispose: () => {
+      unlock();
+      recorder.dispose();
+    },
   };
 };
 

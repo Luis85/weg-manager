@@ -56,7 +56,11 @@ describe("a note deleted while Obsidian still lists it", function () {
         delete (app.vault as unknown as { getFileByPath?: unknown }).getFileByPath;
       }
     }, "Weg.md");
-    expect(outcome as Outcome<unknown>).toEqual({ ok: false, tag: "NoteNotFoundError" });
+    expect(outcome as Outcome<unknown>).toEqual({
+      ok: false,
+      kind: "fail",
+      tag: "NoteNotFoundError",
+    });
     expect(await pluginProblems()).toEqual([]);
   });
 

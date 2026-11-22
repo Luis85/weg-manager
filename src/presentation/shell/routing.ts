@@ -3,12 +3,14 @@ import type { Catalog } from "../../application/messages";
 import type { AppModuleName } from "../../application/modules";
 import type { Route, RouteNameOf, SectionIdOf } from "../../application/routes";
 import {
+  SETTINGS,
   historyAt,
   stepBack,
   stepForward,
   visit,
   type RouteHistory,
   type RouteLike,
+  type SettingsRoute,
   type Routes,
 } from "../../application/shell";
 
@@ -75,6 +77,27 @@ export type SurfaceDefinition<R extends RouteLike> = Routes<R> & {
    * navigation shows them. `src/presentation/app-surface.ts` types them by `SettingsSection`.
    */
   readonly sections?: Readonly<Record<string, SettingsSectionPart>>;
+};
+
+/**
+ * The entries of the frame's navigation (ADR 0008, amendment 2026-11-22): the modules' entries,
+ * then the shell's settings entry when any module adds a settings section. The entry opens the
+ * settings screen on the section that comes first in `sections`, which the composition orders
+ * (`SETTINGS_SECTIONS`); it is current on every section, as every entry is on every route of its
+ * screen.
+ */
+export const frameMenu = <R extends RouteLike>(
+  definition: SurfaceDefinition<R>,
+): readonly MenuEntry<RouteLike>[] => {
+  const [first] = Object.keys(definition.sections ?? {});
+  if (first === undefined) return definition.menu;
+  const route: SettingsRoute = { name: SETTINGS, section: first };
+  const settings: MenuEntry<RouteLike> = {
+    route,
+    label: (catalog) => catalog.shell.frame.settings,
+    icon: "i-lucide-settings",
+  };
+  return [...definition.menu, settings];
 };
 
 /**

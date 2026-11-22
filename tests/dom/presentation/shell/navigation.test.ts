@@ -338,6 +338,14 @@ describe("the app frame", () => {
     expect(english.root.querySelector("[data-testid=app-frame]")?.getAttribute("lang")).toBe("en");
   });
 
+  it("has no settings entry when no module adds a settings section", async () => {
+    const { root } = await mounted();
+    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual([
+      "First",
+      "Second",
+    ]);
+  });
+
   it("fills its context area from the surface definition, and shows none without", async () => {
     const Switch = defineComponent({ setup: () => () => h("p", "community switch") });
     const { runtime } = make();

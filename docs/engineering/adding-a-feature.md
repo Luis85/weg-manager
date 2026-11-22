@@ -14,7 +14,7 @@ The shared files only compose. A new module adds one line to each of these. Type
 | `src/application/events.ts` | its event record, when it has events | typecheck |
 | `src/application/routes.ts` | its route schema in `Route` | typecheck |
 | `src/application/note-types.ts` | its note types in `appNoteTypes` | `tests/unit/application/note-types.test.ts`: every note type a domain `index.ts` exports must be registered once; the test lists the domain indexes and fails until the new folder is in `DOMAIN_INDEXES` |
-| `src/infrastructure/obsidian/app-layer.ts` | its Layer in `appLayer` | typecheck (`appLayer` must provide `AppServices`) |
+| `src/application/app-services-layer.ts` | its services' Layer in `appServicesLayer`, after the modules it needs; a new port's adapter as a field of `AppAdapters` | typecheck (`appServicesLayer` must be a `Layer<AppServices>`; the plugin's `appLayer`, `harness/layers.ts` and `tests/support/adapters.ts` must each supply every field of `AppAdapters`) |
 | `src/presentation/app-surface.ts` | its screens, navigation entry and frame parts | typecheck for the screens (one per `Route` name); the navigation entry and the frame parts are not checked |
 
 Inside the module, its error union and the tag record its type guard reads (`COMMUNITIES_ERROR_TAG_KEYS` in `src/application/communities/errors.ts`) must name the same errors; typecheck fails while the record misses one or has one too many.
@@ -64,22 +64,26 @@ Folder `src/application/communities/`. Test fixture: `tests/support/communities/
    - `deleteCommunity(community)`: `NoteStore.trash`.
 
    First tests: `create-delete.test.ts` and `update.test.ts`, with the note's exact frontmatter, the merge, the conflict, the refusal and a note that is gone.
-4. **A shared value** (`selection.ts`). The community selection is a service with a current value and a stream (`SubscriptionRef`), like the settings. It follows the index, applies `selectedCommunity` and stores the choice through the shell's `DeviceStore`. Its Layer joins `appLayer` through the module's infrastructure folder (step 3). First test: `selection.test.ts`.
+4. **A shared value** (`selection.ts`). The community selection is a service with a current value and a stream (`SubscriptionRef`), like the settings. It follows the index, applies `selectedCommunity` and stores the choice through the shell's `DeviceStore`. Its Layer (`communitySelectionLayer`) joins `appServicesLayer` in `src/application/app-services-layer.ts`, built on the notes module's services (step 3). First test: `selection.test.ts`.
 5. **Errors** (`errors.ts`, `user-messages.ts`). `InvalidCommunityError { issues }`, a `Schema.TaggedError`, with `COMMUNITIES_ERROR_TAGS` and the guard `isCommunitiesError`; the module's union joins `AppError` and its describer joins `describeError`. See [error-handling.md](error-handling.md).
 6. **Texts** (`i18n/catalog.ts`, `de.ts`, `en.ts`, `describe.ts`). The module's part of `Catalog`, typed, German in du-form and English in sentence case, cause then action. `describeCommunityIssue` words the module's codes with the field's label and hands the shared ones to the notes catalog. First test: `i18n.test.ts`, which pins every text in both languages.
 7. **The route** (`routes.ts`). `CommunitiesRoute` joins the union in `src/application/routes.ts`, which also sets the start route.
 
 Mutation testing covers `src/domain` and `src/application`; the slice's score is 100 %, keep it there. Run Stryker on the module's files only (see [testing.md](testing.md#mutation-testing)).
 
-## 3. Infrastructure: the Layer
+## 3. Composition: services and adapters
 
-Folder `src/infrastructure/obsidian/communities/`. A feature adds no vault adapter: notes go through the notes module's `NoteStore`. Its `index.ts` holds `communitiesLayer`, the module's services over the shell's and the notes module's. `appLayer` (`src/infrastructure/obsidian/app-layer.ts`) builds it on `notesLayer`:
+A feature adds no vault adapter: notes go through the notes module's `NoteStore`, so `communities` has no infrastructure folder. Its application service joins the one service graph, `appServicesLayer` (`src/application/app-services-layer.ts`), on the notes module's services:
 
 ```ts
-shellLayer(plugin, options, communitiesLayer.pipe(Layer.provideMerge(notesLayer(plugin, appNoteTypes))));
+const features = communitySelectionLayer.pipe(Layer.provideMerge(notes));
+return adapters.hostEvents.pipe(Layer.provideMerge(features));
 ```
 
-Test: `tests/dom/infrastructure/runtime.test.ts` runs `createCommunity` against the Obsidian adapters on the double. `tests/support/runtime.ts` and `harness/layers.ts` compose the same Layers over the in-memory adapters (`src/infrastructure/memory/`, never imported by `src/`).
+- **A new application service** is one line there, built on what it needs; nothing else changes. The plugin, the harness and the tests get it at once.
+- **A new port** is a field of `AppAdapters` in the same file, merged into the graph where its service needs it, plus one adapter in each host: Obsidian's in the module's folder of `src/infrastructure/obsidian/<module>/`, spread into `appLayer` (`src/infrastructure/obsidian/app-layer.ts`, as `shellAdapters` and `notesAdapters` are); the harness's in `harness/layers.ts`; the tests' in `tests/support/adapters.ts` (`testAdapters`, in-memory adapters from `src/infrastructure/memory/`, never imported by `src/`). Typecheck fails at each until it supplies the field.
+
+Test: `tests/unit/application/app-services-layer.test.ts` (the graph's order, the note types, the language, the log level); `tests/dom/infrastructure/runtime.test.ts` runs `createCommunity` against the Obsidian adapters on the double.
 
 ## 4. Presentation: screen, form, switch
 

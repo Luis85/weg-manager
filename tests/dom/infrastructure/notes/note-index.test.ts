@@ -10,7 +10,7 @@ import {
   unindexedSnapshot,
   type NoteSnapshot,
 } from "../../../../src/application/notes";
-import { communitiesLayer } from "../../../../src/infrastructure/obsidian/communities";
+import { appServicesLayer } from "../../../../src/application/app-services-layer";
 import { useStream } from "../../../../src/presentation/shell";
 import { host } from "../../../support/composable";
 import { FULL, testItem } from "../../../support/notes/test-note-type";
@@ -19,8 +19,8 @@ vi.mock("obsidian", () => import("@test/obsidian"));
 
 const { ManagedRuntime } = await import("effect");
 const { Plugin, createTestPlugin, stringifyYaml } = await import("@test/obsidian");
-const { shellLayer } = await import("../../../../src/infrastructure/obsidian/shell");
-const { notesLayer } = await import("../../../../src/infrastructure/obsidian/notes");
+const { shellAdapters } = await import("../../../../src/infrastructure/obsidian/shell");
+const { notesAdapters } = await import("../../../../src/infrastructure/obsidian/notes");
 
 class Bare extends Plugin {}
 
@@ -41,17 +41,13 @@ afterEach(async () => {
 });
 
 /**
- * The plugin's own composition on the Obsidian double: the shell's Layers with the notes module's
- * built on them (the Obsidian `NoteStore` and the index for the app's types and the test type),
- * the communities module on those, host events last.
+ * The plugin's own composition on the Obsidian double: the application's services over the
+ * Obsidian adapters, with the index for the app's types and the test type, host events last.
  */
 const start = async (plugin: InstanceType<typeof Bare>) => {
-  const layer: Layer.Layer<AppServices> = shellLayer(
-    plugin as never,
-    { developmentMode: false, language: "de" },
-    communitiesLayer.pipe(
-      Layer.provideMerge(notesLayer(plugin as never, [...appNoteTypes, testItem])),
-    ),
+  const layer: Layer.Layer<AppServices> = appServicesLayer(
+    { ...shellAdapters(plugin as never), ...notesAdapters(plugin as never) },
+    { developmentMode: false, language: "de", noteTypes: [...appNoteTypes, testItem] },
   );
   const runtime: AppRuntime = ManagedRuntime.make(layer);
   runtimes.push(runtime);

@@ -107,7 +107,6 @@
         "allow": [
           "adapters/shell",
           "adapters/notes",
-          "adapters/communities",
           "infrastructure",
           "application",
           "application-composition",

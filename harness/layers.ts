@@ -1,19 +1,14 @@
 import { Effect, Layer } from "effect";
 import type { AppServices } from "../src/application/app-services";
-import { communitySelectionLayer } from "../src/application/communities";
+import { appServicesLayer } from "../src/application/app-services-layer";
 import { AppEvent } from "../src/application/events";
-import { appNoteTypes } from "../src/application/note-types";
-import { NoteStore, noteIndexLayer } from "../src/application/notes";
-import { messagesLayer } from "../src/application/messages";
+import { NoteStore } from "../src/application/notes";
 import {
   Clipboard,
   ClipboardError,
   EventBus,
-  EventBusLive,
   HostInfo,
-  LoggerLive,
   Notifier,
-  SettingsServiceLive,
   SettingsStore,
   VaultReadError,
   type Language,
@@ -149,39 +144,35 @@ export const harnessLayer = (
   });
   const write =
     options.writeClipboard ?? (() => Promise.reject(new Error("harness: no clipboard")));
-  const adapters = Layer.mergeAll(
-    settingsStore(),
-    notifier,
-    Layer.succeed(Clipboard)({
-      write: (text: string) =>
-        Effect.tryPromise({
-          try: () => write(text),
-          catch: (cause) => new ClipboardError({ cause }),
-        }),
-    }),
-    Layer.succeed(HostInfo)({ pluginVersion: "harness", apiVersion: "none", platform: "browser" }),
-    messagesLayer(options.language ?? "de"),
-    deviceStoreInMemory(),
-  );
-  const settings = SettingsServiceLive.pipe(Layer.provideMerge(adapters));
-  const logger = LoggerLive({ developmentMode: true }).pipe(Layer.provide(consoleSinkLayer));
-  const shell = Layer.mergeAll(
-    logger.pipe(Layer.provideMerge(settings)),
-    incidentsLayer,
-    EventBusLive,
-  );
   const memory = memoryNoteStore();
   seedFor(scenario, memory);
-  const store = failingOnce(scenario).pipe(Layer.provideMerge(memory.layer));
-  const notes = noteIndexLayer(appNoteTypes).pipe(
-    Layer.provideMerge(
-      Layer.merge(store, sequentialIdGenerator().layer).pipe(Layer.provideMerge(shell)),
-    ),
+  return appServicesLayer(
+    {
+      settingsStore: settingsStore(),
+      notifier,
+      clipboard: Layer.succeed(Clipboard)({
+        write: (text: string) =>
+          Effect.tryPromise({
+            try: () => write(text),
+            catch: (cause) => new ClipboardError({ cause }),
+          }),
+      }),
+      hostInfo: Layer.succeed(HostInfo)({
+        pluginVersion: "harness",
+        apiVersion: "none",
+        platform: "browser",
+      }),
+      deviceStore: deviceStoreInMemory(),
+      incidents: incidentsLayer,
+      logSink: consoleSinkLayer,
+      noteStore: failingOnce(scenario).pipe(Layer.provideMerge(memory.layer)),
+      idGenerator: sequentialIdGenerator().layer,
+      // As the host event adapter is in the plugin: the browser has no metadata cache to wait
+      // for, so the vault is ready at once and the index builds from the in-memory notes.
+      hostEvents: vaultReadyAtOnce,
+    },
+    { language: options.language ?? "de", developmentMode: true },
   );
-  const communities = communitySelectionLayer.pipe(Layer.provideMerge(notes));
-  // Built last, as the host event adapter is in the plugin: the browser has no metadata cache to
-  // wait for, so the vault is ready at once and the index builds from the in-memory notes.
-  return vaultReadyAtOnce.pipe(Layer.provideMerge(communities));
 };
 
 const vaultReadyAtOnce = Layer.effectDiscard(

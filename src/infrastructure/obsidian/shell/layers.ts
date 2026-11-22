@@ -1,17 +1,19 @@
 import { Effect, Layer } from "effect";
 import { Platform, apiVersion, type Plugin } from "obsidian";
-import { messagesLayer } from "../../../application/messages";
+import type { AppAdapters } from "../../../application/app-services-layer";
 import {
   ClipboardError,
   StorageError,
-  type Language,
   type UserMessage,
   Clipboard,
   HostInfo,
   Notifier,
   SettingsStore,
 } from "../../../application/shell";
+import { consoleSinkLayer } from "../../logging/console-sink";
+import { incidentsLayer } from "../../logging/incidents";
 import { deviceStoreLayer } from "./device-store";
+import { hostEventsLayer } from "./events";
 import { showMessage } from "./notices";
 
 export { NOTICE_DURATION } from "./notices";
@@ -57,16 +59,31 @@ const hostLayer = (plugin: Plugin) =>
     platform: platformName(),
   });
 
+/** The shell's ports that the Obsidian adapters serve. */
+export type ShellAdapters = Pick<
+  AppAdapters,
+  | "settingsStore"
+  | "notifier"
+  | "clipboard"
+  | "hostInfo"
+  | "deviceStore"
+  | "incidents"
+  | "logSink"
+  | "hostEvents"
+>;
+
 /**
- * The Obsidian adapters for every port that touches the host. `language` is the UI language of
- * this plugin load (`hostLanguage()`); it picks the `Messages` catalog.
+ * The Obsidian adapters of the shell's ports for one plugin load: `data.json`, notices, the
+ * clipboard, host info, the vault's local storage, incident ids, the console, and the host event
+ * adapter, which `appServicesLayer` builds last.
  */
-export const obsidianLayer = (plugin: Plugin, language: Language) =>
-  Layer.mergeAll(
-    storeLayer(plugin),
-    notifierLayer,
-    clipboardLayer,
-    hostLayer(plugin),
-    messagesLayer(language),
-    deviceStoreLayer(plugin),
-  );
+export const shellAdapters = (plugin: Plugin): ShellAdapters => ({
+  settingsStore: storeLayer(plugin),
+  notifier: notifierLayer,
+  clipboard: clipboardLayer,
+  hostInfo: hostLayer(plugin),
+  deviceStore: deviceStoreLayer(plugin),
+  incidents: incidentsLayer,
+  logSink: consoleSinkLayer,
+  hostEvents: hostEventsLayer(plugin),
+});

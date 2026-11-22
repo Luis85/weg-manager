@@ -1,96 +1,43 @@
-import { Effect, Layer, ManagedRuntime } from "effect";
+import { Effect, ManagedRuntime } from "effect";
 import type { AppRuntime } from "../../src/application/app-services";
+import { appServicesLayer } from "../../src/application/app-services-layer";
 import { AppEvent } from "../../src/application/events";
-import { communitySelectionLayer } from "../../src/application/communities";
 import { appNoteTypes } from "../../src/application/note-types";
-import { noteIndexLayer, type NoteTypeRegistry } from "../../src/application/notes";
+import type { NoteTypeRegistry } from "../../src/application/notes";
 import { EventBus } from "../../src/application/shell/event-bus";
-import { deviceStoreInMemory } from "../../src/infrastructure/memory/shell";
-import { memoryNoteStore, sequentialIdGenerator } from "../../src/infrastructure/memory/notes";
-import { InvalidSettingsError } from "../../src/application/shell/errors";
-import { messagesLayer } from "../../src/application/messages";
 import type { Language } from "../../src/application/shell/i18n/catalog";
-import type { DeviceValue } from "../../src/application/shell";
-import { SettingsService, SettingsServiceLive } from "../../src/application/shell/settings-service";
-import type { SettingsIssue } from "../../src/domain/shell/settings";
-import {
-  controllableRead,
-  inMemoryStore,
-  recordingClipboard,
-  recordingEventBus,
-  recordingLogger,
-  recordingNotifier,
-  sequentialIncidents,
-  testHostInfo,
-  type StoreOptions,
-} from "./layers";
+import { testAdapters, type TestAdaptersOptions } from "./adapters";
+import { controllableRead } from "./layers";
 
-export type TestRuntimeOptions = {
-  readonly store?: StoreOptions;
+export type TestRuntimeOptions = Omit<TestAdaptersOptions, "hostEvents"> & {
   /** What `source.read` gives: a number or a `VaultReadError`; 3 by default. */
   readonly source?: number | "fail";
-  /** Every settings update fails with these issues, as if the service rejected the value. */
-  readonly rejectUpdates?: readonly SettingsIssue[];
   /** The UI language; German by default, so the exact-text tests pin the product's language. */
   readonly language?: Language;
   /** Note types the index holds beside the plugin's own (`appNoteTypes`), e.g. test types. */
   readonly noteTypes?: NoteTypeRegistry;
-  /** What the device store holds at start, e.g. a stored community selection. */
-  readonly device?: Readonly<Record<string, DeviceValue>>;
 };
 
-const rejecting = (issues: readonly SettingsIssue[]) =>
-  Layer.effect(
-    SettingsService,
-    SettingsService.useSync((base) =>
-      SettingsService.of({
-        ...base,
-        update: () => Effect.fail(new InvalidSettingsError({ issues: [...issues] })),
-      }),
-    ),
-  );
-
-/** An `AppRuntime` built from the in-memory support layers, plus handles to inspect them. */
+/**
+ * An `AppRuntime` built as the plugin builds it (`appServicesLayer`), over the in-memory adapters
+ * (`testAdapters`), plus handles to inspect them. No host event adapter runs: `vaultReady()`
+ * publishes what it would once Obsidian's cache holds every note.
+ */
 export const testRuntime = (options: TestRuntimeOptions = {}) => {
-  const store = inMemoryStore(options.store);
-  const notifier = recordingNotifier();
+  const { adapters, ...handles } = testAdapters(options);
   const source = controllableRead(options.source ?? 3);
-  const logger = recordingLogger();
-  const clipboard = recordingClipboard();
-  const events = recordingEventBus();
-  const notes = memoryNoteStore();
-  const messages = messagesLayer(options.language ?? "de");
-  const live = SettingsServiceLive.pipe(
-    Layer.provide(Layer.mergeAll(store.layer, notifier.layer, messages)),
+  const runtime: AppRuntime = ManagedRuntime.make(
+    appServicesLayer(adapters, {
+      language: options.language ?? "de",
+      developmentMode: true,
+      noteTypes: [...appNoteTypes, ...(options.noteTypes ?? [])],
+    }),
   );
-  const settings =
-    options.rejectUpdates === undefined
-      ? live
-      : rejecting(options.rejectUpdates).pipe(Layer.provide(live));
-  const services = Layer.mergeAll(
-    settings,
-    notifier.layer,
-    logger.layer,
-    sequentialIncidents(),
-    clipboard.layer,
-    testHostInfo,
-    messages,
-    events.layer,
-    notes.layer.pipe(Layer.provide(events.layer)),
-    deviceStoreInMemory(options.device),
-    sequentialIdGenerator().layer,
-  );
-  const types = [...appNoteTypes, ...(options.noteTypes ?? [])];
-  const layer = communitySelectionLayer.pipe(
-    Layer.provideMerge(noteIndexLayer(types).pipe(Layer.provideMerge(services))),
-  );
-  const runtime: AppRuntime = ManagedRuntime.make(layer);
-  /** What the host event adapter publishes once Obsidian's cache holds every note. */
   const vaultReady = () =>
     runtime.runPromise(
       EventBus.use((bus) =>
         Effect.andThen(bus.publish(AppEvent.LayoutReady()), bus.publish(AppEvent.VaultReady())),
       ),
     );
-  return { runtime, store, notifier, source, logger, clipboard, events, notes, vaultReady };
+  return { runtime, source, vaultReady, ...handles };
 };

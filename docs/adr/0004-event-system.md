@@ -1,6 +1,6 @@
 # ADR 0004 · Typed event system
 
-- Status: accepted; `VaultReady` added and the module paths amended on 2026-11-21 (see the notes at the end)
+- Status: accepted; `VaultReady` added and the module paths amended on 2026-11-21; the build order amended on 22.11.2026 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -65,3 +65,7 @@ Decision:
 - **The adapter is built last by the shell's Layer.** `shellLayer(plugin, options, followers)` (`src/infrastructure/obsidian/shell/shell-layer.ts`) builds the other modules' services before the host event adapter, which `appLayer` calls. A subscriber that such a service starts sees `LayoutReady` and `VaultReady`.
 - **What consumers wait for.** The first consumer, the note index ([ADR 0007](0007-vault-data-access.md)), builds at `VaultReady`, drops every event before it and applies the later ones as idempotent re-reads by path. No consumer uses `LayoutReady` for anything but ordering. The rule is in [architecture](../engineering/architecture.md#events).
 - **Domain events.** No feature publishes one yet: the tracer slice follows the vault through the index.
+
+## Amendment 22.11.2026: one service graph builds the adapter last
+
+- `shellLayer(plugin, options, followers)` is gone. The order lives in one place, `appServicesLayer(adapters, options)` (`src/application/app-services-layer.ts`): the shell's services, the notes module's, the feature modules', and the host event adapter (`AppAdapters.hostEvents`) last. The plugin passes `hostEventsLayer(plugin)` through `shellAdapters`, the harness an adapter that publishes `LayoutReady` and `VaultReady` at once, the tests none (`vaultReady()` publishes them).

@@ -182,7 +182,7 @@ The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaug
 
 ## Manual checks in Obsidian
 
-The e2e suite covers lifecycle, settings, theme, pop-out, language, vault access and navigation. What still needs a person, in a personal vault with the pre-release (0.2.0, not built yet; see [releasing.md](releasing.md)):
+The e2e suite covers lifecycle, settings, theme, pop-out, language, vault access and navigation. What still needs a person, in a personal vault with the pre-release (0.2.0, installed through BRAT; see [releasing.md](releasing.md)). The owner checks items 3 and 5 with 0.2.0 on Windows (own theme in light and dark, Obsidian's zoom, the root folder in another case); items 2 and 4 have no tester yet (PBI-66):
 
 1. Run `npm run dev` with `OBSIDIAN_PLUGIN_DIR` set in `.env.local` and look at the view in your own vault, with your theme and community plugins.
 2. Use the view with keyboard only and with a screen reader.

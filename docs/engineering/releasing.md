@@ -22,7 +22,7 @@ Versions are bare `x.y.z`. Tags carry no `v`; `.npmrc` sets `tag-version-prefix=
 
 To stage a release locally: `npm run build && npm run release:package` writes `release/weg-manager/` and `release/THIRD-PARTY-NOTICES.txt`. It refuses a `dist/` that is not a fresh production build of the current `manifest.json`.
 
-The workflow has never run. A run started by hand that fails leaves nothing behind (the tag is created last, with the release): fix the cause on `main` and start it again with the same version. A run started by a tag that fails leaves the tag without a release: fix the cause on `main`, delete the tag locally and on GitHub, and start again (by hand with the same version, or with a new tag).
+The workflow first ran for 0.2.0, started by hand, and passed; the start by a pushed tag has not run yet. A run started by hand that fails leaves nothing behind (the tag is created last, with the release): fix the cause on `main` and start it again with the same version. A run started by a tag that fails leaves the tag without a release: fix the cause on `main`, delete the tag locally and on GitHub, and start again (by hand with the same version, or with a new tag).
 
 Raise `minAppVersion` in `manifest.json` before you bump whenever the plugin starts using a newer Obsidian API.
 

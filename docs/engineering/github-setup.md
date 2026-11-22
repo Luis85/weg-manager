@@ -12,7 +12,10 @@ The repository's CI runs on GitHub Actions (decided 2026-11-21, replacing the Az
 
 All logic lives in npm scripts. The YAML only installs Node from `.nvmrc` and calls them, so a local `npm run verify` and CI run the same gate. The exceptions are the release job's steps, which cannot call a script because that job has no checkout (the tag-on-main check, the pre-release flag), and the failure issue of the nightly run.
 
-`release.yml` and `nightly-mutation.yml` have never run, and the Actions runner is the only place they can. Both were checked with `actionlint` only. Expect to fix details on the first run; the first tag is the test.
+`release.yml` and `nightly-mutation.yml` can only run on the Actions runner. What has run so far (2026-11-22):
+
+- `release.yml`, started by hand with `version` 0.2.0: both jobs passed on the first run; the release has the four assets, is a pre-release, and the attestation step passed. The start by a pushed tag has not run yet.
+- `nightly-mutation.yml`: the first scheduled run (before the edge job existed) passed in 32 minutes. A run started by hand after the 0.2.0 version bump tested every mutant, because the lockfile is part of the cache key: the job `mutation-edge` passed in 39 minutes and saved its results; the job `mutation` was cut off by its 45-minute limit without a report, and no issue was opened, because a job cut off by its limit ends as "cancelled". Both are fixed: the limit is 120 minutes, and `report-failure` reads the jobs' results. Not shown yet: a second run that restores the first run's results, and the failure issue itself.
 
 ## Dependency and action updates
 

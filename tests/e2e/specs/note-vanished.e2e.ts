@@ -59,4 +59,58 @@ describe("a note deleted while Obsidian still lists it", function () {
     expect(outcome as Outcome<unknown>).toEqual({ ok: false, tag: "NoteNotFoundError" });
     expect(await pluginProblems()).toEqual([]);
   });
+
+  it("leaves a broken note deleted outside out of the adapter's unreadable notes", async function () {
+    // As above, the vault and its metadata cache are held at what they show in the watcher's
+    // window: the deleted file listed, with its broken block. Obsidian still keeps the file's old
+    // text then (`cachedRead`, `VANISHED_FACTS`), so only a read of the disk sees it is gone.
+    const outcome = await browser.executeObsidian(async ({ app, plugins }, folder) => {
+      const api = (plugins as unknown as { noteStoreProbe?: { api?: unknown } }).noteStoreProbe
+        ?.api as Probe["api"];
+      if (api === undefined) throw new Error("the probe plugin is not loaded");
+      type NodeRequire = (name: string) => {
+        writeFileSync(path: string, text: string): void;
+        unlinkSync(path: string): void;
+        mkdirSync(path: string): void;
+        join(...parts: string[]): string;
+      };
+      const nodeRequire = (window as unknown as { require: NodeRequire }).require;
+      const basePath = (app.vault.adapter as unknown as { basePath: string }).basePath;
+      const onDisk = (path: string) => nodeRequire("path").join(basePath, path);
+      const broken = "---\nschema: [unclosed\n---\n";
+      const indexed = (paths: readonly string[]) =>
+        new Promise<TFile[]>((done) => {
+          const seen = new Map<string, TFile>();
+          const ref = app.metadataCache.on("changed", (changed) => {
+            if (!paths.includes(changed.path)) return;
+            seen.set(changed.path, changed);
+            if (seen.size < paths.length) return;
+            app.metadataCache.offref(ref);
+            done(paths.map((path) => seen.get(path) as TFile));
+          });
+        });
+      const kept = `${folder}/Kaputt.md`;
+      const gone = `${folder}/Weg.md`;
+      const both = indexed([kept, gone]);
+      nodeRequire("fs").mkdirSync(onDisk(folder));
+      nodeRequire("fs").writeFileSync(onDisk(kept), broken);
+      nodeRequire("fs").writeFileSync(onDisk(gone), broken);
+      const [, file] = await both;
+      if (file === undefined) throw new Error("no file");
+      const cache = app.metadataCache.getFileCache(file);
+      nodeRequire("fs").unlinkSync(onDisk(gone));
+      const listed = app.vault.getMarkdownFiles.bind(app.vault);
+      const cached = app.metadataCache.getFileCache.bind(app.metadataCache);
+      app.vault.getMarkdownFiles = () => [...listed().filter((other) => other.path !== gone), file];
+      app.metadataCache.getFileCache = (wanted) => (wanted === file ? cache : cached(wanted));
+      try {
+        return await api.unreadable(folder);
+      } finally {
+        delete (app.vault as unknown as { getMarkdownFiles?: unknown }).getMarkdownFiles;
+        delete (app.metadataCache as unknown as { getFileCache?: unknown }).getFileCache;
+      }
+    }, "Verschwunden");
+    expect(outcome as Outcome<unknown>).toEqual({ ok: true, value: ["Verschwunden/Kaputt.md"] });
+    expect(await pluginProblems()).toEqual([]);
+  });
 });

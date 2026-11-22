@@ -51,7 +51,9 @@ export class FileManager implements Uses<
     fn(frontmatter);
     const body = split === undefined ? text : split.body;
     const yaml = Object.keys(frontmatter).length === 0 ? "" : stringifyYaml(frontmatter);
-    this.vault.write(file, yaml === "" ? body : `---\n${yaml}---\n${body}`);
+    const next = yaml === "" ? body : `---\n${yaml}---\n${body}`;
+    this.vault.write(file, next);
+    this.vault.keep(file, next);
   }
 
   async renameFile(file: TAbstractFile, newPath: string): Promise<void> {

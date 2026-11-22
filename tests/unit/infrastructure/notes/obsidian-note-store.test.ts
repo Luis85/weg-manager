@@ -295,7 +295,7 @@ describe("Obsidian NoteStore adapter", () => {
       const app = new App();
       app.vault.seedFile("F/Kommentar.md", "---\n# c\n---\n");
       yield* Effect.promise(() => app.metadataCache.whenIndexed());
-      app.vault.cachedRead = () => Promise.reject(new Error("EACCES: permission denied"));
+      app.vault.read = () => Promise.reject(new Error("EACCES: permission denied"));
       const error = yield* Effect.flip(run(app, (notes) => notes.unreadable("F")));
       assert.strictEqual(error._tag, "VaultReadError");
     }),
@@ -303,6 +303,8 @@ describe("Obsidian NoteStore adapter", () => {
 
   // Deleted outside while Obsidian still lists it: the note is gone, not unreadable, and the
   // other candidates are still checked (a failed read would leave the index marked as failed).
+  // The double keeps the indexed text for `cachedRead`, as Obsidian does, so this holds only
+  // because `unreadable` reads the disk (`tests/e2e/specs/note-vanished.e2e.ts` in the app).
   it.effect("leaves a candidate out of unreadable when it is gone from the disk", () =>
     Effect.gen(function* () {
       const app = new App();

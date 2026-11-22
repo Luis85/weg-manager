@@ -1,5 +1,7 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { eventually } from "../support/wait";
+import { preloadSurface } from "../support/preload";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -7,6 +9,7 @@ const { DEFAULT_TEST_LANGUAGE, createTestPlugin, recordedNotices, settingsIn, se
   await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../src/main");
 const { SHELL_VIEW_TYPE, reportUnloadFailure } = await import("../../src/bootstrap");
+await preloadSurface();
 
 const settle = async () => {
   await flushPromises();
@@ -28,7 +31,7 @@ const openTab = async (registry: ReturnType<typeof createTestPlugin>["registry"]
   const [tab] = registry.settingTabs;
   if (tab === undefined) throw new Error("no settings tab registered");
   tab.display();
-  await vi.waitFor(() => expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(1));
+  expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(1);
   const rows = settingsIn(tab.containerEl);
   const control = <T>(index: number): T => {
     const component = rows[index]?.components[0];
@@ -124,7 +127,7 @@ describe("UI language follows Obsidian", () => {
     await settle();
     const root = document.querySelector(".weg-manager-root");
     if (root === null) throw new Error("no plugin root");
-    await vi.waitFor(() =>
+    await eventually(() =>
       expect(root.querySelector("[data-testid=communities-screen]")).not.toBeNull(),
     );
     expect(root.querySelector("[data-testid=communities-screen] h2")?.textContent.trim()).toBe(

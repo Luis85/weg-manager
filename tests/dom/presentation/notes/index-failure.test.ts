@@ -1,5 +1,6 @@
 import { flushPromises } from "@vue/test-utils";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { eventually } from "../../../support/wait";
 import { defineComponent, h } from "vue";
 import {
   noteChanges,
@@ -70,7 +71,7 @@ describe("a view that follows the note index", () => {
     await flushPromises();
     expect(root.textContent).toBe("…");
     await test.vaultReady();
-    await vi.waitFor(() => {
+    await eventually(() => {
       expect(root.querySelector("[role=alert]")?.textContent).toContain(
         de.notes.errors.indexRead.title,
       );
@@ -81,7 +82,7 @@ describe("a view that follows the note index", () => {
       (button) => button.textContent === "Erneut versuchen",
     );
     retry?.click();
-    await vi.waitFor(() => {
+    await eventually(() => {
       expect(root.querySelector("li")?.textContent).toBe("WEG Manager/A.md");
     });
     expect(root.querySelector("[role=alert]")).toBeNull();

@@ -3,6 +3,11 @@
 # reports/stryker-incremental.json. A by-hand run can ask for every mutant (`full`). A failed run
 # opens, or adds a comment to, the one issue "Nightly mutation run failed", so that a red night
 # reaches somebody. Never run so far; see docs/engineering/github-setup.md.
+#
+# A second job, `mutation-edge`, mutates the edge layers the gated run skips (Obsidian adapters,
+# presentation `.ts` files, bootstrap) with its own config, cache and report. It has no threshold:
+# its score is read in the uploaded report, never enforced. It fails only when Stryker or the tests
+# do, and then reports through the same issue.
 name: Nightly mutation
 
 on:
@@ -59,8 +64,46 @@ jobs:
           path: reports/mutation/
           if-no-files-found: ignore
 
+  mutation-edge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Same cache scheme as the gated job, under its own key and file.
+      - name: Restore the incremental results
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: reports/stryker-edge-incremental.json
+          key: stryker-edge-${{ runner.os }}-${{ hashFiles('configs/stryker.edge.config.mjs', 'configs/vitest.stryker.edge.config.ts', 'package-lock.json') }}-${{ github.run_id }}
+          restore-keys: |
+            stryker-edge-${{ runner.os }}-${{ hashFiles('configs/stryker.edge.config.mjs', 'configs/vitest.stryker.edge.config.ts', 'package-lock.json') }}-
+      - name: Mutation testing of the edge layers
+        env:
+          FORCE: ${{ inputs.full && '--force' || '' }}
+        run: npm run test:mutation:edge -- $FORCE
+      - name: Save the incremental results
+        if: ${{ !cancelled() }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: reports/stryker-edge-incremental.json
+          key: stryker-edge-${{ runner.os }}-${{ hashFiles('configs/stryker.edge.config.mjs', 'configs/vitest.stryker.edge.config.ts', 'package-lock.json') }}-${{ github.run_id }}
+      - name: Upload mutation report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: mutation-edge-report
+          path: reports/mutation-edge/
+          if-no-files-found: ignore
+
   report-failure:
-    needs: mutation
+    needs: [mutation, mutation-edge]
     if: ${{ failure() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5

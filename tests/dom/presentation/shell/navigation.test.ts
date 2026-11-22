@@ -1,9 +1,17 @@
-import { flushPromises } from "@vue/test-utils";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { flushPromises, mount } from "@vue/test-utils";
+import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import { memoryNavigation } from "../../../../src/presentation/shell/host";
+import { useRoute } from "../../../../src/presentation/shell";
 import { runtimes } from "../../../support/composable";
+import { preloadSurface } from "../../../support/preload";
 import { mountApp, mountTest, testSurface, type TestRoute } from "../../../support/surface";
+import { eventually } from "../../../support/wait";
+
+// "starts on the community settings" waits for the app surface's lazily loaded screen and context.
+// Their first import (the whole communities module) is what once took it past a second on a loaded
+// machine; paying it at file load leaves the wait to cover only rendering.
+await preloadSurface();
 
 const { make, disposeAll } = runtimes();
 const closes: (() => void)[] = [];
@@ -136,6 +144,48 @@ describe("navigation in a surface", () => {
     await settle();
     expect(shown(first.root)).toBe("Item screen");
     expect(shown(second.root)).toBe("Second screen");
+  });
+
+  it("loads the screen of a route name once, however often it is visited", async () => {
+    const { runtime } = make();
+    const base = testSurface();
+    const loads: string[] = [];
+    const surface = testSurface({
+      screen: (route) => {
+        const load = base.screen(route);
+        return load === undefined
+          ? undefined
+          : () => {
+              loads.push(route.name);
+              return load();
+            };
+      },
+    });
+    const navigation = memoryNavigation(surface);
+    closes.push(mountTest(newRoot(), runtime, surface, navigation).close);
+    await settle();
+    const root = document.body;
+    const visit = async (route: TestRoute) => {
+      navigation.navigate(route);
+      await settle();
+    };
+    await visit({ name: "second" });
+    await visit({ name: "first" });
+    await visit({ name: "item", id: "1" });
+    await visit({ name: "item", id: "2" });
+    await visit({ name: "first" });
+    expect(shown(root)).toBe("First screen");
+    expect(loads.toSorted()).toEqual(["first", "item", "second"]);
+  });
+
+  it("refuses a component that asks for the route outside a mounted surface, naming the cause", () => {
+    const Lost = defineComponent({
+      setup() {
+        useRoute();
+        return () => h("p");
+      },
+    });
+    expect(() => mount(Lost)).toThrow("useRouting() outside a mounted surface");
   });
 
   it("stops following the view when the surface closes", async () => {
@@ -280,11 +330,15 @@ describe("the app frame", () => {
     await settle();
     expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Gemeinschaften"]);
     expect(navButtons(root)[0]?.getAttribute("aria-current")).toBe("page");
-    await vi.waitFor(() =>
+    await eventually(() =>
       expect(root.querySelector("section [data-testid=communities-screen]")).not.toBeNull(),
     );
-    await vi.waitFor(() =>
+    await eventually(() =>
       expect(root.querySelector("nav [data-testid=community-switch]")).not.toBeNull(),
+    );
+    // The entry carries its bundled icon, drawn (an empty svg is a missing icon).
+    await eventually(() =>
+      expect(navButtons(root)[0]?.querySelector("svg")?.innerHTML ?? "").not.toBe(""),
     );
   });
 });

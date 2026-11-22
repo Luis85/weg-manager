@@ -16,8 +16,8 @@ const assertNotices = (file) => {
 /**
  * Stages `<outDir>/<plugin-id>/` with exactly the files Obsidian loads, and the third-party notices
  * file beside that folder (`<outDir>/THIRD-PARTY-NOTICES.txt`), so that the folder a user copies
- * into a vault stays the three plugin files. Before it copies anything it re-runs the `check:dist` invariants on `distDir` (a stale or development build must not be
- * packaged) and checks that `<rootDir>/versions.json` has the manifest version, mapped to its
+ * into a vault stays the three plugin files. Before it copies anything it re-runs the `check:dist`
+ * invariants on `distDir` (a stale or development build must not be packaged) and checks that `<rootDir>/versions.json` has the manifest version, mapped to its
  * `minAppVersion`. A tag, when given, must equal the manifest version (bare x.y.z, no `v`).
  * @param {{ distDir: string; outDir: string; rootDir: string; tag?: string | undefined }} options
  * @returns {{ folder: string; notices: string; version: string }}

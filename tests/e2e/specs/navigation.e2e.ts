@@ -6,6 +6,8 @@ import { de } from "../texts";
 const WORKSPACE_FILE = ".obsidian/workspace.json";
 /** The start route: the community settings. */
 const COMMUNITIES = { name: "settings", section: "communities" };
+/** A valid route other than the start route. */
+const OTHER = { name: "settings", section: "data-issues" };
 /** The view the history test opens with a test-only route (see there). */
 const PROBE = "[data-e2e=probe]";
 
@@ -59,6 +61,10 @@ describe("navigation and view state in Obsidian", function () {
 
   it("falls back to the start route for a broken or unknown state", async function () {
     for (const state of [{ route: { name: "gone" } }, { route: 42 }, { route: null }, {}]) {
+      // From another route each time, so a state that is ignored (the view staying where it was)
+      // would show as the wrong route instead of passing by chance.
+      await setViewState({ route: OTHER });
+      expect(await viewState()).toMatchObject({ state: { route: OTHER } });
       await setViewState(state);
       expect(await viewState()).toMatchObject({ state: { route: COMMUNITIES } });
     }

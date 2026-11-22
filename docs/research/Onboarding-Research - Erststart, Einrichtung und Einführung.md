@@ -178,6 +178,9 @@ Installiert ist `@nuxt/ui` 4.13.0 mit `reka-ui` 2.11.0 und `@vueuse/core` ^14.4.
 
 ## 6 Konsequenzen für WEG Manager
 
+> [!note] Entscheidung vom 22.11.2026
+> Die Festlegung weicht in einigen Punkten von den folgenden Empfehlungen ab: Es gibt keine Tour, auch nicht als Angebot, sondern nur Hinweise im Kontext je Gerät. Der Assistent hat zwei Schritte ohne Willkommensschritt. Das Kürzel wird änderbar, und Eingaben bleiben bis zum Neustart von Obsidian erhalten. Gültig ist [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]].
+
 ### 6.1 Ansicht beim Erststart öffnen
 
 - [A] **Einmal öffnen, in `onUserEnable()`.** Die Lage öffnet sich in einem neuen Tab, ohne die Notiz des Menschen zu ersetzen. Weil noch keine Gemeinschaft da ist, zeigt sie die Route „Einrichtung“. Bei jedem weiteren Start öffnet das Plugin nichts selbst: kein Modal, kein Notice. Obsidian stellt die View aus dem Workspace wieder her, wenn sie offen war (1.2).

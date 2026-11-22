@@ -14,7 +14,7 @@ requirements:
   - "[[PBI-25 - Nächste Wochenarbeit vorbereiten]]"
   - "[[PBI-33 - Wochenarbeit auf dem Handy abschließen]]"
   - "[[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]"
-  - "[[PBI-64 - Kurze Einführung durch das Plugin erhalten]]"
+  - "[[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]"
 entities:
   - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
   - "[[docs/design/entities/ENT-04 - Punkt]]"
@@ -73,7 +73,7 @@ Segment-Navigation oben (Lage · Woche · Punkte · Post), Gemeinschaftsfilter a
 | Zustand | Darstellung |
 | --- | --- |
 | Erststart ohne Daten | Ohne Gemeinschaft zeigt die Plugin-Ansicht statt der Lage die Einrichtung ([[VIEW-09 - Einrichtung]]). |
-| Direkt nach der Einrichtung | Karte „Erste Schritte“ oben und Angebot der Einführung ([[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]], [[PBI-64 - Kurze Einführung durch das Plugin erhalten]]) |
+| Direkt nach der Einrichtung | Karte „Erste Schritte“ oben, „Ersten Punkt erfassen“ hervorgehoben; leere Bereiche sagen, dass sie leer sind, wie sie sich füllen, und bieten die Aktion an. Kein Modal, keine Tour ([[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]). Beim ersten Benutzen eines Bereichs ein einzelner Hinweis ([[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]). |
 | Nichts neu | „Seit 9.11. nichts Neues bekannt“ + Hinweis auf ungeprüfte Kanäle, falls vorhanden |
 | Datenproblem | roter Hinweis oben mit „Klären“ (DF-23) |
 | Dunkel | Token-Paar, siehe [[UI-Design - Leitlinien und Reviewumfang]] |

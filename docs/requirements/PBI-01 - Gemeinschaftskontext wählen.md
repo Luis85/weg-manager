@@ -50,7 +50,7 @@ Als Beirat möchte ich zwischen WEG und Tiefgarage wechseln und Punkte eindeutig
 1. Mindestens zwei Gemeinschaften sind nutzbar; vor Bearbeitung und Ausgabe ist der Kontext sichtbar.
 2. Gleich benannte Punkte beider Gemeinschaften bleiben verschieden; Querverweise führen keine Daten zusammen.
 3. Jeder Punkt, jede Karte und jeder Entwurf gehört genau einer Gemeinschaft.
-4. Jede Gemeinschaft hat Name, festes Kürzel und unterscheidbare Farbe; die Art stammt aus einer editierbaren Liste mit eigener Einheitenbezeichnung (z. B. Einheiten, Stellplätze). Aus der Art werden weder Rechtsform noch Befugnisse abgeleitet.
+4. Jede Gemeinschaft hat Name, eindeutiges Kürzel und unterscheidbare Farbe; die Art stammt aus einer editierbaren Liste mit eigener Einheitenbezeichnung (z. B. Einheiten, Stellplätze). Aus der Art werden weder Rechtsform noch Befugnisse abgeleitet.
 
 ## Herkunft und Regeln
 
@@ -78,3 +78,4 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
   - **Art und Einheitenbezeichnung (Kriterium 4):** einfache Textfelder der Gemeinschaftsnotiz. Das Formular schlägt die eingebauten Paare (WEG mit Einheiten, Tiefgarage mit Stellplätzen) und bereits verwendete Paare vor. Die Farbe ist der Name einer Farbe aus der geprüften Palette; eine bereits vergebene Farbe ist gesperrt. Der Dateiname der Notiz ist der Name der Gemeinschaft, bei Kollision mit Zusatz ` (2)`.
   - **Umsetzung:** [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]].
 - 21.11.2026: Der freigegebene Schnitt ist mit [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]] ausgeliefert: Kriterium 4 und der sichtbare Kontext aus Kriterium 1. Die Kriterien 2 und 3 bleiben offen, bis es Punkte gibt.
+- 22.11.2026: Der Produktverantwortliche revidiert die Festlegung zum Kürzel: Es wird nach dem Anlegen änderbar, damit niemand in der Einrichtung etwas Unumkehrbares entscheidet. Umsetzung: [[PBI-65 - Kürzel einer Gemeinschaft nachträglich ändern]]; Begründung: [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]].

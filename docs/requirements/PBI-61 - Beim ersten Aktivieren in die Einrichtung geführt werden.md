@@ -5,7 +5,7 @@ order: 90000
 actors:
   - "[[ACT-01-Beirat]]"
   - "[[ACT-05-Obsidian]]"
-release: ""
+release: "[[MVP - Beirat Support]]"
 status: ""
 started: ""
 finished: ""
@@ -22,7 +22,7 @@ business-rules:
   - "[[docs/business-rules/DF-22 - Notizen als maßgeblicher Datenbestand]]"
 decisions:
   - "[[docs/decisions/K-14 - Markdown und Frontmatter als offene Datengrundlage]]"
-  - "[[docs/decisions/K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und kurze Tour]]"
+  - "[[docs/decisions/K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]"
 hypotheses: []
 pages:
   - "[[docs/design/sitemap/VIEW-09 - Einrichtung]]"
@@ -36,7 +36,7 @@ triage: ""
 
 # PBI-61 · Beim ersten Aktivieren in die Einrichtung geführt werden
 
-**Planungsstand:** Konzeptentwurf · **Umfang:** offen, siehe [[F-25 - Onboarding und Einführung]]
+**Planungsstand:** Konzeptentwurf · **Umfang:** MVP, siehe [[F-25 - Onboarding und Einführung]]
 
 ## User Story
 
@@ -58,6 +58,6 @@ Heute öffnet sich die Plugin-Ansicht nur über das Symbol in der Seitenleiste o
 
 ## Herkunft und Bezüge
 
-Schritt 2 des Ablaufs aus [[F-25 - Onboarding und Einführung]]; Abwägung in [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und kurze Tour]]. Plattformbefunde zu `onUserEnable` und `onLayoutReady`: [[Onboarding-Research - Erststart, Einrichtung und Einführung]], Abschnitt 1. Routen nach `docs/adr/0008-navigation-and-view-state.md`.
+Schritt 2 des Ablaufs aus [[F-25 - Onboarding und Einführung]]; Abwägung in [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]. Plattformbefunde zu `onUserEnable` und `onLayoutReady`: [[Onboarding-Research - Erststart, Einrichtung und Einführung]], Abschnitt 1. Routen nach `docs/adr/0008-navigation-and-view-state.md`.
 
 ## Kommentare

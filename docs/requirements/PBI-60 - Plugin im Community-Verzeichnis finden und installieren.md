@@ -21,7 +21,7 @@ business-rules: []
 decisions:
   - "[[docs/decisions/K-11 - Lokalen Obsidian-Kern ohne Konto und KI-Pflicht anbieten]]"
   - "[[docs/decisions/K-12 - Veröffentlichen vor dem Produktpilot]]"
-  - "[[docs/decisions/K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und kurze Tour]]"
+  - "[[docs/decisions/K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]"
 hypotheses:
   - "[[docs/hypothesis/H-13 - Einrichtung führt in wenigen Minuten zum ersten Punkt]]"
 pages: []
@@ -33,7 +33,7 @@ triage: ""
 
 # PBI-60 · Plugin im Community-Verzeichnis finden und installieren
 
-**Planungsstand:** Konzeptentwurf · **Umfang:** offen, siehe [[F-25 - Onboarding und Einführung]]
+**Planungsstand:** Konzeptentwurf · **Umfang:** nach dem MVP, siehe [[F-25 - Onboarding und Einführung]]
 
 ## User Story
 
@@ -57,3 +57,5 @@ Obsidian zeigt Community-Plugins erst, wenn der eingeschränkte Modus ausgeschal
 Schritt 1 des Ablaufs aus [[F-25 - Onboarding und Einführung]]. Plattformbefunde: [[Onboarding-Research - Erststart, Einrichtung und Einführung]], Abschnitt 1. Abnahme AT-B14 im [[02-MVP-PRD]].
 
 ## Kommentare
+
+- 22.11.2026: Der Produktverantwortliche ordnet den Verzeichniseintrag nach dem MVP ein ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]], O-19a). Für den Pilot vor der Veröffentlichung gilt [[K-12 - Veröffentlichen vor dem Produktpilot]]; die Abnahme AT-B14 ist mit dieser Reihenfolge abzugleichen.

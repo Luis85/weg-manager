@@ -82,3 +82,4 @@ Das Plugin hat die technischen Grundlagen (Notizspeicher, Codec, Index, Navigati
   - **Formular:** seitliches Blatt; Löschen fragt in einem Dialog nach und legt die Notiz in Obsidians Papierkorb.
   - **Demo gelöscht:** Begrüßung, Befehl, Dateianzahl und Info-Dialog sind entfernt; ein alter Schlüssel `greeting` in `data.json` wird ohne Meldung übergangen.
   - **Offen:** Tastatur- und Screenreader-Bedienung hat noch kein Mensch geprüft; das gehört zur manuellen Prüfung mit der Vorabversion.
+- 22.11.2026: Kriterium 3 („nach dem Anlegen nicht änderbar“) wird durch [[PBI-65 - Kürzel einer Gemeinschaft nachträglich ändern]] abgelöst.

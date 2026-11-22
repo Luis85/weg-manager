@@ -51,7 +51,7 @@ Basis Nuxt UI ([[K-13 - Nuxt UI als Frontend-Komponentenbasis]]), über Theme-Ko
 | **FirstRunHint** | Alert (info) | Schritt, Text | sichtbar, gesehen | einmal je Wochenschritt; „Verstanden“, „Keine Hinweise“; zurücksetzbar in Einstellungen › Hilfe |
 | **EventModal** | Modal / Drawer | Eintrag, Punkt | — | Art, Datum, Quelle, Inhalt; „Punktakte öffnen“ außerhalb der Akte |
 | **SettingsNav** | NavigationMenu (vertikal) | Bereiche | aktiv | mobil als umbrechende Chips |
-| **CommunityForm** | Form + Slideover/Drawer | neu/bearbeiten | gültig/ungültig | Kürzel 2–3 Zeichen, nach Anlage fest; Farbe aus Palette, vergebene gesperrt |
+| **CommunityForm** | Form + Slideover/Drawer | neu/bearbeiten | gültig/ungültig | Kürzel 2–5 Zeichen, eindeutig und änderbar ([[PBI-65 - Kürzel einer Gemeinschaft nachträglich ändern]]); Farbe aus Palette, vergebene gesperrt |
 | **Toast** | Toast | Text | — | nur Bestätigung kurzlebiger Erfolge; Fehler persistent als Alert |
 | **Alert** | Alert | warn / bad | — | Datenproblem, Speicherfehler, Datenlücke |
 

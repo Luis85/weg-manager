@@ -26,7 +26,7 @@ Abbildung der geplanten internen Abnahmen AT-B01–18 (ohne das entfallene AT-B1
 | AT-B11 | Interne Bewertung, privates Original, ungeprüfte Anlage | Postausgang, Ausgabe | ausgeschlossene Bausteine sichtbar gesperrt; keine transitive Mitnahme | ~ |
 | AT-B12 | Offline, externe Dateiänderung, doppelte ID, Abbruch, Sichern | alle, Einstellungen | Alerts statt Datenverlust; Eingaben bleiben; Plugin aus → Akten lesbar | – |
 | AT-B13 | Nach dem MVP: Komplette Wochenreise mobil mit Unterbrechung | Woche mobil | alle Eingaben mobil; Pausieren/Fortsetzen; nichts unter Host-Navigation verdeckt | ✓ |
-| AT-B14 | Öffentliche Installation in frischem Vault | Erststart | Einrichtung in 3 Schritten ohne Entwicklerwerkzeuge; danach Einführungstour, überspringbar und neu startbar | ~ (Tour) |
+| AT-B14 | Öffentliche Installation in frischem Vault | Erststart ([[VIEW-09 - Einrichtung]]) | Einrichtung in 2 Schritten ohne Entwicklerwerkzeuge; danach Lage mit „Erste Schritte“, keine Tour ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]) | ~ (Erste Schritte) |
 | AT-B15 | Vorgang ohne Plugin und Obsidian lesen und ändern | alle (Dateivertrag), Datenprobleme | Akten als lesbare Markdown-Notizen; externe gültige Änderung beim nächsten Start übernommen; kein Export nötig | – |
 | AT-B16 | Agent ändert Notizen bei geschlossenem und offenem Plugin | Datenprobleme, Lage, Punktakte | Alert „Geändert außerhalb des Plugins“ mit Vergleichen; ungültiges YAML/neueres Schema sichtbar, nichts still überschrieben | – (Mockup Konflikt) |
 | AT-B18 | Nativer AI-Chat über das Nutzerabo (Desktop) | Chatansicht | Abo-Modus sichtbar, Kontextwahl, Toolbestätigung, Abbruch/Limit, Vorschlag getrennt von ausgeführter Änderung | – (nicht gestaltet) |

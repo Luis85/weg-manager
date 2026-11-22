@@ -4,7 +4,7 @@ parent: "[[F-25 - Onboarding und Einführung]]"
 order: 92000
 actors:
   - "[[ACT-01-Beirat]]"
-release: ""
+release: "[[MVP - Beirat Support]]"
 status: ""
 started: ""
 finished: ""
@@ -22,7 +22,7 @@ entities:
 business-rules:
   - "[[docs/business-rules/DF-22 - Notizen als maßgeblicher Datenbestand]]"
 decisions:
-  - "[[docs/decisions/K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und kurze Tour]]"
+  - "[[docs/decisions/K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]"
 hypotheses:
   - "[[docs/hypothesis/H-13 - Einrichtung führt in wenigen Minuten zum ersten Punkt]]"
 pages:
@@ -37,7 +37,7 @@ triage: ""
 
 # PBI-63 · Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen
 
-**Planungsstand:** Konzeptentwurf · **Umfang:** offen, siehe [[F-25 - Onboarding und Einführung]]
+**Planungsstand:** Konzeptentwurf · **Umfang:** MVP, siehe [[F-25 - Onboarding und Einführung]]
 
 ## User Story
 
@@ -49,15 +49,15 @@ Die Lage ([[VIEW-01 - Lage]]) ist das Dashboard des Plugins; sie entsteht mit [[
 
 ## Akzeptanzkriterien
 
-1. Nach „Anlegen“ in der Einrichtung wechselt die Ansicht auf die Lage. Die erste angelegte Gemeinschaft ist ausgewählt; der Gemeinschaftswechsel zeigt alle.
-2. Die Lage zeigt oben die Karte „Erste Schritte“ mit höchstens fünf Einträgen, etwa: Gemeinschaften angelegt (erledigt), ersten Punkt erfassen, Verwaltung als Kontakt anlegen, Register übernehmen, Einführung ansehen. Einträge zu Funktionen, die es noch nicht gibt, fehlen.
-3. Jeder Eintrag führt mit einem Klick an die passende Stelle. Ob er erledigt ist, ergibt sich aus dem Vault (etwa: Es gibt einen Punkt), nicht aus einem Haken des Nutzers.
-4. Sind alle Einträge erledigt, wird die Karte zu einer kurzen Bestätigung und lässt sich schließen. Der Nutzer kann sie auch vorher ausblenden und in den Plugin-Einstellungen von Obsidian wieder einblenden.
-5. Leere Bereiche der Lage erklären in einem Satz, was dort erscheinen wird, und bieten die passende Aktion an.
-6. Die Lage startet beim ersten Besuch nach der Einrichtung das Angebot der Einführung ([[PBI-64 - Kurze Einführung durch das Plugin erhalten]]).
+1. Nach dem Anlegen in der Einrichtung wechselt die Ansicht auf die Lage. Die erste angelegte Gemeinschaft ist ausgewählt; der Gemeinschaftswechsel zeigt alle.
+2. Die Lage zeigt oben die Karte „Erste Schritte“ mit höchstens vier echten Aufgaben, etwa: Gemeinschaften angelegt (erledigt), ersten Punkt erfassen, Verwaltung als Kontakt anlegen, Register übernehmen. „Ersten Punkt erfassen“ ist hervorgehoben, solange es offen ist. Einträge zu Funktionen, die es noch nicht gibt, fehlen. Es gibt keinen Eintrag für eine Tour.
+3. Jeder Eintrag führt mit einem Klick an die passende Stelle, mit einem Knopf, der die Aktion nennt. Ob er erledigt ist, ergibt sich aus dem Vault (etwa: Es gibt einen Punkt), nicht aus einem Haken des Nutzers.
+4. Sind alle Einträge erledigt, wird die Karte zu einer kurzen Bestätigung und lässt sich schließen. Der Nutzer kann sie auch vorher ausblenden; das merkt sich das Plugin je Gerät. Der Befehl „Erste Schritte wieder einblenden“ (ohne Tastenkürzel) holt sie zurück.
+5. Jeder leere Bereich der Lage tut drei Dinge: Er sagt, dass er leer ist und kein Fehler vorliegt, erklärt in einem Satz, wie er sich füllt, und bietet die passende Aktion an. Beispiel: „Diese Woche ist noch nichts offen. Hier erscheinen Punkte, die du erfasst oder die fällig werden.“ mit „Punkt erfassen“.
+6. Beim Ankommen öffnet die Lage kein Modal, keine Tour und kein Angebot.
 
 ## Herkunft und Bezüge
 
-Schritt 4 des Ablaufs aus [[F-25 - Onboarding und Einführung]]. Checkliste und Leerzustände statt langer Tour: [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und kurze Tour]] und [[Onboarding-Research - Erststart, Einrichtung und Einführung]], Abschnitt 3. Konkretisiert Kriterium 1 von [[PBI-32 - Ohne KI selbstständig beginnen]].
+Schritt 4 des Ablaufs aus [[F-25 - Onboarding und Einführung]]. Checkliste und Leerzustände statt Tour: [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]] und [[Onboarding-Research - Erststart, Einrichtung und Einführung]], Abschnitt 3. Konkretisiert Kriterium 1 von [[PBI-32 - Ohne KI selbstständig beginnen]].
 
 ## Kommentare

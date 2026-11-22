@@ -29,7 +29,7 @@ date: 2026-11-15
 | `kontakte` | [[VIEW-08 - Kontakte]] | Segment, Suche | — |
 | Modal `kontakt/<id>` | Kontakt (über jeder Ansicht) | Kontakt-ID | schließt zurück zur Ansicht |
 | `einstellungen/<bereich>` | [[VIEW-07 - Einstellungen und Einrichtung]] | Bereich | vorheriges Ziel |
-| `einrichtung/<schritt>` | [[VIEW-09 - Einrichtung]] | Schritt 1–3 | keiner; nur ohne Gemeinschaft erreichbar, danach `lage` |
+| `einrichtung/<schritt>` | [[VIEW-09 - Einrichtung]] | Schritt 1–2 (`gemeinschaften`, `pruefen`) | keiner; nur ohne Gemeinschaft erreichbar, danach `lage` |
 | Sheet `erfassen` | [[VIEW-05 - Erfassen]] | optional Punkt-ID | schließt zurück zur Ansicht |
 
 Desktop: Punktakte aus Lage/Woche öffnet im rechten Panel; aus der Liste als Hauptinhalt. Mobil immer Vollbild.
@@ -50,7 +50,8 @@ Ohne Standard-Hotkeys (Obsidian-Richtlinie); Namen in Satzanfang-Großschreibung
 | `open-point` | Punkt öffnen … (Suche) |
 | `backup-now` | Jetzt sichern |
 | `open-settings` | Einstellungen öffnen |
-| `start-tour` | Einführung starten (ohne Tastenkürzel, [[PBI-64 - Kurze Einführung durch das Plugin erhalten]]) |
+| `reset-hints` | Hinweise erneut zeigen (ohne Tastenkürzel, [[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]) |
+| `show-first-steps` | Erste Schritte wieder einblenden (ohne Tastenkürzel, [[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]) |
 
 ## Navigationsregeln
 

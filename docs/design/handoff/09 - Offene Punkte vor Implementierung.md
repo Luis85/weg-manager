@@ -35,7 +35,7 @@ date: 2026-11-15
 | O-D8 | Kontakte importieren (vCard/CSV)? | Nicht im MVP; manuelle Anlage und Erststart reichen für den Pilot |
 | O-D9 | Hinweise je Schritt beim ersten Durchlauf der Wochenarbeit | Entschieden: ja, siehe [[VIEW-02 - Wochenarbeit]] |
 | O-D10 | Kann derselbe Kontakt je Gemeinschaft eine andere Rolle haben (z. B. Verwaltung in AW, Eigentümer in TG)? | Prototyp: eine Rolle je Kontakt, Zuständigkeit je Gemeinschaft. PBI-02 und AT-B01 sprechen von Rollen je Gemeinschaft; vor Umsetzung entscheiden |
-| O-D12 | Onboarding: Release, Speicherort des Tour-Zustands, Ablageordner im Assistenten, Verhalten von `onUserEnable` (K-19, O-19a bis O-19d) | Vorschläge in [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und kurze Tour]]; Ansicht [[VIEW-09 - Einrichtung]] |
+| O-D12 | Onboarding: Verhalten von `onUserEnable` bei erneutem Aktivieren und über Sync (K-19, O-19d). Release, Speicherort und Ablageordner sind am 22.11.2026 entschieden. | [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]; Ansicht [[VIEW-09 - Einrichtung]] |
 | O-D11 | Benennung des nativen Chats (PBI-47) vs. Schreibregel „kein KI in Labels“ ([[06 - Texte und Begriffe]]) | Vorschlag: Regel gilt für die regelbasierte Kernreise; der Chat heißt nach seiner Funktion („Chat mit Claude“) und zeigt den Abrechnungsmodus |
 | O-D6 | Punkte-Liste als Bases-View oder eigene Liste | Spike: Bases-View für Lesen, eigene Liste für Bearbeitung |
 

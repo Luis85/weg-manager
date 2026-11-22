@@ -53,4 +53,7 @@ Im laufenden Betrieb über [[VIEW-08 - Kontakte]]: Kontakt suchen oder aus Punkt
 
 ## Einführungstour
 
+> [!note] Abgelöst
+> Seit 22.11.2026 gibt es keine Tour, sondern Hinweise im Kontext ([[FLOW-09 - Erststart, Einrichtung und Einführung]]). Der folgende Stand v2 bleibt als Referenz.
+
 Nach dem Erststart öffnet die Lage einmalig den Willkommensdialog: „Tour starten“ führt durch 7 Schritte (Kennzahlen, Wochenarbeit, Erfassen, Navigation, Gemeinschaftsfilter, Kontakte, Einstellungen), „Überspringen“ beendet sie. Neustart über Einstellungen › Hilfe oder den Befehl „Einführungstour starten“ ([[VIEW-07 - Einstellungen und Einrichtung]]).

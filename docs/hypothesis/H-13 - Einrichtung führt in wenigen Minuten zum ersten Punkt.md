@@ -15,13 +15,13 @@ Ein Beirat ohne Vorwissen kommt nach dem Aktivieren des Plugins in höchstens f�
 
 ## Herkunft und aktueller Evidenzstand
 
-**Herkunft:** [[F-25 - Onboarding und Einführung]] und [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und kurze Tour]]. Zeitbudget aus dem Jobkatalog: rund eine Stunde pro Woche für das Amt (J-RB1 in [[JTBD - Verwaltungsbeirat]]).
+**Herkunft:** [[F-25 - Onboarding und Einführung]] und [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]. Zeitbudget aus dem Jobkatalog: rund eine Stunde pro Woche für das Amt (J-RB1 in [[JTBD - Verwaltungsbeirat]]).
 
 Es gibt keine Beobachtung. Die Zielwerte sind gesetzt, nicht gemessen.
 
 ## Vorgeschlagene Prüfung
 
-Im Pilot und in den Beirats-Interviews eine Person bei der Installation in einem frischen Vault beobachten ([[Interviewleitfaden - Beirats-Interviews]]). Notiert werden die Zeit bis zur ersten Gemeinschaft und bis zum ersten Punkt, jede Stelle mit Zögern oder Rückfrage und ob die Einführung gestartet, übersprungen oder abgebrochen wurde. Keine Messung im Plugin.
+Vor dem Pilot ein kleiner Usability-Test mit etwa fünf Personen, die laut denken, und im Pilot sowie in den Beirats-Interviews je eine Person bei der Installation in einem frischen Vault beobachten ([[Interviewleitfaden - Beirats-Interviews]]). Notiert werden die Zeit bis zur ersten Gemeinschaft und bis zum ersten Punkt, jede Stelle mit Zögern oder Rückfrage ob die Person die Karte „Erste Schritte“ nutzt und ob sie Hinweise im Kontext liest oder sofort schließt. Keine Messung im Plugin.
 
 ## Hinweise auf Unterstützung
 
@@ -29,15 +29,15 @@ Die Person legt ihre Gemeinschaften ohne Rückfrage an, versteht die Prüfseite 
 
 ## Gegenbelege und Auswertungsgrenze
 
-Die Person bricht die Einrichtung ab, versteht Art oder Kürzel nicht, sucht nach Kontakten oder Register im Assistenten oder findet nach der Einrichtung keinen nächsten Schritt. Einzelbeobachtungen sind keine Verallgemeinerung.
+Die Person bricht die Einrichtung ab, versteht Art oder Kürzel nicht, sucht nach einer Tour oder Anleitung, sucht nach Kontakten oder Register im Assistenten oder findet nach der Einrichtung keinen nächsten Schritt. Einzelbeobachtungen sind keine Verallgemeinerung.
 
 ## Konsequenz für die Produktarbeit
 
-Bei Gegenbelegen Felder oder Schritte des Assistenten reduzieren, Begriffe ändern oder die Checkliste umbauen.
+Bei Gegenbelegen Felder oder Schritte des Assistenten reduzieren, Begriffe ändern, die Checkliste umbauen oder Hinweise ergänzen. Eine Tour kommt nur bei wiederholter Beobachtung in Frage, dass Personen ohne sie nicht zurechtkommen.
 
 ## Bezüge
 
-[[PBI-60 - Plugin im Community-Verzeichnis finden und installieren]], [[PBI-62 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]], [[PBI-64 - Kurze Einführung durch das Plugin erhalten]], [[H-03 - Wochenarbeit bleibt innerhalb einer Stunde]].
+[[PBI-60 - Plugin im Community-Verzeichnis finden und installieren]], [[PBI-62 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]], [[PBI-64 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]], [[H-03 - Wochenarbeit bleibt innerhalb einer Stunde]].
 
 ## Prüfergebnis
 

@@ -13,7 +13,7 @@ Eindeutiger fachlicher Kontext für WEG beziehungsweise Tiefgarage.
 
 ## Wesentliche fachliche Angaben
 
-Bezeichnung und Kurzname; festes Kürzel als unterscheidbare Referenz; Farbe; Art aus einer editierbaren Liste mit Einheitenbezeichnung (z. B. Einheiten, Stellplätze) und Anzahl; Anschrift; Sprachen der Eigentümer-Infos; dokumentierte Ansprechpartner und deren Rollen; bekannte Organisationsangaben, ohne eine Rechtsform aus Name oder Art abzuleiten.
+Bezeichnung und Kurzname; eindeutiges, änderbares Kürzel zur Unterscheidung (Verweise laufen über die `id`, [[PBI-65 - Kürzel einer Gemeinschaft nachträglich ändern]]); Farbe; Art aus einer editierbaren Liste mit Einheitenbezeichnung (z. B. Einheiten, Stellplätze) und Anzahl; Anschrift; Sprachen der Eigentümer-Infos; dokumentierte Ansprechpartner und deren Rollen; bekannte Organisationsangaben, ohne eine Rechtsform aus Name oder Art abzuleiten.
 
 ## Beziehungen
 

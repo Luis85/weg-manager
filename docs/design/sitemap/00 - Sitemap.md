@@ -65,8 +65,7 @@ flowchart LR
   S --> S3[Register-Import]
   S --> S4[Sicherung]
   S --> S5[Datenprobleme]
-  S --> S6[Hilfe & Einführung]
-  S6 --> S7([Einführung · 5 Schritte])
+  S --> S6[Hilfe]
   E0[Erststart ohne Gemeinschaft] --> E1[Einrichtung · VIEW-09]
   E1 --> L
   S --> S8[Eigene Angaben]

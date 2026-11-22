@@ -64,9 +64,9 @@ _Avoid_: onboarding (the whole path), wizard (the UI pattern), installation (hap
 The card on the overview that lists the next things to do after setup. Each step counts as done when the vault shows it, not when the user ticks it.
 _Avoid_: checklist, to-do, task (a task is a record)
 
-**Tour** (German: Einführung):
-The short, optional walk through the main areas, offered once after setup and restartable at any time. It never writes notes.
-_Avoid_: tutorial, walkthrough, guide
+**Contextual hint** (German: Hinweis im Kontext):
+A single note shown beside an element the first time the user works in an area, closed with one click and remembered per device. Hints never chain, never block and never write notes. There is no tour.
+_Avoid_: tour, tutorial, coach mark, tooltip (a tooltip shows on hover every time)
 
 **Tracer slice** (German: Durchstich):
 The first record type built through every layer, to prove the path that all later types take.

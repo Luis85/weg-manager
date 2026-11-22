@@ -29,7 +29,7 @@ Eine Kontaktänderung verändert historische Nachrichten nicht. Eine Rolle verle
 
 ## Modellierungsgrenze und offene Punkte
 
-Designstand 15.11.2026: ein Kontakt mit gemeinsamen Kontaktdaten und Zuständigkeit je Gemeinschaft (VIEW-08). Ob dieselbe Person je Gemeinschaft eine abweichende Rolle haben kann, ist offen (O-D10 in [[09 - Offene Punkte vor Implementierung]]).
+Designstand 15.11.2026: ein Kontakt mit gemeinsamen Kontaktdaten und Zuständigkeit je Gemeinschaft (VIEW-08). Entschieden am 22.11.2026 (O-D10 in [[09 - Offene Punkte vor Implementierung]]): Ein Kontakt hat eine Rolle; eine abweichende Rolle je Gemeinschaft steht in der Notiz und kann mit einer neuen Schemaversion folgen.
 
 ## Herkunft und Anforderungen
 

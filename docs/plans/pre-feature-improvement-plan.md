@@ -191,11 +191,24 @@ After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its 
 | #32 | The release in two jobs from `main` only, with 0.x as a pre-release; no icon request at runtime; three more lint rules; the nightly mutation run keeps its cache and reports a failure. |
 | #33 | Composition seams: one service graph (`appServicesLayer`), commands composed in `appCommands`, the adapter kit of `notes` behind its own entry, command runs that resolve to their outcome. |
 | #34 | The communities screen: focus and modality, only communities without issues selectable, texts in plain words that name their data, notices after writes, notes the plugin cannot write open in Obsidian. |
+| #35 | The backlog notes PBI-60 to PBI-67 and the owner decisions of the first interview; an e2e spec waits for the list before it clicks. |
+| #37 | Tests for the edge layers where planted mutations survived, a shared wait budget and counted work instead of wall-clock bounds, a second, non-gating mutation run for those layers with its own nightly job; the diagnostics name an iOS or Android app correctly. |
 
 ### In progress on 2026-11-22
 
 - Generic record handling moves from `communities` into `notes`, and the settings screen gets one section per module (owner decision: before the pre-release).
-- Tests for the edge layers where planted mutations survive, a second, non-gating mutation run for those layers, and the timing-sensitive unit and dom tests.
+- A generated third-party notices file, checked by the gate and attached to each release (PBI-67).
+
+### Before the 0.2.0 tag (owner decisions of the second interview)
+
+In this order after the two steps above, one pull request each:
+
+1. The unhandled events `ActiveFileChanged` and `ColorSchemeChanged`, `isMarkdown` and the event bus's unused subscription are deleted (PBI-62).
+2. The module manifest: two entries per module, the lint and fallow module lists generated from the one module list (PBI-60).
+3. Write fixes and two rare cases: the closing lines `---` with trailing spaces and `----` are accepted, a comment at the end of a written line stays, a root folder that differs only in case is found, a file name is limited to 255 bytes (PBI-65).
+4. The community colour `cyan` is replaced by `amber` (PBI-66).
+
+Beside these, not holding the tag: the design handoff documents and the Archify diagrams are rewritten to the current state (PBI-66).
 
 ### Owner decisions (2026-11-22)
 
@@ -211,15 +224,32 @@ After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its 
 | Agent skills | `.claude/skills` stays in the repository. | this plan |
 | Dependabot | Action updates are reviewed and merged by an agent under the standing rule of 2026-11-21. | [github-setup](../engineering/github-setup.md) |
 
+### Owner decisions (2026-11-22, second interview)
+
+| Topic | Decision | Recorded in |
+| --- | --- | --- |
+| 0.2.0 tag | The agent pushes it once everything listed under "Before the 0.2.0 tag" is on `main` and CI there is green, and watches the first release run. | PBI-67 |
+| Third-party notices | A generated file in the repository, kept current by the gate, attached to each release as a fourth asset; already in 0.2.0. | PBI-67 |
+| Module manifest | Introduced now. Two entries per module (application side; screens, loaded late); lint and fallow lists generated. | PBI-60 |
+| Unused machinery | `useQuery` and `useAppEvents` stay; the two unhandled events, `isMarkdown` and the unused subscription are deleted. | PBI-62 |
+| Refused layouts | Only the two closing-line variants are learned; flow style, anchors and unusual keys stay refused. | PBI-65 |
+| Line comment | A comment at the end of a written line is kept. | PBI-65 |
+| Rare cases | Root folder case and the 255-byte limit before 0.2.0; the other three stay in the backlog. | PBI-65 |
+| Contact role | One role per contact, plus the list of communities (O-D10). | ADR 0007 amendment, PBI-61 |
+| Palette | `cyan` is replaced by `amber`. | PBI-66 |
+| Design documents | Rewritten to the current state, diagrams included. | PBI-66 |
+| `CI / e2e` required | Not yet. | PBI-67 |
+| After the tag | References and dates (PBI-61), the test double and e2e (PBI-63), gate and CI cost (PBI-64), while the owner checks 0.2.0. | this plan |
+
 ### Not fixed, in the backlog
 
 | Note | What |
 | --- | --- |
-| PBI-60 | A module manifest, as an option that needs a decision. |
-| PBI-61 | References between records, lookup by id, a source for "today"; and how a contact's role per community is stored, which must be decided before the contacts contract. |
-| PBI-62 | One index snapshot across types, and whether unused machinery stays. |
+| PBI-60 | The module manifest: decided, before the 0.2.0 tag. |
+| PBI-61 | References between records, lookup by id, a source for "today": after the tag. The contact role is decided. |
+| PBI-62 | One index snapshot across types (with the second note type). The unused machinery is decided, before the 0.2.0 tag. |
 | PBI-63 | Fidelity of the Obsidian double, fixed pauses and literal sentences in e2e specs. |
 | PBI-64 | Run time and cost of the gate and CI. |
-| PBI-65 | Open robustness cases when reading and writing notes. |
-| PBI-66 | Manual accessibility checks, the focus ring on inputs, two similar colours, documents that no longer match. |
-| PBI-67 | The first release: workflows that have never run, third-party notices, `CI / e2e` as a required check. |
+| PBI-65 | Four cases before the 0.2.0 tag; three stay open (no `VaultReady` fallback, two wrong messages). |
+| PBI-66 | Manual accessibility checks, the focus ring on inputs, three small points from the UX step; the palette and the documents are decided. |
+| PBI-67 | The first release: workflows that have never run; `CI / e2e` as a required check is postponed. |

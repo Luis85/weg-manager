@@ -23,12 +23,12 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: needs-triage
+triage: ready-for-agent
 ---
 
 # PBI-62 · Index-Stand über mehrere Typen und ungenutzte Bausteine klären
 
-**Planungsstand:** Zwei Befunde des Architektur-Reviews; der zweite braucht eine Entscheidung · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, Review-Runde vom 22.11.2026)
+**Planungsstand:** Zweiter Befund entschieden am 22.11.2026 (Lesepfad behalten, Rest löschen); der erste wartet auf den zweiten Notiztyp · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, Review-Runde vom 22.11.2026)
 
 ## User Story
 
@@ -54,9 +54,9 @@ Sie sind getestet und billig, aber ohne Nutzer.
 3. Für die ungenutzten Bausteine ist entschieden: behalten oder löschen, bis es einen Nutzer gibt. Bei „löschen“ verschwinden Code, Tests und Erwähnungen in `docs/engineering/architecture.md` zusammen.
 4. `npm run verify` endet mit Exit 0.
 
-## Offene Entscheidung
+## Entscheidung (22.11.2026)
 
-Ungenutzte Bausteine behalten oder löschen (Kriterium 3).
+Ungenutzte Bausteine: **`useQuery` und `useAppEvents` bleiben**, weil `AGENTS.md` `useQuery` als Lesepfad der Komponenten nennt und die nächste Funktion ihn braucht. **Gelöscht werden** die Ereignisse `ActiveFileChanged` und `ColorSchemeChanged`, `isMarkdown` sowie `EventBus.events` und `on`, jeweils mit Tests und Erwähnungen in `docs/engineering/architecture.md`. Sie kommen zurück, wenn etwas sie braucht. Umsetzung vor dem Tag 0.2.0.
 
 ## Herkunft und Bezüge
 
@@ -65,3 +65,4 @@ Architektur-Review vom 22.11.2026, Optionen C3 und C4. [[PBI-54 - Index der Noti
 ## Kommentare
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
+- 22.11.2026 (Interview nach der Review-Runde): Entscheidung zu Kriterium 3 eingetragen; `triage` auf `ready-for-agent`. Die Kriterien 1 und 2 entstehen mit dem zweiten Notiztyp.

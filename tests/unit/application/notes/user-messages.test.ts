@@ -8,6 +8,7 @@ import {
   NoteIndexReadError,
   NoteNotFoundError,
   NotePathTakenError,
+  NoteOpenError,
   NoteTrashError,
   NoteUnreadableError,
   NoteWriteError,
@@ -40,6 +41,7 @@ const ALL: readonly AppError[] = [
   new NoteUnreadableError({ cause: null }),
   new NoteWriteError({ cause: null }),
   new NoteTrashError({ cause: null }),
+  new NoteOpenError({ cause: null }),
   new NoteEditConflictError({
     conflicts: [{ key: "title", base: "a", edited: "b", current: "c" }],
   }),
@@ -112,6 +114,7 @@ describe.each([de, en])("describeError for notes ($shell.language)", (messages) 
       property(content, (text) => {
         for (const error of [
           new NoteWriteError({ cause: new Error(text) }),
+          new NoteOpenError({ cause: new Error(text) }),
           new NoteUnreadableError({ cause: new Error(text) }),
         ]) {
           expectPlain(describeError(error, messages), text);
@@ -172,6 +175,12 @@ describe("notes message texts", () => {
         "error",
         "Notiz nicht gelöscht",
         "Obsidian konnte die Notiz nicht in den Papierkorb verschieben. Versuche es erneut.",
+        "retry",
+      ],
+      [
+        "error",
+        "Notiz nicht geöffnet",
+        "Obsidian konnte die Notiz nicht in einem Tab öffnen. Versuche es erneut.",
         "retry",
       ],
       [
@@ -265,6 +274,7 @@ describe("notes message texts", () => {
         "Obsidian couldn't move the note to the trash. Try again.",
         "retry",
       ],
+      ["error", "Note not opened", "Obsidian couldn't open the note in a tab. Try again.", "retry"],
       [
         "warning",
         "Note changed while you were editing",

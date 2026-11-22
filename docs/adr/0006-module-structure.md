@@ -1,6 +1,6 @@
 # ADR 0006 · Modules inside the layers, English in code
 
-- Status: accepted; public entries of `presentation/shell` and the enforcement amended on 2026-11-21; composition seams and the `application/notes` adapter entry amended on 22.11.2026 (see the notes at the end)
+- Status: accepted; public entries of `presentation/shell` and the enforcement amended on 2026-11-21; composition seams and the `application/notes` adapter entry amended on 22.11.2026; the record kit in `notes` and the presentation module `notes` amended on 22.11.2026 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -64,3 +64,15 @@ Decision:
 - **A second entry for `application/notes`.** `adapter.ts` holds the kit the `NoteStore` adapters build on (`writeCommand`, `createNote`, `asDefect`, `copyFrontmatter`, `recordNotes`, `newNoteText`, `updateNoteText`, `pathsInFolder`, `planRename`). Only `src/infrastructure/**` imports it; features reach the vault through `NoteStore` alone. ESLint refuses `notes/adapter` outside the infrastructure; fallow makes the kit's files a zone of their own whose only public file is `adapter.ts` and which only the adapter zones may import. The kit imports the rest of the module through its `index.ts`. Constants only tests read (`INDEX_BATCH_QUIET`, `INDEX_BATCH_MAX`) left the index; tests import them from their file.
 
 Consequence: the root files are `AppError`, `AppEvent`, `AppServices`, `appServicesLayer`, `Catalog`, `Route`, `appNoteTypes`, `appCommands`, `appLayer` and `appSurface`. Two modules have a second entry, each for one kind of caller: `presentation/shell/host.ts` for code at plugin load, `application/notes/adapter.ts` for the `NoteStore` adapters.
+
+## Amendment, 22.11.2026: the record kit and a presentation module for `notes`
+
+Context: a review after the first feature found that most of `communities` was record handling that every record type repeats: file names from a title, line fields, the edited values a form saves, list rows and their order, finding a record by its id, create, the merge-then-rename update and delete with their notices, the issue describer, the conflict choice, the form's flow, the delete dialog, opening a note in Obsidian and the list of notes of no known type. The second feature would have copied it.
+
+Decision (owner, 22.11.2026):
+
+- **What any record needs belongs to `notes`, in every layer.** The domain holds `recordFileName`, `followsTitle`, `lineOfText`, `trimmedValues` and `editedValues`; a note type may name its `folder`. The application holds the record kit, `defineRecords({ type, title, fallbackName, log, issue?, between? })`, which gives the list (`RecordRow`, `RecordList`), `create`, `update` and `remove`, and `describeRecordIssue` over a feature's `RecordTexts`. The generic texts (notices, conflict, delete dialog, open in Obsidian, data issues) are the notes catalog's, without feature words.
+- **`src/presentation/notes/` is a module**, with its `index.ts`, in the direction feature → `notes` → `shell`: `useRecordForm`, `useRecordScreen`, `cardKey`, `ConflictChoice`, `DeleteRecordDialog`, `OpenNoteButton`, and the settings section `DataIssues` with its badge. ESLint already knew `notes` as a core module; fallow lets the presentation rule import `presentation/notes` and gives the zone a rule of its own (`presentation/shell`, `application/notes`, `application/shell`, `application-describe-error`, `domain/notes`, `domain/shell`; the composition as types only).
+- **A feature keeps what is its own:** its note type, its rules (for communities: unique short code and colour, the fixed short code, the kinds, the selection), its texts and its layout.
+
+Consequence: a new record type declares its type, its rules and its texts, and gets lists, writes, the form's flow and the conflict UI from `notes`. The modules are `shell`, `notes` and `communities`, now with a `notes` folder in every layer, presentation included.

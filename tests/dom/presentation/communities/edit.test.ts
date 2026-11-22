@@ -14,6 +14,7 @@ import {
 afterEach(closeAll);
 
 const t = de.communities;
+const n = de.notes;
 
 const PATH = `${FOLDER}/Ahornweg 12.md`;
 const AW = communityNote(1, { name: "Ahornweg 12", short_code: "AW" });
@@ -83,17 +84,17 @@ describe("editing a community", () => {
     screen.notes.seed(PATH, { ...AW, kind: "Tiefgarage" });
     await fill(screen, { kind: "Haus", unit_label: "Wohnungen" });
     await save(screen);
-    const conflict = screen.q("community-conflict");
-    expect(conflict?.querySelector("h3")?.textContent.trim()).toBe(t.conflict.title);
+    const conflict = screen.q("record-conflict");
+    expect(conflict?.querySelector("h3")?.textContent.trim()).toBe(n.conflict.title);
     expect(
       [...(screen.q("conflict-kind")?.querySelectorAll("legend, p, label") ?? [])].map((part) =>
         part.textContent.trim(),
       ),
     ).toEqual([
       "Art",
-      t.conflict.loaded("WEG"),
-      t.conflict.mine("Haus"),
-      t.conflict.theirs("Tiefgarage"),
+      n.conflict.loaded("WEG"),
+      n.conflict.mine("Haus"),
+      n.conflict.theirs("Tiefgarage"),
     ]);
     expect(screen.all("conflict-kind")).toHaveLength(1);
     const saveButton = screen.q("community-save") as HTMLButtonElement;
@@ -134,7 +135,7 @@ describe("editing a community", () => {
       screen.q("conflict-kind")?.querySelector("[data-testid=choose-theirs]") ?? undefined,
     );
     await screen.click(screen.q("conflict-apply"));
-    expect(screen.q("community-conflict")).toBeUndefined();
+    expect(screen.q("record-conflict")).toBeUndefined();
     expect(screen.input("field-kind").value).toBe("");
     expect(screen.q("community-form")?.textContent).toContain(t.missing.kind);
     const saveButton = () => screen.q("community-save") as HTMLButtonElement;

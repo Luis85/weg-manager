@@ -4,6 +4,8 @@ import {
   checkbox,
   date,
   isCalendarDate,
+  isControlCharacter,
+  lineOfText,
   list,
   number,
   required,
@@ -122,5 +124,36 @@ describe("isCalendarDate", () => {
     expect(isCalendarDate("2026-02-30")).toBe(false);
     expect(isCalendarDate("2026-11-21 ")).toBe(false);
     expect(isCalendarDate("x")).toBe(false);
+  });
+});
+
+describe("isControlCharacter", () => {
+  it("is true for C0 controls, line breaks and tabs included, and for DEL", () => {
+    expect(["\u0000", "\t", "\n", "\r", "\u001f", "\u007f"].map(isControlCharacter)).toEqual([
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]);
+    expect([" ", "A", "~", "\u0080", "ä"].map(isControlCharacter)).toEqual([
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]);
+  });
+});
+
+describe("lineOfText", () => {
+  it("reads one line that is not blank, up to its length", () => {
+    const line = reading(
+      text({ schema: lineOfText(5) }),
+      ["A", " AB ", "ABCDE", "Ä ö"],
+      ["", "   ", "ABCDEF", "A\nB", "A\tB", "A\u007fB", 3],
+    );
+    expect(line.actual).toEqual(line.expected);
   });
 });

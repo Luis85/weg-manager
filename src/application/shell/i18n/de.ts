@@ -69,7 +69,13 @@ export const shellDe: ShellCatalog = {
       labels: { error: "Fehler", warn: "Warnungen", info: "Informationen", debug: "Details" },
     },
   },
-  frame: { navigation: "Ansichten", content: "Inhalt", back: "Zurück", forward: "Vorwärts" },
+  frame: {
+    navigation: "Ansichten",
+    content: "Inhalt",
+    back: "Zurück",
+    forward: "Vorwärts",
+    settingsSections: "Bereiche der Einstellungen",
+  },
   notFound: {
     title: "Nicht gefunden",
     detail:

@@ -91,7 +91,10 @@ export type UseCase<Args extends unknown[], A, E> = {
   readonly message: Readonly<ShallowRef<UserMessage | undefined>>;
 };
 
-type UseCaseFn<Args extends unknown[], A, E> = (...args: Args) => Effect.Effect<A, E, AppServices>;
+/** A use case as components hand it to `useCommand` and `useQuery`: arguments in, an effect out. */
+export type UseCaseFn<Args extends unknown[], A, E> = (
+  ...args: Args
+) => Effect.Effect<A, E, AppServices>;
 
 /** Runs `fn(...args)`; a throw while building the effect and a disposed runtime become defects. */
 const exitOf = <Args extends unknown[], A, E>(

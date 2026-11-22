@@ -6,6 +6,7 @@ export {
   memoryNavigation,
   type MemoryNavigation,
   type ScreenLoader,
+  type SettingsSectionPart,
   type SurfaceDefinition,
   type ViewNavigation,
 } from "./routing";

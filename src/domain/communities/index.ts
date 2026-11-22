@@ -1,7 +1,6 @@
 // The public face of the communities domain (ADR 0006): other modules and layers import only this.
 export {
   COMMUNITY_COLORS,
-  COMMUNITY_KEYS,
   LABEL_MAX_LENGTH,
   NAME_MAX_LENGTH,
   communityType,
@@ -10,13 +9,11 @@ export {
   type CommunityKey,
   type CommunityValues,
 } from "./community-type";
-export { communityFileName, followsName } from "./file-name";
 export { kindSuggestions, type KindPair } from "./kinds";
 export {
   colorOwners,
   communityValues,
   duplicateShortCodes,
-  editedValues,
   firstFreeColor,
   normalizeShortCode,
   validateCommunity,

@@ -1,7 +1,7 @@
 import { anything, assert as fcAssert, property } from "fast-check";
 import { Schema } from "effect";
 import { describe, expect, it } from "vitest";
-import { routesOf } from "../../../../src/application/shell/routes";
+import { SETTINGS, routesOf, settingsRoute } from "../../../../src/application/shell/routes";
 
 /** Two routes, one with a parameter, as a feature module would contribute them. */
 const TestRoute = Schema.Union([
@@ -59,5 +59,31 @@ describe("routesOf", () => {
     expect(routes.equals({ name: "list" }, { name: "list" })).toBe(true);
     expect(routes.equals({ name: "record", id: "a" }, { name: "record", id: "b" })).toBe(false);
     expect(routes.equals({ name: "list" }, { name: "record", id: "a" })).toBe(false);
+  });
+});
+
+describe("settingsRoute: the shell's settings screen on one of its sections", () => {
+  const SettingsRoute = settingsRoute(["general", "data"]);
+  const decode = Schema.decodeUnknownOption(SettingsRoute);
+
+  it("is the route `settings` with one of the sections the modules contribute", () => {
+    expect(SETTINGS).toBe("settings");
+    expect(decode({ name: "settings", section: "general" })._tag).toBe("Some");
+    expect(decode({ name: "settings", section: "data" })._tag).toBe("Some");
+  });
+
+  it("decodes no other section and no other name", () => {
+    expect(decode({ name: "settings", section: "other" })._tag).toBe("None");
+    expect(decode({ name: "settings" })._tag).toBe("None");
+    expect(decode({ name: "other", section: "general" })._tag).toBe("None");
+  });
+
+  it("falls back to the start route through routesOf, as every unknown route does", () => {
+    const settings = routesOf(SettingsRoute, { name: "settings", section: "general" });
+    expect(settings.decode({ name: "settings", section: "data", extra: 1 })).toStrictEqual({
+      name: "settings",
+      section: "data",
+    });
+    expect(settings.decode({ name: "settings", section: "gone" })).toBe(settings.start);
   });
 });

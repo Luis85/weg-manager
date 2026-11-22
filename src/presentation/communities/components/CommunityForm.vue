@@ -4,10 +4,10 @@ import UFormField from "@nuxt/ui/components/FormField.vue";
 import UInput from "@nuxt/ui/components/Input.vue";
 import { useId, useTemplateRef } from "vue";
 import type { Community } from "../../../application/communities";
+import { ConflictChoice } from "../../notes";
 import { ErrorNotice } from "../../shell";
 import { useCommunityForm } from "../use-community-form";
 import ColorField from "./ColorField.vue";
-import ConflictChoice from "./ConflictChoice.vue";
 
 /**
  * Creates a community or edits one (`community` set), in one form (handoff CommunityForm); the
@@ -37,6 +37,7 @@ const {
   typed,
   submit,
   resolve,
+  label,
   pending,
   blocked,
   summary,
@@ -181,6 +182,7 @@ const suggestionsId = useId();
         v-if="conflicts"
         :conflicts="conflicts"
         :disabled="pending"
+        :label="label"
         @apply="resolve"
       />
       <ErrorNotice v-if="notice" :message="notice" />

@@ -58,6 +58,24 @@ const fieldKind = <Base extends FieldValue, K extends FieldKind>(
     required: false,
   })) as FieldKindConstructor<Base, K>;
 
+/** A control character, line breaks and tabs included. */
+export const isControlCharacter = (character: string): boolean => {
+  const code = character.charCodeAt(0);
+  return code < 0x20 || code === 0x7f;
+};
+
+/**
+ * One line of text, not blank, at most `max` characters: a schema for `text` fields such as a
+ * name or a label. No control character, so no line break or tab either.
+ */
+export const lineOfText = (max: number) =>
+  Schema.String.check(
+    Schema.makeFilter(
+      (value: string) =>
+        value.trim() !== "" && value.length <= max && ![...value].some(isControlCharacter),
+    ),
+  );
+
 /** Free text, kept as the user wrote it. */
 export const text = fieldKind("text", Schema.String);
 

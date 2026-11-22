@@ -7,6 +7,16 @@ import type { SchemaMarker } from "./schema-marker";
 export type Frontmatter = Readonly<Record<string, unknown>>;
 
 /**
+ * What a write changes: keys to set (in their place, or appended in this order) and keys to remove
+ * unless `set` has them too. Every other key, known or not, stays as it is, in its order. The
+ * merge, the line edit and `NoteStore.update` share this one shape.
+ */
+export type FrontmatterPatch = {
+  readonly set?: Frontmatter;
+  readonly remove?: readonly string[];
+};
+
+/**
  * The fields of one note type, by their frontmatter key: English snake_case (ADR 0007). The record
  * uses the same keys, so the file, its contract page and the code share one name per field.
  */
@@ -24,6 +34,11 @@ export type NoteTypeSpec<F extends NoteFields> = {
   readonly type: string;
   /** The version this plugin writes: a positive integer. */
   readonly version: number;
+  /**
+   * The folder below the root folder where new notes of this type go (`Gemeinschaften`); none puts
+   * them into the root folder. Part of the file contract, so German in every UI language (ADR 0007).
+   */
+  readonly folder?: string;
   /** In the order a new note writes them; `schema` and `id` are not fields. */
   readonly fields: F & { readonly schema?: never; readonly id?: never };
   readonly migrations: Migrations;

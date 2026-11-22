@@ -1,7 +1,7 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect } from "effect";
+import { MAX_NAME_ATTEMPTS } from "../../../../src/domain/notes";
 import {
-  MAX_NAME_ATTEMPTS,
   checkNoteName,
   planNewNote,
   planRename,
@@ -9,10 +9,26 @@ import {
   pathsInFolder,
   renamedNotePath,
 } from "../../../../src/application/notes/paths";
-import { isInFolder } from "../../../../src/application/notes/folders";
+import { isInFolder, recordFolder } from "../../../../src/application/notes/folders";
+import { defineNoteType } from "../../../../src/domain/notes";
 
 /** Obsidian's `normalizePath`, as far as these tests need it. */
 const normalize = (path: string) => path.replace(/\/+/g, "/").replace(/^\/|\/$/g, "") || "/";
+
+describe("recordFolder", () => {
+  it("is the type's folder below the root folder, or the root folder for a type without one", () => {
+    const filed = defineNoteType({
+      type: "filed",
+      version: 1,
+      folder: "Akten",
+      fields: {},
+      migrations: {},
+    });
+    const loose = defineNoteType({ type: "loose", version: 1, fields: {}, migrations: {} });
+    assert.strictEqual(recordFolder("WEG Manager", filed), "WEG Manager/Akten");
+    assert.strictEqual(recordFolder("Beirat/WEG", loose), "Beirat/WEG");
+  });
+});
 
 describe("isInFolder", () => {
   it("is true for a note in the folder or in a folder below it", () => {

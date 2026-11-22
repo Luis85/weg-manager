@@ -41,7 +41,7 @@ export class CommunitySelectionService extends Context.Service<
 const derive = (stored: unknown, snapshot: NoteSnapshot<CommunityFields>): CommunitySelection => {
   if (!snapshot.ready) return { ready: false, id: undefined, choiceNeeded: false };
   // The list adds the issues between communities (a duplicate short code) to the index's own.
-  const ids = selectableIds(toCommunityList(snapshot).communities);
+  const ids = selectableIds(toCommunityList(snapshot).records);
   const id = selectedCommunity(stored, ids);
   return { ready: true, id, choiceNeeded: id === undefined && ids.length > 0 };
 };

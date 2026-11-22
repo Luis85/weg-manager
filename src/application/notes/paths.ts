@@ -1,5 +1,5 @@
 import { Array as Arr, Effect, Order } from "effect";
-import { clashKey, clashName, noteNameIssue } from "../../domain/notes";
+import { MAX_NAME_ATTEMPTS, clashKey, clashName, noteNameIssue } from "../../domain/notes";
 import { copyFrontmatter } from "./frontmatter";
 import {
   InvalidNoteNameError,
@@ -8,9 +8,6 @@ import {
   type Frontmatter,
   type NewNote,
 } from "./index";
-
-/** How many names `freeNotePath` tries: `Name`, `Name (2)`, … `Name (100)`. */
-export const MAX_NAME_ATTEMPTS = 100;
 
 /** The adapter's `normalizePath` (Obsidian's, or the in-memory copy of it). */
 export type Normalize = (path: string) => string;

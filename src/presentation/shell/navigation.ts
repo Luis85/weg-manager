@@ -9,6 +9,7 @@ import {
   type Ref,
   type ShallowRef,
 } from "vue";
+import type { Catalog } from "../../application/messages";
 import type { Route } from "../../application/routes";
 import type { RouteHistory, RouteLike } from "../../application/shell";
 import type { SurfaceDefinition, ViewNavigation } from "./routing";
@@ -23,7 +24,17 @@ type SurfaceRouting = {
   readonly forward: () => void;
   /** The async component of each route name, created once per surface. */
   readonly screenOf: (route: RouteLike) => Component | undefined;
+  /** The settings screen's sections, each with its async components, created once per surface. */
+  readonly sections: readonly SettingsSection[];
   readonly context: Component | undefined;
+};
+
+/** One section of the settings screen, as `SettingsScreen` shows it. */
+type SettingsSection = {
+  readonly id: string;
+  readonly label: (catalog: Catalog) => string;
+  readonly component: Component;
+  readonly badge: Component | undefined;
 };
 
 /** One entry of the frame's navigation, as `AppFrame` shows it. */
@@ -70,6 +81,12 @@ export const provideRouting = <R extends RouteLike>(
     },
     context:
       definition.context === undefined ? undefined : defineAsyncComponent(definition.context),
+    sections: Object.entries(definition.sections ?? {}).map(([id, part]) => ({
+      id,
+      label: part.label,
+      component: defineAsyncComponent(part.component),
+      badge: part.badge === undefined ? undefined : defineAsyncComponent(part.badge),
+    })),
   };
   app.provide(ROUTING_KEY, routing);
   return stop;

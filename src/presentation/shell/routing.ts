@@ -27,6 +27,17 @@ export type MenuEntry<R extends RouteLike> = {
 };
 
 /**
+ * What a module puts into the shell's settings screen: one section (ADR 0008, amendment
+ * 22.11.2026), with its entry in the screen's navigation. `badge` is a small component shown in
+ * that entry, such as a count of notes with issues.
+ */
+export type SettingsSectionPart = {
+  readonly label: (catalog: Catalog) => string;
+  readonly component: ScreenLoader;
+  readonly badge?: ScreenLoader;
+};
+
+/**
  * What a surface shows: the routes, the screen of each, the frame's navigation and its context
  * area. `src/presentation/app-surface.ts` composes the app's from the modules' parts; tests build
  * their own with test routes.
@@ -40,6 +51,11 @@ export type SurfaceDefinition<R extends RouteLike> = Routes<R> & {
   readonly menu: readonly MenuEntry<R>[];
   /** Fills the frame's context area: the community switch in the plugin. */
   readonly context?: ScreenLoader;
+  /**
+   * The settings screen's sections by their id (the route's `section`), in the order its
+   * navigation shows them. `src/presentation/app-surface.ts` types them by `SettingsSection`.
+   */
+  readonly sections?: Readonly<Record<string, SettingsSectionPart>>;
 };
 
 /**

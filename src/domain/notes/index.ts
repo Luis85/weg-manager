@@ -10,6 +10,8 @@ export {
   number,
   required,
   text,
+  type FieldDeclaration,
+  type KindIssueCode,
 } from "./fields";
 export { followsTitle, recordFileName } from "./file-name";
 export { editedValues, trimmedValues, type FormDraft, type FormInput } from "./form";
@@ -17,12 +19,14 @@ export type {
   DecodedNote,
   EditableRecord,
   FieldIssue,
+  FieldIssueCode,
   Frontmatter,
   FrontmatterPatch,
   Migrations,
   NoteFields,
   NoteInput,
   NoteIssue,
+  PartialValues,
   ReadOnlyRecord,
   RecordIssue,
   RecordValues,

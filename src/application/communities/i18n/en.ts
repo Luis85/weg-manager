@@ -103,11 +103,6 @@ export const communitiesEn: CommunitiesCatalog = {
     "kind.invalid": (_, label) => oneLine(label, LABEL_MAX_LENGTH),
     "unit-label.invalid": (_, label) => oneLine(label, LABEL_MAX_LENGTH),
   },
-  notices: {
-    created: (name) => `“${name}” created`,
-    saved: (name) => `“${name}” saved`,
-    deleted: (name) => `“${name}” moved to the trash`,
-  },
   errors: {
     invalid: {
       title: "Community not saved",

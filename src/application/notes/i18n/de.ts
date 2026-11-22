@@ -62,6 +62,11 @@ export const notesDe: NotesCatalog = {
         "Obsidian konnte nicht alle Notizen lesen, deshalb ist die Liste vielleicht unvollständig. Versuche es erneut.",
     },
   },
+  notices: {
+    created: (name) => `„${name}“ angelegt`,
+    saved: (name) => `„${name}“ gespeichert`,
+    deleted: (name) => `„${name}“ in den Papierkorb verschoben`,
+  },
   recordIssues: {
     "schema.malformed": () =>
       "Die Eigenschaft „schema“ ist falsch geschrieben, deshalb ist die Notiz schreibgeschützt. Öffne die Notiz und korrigiere „schema“.",

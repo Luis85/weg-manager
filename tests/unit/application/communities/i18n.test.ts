@@ -66,11 +66,6 @@ const rendered = (catalog: CommunitiesCatalog) => {
         "Feld",
       ),
     },
-    notices: {
-      created: catalog.notices.created("Ahornweg 12"),
-      saved: catalog.notices.saved("Ahornweg 12"),
-      deleted: catalog.notices.deleted("Ahornweg 12"),
-    },
   };
 };
 
@@ -179,11 +174,6 @@ describe("the communities catalog", () => {
         "kind.invalid": "Gib für „Feld“ eine Zeile mit höchstens 50 Zeichen ein.",
         "unit-label.invalid": "Gib für „Feld“ eine Zeile mit höchstens 50 Zeichen ein.",
       },
-      notices: {
-        created: "„Ahornweg 12“ angelegt",
-        saved: "„Ahornweg 12“ gespeichert",
-        deleted: "„Ahornweg 12“ in den Papierkorb verschoben",
-      },
       errors: {
         invalid: {
           title: "Gemeinschaft nicht gespeichert",
@@ -291,11 +281,6 @@ describe("the communities catalog", () => {
         "color.taken": "Another community already uses this color. Choose another one.",
         "kind.invalid": "Enter one line of at most 50 characters for “Feld”.",
         "unit-label.invalid": "Enter one line of at most 50 characters for “Feld”.",
-      },
-      notices: {
-        created: "“Ahornweg 12” created",
-        saved: "“Ahornweg 12” saved",
-        deleted: "“Ahornweg 12” moved to the trash",
       },
       errors: {
         invalid: {

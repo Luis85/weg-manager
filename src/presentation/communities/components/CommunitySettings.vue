@@ -4,14 +4,14 @@ import USkeleton from "@nuxt/ui/components/Skeleton.vue";
 import USlideover from "@nuxt/ui/components/Slideover.vue";
 import { computed, shallowRef } from "vue";
 import {
-  COMMUNITIES_FOLDER,
   communityList,
   communityListChanges,
   communitySelection,
   communitySelectionChanges,
   type Community,
 } from "../../../application/communities";
-import { rebuildNoteIndex } from "../../../application/notes";
+import { rebuildNoteIndex, recordFolder } from "../../../application/notes";
+import { communityType } from "../../../domain/communities";
 import { describeError } from "../../../application/user-messages";
 import {
   ErrorNotice,
@@ -45,7 +45,7 @@ const rebuild = useCommand(() => rebuildNoteIndex);
 const screen = shallowRef<HTMLElement>();
 const focus = useFocusAfter(
   () => screen.value,
-  () => list.value.communities,
+  () => list.value.records,
 );
 
 /** The sheet: closed, a new community, or one being edited. */
@@ -54,13 +54,13 @@ const deleting = shallowRef<Community | undefined>();
 /** One dialog per community: a delete still running after a cancel lands in no other's. */
 const deletingKey = computed(() => deleting.value?.path ?? "");
 
-const folder = computed(() => `${settings.value.rootFolder}/${COMMUNITIES_FOLDER}`);
+const folder = computed(() => recordFolder(settings.value.rootFolder, communityType));
 const loading = computed(() => !list.value.ready && list.value.failure === undefined);
 const loadingShown = useDelayed(() => loading.value);
 const failure = computed(() =>
   list.value.failure === undefined ? undefined : describeError(list.value.failure, catalog),
 );
-const empty = computed(() => list.value.ready && list.value.communities.length === 0);
+const empty = computed(() => list.value.ready && list.value.records.length === 0);
 const sheetOpen = computed({
   get: () => editing.value !== undefined,
   set: (open: boolean) => {
@@ -148,13 +148,13 @@ const close = () => {
       />
     </div>
     <ul
-      v-else-if="list.communities.length > 0"
+      v-else-if="list.records.length > 0"
       class="wm:flex wm:flex-col wm:gap-2"
       :aria-label="t.screen.title"
       data-testid="communities"
     >
       <CommunityCard
-        v-for="community in list.communities"
+        v-for="community in list.records"
         :key="cardKey(community)"
         :community="community"
         :selected="isSelected(community)"
@@ -174,7 +174,7 @@ const close = () => {
         <CommunityForm
           v-if="editing"
           :community="editing.community"
-          :communities="list.communities"
+          :communities="list.records"
           @done="saved"
           @cancel="close"
         />

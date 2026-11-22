@@ -1,17 +1,12 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect } from "effect";
 import {
-  COMMUNITIES_FOLDER,
   InvalidCommunityError,
   communityList,
   createCommunity,
   deleteCommunity,
 } from "../../../../src/application/communities";
-import {
-  NoteNotFoundError,
-  NoteStore,
-  NoteWriteRefusedError,
-} from "../../../../src/application/notes";
+import { NoteStore } from "../../../../src/application/notes";
 import type { CommunityInput } from "../../../../src/domain/communities";
 import {
   FOLDER,
@@ -39,8 +34,7 @@ describe("createCommunity", () => {
     return Effect.gen(function* () {
       yield* ready;
       const note = yield* createCommunity(INPUT);
-      assert.strictEqual(COMMUNITIES_FOLDER, "Gemeinschaften");
-      assert.strictEqual(note.path, `WEG Manager/${COMMUNITIES_FOLDER}/Ahornweg 12.md`);
+      assert.strictEqual(note.path, "WEG Manager/Gemeinschaften/Ahornweg 12.md");
       const read = yield* stored(note.path);
       assert.deepStrictEqual(Object.entries(read.frontmatter), [
         ["schema", "weg-manager.community/v1"],
@@ -55,29 +49,9 @@ describe("createCommunity", () => {
       yield* indexed;
       const list = yield* communityList;
       assert.deepStrictEqual(
-        list.communities.map((community) => community.id),
+        list.records.map((community) => community.id),
         [communityId(1)],
       );
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("uses the root folder from the settings", () => {
-    const fixture = communitiesFixture({ settings: { rootFolder: "Beirat/WEG" } });
-    return Effect.gen(function* () {
-      yield* ready;
-      const note = yield* createCommunity(INPUT);
-      assert.strictEqual(note.path, "Beirat/WEG/Gemeinschaften/Ahornweg 12.md");
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("adds (2) when the file name is taken and keeps the user's name in the note", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      fixture.memory.seed(`${FOLDER}/Ahornweg 12-14.md`, "none");
-      yield* ready;
-      const note = yield* createCommunity({ ...INPUT, name: "Ahornweg 12/14" });
-      assert.strictEqual(note.path, `${FOLDER}/Ahornweg 12-14 (2).md`);
-      assert.strictEqual((yield* stored(note.path)).frontmatter["name"], "Ahornweg 12/14");
     }).pipe(Effect.provide(fixture.layer));
   });
 
@@ -130,7 +104,7 @@ describe("deleteCommunity", () => {
       fixture.memory.seed(`${FOLDER}/G1.md`, communityNote(1));
       fixture.memory.seed(`${FOLDER}/G2.md`, communityNote(2, { color: "blue" }));
       yield* ready;
-      const [first] = (yield* communityList).communities;
+      const [first] = (yield* communityList).records;
       if (first === undefined) throw new Error("no community");
       yield* deleteCommunity(first);
       assert.deepStrictEqual(
@@ -139,70 +113,9 @@ describe("deleteCommunity", () => {
       );
       yield* indexed;
       assert.deepStrictEqual(
-        (yield* communityList).communities.map((community) => community.id),
+        (yield* communityList).records.map((community) => community.id),
         [communityId(2)],
       );
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("finds a note renamed meanwhile by its id", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      fixture.memory.seed(`${FOLDER}/G1.md`, communityNote(1));
-      yield* ready;
-      const [first] = (yield* communityList).communities;
-      if (first === undefined) throw new Error("no community");
-      yield* NoteStore.use((store) => store.rename(first.path, "Umbenannt"));
-      yield* indexed;
-      yield* deleteCommunity(first);
-      assert.deepStrictEqual(yield* listed, []);
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("refuses to trash either note when a copy with the same id appeared meanwhile", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      fixture.memory.seed(`${FOLDER}/Gemeinschaft 1.md`, communityNote(1));
-      yield* ready;
-      const [first] = (yield* communityList).communities;
-      if (first === undefined) throw new Error("no community");
-      fixture.memory.seed(`${FOLDER}/Gemeinschaft 1 (Kopie).md`, communityNote(1));
-      yield* indexed;
-      const error = yield* Effect.flip(deleteCommunity(first));
-      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "duplicate-id" }));
-      assert.deepStrictEqual(
-        (yield* listed).map((note) => note.path),
-        [`${FOLDER}/Gemeinschaft 1 (Kopie).md`, `${FOLDER}/Gemeinschaft 1.md`],
-      );
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("deletes a note without an id by its own path", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      fixture.memory.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", id: undefined }));
-      fixture.memory.seed(`${FOLDER}/B.md`, communityNote(2, { name: "B", id: undefined }));
-      yield* ready;
-      const [, second] = (yield* communityList).communities;
-      if (second === undefined) throw new Error("no community");
-      yield* deleteCommunity(second);
-      assert.deepStrictEqual(
-        (yield* listed).map((note) => note.path),
-        [`${FOLDER}/A.md`],
-      );
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("fails with NoteNotFoundError when the note is gone", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      fixture.memory.seed(`${FOLDER}/G1.md`, communityNote(1));
-      yield* ready;
-      const [first] = (yield* communityList).communities;
-      if (first === undefined) throw new Error("no community");
-      yield* NoteStore.use((store) => store.trash(first.path));
-      const error = yield* Effect.flip(deleteCommunity(first));
-      assert.deepStrictEqual(error, new NoteNotFoundError());
     }).pipe(Effect.provide(fixture.layer));
   });
 });

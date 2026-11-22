@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest";
-import { Effect, Fiber, Layer } from "effect";
+import { Effect } from "effect";
 import {
   InvalidCommunityError,
   canChangeShortCode,
@@ -7,13 +7,7 @@ import {
   updateCommunity,
   type Community,
 } from "../../../../src/application/communities";
-import {
-  NoteEditConflictError,
-  NoteNotFoundError,
-  NoteStore,
-  NoteWriteRefusedError,
-} from "../../../../src/application/notes";
-import { NoteWriteError } from "../../../../src/application/notes/errors";
+import { NoteStore } from "../../../../src/application/notes";
 import type { CommunityInput } from "../../../../src/domain/communities";
 import {
   FOLDER,
@@ -23,7 +17,6 @@ import {
   ready,
   stored,
 } from "../../../support/communities/fixture";
-import { settle } from "../../../support/notes/index-fixture";
 
 const PATH = `${FOLDER}/Gemeinschaft 1.md`;
 const BODY = "Eigene Notizen\n";
@@ -38,8 +31,8 @@ const inputOf = (community: Community, change: Partial<CommunityInput> = {}): Co
   ...change,
 });
 
-const first = Effect.map(communityList, ({ communities }) => {
-  const [community] = communities;
+const first = Effect.map(communityList, ({ records }) => {
+  const [community] = records;
   if (community === undefined) throw new Error("no community");
   return community;
 });
@@ -79,25 +72,6 @@ describe("updateCommunity", () => {
       }).pipe(Effect.provide(fixture.layer));
     },
   );
-
-  it.effect("writes nothing and names the conflict when both changed a field", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      const community = yield* loaded(fixture);
-      const theirs = { ...community.frontmatter, kind: "Tiefgarage" };
-      fixture.memory.seed(PATH, theirs, BODY);
-      const error = yield* Effect.flip(
-        updateCommunity(community, inputOf(community, { kind: "Haus" })),
-      );
-      assert.deepStrictEqual(
-        error,
-        new NoteEditConflictError({
-          conflicts: [{ key: "kind", base: "WEG", edited: "Haus", current: "Tiefgarage" }],
-        }),
-      );
-      assert.deepStrictEqual((yield* stored(PATH)).frontmatter, theirs);
-    }).pipe(Effect.provide(fixture.layer));
-  });
 
   it.effect("leaves a field the user did not change as written, spaces included", () => {
     const fixture = communitiesFixture();
@@ -203,36 +177,6 @@ describe("updateCommunity", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
-  it.effect("renames a file with a clash suffix and adds one when the new name is taken", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      fixture.memory.seed(`${FOLDER}/Neu.md`, "none");
-      const community = yield* loaded(fixture, {}, `${FOLDER}/Gemeinschaft 1 (2).md`);
-      const note = yield* updateCommunity(community, inputOf(community, { name: "Neu" }));
-      assert.strictEqual(note.path, `${FOLDER}/Neu (2).md`);
-      assert.deepStrictEqual(yield* paths, [`${FOLDER}/Neu (2).md`]);
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("keeps a file name the user chose", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      const community = yield* loaded(fixture, {}, `${FOLDER}/Unsere WEG.md`);
-      const note = yield* updateCommunity(community, inputOf(community, { name: "Neu" }));
-      assert.strictEqual(note.path, `${FOLDER}/Unsere WEG.md`);
-      assert.strictEqual((yield* stored(note.path)).frontmatter["name"], "Neu");
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("does not rename when the name stays", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      const community = yield* loaded(fixture, {}, `${FOLDER}/Gemeinschaft 1 (2).md`);
-      const note = yield* updateCommunity(community, inputOf(community, { kind: "Haus" }));
-      assert.strictEqual(note.path, `${FOLDER}/Gemeinschaft 1 (2).md`);
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
   it.effect("keeps the saved note when the rename fails, and logs it without a name", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {
@@ -247,125 +191,6 @@ describe("updateCommunity", () => {
         fixture.logger.entries().filter((entry) => entry.event.startsWith("communities.")),
         [{ level: "warn", event: "communities.rename.failed" }],
       );
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("still renames the file when an unload interrupts while the save is written", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      const community = yield* loaded(fixture);
-      fixture.memory.holdWrites();
-      const saving = yield* Effect.forkChild(
-        updateCommunity(community, inputOf(community, { name: "Neu" })),
-      );
-      yield* settle;
-      assert.strictEqual(fixture.memory.heldWrites(), 1);
-      // `ManagedRuntime.dispose` interrupts the command's fiber and waits for it.
-      const unloading = yield* Effect.forkChild(Fiber.interrupt(saving));
-      yield* settle;
-      fixture.memory.releaseWrites();
-      yield* Fiber.join(unloading);
-      assert.deepStrictEqual(yield* paths, [`${FOLDER}/Neu.md`]);
-      assert.strictEqual((yield* stored(`${FOLDER}/Neu.md`)).frontmatter["name"], "Neu");
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("tries up to the hundredth name", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      const community = yield* loaded(fixture);
-      for (let n = 1; n <= 99; n += 1) {
-        fixture.memory.seed(`${FOLDER}/${n === 1 ? "Neu" : `Neu (${n})`}.md`, "none");
-      }
-      const note = yield* updateCommunity(community, inputOf(community, { name: "Neu" }));
-      assert.strictEqual(note.path, `${FOLDER}/Neu (100).md`);
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("stops trying names when the rename fails for another reason", () => {
-    const fixture = communitiesFixture();
-    let renames = 0;
-    const failing = Layer.effect(
-      NoteStore,
-      NoteStore.useSync((store) =>
-        NoteStore.of({
-          ...store,
-          rename: () =>
-            Effect.suspend(() => {
-              renames += 1;
-              return Effect.fail(new NoteWriteError({ cause: new Error("disk") }));
-            }),
-        }),
-      ),
-    );
-    return Effect.gen(function* () {
-      const community = yield* loaded(fixture);
-      const note = yield* updateCommunity(community, inputOf(community, { name: "Neu" })).pipe(
-        Effect.provide(failing),
-      );
-      assert.strictEqual(note.path, PATH);
-      assert.strictEqual(renames, 1);
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("finds a note renamed meanwhile by its id", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      fixture.memory.seed(PATH, communityNote(1), BODY);
-      fixture.memory.seed(
-        `${FOLDER}/Andere.md`,
-        communityNote(2, { name: "Andere", color: "blue" }),
-      );
-      yield* ready;
-      const community = (yield* communityList).communities[1];
-      if (community === undefined) throw new Error("no community");
-      yield* NoteStore.use((store) => store.rename(PATH, "Eigener Name"));
-      yield* indexed;
-      const note = yield* updateCommunity(community, inputOf(community, { kind: "Haus" }));
-      assert.strictEqual(note.path, `${FOLDER}/Eigener Name.md`);
-      assert.strictEqual((yield* stored(note.path)).frontmatter["kind"], "Haus");
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("refuses to write when a copy with the same id appeared meanwhile", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      const community = yield* loaded(fixture);
-      // Sorted by name, the copy comes first: neither of the two may be written (ADR 0007).
-      const copy = `${FOLDER}/Gemeinschaft 1 (Kopie).md`;
-      fixture.memory.seed(copy, communityNote(1), BODY);
-      yield* indexed;
-      const error = yield* Effect.flip(
-        updateCommunity(community, inputOf(community, { kind: "Haus" })),
-      );
-      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "duplicate-id" }));
-      assert.deepStrictEqual((yield* stored(PATH)).frontmatter, communityNote(1));
-      assert.deepStrictEqual((yield* stored(copy)).frontmatter, communityNote(1));
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("fails with NoteNotFoundError when the note is gone", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      const community = yield* loaded(fixture);
-      yield* NoteStore.use((store) => store.trash(PATH));
-      yield* indexed;
-      const error = yield* Effect.flip(updateCommunity(community, inputOf(community)));
-      assert.deepStrictEqual(error, new NoteNotFoundError());
-    }).pipe(Effect.provide(fixture.layer));
-  });
-
-  it.effect("refuses to write a note a newer version saved meanwhile", () => {
-    const fixture = communitiesFixture();
-    return Effect.gen(function* () {
-      const community = yield* loaded(fixture);
-      const newer = { ...community.frontmatter, schema: "weg-manager.community/v2" };
-      fixture.memory.seed(PATH, newer, BODY);
-      const error = yield* Effect.flip(
-        updateCommunity(community, inputOf(community, { kind: "Haus" })),
-      );
-      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "newer-version" }));
-      assert.deepStrictEqual((yield* stored(PATH)).frontmatter, newer);
     }).pipe(Effect.provide(fixture.layer));
   });
 });

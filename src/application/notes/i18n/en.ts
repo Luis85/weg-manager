@@ -61,6 +61,11 @@ export const notesEn: NotesCatalog = {
       detail: "Obsidian couldn't read every note, so the list may be incomplete. Try again.",
     },
   },
+  notices: {
+    created: (name) => `“${name}” created`,
+    saved: (name) => `“${name}” saved`,
+    deleted: (name) => `“${name}” moved to the trash`,
+  },
   recordIssues: {
     "schema.malformed": () =>
       "The schema property is malformed, so the note is read-only. Open the note and fix its schema property.",

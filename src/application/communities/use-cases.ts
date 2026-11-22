@@ -1,4 +1,4 @@
-import { Effect, Result, Stream } from "effect";
+import { Effect } from "effect";
 import {
   communityType,
   communityValues,
@@ -6,52 +6,15 @@ import {
   type CommunityInput,
   type CommunityValues,
 } from "../../domain/communities";
-import {
-  MAX_NAME_ATTEMPTS,
-  clashName,
-  editedValues,
-  followsTitle,
-  recordFileName,
-} from "../../domain/notes";
-import {
-  NoteStore,
-  NoteWriteRefusedError,
-  editChange,
-  newRecordFrontmatter,
-  noteChanges,
-  noteSnapshot,
-  type Note,
-} from "../notes";
-import { Logger, Messages, Notifier, SettingsService } from "../shell";
-import type { CommunitiesCatalog } from "./i18n/catalog";
+import { editedValues } from "../../domain/notes";
 import { InvalidCommunityError } from "./errors";
-import { canChangeShortCode, fileNameOf, shownName, toCommunityList, type Community } from "./list";
-
-/**
- * The folder below the root folder where new community notes go. Part of the file contract, so it
- * is German in every UI language (ADR 0007): a vault is shared between devices.
- */
-export const COMMUNITIES_FOLDER = communityType.folder;
-
-/**
- * Confirms a write with a short notice through the `Notifier` (handoff: a toast only confirms a
- * short-lived success; failures stay at the form). The title says it all.
- */
-const confirm = (title: (notices: CommunitiesCatalog["notices"]) => string) =>
-  Effect.gen(function* () {
-    const { communities } = yield* Messages;
-    yield* (yield* Notifier).notify({
-      severity: "info",
-      title: title(communities.notices),
-      detail: "",
-    });
-  });
+import { canChangeShortCode, communityRecords, shownName, type Community } from "./list";
 
 /** The communities now, for `useStream`. Never suspends. */
-export const communityList = Effect.map(noteSnapshot(communityType), toCommunityList);
+export const communityList = communityRecords.list;
 
 /** The communities: the current list first, then each change. */
-export const communityListChanges = Stream.map(noteChanges(communityType), toCommunityList);
+export const communityListChanges = communityRecords.changes;
 
 /**
  * Every community's valid values and shown name: what the uniqueness rules compare with and name.
@@ -78,101 +41,30 @@ const checked = (
  */
 export const createCommunity = (input: CommunityInput) =>
   Effect.gen(function* () {
-    const { communities } = yield* communityList;
-    const values = yield* checked(input, { others: valuesOf(communities) });
-    const { rootFolder } = yield* (yield* SettingsService).current;
-    const frontmatter = yield* newRecordFrontmatter(communityType, values);
-    const note = yield* (yield* NoteStore).create({
-      folder: `${rootFolder}/${COMMUNITIES_FOLDER}`,
-      name: recordFileName(values.name, values.short_code),
-      frontmatter,
-    });
-    yield* confirm((notices) => notices.created(values.name));
-    return note;
-  });
-
-/**
- * Where the community lives now: a note renamed meanwhile is found by its id (ADR 0007). An id
- * that another note carries too (a copy made meanwhile) is read-only on every note that has it,
- * so the write is refused (`duplicate-id`) rather than guessing which note the form loaded.
- */
-const pathOf = (community: Community) =>
-  Effect.flatMap(communityList, ({ communities }) => {
-    const found = communities.filter(
-      (candidate) => candidate.id !== undefined && candidate.id === community.id,
-    );
-    const duplicated = found.some((candidate) =>
-      candidate.issues.some((issue) => issue.code === "id.duplicate"),
-    );
-    return duplicated
-      ? Effect.fail(new NoteWriteRefusedError({ reason: "duplicate-id" }))
-      : Effect.succeed(found[0]?.path ?? community.path);
-  });
-
-/**
- * Gives the file the community's new name, when the name changed and the file still carries the
- * old one (`followsName`); a name the user gave the file stays. A taken name gets ` (2)`, ` (3)`,
- * … A rename that fails keeps the saved note where it is and is logged: the record is saved, and
- * the file name is only for people.
- */
-const followName = (note: Note, before: Community, values: CommunityValues) =>
-  Effect.gen(function* () {
-    const old = before.values.name;
-    if (old === undefined || old === values.name) return note;
-    const fileName = fileNameOf(note.path);
-    if (!followsTitle(fileName, old, before.values.short_code ?? values.short_code)) return note;
-    const store = yield* NoteStore;
-    const target = recordFileName(values.name, values.short_code);
-    for (let attempt = 1; attempt <= MAX_NAME_ATTEMPTS; attempt += 1) {
-      const renamed = yield* Effect.result(store.rename(note.path, clashName(target, attempt)));
-      if (Result.isSuccess(renamed)) return renamed.success;
-      if (renamed.failure._tag !== "NotePathTakenError") break;
-    }
-    yield* (yield* Logger).log({ level: "warn", event: "communities.rename.failed" });
-    return note;
+    const { records } = yield* communityList;
+    const values = yield* checked(input, { others: valuesOf(records) });
+    return yield* communityRecords.create(values);
   });
 
 /**
  * Saves the form of `community` (as it was loaded) with `input` (PBI-56, ADR 0007). The rules run
  * against the other communities; the short code stays as loaded unless it may be repaired
  * (`canChangeShortCode`). A field left as loaded keeps the note's value as written, not even
- * trimmed (`editedValues`). The write merges per field with an outside edit; a field both changed
- * is a conflict, a note that is no longer this record is refused, and a note that is gone is
- * `NoteNotFoundError`. Then the file follows the name; save and rename run as one command, so an
- * unload once the save has started waits for both.
+ * trimmed (`editedValues`). The record kit then merges per field with an outside edit and lets the
+ * file follow the name, as one command.
  */
 export const updateCommunity = (community: Community, input: CommunityInput) =>
   Effect.gen(function* () {
-    const { communities } = yield* communityList;
+    const { records } = yield* communityList;
     const loaded = community.values;
     const fixed = canChangeShortCode(community)
       ? input
       : { ...input, short_code: loaded.short_code ?? input.short_code };
-    yield* checked(fixed, { others: valuesOf(communities), loaded });
+    yield* checked(fixed, { others: valuesOf(records), loaded });
     const draft = communityValues(fixed);
-    const values = editedValues(
-      communityType,
-      fixed,
-      draft,
-      community.frontmatter,
-    ) as CommunityValues;
-    const path = yield* pathOf(community);
-    const store = yield* NoteStore;
-    // One command: an unload while the save is written still lets the file follow the name.
-    const note = yield* Effect.uninterruptible(
-      Effect.flatMap(
-        store.update(path, editChange(communityType, community.frontmatter, values)),
-        (written) => followName(written, community, values),
-      ),
-    );
-    yield* confirm((notices) => notices.saved(values.name));
-    return note;
+    const values = editedValues(communityType, fixed, draft, community.frontmatter);
+    return yield* communityRecords.update(community, values as CommunityValues);
   });
 
 /** Moves the community's note to Obsidian's trash; one renamed meanwhile is found by its id. */
-export const deleteCommunity = (community: Community) =>
-  Effect.gen(function* () {
-    const path = yield* pathOf(community);
-    yield* NoteStore.use((store) => store.trash(path));
-    yield* confirm((notices) => notices.deleted(shownName(community)));
-  });
+export const deleteCommunity = communityRecords.remove;

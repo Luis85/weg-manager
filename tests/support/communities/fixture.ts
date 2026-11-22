@@ -1,13 +1,12 @@
-import { Duration, Effect, Layer } from "effect";
-import { TestClock } from "effect/testing";
+import { Effect, Layer } from "effect";
 import { communitySelectionLayer } from "../../../src/application/communities";
-import { NoteStore } from "../../../src/application/notes";
-import { INDEX_BATCH_QUIET } from "../../../src/application/notes/index-batches";
 import { DeviceStore, type DeviceValue } from "../../../src/application/shell";
 import { communityType } from "../../../src/domain/communities";
 import { sequentialIdGenerator } from "../../../src/infrastructure/memory/notes";
 import { deviceStoreInMemory } from "../../../src/infrastructure/memory/shell";
-import { indexFixture, settle, untilUnindexed, vaultReady } from "../notes/index-fixture";
+import { indexFixture } from "../notes/index-fixture";
+
+export { indexed, ready, stored } from "../notes/record-fixture";
 
 /** The id of the `n`-th community `sequentialIdGenerator` makes. */
 export const communityId = (n: number) =>
@@ -61,18 +60,3 @@ export const communitiesFixture = (options: CommunitiesFixtureOptions = {}) => {
   /** How often the device store was written. */
   return { ...index, layer, deviceWrites: () => deviceWrites };
 };
-
-/** Builds the index: `VaultReady`, then the first build. */
-export const ready = Effect.andThen(
-  vaultReady,
-  untilUnindexed((snapshot) => snapshot.ready),
-);
-
-/** Lets the index read what was written or seeded since: one quiet batch. */
-export const indexed = Effect.andThen(
-  TestClock.adjust(Duration.toMillis(INDEX_BATCH_QUIET)),
-  settle,
-);
-
-/** The note at `path` as the store holds it now. */
-export const stored = (path: string) => NoteStore.use((store) => store.read(path));

@@ -29,8 +29,8 @@ const captionId = useId();
 
 /** Each community that can be selected: one without issues, in the list's order. */
 const options = computed(() => {
-  const ids = new Set(selectableIds(list.value.communities));
-  return list.value.communities.filter(
+  const ids = new Set(selectableIds(list.value.records));
+  return list.value.records.filter(
     (community): community is Community & { readonly id: string } =>
       community.id !== undefined && ids.delete(community.id),
   );
@@ -41,7 +41,7 @@ const loading = useDelayed(() => !ready.value && list.value.failure === undefine
 const state = computed(() => {
   if (!ready.value) return list.value.failure === undefined ? "loading" : "failed";
   if (options.value.length > 0) return "options";
-  return list.value.communities.length === 0 ? "none" : "unavailable";
+  return list.value.records.length === 0 ? "none" : "unavailable";
 });
 const note = computed(() =>
   state.value === "none" || state.value === "unavailable" ? t.switcher[state.value] : undefined,

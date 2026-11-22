@@ -13,14 +13,16 @@ export {
   NoteWriteRefusedError,
   type NotesError,
 } from "./errors";
-export { isInFolder } from "./folders";
-export type { NotesCatalog } from "./i18n/catalog";
-export { describeNoteIssue, describeUnindexedIssue } from "./i18n/describe";
+export { isInFolder, recordFolder } from "./folders";
+export type { IssueSentences, NotesCatalog, RecordTexts } from "./i18n/catalog";
+export { describeNoteIssue, describeRecordIssue, describeUnindexedIssue } from "./i18n/describe";
 export { notesDe } from "./i18n/de";
 export { notesEn } from "./i18n/en";
 export { openNote } from "./open-note";
 export { applyPatch } from "./patch";
 export { editChange, newRecordFrontmatter } from "./records";
+export { defineRecords } from "./record-kit";
+export { fileNameOf, type RecordRow } from "./record-list";
 export {
   IdGenerator,
   NoteOpener,

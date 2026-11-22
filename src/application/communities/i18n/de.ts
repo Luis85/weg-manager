@@ -105,11 +105,6 @@ export const communitiesDe: CommunitiesCatalog = {
     "kind.invalid": (_, label) => oneLine(label, LABEL_MAX_LENGTH),
     "unit-label.invalid": (_, label) => oneLine(label, LABEL_MAX_LENGTH),
   },
-  notices: {
-    created: (name) => `„${name}“ angelegt`,
-    saved: (name) => `„${name}“ gespeichert`,
-    deleted: (name) => `„${name}“ in den Papierkorb verschoben`,
-  },
   errors: {
     invalid: {
       title: "Gemeinschaft nicht gespeichert",

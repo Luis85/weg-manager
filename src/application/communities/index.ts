@@ -23,7 +23,6 @@ export {
 } from "./selection";
 export type { CommunitiesServices } from "./services";
 export {
-  COMMUNITIES_FOLDER,
   communityList,
   communityListChanges,
   createCommunity,

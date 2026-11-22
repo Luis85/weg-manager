@@ -4,22 +4,9 @@ import type {
   CommunityKey,
   KindPair,
 } from "../../../domain/communities";
+import type { IssueSentences } from "../../notes";
 
 type Text = { readonly title: string; readonly detail: string };
-
-/** One sentence per issue code of this module; the issue's data and the field's label fill it. */
-type IssueTexts = {
-  readonly [Code in Exclude<CommunityFieldIssue["code"], "field.missing">]: (
-    issue: IssueOf<Code>,
-    label: string,
-  ) => string;
-};
-
-/** The issue of `Code`: with its data, or (a code that carries none) just its key and code. */
-type IssueOf<Code extends string> =
-  Extract<CommunityFieldIssue, { code: Code }> extends never
-    ? { readonly key: CommunityKey; readonly code: Code }
-    : Extract<CommunityFieldIssue, { code: Code }>;
 
 /**
  * Every text of the communities module the user sees, for one language: the module's part of the
@@ -105,13 +92,7 @@ export type CommunitiesCatalog = {
   };
   /** What a missing field asks for, per field. */
   readonly missing: Readonly<Record<CommunityKey, string>>;
-  /** One sentence per issue code of this module. */
-  readonly issues: IssueTexts;
-  /** The notices that confirm a write (handoff: Toast, only for short-lived success). */
-  readonly notices: {
-    created(name: string): string;
-    saved(name: string): string;
-    deleted(name: string): string;
-  };
+  /** One sentence per issue code of this module; the issue's data and the field's label fill it. */
+  readonly issues: IssueSentences<CommunityFieldIssue>;
   readonly errors: { readonly invalid: Text };
 };

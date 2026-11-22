@@ -32,9 +32,9 @@ describe("harnessLayer scenarios", () => {
   it.effect("loaded: two communities, the selection asks for a choice", () =>
     Effect.gen(function* () {
       const list = yield* built;
-      assert.deepStrictEqual(names(list.communities), ["Ahornweg 12", "Tiefgarage Ahornweg"]);
+      assert.deepStrictEqual(names(list.records), ["Ahornweg 12", "Tiefgarage Ahornweg"]);
       assert.deepStrictEqual(
-        list.communities.map((community) => community.issues),
+        list.records.map((community) => community.issues),
         [[], []],
       );
       const selection = yield* Stream.runHead(
@@ -47,7 +47,7 @@ describe("harnessLayer scenarios", () => {
   it.effect("empty: no community and nothing to show", () =>
     Effect.gen(function* () {
       const list = yield* built;
-      assert.deepStrictEqual(list.communities, []);
+      assert.deepStrictEqual(list.records, []);
       assert.deepStrictEqual((yield* unindexedSnapshot).notes, []);
     }).pipe(Effect.provide(harnessLayer("empty"))),
   );
@@ -56,7 +56,7 @@ describe("harnessLayer scenarios", () => {
     Effect.gen(function* () {
       const list = yield* built;
       assert.deepStrictEqual(
-        list.communities.map((community) => [
+        list.records.map((community) => [
           shownName(community),
           community.issues.map((issue) => issue.code),
         ]),
@@ -80,7 +80,7 @@ describe("harnessLayer scenarios", () => {
     Effect.gen(function* () {
       const list = yield* built;
       assert.deepStrictEqual(
-        list.communities.map((community) => [shownName(community), community.editable]),
+        list.records.map((community) => [shownName(community), community.editable]),
         [
           ["Ahornweg 12", true],
           ["Aus der Zukunft", false],
@@ -96,7 +96,7 @@ describe("harnessLayer scenarios", () => {
       yield* rebuildNoteIndex;
       const retried = yield* communityList;
       assert.deepStrictEqual([retried.ready, retried.failure], [true, undefined]);
-      assert.deepStrictEqual(names(retried.communities), ["Ahornweg 12", "Tiefgarage Ahornweg"]);
+      assert.deepStrictEqual(names(retried.records), ["Ahornweg 12", "Tiefgarage Ahornweg"]);
     }).pipe(Effect.provide(harnessLayer("failure"))),
   );
 });
@@ -122,9 +122,9 @@ describe("harnessLayer", () => {
       );
       yield* TestClock.adjust(INDEX_BATCH_QUIET);
       const shown = yield* Stream.runHead(
-        Stream.filter(communityListChanges, (list) => list.communities.length === 1),
+        Stream.filter(communityListChanges, (list) => list.records.length === 1),
       );
-      assert.deepStrictEqual(names(Option.getOrThrow(shown).communities), ["Birke"]);
+      assert.deepStrictEqual(names(Option.getOrThrow(shown).records), ["Birke"]);
     }).pipe(Effect.provide(harnessLayer("empty"))),
   );
 

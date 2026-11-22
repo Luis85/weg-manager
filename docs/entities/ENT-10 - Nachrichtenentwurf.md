@@ -23,6 +23,7 @@ Die prüfbare Fassung einer vorgesehenen externen Nachricht. Das WCS führt den 
 | Gemeinschaft | `community_id` | Text | P | Genau eine Gemeinschaft. |
 | Anlass | `decision_card_id`, `matter_ids` | Text, Liste | O | Bezug zur Entscheidungskarte und ihrer Wahl und Notiz, zu den Vorgängen. |
 | Empfänger | `recipient_ids` | Liste | P | Personen mit Rolle oder ein Verteiler ([[ENT-02 - Person und Rolle]]). |
+| Absender | `sender` | Text | O | Absenderadresse, je Gemeinschaft vorbelegt (etwa die Beirats-Adresse). Nur eine Vorgabe für den Menschen, der sendet. |
 | Text | Body | Text | P | WCS `entwurf` beziehungsweise `kopiertext`. |
 | Sprache | `language` | Text | P | `de` oder `de+en`. Eigentümertexte immer `de+en`. |
 | Zusammengehörige Fassung | `translation_of_id` | Text | O | Verknüpft DE- und EN-Fassung. |
@@ -60,6 +61,10 @@ Entwürfe enthalten nie Daten anderer Eigentümer und nie Inhalte der Bewertungs
 - Neutrale Postfachreferenz statt Bindung an einen bestimmten Mail-Dienst.
 - Das WCS kennt keinen eigenen Entwurf. Die Note bleibt als unsere Ergänzung eigenständig, weil sie Empfänger, Sprachfassungen, Anlagen und Prüfstand trägt.
 - Eine technische Mail- oder Übersetzungsintegration ist nicht vorausgesetzt. Der Entwurf ist kein Versanddienst.
+
+## Befund aus dem IST-Ablauf
+
+Laut [[Research - IST-Ablauf des Pilot-Beirats (Storymap)]] ist der Schritt von der bestätigten Wahl zum Versand der größte Engpass. Der Pilot stellt heute bei jedem Entwurf den Absender von Hand auf die Beirats-Adresse um. Es entsteht je Gemeinschaft und Empfänger ein Entwurf, Eigentümer-Infos auf Deutsch und Englisch. Das stützt die Felder Absender, Empfänger und Sprache und die Bündelung je Gemeinschaft.
 
 ## Offene Punkte
 

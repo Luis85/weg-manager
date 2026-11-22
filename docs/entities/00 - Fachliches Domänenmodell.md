@@ -64,7 +64,7 @@ erDiagram
 | Note | Objekt | scope | WCS |
 | --- | --- | --- | --- |
 | [[ENT-01 - Gemeinschaft]] | Gemeinschaft (WEG, Tiefgarage, Viertel als Vorschlag) | mvp | v1 |
-| [[ENT-02 - Person und Rolle]] | Person mit Rolle in einer Gemeinschaft | mvp | v1 (als Text in `wer`) |
+| [[ENT-02 - Person und Rolle]] | Person mit Rolle in einer Gemeinschaft | mvp | v1-offen (im WCS Text in `wer`) |
 | [[ENT-23 - Grundstück]] | Grundstück, Flurstück | spaeter | spaeter |
 | [[ENT-24 - Einheit]] | Wohnung, Stellplatz oder Gewerbe mit MEA | spaeter | spaeter |
 | [[ENT-25 - Beschluss]] | Beschluss mit Umsetzungsstatus | spaeter | v1-should |

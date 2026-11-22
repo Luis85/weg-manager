@@ -18,6 +18,7 @@ requirements:
   - "[[PBI-33 - Wochenarbeit auf dem Handy abschließen]]"
   - "[[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]]"
   - "[[PBI-42 - AI-Agent direkt mit den Notizen arbeiten lassen]]"
+  - "[[PBI-64 - Kurze Einführung durch das Plugin erhalten]]"
 entities:
   - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
   - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
@@ -76,11 +77,17 @@ Beide Fassungen nebeneinander (Plugin / extern geändert) mit Zeitpunkt und Quel
 
 ## Erststart
 
+> [!note] Abgelöst
+> Die Einrichtung beim ersten Start ist seit 22.11.2026 in [[VIEW-09 - Einrichtung]] beschrieben: nur Gemeinschaften, danach die Lage mit „Erste Schritte“ ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und kurze Tour]]). Der folgende Stand v2 bleibt als Referenz.
+
 Drei Schritte: Gemeinschaften (Name, Kürzel, Art, Farbe aus geprüfter Palette; vergebene Farben gesperrt) → Kontakte (gleiches Formular wie in [[VIEW-08 - Kontakte]]) → Register übernehmen (optional). Ablageordner änderbar.
 
 ![[v2-D13-Erststart.png]]
 
 ## Einführungstour
+
+> [!note] Abgelöst
+> Die Einführung hat seit 22.11.2026 höchstens fünf Schritte, wird angeboten statt automatisch gestartet und blockiert nur, solange sie läuft ([[PBI-64 - Kurze Einführung durch das Plugin erhalten]], [[VIEW-09 - Einrichtung]]). Neu starten über den Befehl „Einführung starten“ und die Gruppe „Einführung“ in den Plugin-Einstellungen von Obsidian. Der folgende Stand v2 bleibt als Referenz.
 
 Startet einmalig nach dem Erststart auf der Lage; danach über Einstellungen › Hilfe oder den Befehl „Einführungstour starten“. Willkommensdialog mit „Tour starten“ und „Überspringen“, dann 7 Schritte als Spotlight mit Hinweiskarte (Punkte, „n / 7“, Zurück, Weiter bzw. Fertig, × zum Beenden):
 

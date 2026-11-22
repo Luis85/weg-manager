@@ -95,3 +95,7 @@ Alt FR-19; P NFR-3/4/8; US-15. Quellkürzel: 01-Quellabdeckung (historische Quel
 ## Refinementgrenze
 
 Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe sind offen. Anwendbare Qualitätsanforderungen und offene Entscheidungen im [[02-MVP-PRD]] gehören zur Abnahme.
+
+## Kommentare
+
+- 22.11.2026: Kriterium 1 (Einführung zum ersten Punkt) und Kriterium 5 (Einführungstour) werden durch [[F-25 - Onboarding und Einführung]] konkretisiert, vor allem [[PBI-62 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-63 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]] und [[PBI-64 - Kurze Einführung durch das Plugin erhalten]]. Hilfe, Offline-Betrieb, Diagnose und die Hinweise in der Wochenarbeit bleiben hier. Siehe [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und kurze Tour]].

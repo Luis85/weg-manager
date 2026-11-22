@@ -14,6 +14,7 @@ views:
   - "[[VIEW-06 - Sachstand ausgeben]]"
   - "[[VIEW-07 - Einstellungen und Einrichtung]]"
   - "[[VIEW-08 - Kontakte]]"
+  - "[[VIEW-09 - Einrichtung]]"
 mockups:
   - "[[docs/design/sitemap/assets/v2-Sitemap.png]]"
 ---
@@ -64,8 +65,10 @@ flowchart LR
   S --> S3[Register-Import]
   S --> S4[Sicherung]
   S --> S5[Datenprobleme]
-  S --> S6[Hilfe & Erststart]
-  S6 --> S7([Einführungstour])
+  S --> S6[Hilfe & Einführung]
+  S6 --> S7([Einführung · 5 Schritte])
+  E0[Erststart ohne Gemeinschaft] --> E1[Einrichtung · VIEW-09]
+  E1 --> L
   S --> S8[Eigene Angaben]
   S --> S9[Arten von Gemeinschaften]
   S --> S10[Ablage]

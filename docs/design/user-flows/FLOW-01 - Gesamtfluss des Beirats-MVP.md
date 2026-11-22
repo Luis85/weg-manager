@@ -21,6 +21,7 @@ flows:
   - "[[FLOW-06 - Einrichten, Import und Datenerhalt]]"
   - "[[FLOW-07 - Sachstand gezielt ausgeben]]"
   - "[[FLOW-08 - Zwischen Plugin und direkter Dateibearbeitung wechseln]]"
+  - "[[FLOW-09 - Erststart, Einrichtung und Einführung]]"
 mockups:
   - "[[docs/design/sitemap/assets/v2-Flows.png]]"
 requirements:
@@ -74,7 +75,7 @@ Drei Rhythmen tragen das Produkt: **einmal pro Woche** geführt arbeiten, **zwis
 ```mermaid
 flowchart LR
   A[Plugin öffnen] --> B{Eingerichtet?}
-  B -- nein --> E[FLOW-06 Einrichten]
+  B -- nein --> E[FLOW-09 Einrichten]
   E --> L
   B -- ja --> L[Lage]
   L -->|Wochentag| W[FLOW-02 Woche starten]

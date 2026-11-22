@@ -56,6 +56,18 @@ _Avoid_: locked, disabled, invalid
 A field that the user changed in a form and someone else changed in the note meanwhile, to another value. Nothing is saved until the user chooses which value applies.
 _Avoid_: collision, clash, merge error
 
+**Setup** (German: Einrichtung):
+The guided steps on the first start in a vault without a community, ending with the communities written as notes. Whether setup is needed follows from the vault, never from a stored flag.
+_Avoid_: onboarding (the whole path), wizard (the UI pattern), installation (happens in Obsidian)
+
+**First steps** (German: Erste Schritte):
+The card on the overview that lists the next things to do after setup. Each step counts as done when the vault shows it, not when the user ticks it.
+_Avoid_: checklist, to-do, task (a task is a record)
+
+**Tour** (German: Einführung):
+The short, optional walk through the main areas, offered once after setup and restartable at any time. It never writes notes.
+_Avoid_: tutorial, walkthrough, guide
+
 **Tracer slice** (German: Durchstich):
 The first record type built through every layer, to prove the path that all later types take.
 _Avoid_: walking skeleton, demo, prototype

@@ -23,6 +23,9 @@ requirements:
 
 # FLOW-06 · Einrichten, Import und Datenerhalt
 
+> [!note] Erststart abgelöst
+> Erststart, Einrichtung und Einführung stehen seit 22.11.2026 in [[FLOW-09 - Erststart, Einrichtung und Einführung]]. Die Einrichtung fragt dort nur Gemeinschaften ab; Kontakte und Registerimport folgen über die Karte „Erste Schritte“. Import und Datenerhalt gelten hier weiter.
+
 ```mermaid
 flowchart TD
   A[Erststart] --> B[1 Gemeinschaften anlegen: Name, Kürzel, Farbe]

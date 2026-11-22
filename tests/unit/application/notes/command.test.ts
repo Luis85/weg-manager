@@ -1,6 +1,11 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Cause, Effect, Exit, Fiber, Result } from "effect";
-import { asDefect, createNote, writeCommand } from "../../../../src/application/notes/command";
+import {
+  asDefect,
+  createNote,
+  isFileGone,
+  writeCommand,
+} from "../../../../src/application/notes/command";
 import type { PlannedNote } from "../../../../src/application/notes/paths";
 
 const normalize = (path: string) => path.replace(/\/+/g, "/").replace(/^\/|\/$/g, "") || "/";
@@ -78,6 +83,28 @@ describe("writeCommand", () => {
       assert.isTrue(written);
     }),
   );
+});
+
+describe("isFileGone", () => {
+  it("is true for what Node rejects with when the file is not there", () => {
+    const rejection = Object.assign(new Error("ENOENT: no such file or directory, open 'a.md'"), {
+      errno: -2,
+      code: "ENOENT",
+      syscall: "open",
+    });
+    assert.isTrue(isFileGone(rejection));
+    assert.isTrue(isFileGone({ code: "ENOENT" }));
+  });
+
+  it("is false for every other rejection, also one that only says ENOENT", () => {
+    assert.isFalse(isFileGone(Object.assign(new Error("EACCES"), { code: "EACCES" })));
+    assert.isFalse(isFileGone(new Error("ENOENT: no such file or directory")));
+    assert.isFalse(isFileGone({ code: "enoent" }));
+    assert.isFalse(isFileGone({ cause: { code: "ENOENT" } }));
+    for (const other of ["ENOENT", 2, null, undefined, {}, []]) {
+      assert.isFalse(isFileGone(other));
+    }
+  });
 });
 
 describe("createNote", () => {

@@ -43,6 +43,7 @@ export { copyDiagnostics, setLogLevel } from "./use-cases";
 export {
   describeDefect,
   describeShellError,
+  forClosedView,
   type UserMessage,
   type UserMessageAction,
 } from "./user-messages";

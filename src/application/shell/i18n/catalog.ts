@@ -34,7 +34,11 @@ export type ShellCatalog = {
   readonly language: Language;
   readonly issues: IssueTexts;
   readonly errors: {
-    readonly storage: Text;
+    /**
+     * A failed save. `detailAfterClose` is the text once the view that held the user's input is
+     * closed, where "your input is kept" is no longer true (`forClosedView`).
+     */
+    readonly storage: Text & { readonly detailAfterClose: string };
     readonly readOnly: {
       readonly title: string;
       readonly detail: Readonly<Record<ReadOnlySettingsError["reason"], string>>;

@@ -39,6 +39,17 @@ describe("useCommand while the scope is alive", () => {
     expect(exposed.error.value).toBeUndefined();
   });
 
+  it("keeps saying that the input is kept while the view is open", async () => {
+    const { runtime, store, notifier } = make();
+    store.setFailSave(true);
+    const { exposed } = host(runtime, () => useCommand(setLogLevel));
+    await exposed.run("info");
+    expect(exposed.message.value?.detail).toBe(
+      "Die Einstellungsdatei konnte nicht geschrieben werden. Deine Eingabe ist erhalten. Speichere erneut.",
+    );
+    expect(notifier.messages()).toEqual([]);
+  });
+
   it("puts a typed failure and its message into error and message, without a notice", async () => {
     const { runtime, notifier } = make();
     const failure = new VaultReadError({ cause: new Error("x") });
@@ -201,7 +212,7 @@ describe("useCommand after the scope ended", () => {
     expect(encodeSettings(current)).toEqual(store.stored());
   });
 
-  it("shows a typed failure as a notice and leaves the component's refs alone", async () => {
+  it("shows a typed failure as a notice that tells the input is gone, and leaves the refs alone", async () => {
     const { runtime, store, notifier } = make({ store: { uncancellableSaves: true } });
     store.holdSaves();
     store.setFailSave(true);
@@ -221,13 +232,32 @@ describe("useCommand after the scope ended", () => {
         severity: "error",
         title: "Einstellungen nicht gespeichert",
         detail:
-          "Die Einstellungsdatei konnte nicht geschrieben werden. Deine Eingabe ist erhalten. Speichere erneut.",
-        action: "retry",
+          "Die Einstellungsdatei konnte nicht geschrieben werden, und deine Eingabe ging mit dem Schließen der Ansicht verloren. Öffne die Ansicht erneut und gib die Änderung noch einmal ein.",
       },
     ]);
     expect(exposed.error.value).toBeUndefined();
     expect(exposed.message.value).toBeUndefined();
     expect(exposed.pending.value).toBe(true);
+  });
+
+  it("words that notice in English too, and hands the same text to whoever awaits the run", async () => {
+    const { runtime, store, notifier } = make({
+      language: "en",
+      store: { uncancellableSaves: true },
+    });
+    store.holdSaves();
+    store.setFailSave(true);
+    const { wrapper, exposed } = host(runtime, () => useCommand(setLogLevel));
+    const running = exposed.run("info");
+    await settle();
+    wrapper.unmount();
+    store.releaseSaves();
+    const outcome = await running;
+    await settle();
+    const detail =
+      "The settings file couldn't be written, and your input was lost when the view closed. Open the view again and enter the change once more.";
+    expect(notifier.messages().map((message) => message.detail)).toEqual([detail]);
+    expect(outcome._tag === "failure" && outcome.message.detail).toBe(detail);
   });
 
   it("reports a defect exactly once", async () => {

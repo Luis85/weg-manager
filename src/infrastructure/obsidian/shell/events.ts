@@ -1,15 +1,26 @@
-import { Effect, Layer } from "effect";
+import { Duration, Effect, Layer, Option, Queue } from "effect";
 import { TFile, type EventRef, type Events, type Plugin, type TAbstractFile } from "obsidian";
 import { AppEvent } from "../../../application/events";
 import {
   EventBus,
+  Logger,
   reportUnexpected,
   type Incidents,
-  type Logger,
   type Messages,
   type Notifier,
 } from "../../../application/shell";
 import { cacheCompleteness } from "./cache-completeness";
+
+/**
+ * How long the metadata cache may stay silent, with files still missing from it, before
+ * `VaultReady` is published anyway. It runs from the layout being ready and starts again at every
+ * `resolved`, which Obsidian fires after each file it indexes: a cold start on the reference vault
+ * fires one about every millisecond (`vault-ready.e2e.ts`: 2,200 notes in about 2.6 s), so a vault
+ * that is still being indexed never reaches it, however large; one file that Obsidian does not get
+ * to is what it waits for. Ten seconds is many times the gap between two files of a working
+ * indexer, and a view that waits for the index costs the user no more than that.
+ */
+export const VAULT_READY_DEADLINE = Duration.seconds(10);
 
 const ifFile =
   (make: (file: TFile) => AppEvent) =>
@@ -27,6 +38,11 @@ const pathAndExtension = (file: TFile) => ({ path: file.path, extension: file.ex
  *   checked when the layout is ready and on every `resolved` (which also follows a delete), and is
  *   published once. After a warm restart and in a running app it comes right after `LayoutReady`;
  *   on a cold start with the `resolved` after the last file Obsidian indexes.
+ * - A file that Obsidian never indexes would hold it back for good, so after
+ *   `VAULT_READY_DEADLINE` without a `resolved` it is published anyway and the number of files
+ *   missing is logged once, without paths (`vault.ready.fallback`). The note index then builds
+ *   with what the cache holds and follows the file's `MetadataChanged` if Obsidian indexes it
+ *   later. The wait is a fiber of the runtime's scope, so unloading ends it.
  * - Every listener is also handed to `plugin.registerEvent`, so Obsidian detaches it synchronously
  *   in `unload()`, before the runtime's asynchronous dispose has finished.
  * - Every listener is removed with `offref` when the runtime's scope closes, so a bootstrap that
@@ -40,12 +56,15 @@ export const hostEventsLayer = (plugin: Plugin) =>
   Layer.effectDiscard(
     Effect.gen(function* () {
       const bus = yield* EventBus;
+      const logger = yield* Logger;
       const context = yield* Effect.context<Logger | Incidents | Notifier | Messages>();
       const { vault, metadataCache, workspace } = plugin.app;
       let ready = false;
       let vaultReady = false;
       let active = true;
-      const complete = cacheCompleteness(vault, metadataCache);
+      const cache = cacheCompleteness(vault, metadataCache);
+      /** A sign that the cache moved or the layout became ready, for the deadline's fiber. */
+      const progress = yield* Queue.sliding<void>(1);
 
       const publish = (build: () => AppEvent | undefined): void => {
         const program = Effect.suspend(() => {
@@ -61,13 +80,27 @@ export const hostEventsLayer = (plugin: Plugin) =>
           if (ready) publish(() => build(...args));
         };
       const readiness = (): AppEvent | undefined => {
-        if (vaultReady || !complete()) return undefined;
+        if (vaultReady || !cache.complete()) return undefined;
         vaultReady = true;
         return AppEvent.VaultReady();
       };
       const checkReadiness = (): void => {
-        if (ready && !vaultReady) publish(readiness);
+        if (!ready || vaultReady) return;
+        publish(readiness);
+        if (!vaultReady) Queue.offerUnsafe(progress, undefined);
       };
+      /** `VaultReady` although the cache is incomplete: the deadline has passed. */
+      const giveUpWaiting = Effect.suspend(() => {
+        if (vaultReady) return Effect.void;
+        const missing = cache.missing();
+        vaultReady = true;
+        return Effect.andThen(
+          missing === 0
+            ? Effect.void
+            : logger.log({ level: "warn", event: "vault.ready.fallback", data: { missing } }),
+          bus.publish(AppEvent.VaultReady()),
+        );
+      }).pipe(Effect.catchCause(reportUnexpected), Effect.provideContext(context));
 
       yield* Effect.acquireRelease(
         Effect.sync((): readonly (readonly [Events, EventRef])[] => [
@@ -124,6 +157,18 @@ export const hostEventsLayer = (plugin: Plugin) =>
             for (const [emitter, ref] of refs) emitter.offref(ref);
           }),
       );
+
+      // Once the layout is ready with files missing, each `resolved` is a sign of life. The first
+      // wait has no deadline: it ends with the layout, and never ends when the cache is complete.
+      const waitForSigns: Effect.Effect<void> = Effect.suspend(() =>
+        vaultReady
+          ? Effect.void
+          : Effect.flatMap(
+              Effect.timeoutOption(Queue.take(progress), VAULT_READY_DEADLINE),
+              (sign) => (Option.isNone(sign) ? giveUpWaiting : waitForSigns),
+            ),
+      );
+      yield* Effect.forkScoped(Effect.andThen(Queue.take(progress), waitForSigns));
 
       // Obsidian cannot cancel this callback, so it checks that the runtime is still alive.
       workspace.onLayoutReady(() => {

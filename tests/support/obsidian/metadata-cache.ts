@@ -80,6 +80,7 @@ const indexOf = (raw: string): CachedMetadata => {
  */
 export class MetadataCache extends Events {
   private readonly caches = new Map<TFile, CachedMetadata>();
+  private readonly withheld = new Set<string>();
   private pending = 0;
   private idle: (() => void)[] = [];
 
@@ -147,6 +148,24 @@ export class MetadataCache extends Events {
     this.trigger("resolved");
   }
 
+  /**
+   * Test helper: Obsidian never gets to the file at `path`: it has no cache entry and fires no
+   * `changed`, `resolve` or `resolved` for it, whatever happens to it, until `restoreIndex`.
+   * Obsidian 1.15.1 did this for no file a reviewer could build (null bytes, a binary `.md`,
+   * 30 MB, excluded files, symlinks, an unreadable file all got an entry), so it is a state the
+   * host adapter has to survive, not one Obsidian is known to reach.
+   */
+  withholdIndex(path: string): void {
+    this.withheld.add(path);
+  }
+
+  /** Test helper: Obsidian gets to a withheld file after all, as it does after a change. */
+  restoreIndex(path: string): void {
+    this.withheld.delete(path);
+    const file = this.vault.getFileByPath(path);
+    if (file !== null) this.schedule(file);
+  }
+
   private schedule(file: TFile): void {
     this.pending += 1;
     setTimeout(() => {
@@ -154,11 +173,18 @@ export class MetadataCache extends Events {
     }, 0);
   }
 
-  /** Indexes a file that is still in the vault, then wakes `whenIndexed` once nothing is pending. */
+  /**
+   * Indexes a file that is still in the vault, then wakes `whenIndexed` once nothing is pending. A
+   * file that is gone from the disk meanwhile (`vault.vanish`) is skipped, as is a withheld one.
+   */
   private index(file: TFile): void {
     this.pending -= 1;
-    if (this.vault.getFileByPath(file.path) === file) {
-      const text = this.vault.textOf(file);
+    const text = this.vault.onDisk(file);
+    if (
+      this.vault.getFileByPath(file.path) === file &&
+      text !== undefined &&
+      !this.withheld.has(file.path)
+    ) {
       const cache = indexOf(text);
       this.caches.set(file, cache);
       this.trigger("changed", file, text, cache);

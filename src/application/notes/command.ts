@@ -30,6 +30,18 @@ export const asDefect = <A>(run: () => A): A => {
   }
 };
 
+/**
+ * True when a rejected vault write says the file is not there: Node's `ENOENT` (`code`), which
+ * Obsidian's desktop adapter passes on unchanged. Measured in Obsidian 1.15.1: `vault.process`
+ * on a file deleted outside rejects so while the vault still lists the file, until its file
+ * watcher reports the delete. Only the `code` counts, never the message text.
+ */
+export const isFileGone = (rejection: unknown): boolean =>
+  typeof rejection === "object" &&
+  rejection !== null &&
+  "code" in rejection &&
+  rejection.code === "ENOENT";
+
 type Settled<A, E> = { readonly result: Result.Result<A, E> } | { readonly rejected: unknown };
 
 /**

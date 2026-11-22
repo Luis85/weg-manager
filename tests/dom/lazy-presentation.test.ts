@@ -22,20 +22,32 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
+/**
+ * This file must not preload the surface (`tests/support/preload.ts`), because it proves that
+ * nothing of it loads before a view opens. So its one test pays for importing Vue, Nuxt UI and the
+ * screens itself: about a second alone, more than the default 5 s on a loaded machine (the gate
+ * beside other suites), where it timed out three times on 2026-11-22.
+ */
+const FIRST_OPEN_TIMEOUT_MS = 30_000;
+
 /** Vue, Nuxt UI and TanStack Form are evaluated when the first view opens, not on plugin load. */
 describe("lazy presentation", () => {
-  it("loads the plugin without evaluating Vue, then mounts it when a view opens", async () => {
-    const { plugin, registry } = createTestPlugin(WegManagerPlugin, {
-      data: { rootFolder: "Beirat" },
-    });
-    await registry.load();
-    expect(evaluated).toEqual([]);
+  it(
+    "loads the plugin without evaluating Vue, then mounts it when a view opens",
+    async () => {
+      const { plugin, registry } = createTestPlugin(WegManagerPlugin, {
+        data: { rootFolder: "Beirat" },
+      });
+      await registry.load();
+      expect(evaluated).toEqual([]);
 
-    await registry.runCommand("open-view");
-    await flushPromises();
-    expect(evaluated).toContain("mount");
-    expect(evaluated).toContain("vue");
-    await eventually(() => expect(document.body.textContent).toContain("Beirat/Gemeinschaften"));
-    plugin.unload();
-  });
+      await registry.runCommand("open-view");
+      await flushPromises();
+      expect(evaluated).toContain("mount");
+      expect(evaluated).toContain("vue");
+      await eventually(() => expect(document.body.textContent).toContain("Beirat/Gemeinschaften"));
+      plugin.unload();
+    },
+    FIRST_OPEN_TIMEOUT_MS,
+  );
 });

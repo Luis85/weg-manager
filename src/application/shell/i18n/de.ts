@@ -20,6 +20,8 @@ export const shellDe: ShellCatalog = {
       title: "Einstellungen nicht gespeichert",
       detail:
         "Die Einstellungsdatei konnte nicht geschrieben werden. Deine Eingabe ist erhalten. Speichere erneut.",
+      detailAfterClose:
+        "Die Einstellungsdatei konnte nicht geschrieben werden, und deine Eingabe ging mit dem Schließen der Ansicht verloren. Öffne die Ansicht erneut und gib die Änderung noch einmal ein.",
     },
     readOnly: {
       title: "Einstellungen schreibgeschützt",

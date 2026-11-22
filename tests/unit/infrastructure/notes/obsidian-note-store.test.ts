@@ -272,6 +272,34 @@ describe("Obsidian NoteStore adapter", () => {
     }),
   );
 
+  // Obsidian's cache keeps such a block as a `yaml` section without `frontmatter`, as it does for
+  // broken YAML (`difficult-fidelity.ts`), while `update` reads it as `{}` and writes into it.
+  it.effect("counts a block of comments or blank lines as readable, as update does", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      app.vault.seedFile("F/Kommentar.md", "---\n# properties: later\n---\nbody\n");
+      app.vault.seedFile("F/Leerzeilen.md", "---\n\n\n---\nbody\n");
+      app.vault.seedFile("F/Kaputt.md", "---\nschema: [unclosed\n---\n");
+      yield* Effect.promise(() => app.metadataCache.whenIndexed());
+      assert.deepStrictEqual(yield* run(app, (notes) => notes.unreadable("/")), ["F/Kaputt.md"]);
+      const note = yield* run(app, (notes) =>
+        notes.update("F/Kommentar.md", () => Result.succeed({ set: { a: 1 } })),
+      );
+      assert.deepStrictEqual(note.frontmatter, { a: 1 });
+    }),
+  );
+
+  it.effect("fails unreadable with VaultReadError when a candidate cannot be read", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      app.vault.seedFile("F/Kommentar.md", "---\n# c\n---\n");
+      yield* Effect.promise(() => app.metadataCache.whenIndexed());
+      app.vault.vanish("F/Kommentar.md");
+      const error = yield* Effect.flip(run(app, (notes) => notes.unreadable("F")));
+      assert.strictEqual(error._tag, "VaultReadError");
+    }),
+  );
+
   it.effect("treats a non-Markdown file as no note", () =>
     Effect.gen(function* () {
       const app = new App();

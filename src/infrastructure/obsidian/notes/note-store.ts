@@ -151,16 +151,37 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
       ),
     ),
     unreadable: (folder) =>
-      vaultRead(() =>
-        pathsInFolder(
+      Effect.gen(function* () {
+        const candidates = yield* vaultRead(() =>
           vault
             .getMarkdownFiles()
-            .filter((file) => hasUnreadableFrontmatter(metadataCache.getFileCache(file)))
-            .map((file) => file.path),
-          normalizePath(folder),
-          foldersIn,
-        ),
-      ),
+            .filter((file) => hasUnreadableFrontmatter(metadataCache.getFileCache(file))),
+        );
+        const inFolder = new Set(
+          yield* vaultRead(() =>
+            pathsInFolder(
+              candidates.map((file) => file.path),
+              normalizePath(folder),
+              foldersIn,
+            ),
+          ),
+        );
+        // The cache shows a block of only comments or blank lines as it shows broken YAML
+        // (measured in Obsidian 1.15.1, `tests/support/notes/difficult-fidelity.ts`), so the
+        // note's text decides, read as `update` reads it: what `update` can write is readable.
+        const unreadable = yield* Effect.filter(
+          candidates.filter((file) => inFolder.has(file.path)),
+          (file) =>
+            Effect.tryPromise({
+              try: async () =>
+                Result.isFailure(
+                  updateNoteText(await vault.cachedRead(file), () => Result.succeed({}), parseYaml),
+                ),
+              catch: (cause) => new VaultReadError({ cause }),
+            }),
+        );
+        return [...inFolder].filter((path) => unreadable.some((file) => file.path === path));
+      }),
     read: (path) =>
       Effect.flatMap(find(path), (file) =>
         vaultRead(() => ({ path: file.path, frontmatter: frontmatterOf(file) })),

@@ -68,11 +68,12 @@ describe("communities: notes that break the file contract", function () {
     expect(await issuesOf("Kürzel B")).toEqual([duplicateCode("Kürzel A")]);
     expect(await issuesOf("Kopie A")).toEqual([duplicateId("Kopie B.md")]);
     expect(await issuesOf("Kopie B")).toEqual([duplicateId("Kopie A.md")]);
-    await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).not.toExist();
-    // The notes of no known type are the section "Datenprobleme", counted beside its entry.
+    // The notes of no known type are the section "Datenprobleme", counted beside its entry. The
+    // badge loads lazily; once it shows, the unindexed list is known and its absence means something.
     await expect(browser.$(ROOT).$("[data-testid=data-issues-count]")).toHaveText(
       expect.stringContaining(de.notes.dataIssues.count(1)),
     );
+    await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).not.toExist();
     await openSection(de.notes.dataIssues.title);
     await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).toHaveText(
       expect.stringContaining(`${FOLDER}/Kaputt.md`),

@@ -274,7 +274,7 @@ As the notes under `docs/requirements/` say it (2026-11-22).
 | PBI-67 | Open, `ready-for-human`. Criterion 1 (0.2.0 through the release workflow) and criterion 4 (third-party notices) are met; criterion 2 is partly met (a scheduled run passed; a second run that uses the first one's results and the failure issue are not shown yet); criterion 3 (the first Dependabot run) is open; criterion 5 (`CI / e2e` required) is postponed. |
 | PBI-68 | Finished: the findings on the note store and the test double (a failed system trash, reads of a note deleted outside, queued renames measured, typed error for a note that does not open, `Today` guarded). |
 | PBI-69 | Open, `ready-for-agent`: the fixes to release, CI and scripts are merged (#60); the changed release and nightly workflows have not run yet. |
-| PBI-70 | Not written yet: e2e negative checks that can pass empty, and write failures in the real app. |
+| PBI-70 | Open, `ready-for-agent`: the negative e2e checks wait for a positive sign and start from another state, the index edit goes through Node's `fs` and is bounded from `changed`, the probe tells a failure from a defect, the contract's size is pinned; the four failing-write cases run in real Obsidian through `chmod` for a user that is not root and are skipped as root, so they have not run yet (the first CI run measures what Obsidian does). |
 | PBI-71 | Open, `ready-for-agent`: record forms for every field kind, before the second record type. |
 | PBI-72 | Open, `needs-triage`: typed input in the community sheet is lost on Escape or a click outside; the owner decides. |
 

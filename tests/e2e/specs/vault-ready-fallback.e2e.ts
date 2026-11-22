@@ -43,6 +43,33 @@ const counts = () =>
   });
 
 /**
+ * Makes Obsidian fire `resolved` once more, and waits until the probe has seen it. "VaultReady
+ * exactly once" is a negative check: a second one would follow a later `resolved`, so waiting some
+ * time for it could pass empty. A plain note is edited, Obsidian's `resolved` that follows is the
+ * positive sign, and only then is the count of `VaultReady` read.
+ */
+const afterAnotherResolved = async (): Promise<StartupRecord> => {
+  const resolved = async () => (await record()).counts["metadataCache:resolved"] ?? 0;
+  const before = await resolved();
+  const edited = await browser.executeObsidian(async ({ app }, never) => {
+    const plain = app.vault
+      .getMarkdownFiles()
+      .find(
+        (file) =>
+          file.path !== never && app.metadataCache.getFileCache(file)?.frontmatter === undefined,
+      );
+    if (plain === undefined) return false;
+    await app.vault.process(plain, (text) => `${text}\nEdited after VaultReady.\n`);
+    return true;
+  }, NEVER);
+  expect(edited).toBe(true);
+  await browser.waitUntil(async () => (await resolved()) > before, {
+    timeoutMsg: "Obsidian fired no `resolved` after the edit",
+  });
+  return record();
+};
+
+/**
  * A Markdown file that Obsidian never indexes, which no file of Obsidian 1.15.1 was (null bytes, a
  * binary `.md`, 30 MB, excluded files, symlinks and an unreadable file all got an entry). Real
  * Obsidian cannot be made to skip a file, so the app's metadata cache is told to answer `null` for
@@ -105,7 +132,8 @@ describe("VaultReady with a file that is never indexed", function () {
       timeoutMsg: "LayoutReady was not published",
     });
 
-    // Half the deadline later the adapter still waits.
+    // Half the deadline later the adapter still waits. This pause stays: "not earlier than the
+    // deadline" has no signal while it holds, and only time passing can show it.
     await browser.pause(DEADLINE_MS / 2);
     const waiting = await record();
     expect(waiting.counts["bus:VaultReady"]).toBeUndefined();
@@ -115,9 +143,8 @@ describe("VaultReady with a file that is never indexed", function () {
       timeout: DEADLINE_MS * 2,
       timeoutMsg: "VaultReady was not published after the deadline",
     });
-    // Long enough for a second VaultReady to show, if one came.
-    await browser.pause(500);
-    const fallback = await record();
+    // A later `resolved` would publish a second VaultReady, if the adapter allowed one.
+    const fallback = await afterAnotherResolved();
     expect(fallback.counts["bus:VaultReady"]).toBe(1);
     const snapshot = fallback.snapshots.find((entry) => entry.at === "bus:VaultReady");
     expect(snapshot?.cached).toBe((snapshot?.markdown ?? 0) - 1);
@@ -139,8 +166,7 @@ describe("VaultReady with a file that is never indexed", function () {
       timeout: 10_000,
       timeoutMsg: "the index did not take the file Obsidian indexed late",
     });
-    await browser.pause(500);
-    const after = await record();
+    const after = await afterAnotherResolved();
     expect(after.counts["bus:VaultReady"]).toBe(1);
     expect(await pluginProblems()).toEqual([]);
 

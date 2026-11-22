@@ -261,7 +261,7 @@ const facts = (name: string, text: string, patch: Record<string, unknown>): Diff
     update:
       refused === undefined
         ? { ok: true, value: { path, frontmatter: after } }
-        : { ok: false, tag: refused },
+        : { ok: false, kind: "fail", tag: refused },
     written: measured.written ?? text,
     frontmatterAfter: after,
   };

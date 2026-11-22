@@ -100,8 +100,7 @@ export const SCREENS = [
 const fileName = (vp, s) => `v2-P-${vp.key}-${s.nr}-${s.name}.png`;
 
 async function run(page, step) {
-  // Ein DOM-Klick statt Mausklick: Auf Mobil liegt der Fußbereich der Woche teils unter dem Erfassen-Button.
-  if (step.tap) await page.locator(`${step.tap}:visible`).first().evaluate((el) => el.click());
+  if (step.tap) await page.locator(`${step.tap}:visible`).first().click();
   else if (step.type) await page.locator(`${step.type}:visible`).first().fill(step.text);
   else if (step.key) await page.keyboard.press(step.key);
 }

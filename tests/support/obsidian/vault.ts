@@ -223,9 +223,12 @@ export class Vault extends Events {
   /**
    * Test helper: a file written from outside Obsidian (a person, Sync, an agent) as Obsidian then
    * sees it: missing folders and the file appear with `create`, an existing file changes with
-   * `modify`, and the metadata cache indexes it. No checks, no waiting, no failure knobs.
+   * `modify`, and the metadata cache indexes it. No checks, no waiting, no failure knobs. A name
+   * written in NFD (as macOS writes them) is listed in NFC, as Obsidian 1.15.1 lists it (measured
+   * on Linux: the file keeps its NFD name on the disk, the vault knows it only in NFC).
    */
-  seedFile(path: string, text: string): void {
+  seedFile(written: string, text: string): void {
+    const path = written.normalize("NFC");
     const segments = path.split("/");
     for (let depth = 1; depth < segments.length; depth += 1) {
       const prefix = segments.slice(0, depth).join("/");

@@ -31,7 +31,12 @@ const SENTINEL = "Zaun.md";
 export const eventRecorder = (app: App, options: RecorderOptions) => {
   const events: string[] = [];
   let recording = false;
-  const fenceState = { mark: "", changed: false, resolve: false, wake: (): void => undefined };
+  const fenceState = {
+    mark: null as string | null,
+    changed: false,
+    resolve: false,
+    wake: (): void => undefined,
+  };
   const record = (path: string, event: string) => {
     if (recording && path !== SENTINEL) events.push(event);
   };
@@ -88,9 +93,15 @@ export const eventRecorder = (app: App, options: RecorderOptions) => {
   const fence = async (): Promise<void> => {
     const sentinel = app.vault.getFileByPath(SENTINEL) ?? (await app.vault.create(SENTINEL, ""));
     await new Promise<void>((wake) => {
-      Object.assign(fenceState, { mark: `${fenceState.mark}.`, changed: false, resolve: false });
+      Object.assign(fenceState, { mark: null, changed: false, resolve: false });
       fenceState.wake = wake;
-      app.vault.process(sentinel, () => fenceState.mark).catch(() => wake());
+      // A text the sentinel has never held, whoever fenced last: its own text and one more dot.
+      app.vault
+        .process(sentinel, (text) => {
+          fenceState.mark = `${text}.`;
+          return fenceState.mark;
+        })
+        .catch(() => wake());
     });
     recording = false;
   };

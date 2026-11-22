@@ -32,13 +32,25 @@ const shellViewType = (): Plugin => ({
 });
 
 /**
+ * The probe runs the NoteStore contract (`contract-runner.ts`), whose cases import
+ * `@effect/vitest` and `vitest`: both resolve to the shim with what the cases use.
+ */
+const contractShim = (): Plugin => ({
+  name: "weg-manager:probe-contract-shim",
+  enforce: "pre",
+  resolveId(id) {
+    return id === "@effect/vitest" || id === "vitest" ? `${ROOT}${PROBE}/contract-shim.ts` : null;
+  },
+});
+
+/**
  * The e2e probe plugin: the real `NoteStore` adapter from `src/`, bundled with Effect into one
  * CommonJS `main.js` next to its manifest, so `wdio.conf.mts` can install it beside `dist/`. It is
  * never part of the plugin build.
  */
 export default defineConfig({
   root: ROOT,
-  plugins: [shellViewType(), copyManifest()],
+  plugins: [shellViewType(), contractShim(), copyManifest()],
   define: { "process.env.NODE_ENV": JSON.stringify("production") },
   build: {
     outDir: `${PROBE}/dist`,

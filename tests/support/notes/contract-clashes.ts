@@ -44,10 +44,13 @@ export const clashContract = (make: () => NoteStoreFixture) => {
           store.create({ folder: "F", name: MUELLER_NFC, frontmatter: COMMUNITY }),
         );
         assert.strictEqual(note.path, `F/${MUELLER_NFC} (2).md`);
-        assert.strictEqual(
-          yield* promise(() => fixture.body(`F/${MUELLER_NFD}.md`)),
-          "von macOS\n",
+        // The note from outside keeps its text, under the path the host lists it by: Obsidian
+        // lists a name written in NFD in its NFC form (measured in 1.15.1 on Linux).
+        const kept = yield* promise(
+          async () =>
+            (await fixture.body(`F/${MUELLER_NFD}.md`)) ?? fixture.body(`F/${MUELLER_NFC}.md`),
         );
+        assert.strictEqual(kept, "von macOS\n");
       }),
     );
 

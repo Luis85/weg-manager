@@ -152,8 +152,8 @@ The ready edges can come before or after `registerView`: in an app that is alrea
 Decision record: [ADR 0004](../adr/0004-event-system.md).
 
 - `AppEvent` (`src/application/events.ts`) is one tagged union of plain data for host and domain events, built from the modules' event records (the shell's are in `src/application/shell/events.ts`). Switch on `_tag`.
-- `EventBus` (`src/application/shell/event-bus.ts`) publishes them through an unbounded PubSub: `on(tag)` gives a narrowed stream, `subscribe` subscribes at once for forked consumers.
-- `hostEventsLayer` (`src/infrastructure/obsidian/shell/events.ts`) maps Obsidian's `vault`, `metadataCache` and `workspace` events at the edge. It publishes nothing until the layout is ready, then `LayoutReady`, then file events. Folders are not published.
+- `EventBus` (`src/application/shell/event-bus.ts`) publishes them through an unbounded PubSub: `subscribe` subscribes at once and returns the stream of every later event, for forked consumers.
+- `hostEventsLayer` (`src/infrastructure/obsidian/shell/events.ts`) maps Obsidian's `vault` and `metadataCache` events at the edge (and waits for `workspace.onLayoutReady`). It publishes nothing until the layout is ready, then `LayoutReady`, then file events. Folders are not published.
 - Its listeners and the PubSub belong to the runtime: `runtime.dispose()` removes every listener with `offref` and ends every stream, also after a failed or aborted bootstrap. Each listener is also passed to `plugin.registerEvent`, so Obsidian detaches it synchronously in `unload()`, before the asynchronous dispose has finished. Obsidian's `offref` removes a ref by identity and ignores one that is gone, so the second release does nothing.
 
 **`VaultReady`** means: the metadata cache holds the frontmatter of every Markdown file the vault has at this moment, so records read now are complete. It is published once per plugin load, always after `LayoutReady`. The file list is complete after `LayoutReady`; frontmatter is read after `VaultReady`.

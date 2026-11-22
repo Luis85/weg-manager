@@ -60,7 +60,13 @@ const foldersOf = (folders: readonly string[]) => (folder: string) =>
 
 describe("vaultFolder", () => {
   it("is the vault root for the root, and the folder as asked in a vault without it", () => {
-    assert.strictEqual(vaultFolder("/", foldersOf(["/"])), "/");
+    const asked: string[] = [];
+    const lookup = (folder: string) => {
+      asked.push(folder);
+      return [];
+    };
+    assert.strictEqual(vaultFolder("/", lookup), "/");
+    assert.deepStrictEqual(asked, []);
     assert.strictEqual(
       vaultFolder("WEG Manager/Gemeinschaften", foldersOf([])),
       "WEG Manager/Gemeinschaften",

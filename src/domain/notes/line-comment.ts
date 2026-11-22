@@ -54,6 +54,7 @@ export const lineComment = (value: string): string => {
   let inFlow = false;
   /** Whether a value may start here, so a quote opens quoted text. */
   let valueStart = true;
+  // Stryker disable next-line EqualityOperator: one more step reads `charAt` past the end, "", which no branch acts on.
   for (let index = 0; index < value.length; index += 1) {
     const character = value.charAt(index);
     const comment = commentAt(value, index);

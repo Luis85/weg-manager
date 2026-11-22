@@ -47,12 +47,12 @@ const LONGEST_ADDITION = `${clashName("", MAX_NAME_ATTEMPTS)}.md`;
 /**
  * Whether a record named `title` gets a file name the disk takes, with every clash suffix up to
  * ` (100)` and `.md`: at most `MAX_FILE_NAME_BYTES` bytes in UTF-8 (PBI-65). It counts the file
- * name the title gives (`recordFileName`), not the title as typed. A feature checks it at its
- * title field, so a name that is too long is an issue there, never a failed write; a note that
- * already has a longer title keeps it.
+ * name the title gives (`recordFileName`, with `fallback` where the title leaves nothing), not
+ * the title as typed. A feature checks it at its title field, so a name that is too long is an
+ * issue there, never a failed write; a note that already has a longer title keeps it.
  */
-export const fitsFileName = (title: string): boolean =>
-  new TextEncoder().encode(`${recordFileName(title, "")}${LONGEST_ADDITION}`).length <=
+export const fitsFileName = (title: string, fallback: string): boolean =>
+  new TextEncoder().encode(`${recordFileName(title, fallback)}${LONGEST_ADDITION}`).length <=
   MAX_FILE_NAME_BYTES;
 
 const CLASH_SUFFIX = / \(([2-9]|[1-9]\d+)\)$/;

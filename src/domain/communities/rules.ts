@@ -134,8 +134,10 @@ const takenBy = (
  * Whether `name` gives a file name the disk cannot take (`fitsFileName`, PBI-65), unless the
  * community already had it: a note named so outside the plugin keeps working.
  */
-const tooLongForFileName = (name: string | undefined, context: CommunityRuleContext): boolean =>
-  name !== context.loaded?.name && !fitsFileName(name ?? "");
+const tooLongForFileName = (input: CommunityInput, context: CommunityRuleContext): boolean => {
+  const name = input.name.trim();
+  return name !== context.loaded?.name && !fitsFileName(name, normalizeShortCode(input.short_code));
+};
 
 /**
  * The issue of a field the note type accepts, by the rules beyond it: a short code or a colour
@@ -159,7 +161,7 @@ const ruleIssue = (
       ? undefined
       : { key, code: "color.taken" };
   }
-  return key === "name" && tooLongForFileName(draft.name, context)
+  return key === "name" && tooLongForFileName(input, context)
     ? { key, code: "name.too-long" }
     : undefined;
 };

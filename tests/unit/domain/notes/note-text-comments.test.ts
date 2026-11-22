@@ -57,6 +57,7 @@ describe("editNoteText and a comment at the end of a written line", () => {
     ["after an escaped quote inside double quotes", 'name: "A \\" # B"'],
     ["after a doubled quote inside single quotes", "name: 'A '' # B'"],
     ["without a space before it", "name: A#B"],
+    ["without a space before it but with one after it", "name: A# B"],
     ["inside a quoted item of a flow list", 'name: [a, "b # c"]'],
     ["inside a quoted value of a flow map", "name: {a: 'b # c'}"],
     ["inside quoted text right after a colon in a flow map", 'name: {"a":"b # c"}'],
@@ -77,6 +78,9 @@ describe("editNoteText and a comment at the end of a written line", () => {
     ["a tag before quoted text", 'name: !!str "a # b" # c'],
     ["a block scalar header", "name: | # c"],
     ["brackets inside plain text", "name: a[b] # c"],
+    ["a quote inside plain text of a flow list", "name: [a'b] # c '"],
+    ["a tab right before the comment", "name: a\t# c"],
+    ["a comment without a space after the #", "name: a #c"],
     ["a bracket, a comma and a quote inside plain text", 'name: a[b, "c # d'],
     ["a comma and a quote inside plain text", 'name: a, "b # c'],
     ["a colon and a quote inside plain text", 'name: a:"b # c'],
@@ -84,7 +88,7 @@ describe("editNoteText and a comment at the end of a written line", () => {
     ["a lone tag", "name: !!null # c"],
   ])("finds the comment after %s", (_, line) => {
     const lines = line.endsWith("| # c") ? [line, "  text"] : [line];
-    const comment = line.slice(line.lastIndexOf(" #"));
+    const comment = line.slice(line.search(/[ \t]+#[^#]*$/));
     expect(editedLines(lines, { set: { name: "C" } })).toEqual([`name: C${comment}`]);
   });
 

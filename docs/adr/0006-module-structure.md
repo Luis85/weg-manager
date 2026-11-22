@@ -1,6 +1,6 @@
 # ADR 0006 · Modules inside the layers, English in code
 
-- Status: accepted; public entries of `presentation/shell` and the enforcement amended on 2026-11-21 (see the notes at the end)
+- Status: accepted; public entries of `presentation/shell` and the enforcement amended on 2026-11-21; composition seams and the `application/notes` adapter entry amended on 22.11.2026 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -52,3 +52,15 @@ Consequence: ESLint and fallow accept exactly these two files as entries of `pre
 - **Who enforces what.** The decision says oxlint and fallow reject a cross-module import. As built, oxlint keeps the layer rules, ESLint enforces the module boundaries (the index rule, the direction `feature → notes → shell`, no in-memory adapters in `src/`), and fallow checks both with zones. An oxlint override replaces the `no-restricted-imports` options of an earlier matching override, so a module rule there would have switched the layer rule off. Details: [architecture](../engineering/architecture.md#enforcement).
 - **`host.ts` also exports `memoryNavigation`.** The Vue-free entry of `presentation/shell` holds `releaseAll`, `loadSurface`, `memoryNavigation` and the surface types, because `ShellView` keeps its own history ([ADR 0008](0008-navigation-and-view-state.md), amendment).
 - **Built as decided.** The modules are `shell`, `notes` and `communities`. The root files compose only: `AppError`, `AppEvent`, `AppServices`, `Catalog`, `Route`, `appNoteTypes`, `appLayer` and `appSurface`. The first feature module added no vault adapter and no Layer of its own beyond the community selection.
+
+## Amendment, 22.11.2026: composition seams and a second entry for `application/notes`
+
+An architecture review after the first feature found that each new module had to edit the shell or repeat its wiring in three places, and that the notes module's index handed the `NoteStore` adapters' kit to every feature.
+
+Decision:
+
+- **One service graph.** `appServicesLayer(adapters, options)` (`src/application/app-services-layer.ts`) builds every application service of a load in one place, typed `Layer<AppServices>`. Hosts supply only adapters (`AppAdapters`, one Layer per port): Obsidian through `shellAdapters` and `notesAdapters` in `appLayer`, the harness in `harness/layers.ts`, the tests in `tests/support/adapters.ts`. A feature whose Layer was only an application Layer has no infrastructure folder; `src/infrastructure/obsidian/communities/` is gone.
+- **Commands are composed.** `appCommands` (`src/application/commands.ts`) joins the root files: each module contributes `PluginCommand`s (id without the plugin id, a label from its catalog part, an action that opens a typed `Route` or runs a use case), and the shell's `registerCommands` iterates them. A feature command never edits the shell.
+- **A second entry for `application/notes`.** `adapter.ts` holds the kit the `NoteStore` adapters build on (`writeCommand`, `createNote`, `asDefect`, `copyFrontmatter`, `recordNotes`, `newNoteText`, `updateNoteText`, `pathsInFolder`, `planRename`). Only `src/infrastructure/**` imports it; features reach the vault through `NoteStore` alone. ESLint refuses `notes/adapter` outside the infrastructure; fallow makes the kit's files a zone of their own whose only public file is `adapter.ts` and which only the adapter zones may import. The kit imports the rest of the module through its `index.ts`. Constants only tests read (`INDEX_BATCH_QUIET`, `INDEX_BATCH_MAX`) left the index; tests import them from their file.
+
+Consequence: the root files are `AppError`, `AppEvent`, `AppServices`, `appServicesLayer`, `Catalog`, `Route`, `appNoteTypes`, `appCommands`, `appLayer` and `appSurface`. Two modules have a second entry, each for one kind of caller: `presentation/shell/host.ts` for code at plugin load, `application/notes/adapter.ts` for the `NoteStore` adapters.

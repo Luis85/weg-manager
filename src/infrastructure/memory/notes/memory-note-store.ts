@@ -5,6 +5,12 @@ import {
   NoteStore,
   NoteUnreadableError,
   applyPatch,
+  type Frontmatter,
+  type FrontmatterChange,
+  type NewNote,
+  type Note,
+} from "../../../application/notes";
+import {
   asDefect,
   copyFrontmatter,
   createNote,
@@ -12,11 +18,7 @@ import {
   recordNotes,
   planRename,
   writeCommand,
-  type Frontmatter,
-  type FrontmatterChange,
-  type NewNote,
-  type Note,
-} from "../../../application/notes";
+} from "../../../application/notes/adapter";
 import { EventBus, VaultReadError } from "../../../application/shell";
 import { normalizePath } from "./normalize-path";
 

@@ -1,7 +1,8 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Duration, Effect, Fiber } from "effect";
 import { TestClock } from "effect/testing";
-import { INDEX_BATCH_QUIET, rebuildNoteIndex } from "../../../../src/application/notes";
+import { rebuildNoteIndex } from "../../../../src/application/notes";
+import { INDEX_BATCH_QUIET } from "../../../../src/application/notes/index-batches";
 import { REFERENCE_PROFILE, referenceVault } from "../../../../scripts/reference-vault.mjs";
 import { splitFrontmatter } from "../../../support/obsidian/metadata-cache";
 import { parseYaml } from "../../../support/obsidian/yaml";

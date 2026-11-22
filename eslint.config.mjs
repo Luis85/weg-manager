@@ -55,6 +55,8 @@ const obsidianmdForVue = [
  *   plugin load (`bootstrap`, the Obsidian adapters, the composition files in `src/presentation/`).
  *   That code may not import a module's presentation `index.ts` (it loads Vue) except as types:
  *   the shell's or a feature's. `app-surface.ts` reaches a feature's screens through `import()`.
+ * - `application/notes` has a second entry, `adapter.ts`, the kit of the `NoteStore` adapters,
+ *   which only `src/infrastructure/**` may import (`kitOutside`, `kitElsewhere`).
  * - A core module imports no module listed after it: `shell` none, `notes` only `shell`. Feature
  *   modules may import each other's index.
  * - Nothing in `src/` imports the in-memory adapters (`src/infrastructure/memory/`): they serve the
@@ -63,11 +65,16 @@ const obsidianmdForVue = [
 const CORE_MODULES = ["shell", "notes"];
 const FEATURE_MODULES = ["communities"];
 const MODULES = [...CORE_MODULES, ...FEATURE_MODULES];
+/** The second entries: `presentation/shell/host.ts` and `application/notes/adapter.ts`. */
+const SECOND_ENTRY = { shell: "host", notes: "adapter" };
 const pastIndex = [
-  ...MODULES.map((module) => ({
-    regex: module === "shell" ? "(^|/)shell/(?!index$|host$)" : `(^|/)${module}/(?!index$)`,
-    message: `Import module ${module} only through its index.ts (ADR 0006).`,
-  })),
+  ...MODULES.map((module) => {
+    const second = SECOND_ENTRY[/** @type {keyof typeof SECOND_ENTRY} */ (module)];
+    return {
+      regex: `(^|/)${module}/(?!index$${second === undefined ? "" : `|${second}$`})`,
+      message: `Import module ${module} only through its index.ts (ADR 0006).`,
+    };
+  }),
   {
     regex: "(^|/)(?<!presentation/)shell/host$",
     message: "Only presentation/shell has a host.ts entry (ADR 0006).",
@@ -102,6 +109,24 @@ const testOnly = {
   regex: "(^|/)memory(/|$)",
   message: "The in-memory adapters are for tests and the harness only (ADR 0007).",
 };
+/**
+ * `application/notes/adapter.ts` is the kit of the `NoteStore` adapters (writes as commands, the
+ * line edit, paths): only `src/infrastructure/**` imports it, so a feature reaches the vault
+ * through `NoteStore` alone. Elsewhere every `notes/adapter` is refused; in the infrastructure only
+ * one of another layer than application.
+ */
+const INFRASTRUCTURE = "src/infrastructure/";
+const kitOutside = {
+  regex: "(^|/)notes/adapter$",
+  message:
+    "Only src/infrastructure/** imports notes/adapter, the NoteStore adapters' kit; features use NoteStore (ADR 0006).",
+};
+const kitElsewhere = {
+  regex: "(^|/)(?<!application/)notes/adapter$",
+  message: "Only application/notes has an adapter.ts entry (ADR 0006).",
+};
+const kitRule = (/** @type {boolean} */ infrastructure) =>
+  infrastructure ? kitElsewhere : kitOutside;
 const moduleFolders = (/** @type {string} */ module) => [
   `src/domain/${module}/**`,
   `src/application/${module}/**`,
@@ -113,23 +138,36 @@ const moduleFolders = (/** @type {string} */ module) => [
 const restrict = (/** @type {{ regex: string; message: string }[]} */ patterns) => ({
   "no-restricted-imports": ["error", { patterns }],
 });
-/** @type {import("eslint").Linter.Config[]} */
-const moduleBoundaries = [
-  { files: ["src/**/*.ts", "src/**/*.vue"], rules: restrict([...pastIndex, testOnly]) },
-  { files: ["src/presentation/*.ts"], rules: restrict([...pastIndexInPresentation, testOnly]) },
-  vueFreeAtLoad(PLUGIN_LOAD_FILES, `(^|/)presentation/${PRESENTATION_INDEX}`),
-  vueFreeAtLoad(["src/presentation/*.ts"], `^\\./${PRESENTATION_INDEX}`),
-  ...CORE_MODULES.map((module, index) => ({
-    files: moduleFolders(module),
+/** A core module's folders, split by whether the kit is theirs to import. */
+const coreBlocks = (/** @type {string} */ module, /** @type {number} */ index) =>
+  [false, true].map((infrastructure) => ({
+    files: moduleFolders(module).filter(
+      (folder) => folder.startsWith(INFRASTRUCTURE) === infrastructure,
+    ),
     rules: restrict([
       ...pastIndex,
+      kitRule(infrastructure),
       testOnly,
       ...MODULES.slice(index + 1).map((later) => ({
         regex: `(^|/)${later}(/|$)`,
         message: `Module ${module} never imports ${later}: feature → notes → shell (ADR 0006).`,
       })),
     ]),
-  })),
+  }));
+/** @type {import("eslint").Linter.Config[]} */
+const moduleBoundaries = [
+  {
+    files: ["src/**/*.ts", "src/**/*.vue"],
+    rules: restrict([...pastIndex, kitOutside, testOnly]),
+  },
+  { files: [`${INFRASTRUCTURE}**/*.ts`], rules: restrict([...pastIndex, kitElsewhere, testOnly]) },
+  {
+    files: ["src/presentation/*.ts"],
+    rules: restrict([...pastIndexInPresentation, kitOutside, testOnly]),
+  },
+  vueFreeAtLoad(PLUGIN_LOAD_FILES, `(^|/)presentation/${PRESENTATION_INDEX}`),
+  vueFreeAtLoad(["src/presentation/*.ts"], `^\\./${PRESENTATION_INDEX}`),
+  ...CORE_MODULES.flatMap(coreBlocks),
 ];
 
 /** Vue's presets carry no `files`; scope them so `.ts` files keep the TypeScript parser. */

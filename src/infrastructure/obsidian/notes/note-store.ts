@@ -3,6 +3,13 @@ import { normalizePath, parseYaml, type App, type CachedMetadata, type TFile } f
 import {
   NoteNotFoundError,
   NoteStore,
+  type FrontmatterChange,
+  type NewNote,
+  type Note,
+  type NoteUnreadableError,
+  type NoteWriteRefusedError,
+} from "../../../application/notes";
+import {
   asDefect,
   copyFrontmatter,
   createNote,
@@ -12,12 +19,7 @@ import {
   planRename,
   updateNoteText,
   writeCommand,
-  type FrontmatterChange,
-  type NewNote,
-  type Note,
-  type NoteUnreadableError,
-  type NoteWriteRefusedError,
-} from "../../../application/notes";
+} from "../../../application/notes/adapter";
 import { VaultReadError } from "../../../application/shell";
 
 /** How an update fails besides the change's own failure and a failed write (`NoteWriteError`). */

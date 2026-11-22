@@ -20,7 +20,7 @@ import {
   type NoteTypeRegistry,
   type UnindexedSnapshot,
 } from "./note-index";
-import { isInFolder } from "./paths";
+import { isInFolder } from "./folders";
 import { NoteStore } from "./ports";
 
 const EMPTY = { ready: false, failure: undefined, notes: [] } as const;

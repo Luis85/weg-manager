@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-22
 horizon: ""
 start: ""
 due: ""
@@ -23,12 +23,12 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-70 · Befunde der zweiten Review-Runde an den Ende-zu-Ende-Prüfungen beheben
 
-**Planungsstand:** umgesetzt bis auf einen Lauf als Nutzer ohne Root-Rechte · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, zweite Review-Runde), `docs/engineering/testing.md`
+**Planungsstand:** umgesetzt · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, zweite Review-Runde), `docs/engineering/testing.md`
 
 ## User Story
 
@@ -67,3 +67,6 @@ Test-Review der zweiten Runde (22.11.2026), Befunde 5 bis 8. [[PBI-63 - Obsidian
   - Kriterium 3 erfüllt. `Outcome` trägt `kind: "fail" | "die"`; ein Defekt heißt immer `defect`. Mit einem eingepflanzten `Effect.die` statt `Effect.fail` für `NoteNotFoundError` im Adapter scheitert die Double-Prüfung der gemeinsamen Szenarien an der Art (vorher bestand sie).
   - Kriterium 4 erfüllt. 53 Fälle (42 bestanden, 11 übersprungen); mit 52 scheitert die Spec.
   - Kriterium 5 offen. `setFailWrites` in `contract-fixture.ts` nimmt allen Ordnern des Vaults (Wurzel eingeschlossen) und allen Notizen das Schreibrecht (außer `.`-Ordnern und der Zaun-Notiz), stellt die Rechte nach jedem Fall wieder her (auch in `dispose`) und stellt den Papierkorb währenddessen auf `local`. Als Root überspringt der Fall mit dem Grund „chmod hält Root nicht auf“, in der Spec beim Namen. Im Agenten-Container (Root) nicht gelaufen: ein zweiter Nutzer ließ sich dort nicht anlegen. Offen bleibt daher, was Obsidian bei den vier Fällen tut (ablehnen, `false`, anderes) und ob das Double abweicht. Die CI läuft als `runner`, nicht als Root; der erste dortige Lauf misst es. Bei einem roten Fall dort: die Abweichung ist ein Befund, das Double ist anzupassen, und liegt es am Adapter, ist es zu melden und nicht an `src/` zu ändern.
+- 22.11.2026: Kriterium 5 erfüllt. Der Lauf als Nutzer ohne Root-Rechte hat stattgefunden: im Job `e2e` des Pull Requests, der die Umsetzung zusammenführte (CI-Lauf 45071294408 vom 22.11.2026), läuft der Läufer als `runner`, nicht als Root. `note-store-contract.e2e.ts` bestand; die Spec scheitert, wenn die übersprungenen Fälle nicht genau ihrer Liste entsprechen, und diese Liste lässt die vier Fälle mit fehlschlagenden Schreibvorgängen weg, sobald der Nutzer nicht Root ist. Die vier Fälle liefen also und bestanden im echten Obsidian: `create`, `update`, `trash` (lokaler Papierkorb) und `rename` scheitern jeweils mit dem getypten Fehler, den der Vertrag erwartet, wie beim Double. Eine Abweichung vom Double gab es nicht, ein falsch benannter Fehler im Adapter wurde nicht gefunden. Was Obsidian bei einem fehlschlagenden System-Papierkorb tut, decken diese Fälle nicht ab; das prüft das eigene Papierkorb-Szenario (`trash-failure-scenario.ts`, [[PBI-68 - Befunde der zweiten Review-Runde am Notizspeicher und am Testdouble beheben]]).
+  - Offen bleibt Kriterium 6: Dass `npm run verify` mit Exit 0 endet und die e2e-Suite fünfmal hintereinander besteht, ist in diesen Kommentaren nicht belegt; die CI hat bisher einen Lauf des Pull Requests gezeigt. `finished` bleibt leer, bis die fünf Läufe gezeigt sind oder der Eigentümer das Kriterium streicht.
+- 22.11.2026 (Abschluss): Kriterium 6 ist erfüllt; der Beleg stand im Bericht des Umsetzers und fehlte hier. Auf dem fertigen Stand, nach dem Rebase auf `main`, endete `npm run verify` mit Exit 0 (89 s), und die e2e-Suite bestand fünfmal hintereinander mit dem Befehl der CI (Exit 0, je 25 von 25 Spec-Dateien, 90, 93, 96, 87 und 92 s). Diese fünf Läufe liefen im Agenten-Container als Root, also mit den vier Schreibfehler-Fällen übersprungen; der Lauf ohne Root ist der CI-Lauf 45071294408 (siehe oben), dazu der Lauf auf `main` nach dem Zusammenführen. Damit sind alle sechs Kriterien erfüllt.

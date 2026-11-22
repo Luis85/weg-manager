@@ -3,7 +3,7 @@ import { describe, it } from "mocha";
 import { obsidianPage } from "wdio-obsidian-service";
 import { PLUGIN_ID, ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
 
-type Counts = Record<"vault" | "metadataCache" | "workspace", Record<string, number>>;
+type Counts = Record<"vault" | "metadataCache", Record<string, number>>;
 
 /**
  * Handlers per event name on Obsidian's internal `Events` map (`emitter._`, 1.15.1). Internal API:
@@ -19,7 +19,6 @@ const handlerCounts = (): Promise<Counts> =>
     return {
       vault: count(app.vault, ["create", "modify", "delete", "rename"]),
       metadataCache: count(app.metadataCache, ["changed", "resolved"]),
-      workspace: count(app.workspace, ["file-open", "css-change"]),
     };
   });
 
@@ -29,7 +28,6 @@ const difference = (more: Counts, less: Counts): Counts => {
   return {
     vault: diff(more.vault, less.vault),
     metadataCache: diff(more.metadataCache, less.metadataCache),
-    workspace: diff(more.workspace, less.workspace),
   };
 };
 
@@ -49,7 +47,6 @@ const COMMUNITY = [
 const ONE_EACH: Counts = {
   vault: { create: 1, modify: 1, delete: 1, rename: 1 },
   metadataCache: { changed: 1, resolved: 1 },
-  workspace: { "file-open": 1, "css-change": 1 },
 };
 
 describe("host events in Obsidian", function () {

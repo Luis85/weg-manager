@@ -1,5 +1,5 @@
 import { Effect, Layer, ManagedRuntime } from "effect";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AppEvent } from "../../../../src/application/events";
 import {
   recordingEventBus,
@@ -45,10 +45,6 @@ const ready = AppEvent.LayoutReady();
 /** What a runtime publishes first when the layout is ready and the (empty) vault is indexed. */
 const startup = [ready, AppEvent.VaultReady()];
 
-afterEach(() => {
-  document.body.className = "";
-});
-
 describe("hostEventsLayer", () => {
   it("publishes LayoutReady at once when the layout is already ready, then VaultReady", async () => {
     const { bus, runtime } = await started();
@@ -81,34 +77,12 @@ describe("hostEventsLayer", () => {
     await runtime.dispose();
   });
 
-  it("maps metadata changes and the active file", async () => {
+  it("maps metadata changes", async () => {
     const { app, bus, runtime } = await started();
-    const note = new TFile("a.md");
-    app.metadataCache.trigger("changed", note, "content", {});
-    app.workspace.trigger("file-open", note);
-    app.workspace.trigger("file-open", null);
+    app.metadataCache.trigger("changed", new TFile("a.md"), "content", {});
     expect(bus.published()).toEqual([
       ...startup,
       AppEvent.MetadataChanged({ path: "a.md", extension: "md" }),
-      AppEvent.ActiveFileChanged({ path: "a.md" }),
-      AppEvent.ActiveFileChanged({ path: null }),
-    ]);
-    await runtime.dispose();
-  });
-
-  it("publishes the colour scheme only when it changes", async () => {
-    document.body.className = "theme-light";
-    const { app, bus, runtime } = await started();
-    app.workspace.trigger("css-change");
-    document.body.className = "theme-dark";
-    app.workspace.trigger("css-change");
-    app.workspace.trigger("css-change");
-    document.body.className = "theme-light";
-    app.workspace.trigger("css-change");
-    expect(bus.published()).toEqual([
-      ...startup,
-      AppEvent.ColorSchemeChanged({ scheme: "dark" }),
-      AppEvent.ColorSchemeChanged({ scheme: "light" }),
     ]);
     await runtime.dispose();
   });
@@ -118,9 +92,6 @@ describe("hostEventsLayer", () => {
     // Obsidian fires `create` for every existing file while it starts.
     app.vault.trigger("create", new TFile("existing.md"));
     app.metadataCache.trigger("changed", new TFile("existing.md"), "", {});
-    app.workspace.trigger("file-open", new TFile("existing.md"));
-    document.body.className = "theme-dark";
-    app.workspace.trigger("css-change");
     expect(bus.published()).toEqual([]);
     app.workspace.markLayoutReady();
     app.vault.trigger("create", new TFile("new.md"));
@@ -137,7 +108,7 @@ describe("hostEventsLayer", () => {
     expect(app.metadataCache.listenerCount("changed")).toBe(1);
     expect(app.metadataCache.listenerCount("resolved")).toBe(1);
     expect(app.metadataCache.listenerCount()).toBe(2);
-    expect(app.workspace.listenerCount()).toBe(2);
+    expect(app.workspace.listenerCount()).toBe(0);
     await runtime.dispose();
     expect(listeners()).toBe(0);
     app.workspace.markLayoutReady();
@@ -159,7 +130,7 @@ describe("hostEventsLayer", () => {
   it("reports a dying publish as a defect without throwing into Obsidian", async () => {
     const { app, bus, logger, runtime } = await started();
     bus.failNextPublish();
-    expect(() => app.workspace.trigger("file-open", null)).not.toThrow();
+    expect(() => app.vault.trigger("create", new TFile("a.md"))).not.toThrow();
     expect(logger.entries()).toEqual([
       expect.objectContaining({ event: "defect.reported", incidentId: "T-1" }),
     ]);

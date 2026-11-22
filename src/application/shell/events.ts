@@ -1,5 +1,3 @@
-import type { AppEvent } from "../events";
-
 /**
  * The shell's members of `AppEvent` (`src/application/events.ts`), as plain serialisable data: no
  * Obsidian types, no class instances, no functions. Consumers switch exhaustively on `_tag`.
@@ -32,11 +30,4 @@ export type ShellEvents = {
    * read now returns; see docs/engineering/architecture.md (Events) for how a consumer uses it.
    */
   VaultReady: Record<never, never>;
-  /** The file shown in the active editor changed; `null` when no file is open there. */
-  ActiveFileChanged: { readonly path: string | null };
-  ColorSchemeChanged: { readonly scheme: "light" | "dark" };
 };
-
-/** True for an event about a Markdown file, with Obsidian's own test (`extension === "md"`). */
-export const isMarkdown = (event: AppEvent): boolean =>
-  "extension" in event && event.extension === "md";

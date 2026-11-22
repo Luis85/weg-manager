@@ -15,7 +15,7 @@ const listeners = (app: TestApp) => ({
 });
 
 const NONE = { vault: 0, metadataCache: 0, workspace: 0 };
-const ONE_LOAD = { vault: 4, metadataCache: 2, workspace: 2 };
+const ONE_LOAD = { vault: 4, metadataCache: 2, workspace: 0 };
 
 afterEach(() => {
   vi.restoreAllMocks();

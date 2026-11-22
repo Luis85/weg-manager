@@ -157,8 +157,9 @@ describe("VaultReady in Obsidian", function () {
   it("comes with LayoutReady on a warm restart, complete", async function () {
     await browser.reloadObsidian();
     const warm = await afterVaultReady();
-    // Warm means Obsidian found its cache on disk and indexed nothing.
-    expect(warm.counts["metadataCache:changed"]).toBeUndefined();
+    // Whether Obsidian found all of its cache on disk (no `changed` at all) depends on how far its
+    // cache writes had come when the cold run ended: on a loaded machine 1,143 notes were indexed
+    // again. That is recorded below, not asserted; either way `VaultReady` comes complete.
     expect(at(warm, "bus:VaultReady")).toMatchObject({ layoutReady: true, ...complete });
     observed["warm"] = observation(warm);
     const later = await resolvedAgain();

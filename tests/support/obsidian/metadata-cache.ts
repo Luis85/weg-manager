@@ -48,16 +48,21 @@ const indexOf = (raw: string): CachedMetadata => {
   };
   // Obsidian lists the block as a `yaml` section whether or not it can read it.
   const sections = [{ type: "yaml", position }];
-  let frontmatter: Record<string, unknown> | null;
+  let frontmatter: unknown;
   try {
     frontmatter = parseYaml(found.yaml);
   } catch {
     // Obsidian keeps a note with broken YAML without `frontmatter` and without its position.
     return { sections };
   }
-  if (frontmatter === null) return { sections };
+  // So it keeps a block that holds nothing (only comments, say), a text or a list.
+  if (!isMap(frontmatter)) return { sections };
   return { frontmatter, frontmatterPosition: position, sections };
 };
+
+/** A YAML mapping, as `parseYaml` gives it: a plain object, not a list. */
+export const isMap = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
 /**
  * Obsidian's metadata cache as 1.15.1 behaves (checked by `tests/e2e/specs/note-store.e2e.ts` and

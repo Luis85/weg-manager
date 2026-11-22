@@ -1,28 +1,33 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
+import { asWritten, inExpectedOrder } from "../../support/notes/event-order";
 import {
   CLOSING_TEXTS,
   NORMALIZE_CASES,
   PARSE_SAMPLE,
-  STORE_REPORT,
   STRINGIFY_SAMPLE,
   VAULT_FACTS,
 } from "../../support/notes/fidelity";
-import { storeScenario, vaultFacts } from "../../support/notes/scenarios";
+import { ORDER_FACTS } from "../../support/notes/order-fidelity";
+import { orderScenario } from "../../support/notes/order-scenario";
+import { vaultFacts } from "../../support/notes/scenarios";
+import { STORE_REPORT } from "../../support/notes/store-fidelity";
+import { storeScenario } from "../../support/notes/store-scenario";
 import { cacheIdle, installConsoleSpy, pluginProblems } from "../support";
 
-/** Long enough for Obsidian's metadata cache to index a write (about 3 ms on a dev machine). */
-const SETTLE_MS = 400;
+/** The report in the expectation's order where Obsidian keeps none, and the expectation. */
+const ordered = (report: unknown, expected: unknown) =>
+  [inExpectedOrder(report, expected), asWritten(expected)] as const;
 
 /**
  * The fidelity check for the Obsidian double: the same scenarios and expectations as
  * `tests/unit/support/obsidian-double.test.ts`, here in a real Obsidian. The store runs from the
- * real adapter source inside the test-only probe plugin (`tests/e2e/probe-plugin/`).
+ * real adapter source inside the test-only probe plugin (`tests/e2e/probe-plugin/`), and every
+ * step ends on the probe's event fence, never on a timer.
  */
 describe("note store in Obsidian", function () {
   before(async function () {
-    // The first scenario records every event for a stretch; the vault's own notes must not still
-    // be indexing in the background then (seen once on a loaded machine: three late `changed`).
+    // The scenarios fence their own steps; this only lets Obsidian finish the vault's own notes.
     await cacheIdle();
   });
 
@@ -33,14 +38,22 @@ describe("note store in Obsidian", function () {
       text: PARSE_SAMPLE.text,
       closings: CLOSING_TEXTS,
     };
-    const facts = await browser.executeObsidian(vaultFacts, input, SETTLE_MS);
-    expect(facts).toEqual(VAULT_FACTS);
+    const [report, expected] = ordered(
+      await browser.executeObsidian(vaultFacts, input),
+      VAULT_FACTS,
+    );
+    expect(report).toEqual(expected);
+  });
+
+  it("fires events in the order the double fires them", async function () {
+    const [report, expected] = ordered(await browser.executeObsidian(orderScenario), ORDER_FACTS);
+    expect(report).toEqual(expected);
   });
 
   it("creates, lists, updates, renames and trashes notes with the events the double fires", async function () {
     await installConsoleSpy();
-    const report = await browser.executeObsidian(storeScenario, SETTLE_MS);
-    expect(report).toEqual(STORE_REPORT);
+    const [report, expected] = ordered(await browser.executeObsidian(storeScenario), STORE_REPORT);
+    expect(report).toEqual(expected);
     expect(await pluginProblems()).toEqual([]);
   });
 });

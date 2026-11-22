@@ -1,5 +1,6 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
+import type { TFile } from "obsidian";
 import { VANISHED_FACTS, vanishedScenario } from "../../support/notes/vanished-scenario";
 import type { Outcome, ProbeApi } from "../../support/notes/probe-api";
 import { installConsoleSpy, pluginProblems } from "../support";
@@ -15,7 +16,7 @@ describe("a note deleted while Obsidian still lists it", function () {
 
   it("rejects vault.process with Node's ENOENT while the vault lists the file", async function () {
     await installConsoleSpy();
-    const report = await browser.executeObsidian(vanishedScenario, 300);
+    const report = await browser.executeObsidian(vanishedScenario);
     expect(report).toEqual(VANISHED_FACTS);
   });
 
@@ -27,8 +28,15 @@ describe("a note deleted while Obsidian still lists it", function () {
       const api = (plugins as unknown as { noteStoreProbe?: { api?: unknown } }).noteStoreProbe
         ?.api as Probe["api"];
       if (api === undefined) throw new Error("the probe plugin is not loaded");
-      const file = await app.vault.create(path, "---\na: 1\n---\n");
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      // Created and indexed first, so the delete does not race the metadata cache's read.
+      const file = await new Promise<TFile>((done, fail) => {
+        const ref = app.metadataCache.on("changed", (changed) => {
+          if (changed.path !== path) return;
+          app.metadataCache.offref(ref);
+          done(changed);
+        });
+        app.vault.create(path, "---\na: 1\n---\n").catch(fail);
+      });
       type NodeRequire = (name: string) => {
         unlinkSync(path: string): void;
         join(...parts: string[]): string;

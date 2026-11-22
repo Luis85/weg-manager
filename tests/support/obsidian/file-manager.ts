@@ -1,5 +1,5 @@
 import type { MetadataCache } from "./metadata-cache";
-import { splitFrontmatter } from "./metadata-cache";
+import { isMap, splitFrontmatter } from "./metadata-cache";
 import { TFile, TFolder, type TAbstractFile, type Vault } from "./vault";
 import { parseYaml, stringifyYaml } from "./yaml";
 
@@ -11,11 +11,17 @@ import { parseYaml, stringifyYaml } from "./yaml";
  *   nothing. A thrown error, also a `YAMLParseError` of broken YAML, writes nothing. With every key
  *   deleted the `---` block goes and only the body stays. The body is never touched.
  * - `renameFile` refuses a taken path (`Destination file already exists!`) and a missing folder
- *   (ENOENT), keeps the `TFile` object and fires `rename` with the old path. Link updates in other
- *   notes are not modelled, and folders cannot be renamed here.
- * - `trashFile` fires, for each file, the metadata cache's `deleted`, the vault's `delete` and then
- *   the metadata cache's `resolved` (measured for one file), the folder's own `delete` last. Which trash the user chose makes no difference to that. It
- *   resolves with `true`, although the d.ts says `Promise<void>`.
+ *   (ENOENT), keeps the `TFile` and `TFolder` objects and fires `rename` with the old path: for a
+ *   folder the folder first, then everything inside it in the vault's order. Once the promise has
+ *   resolved, the metadata cache fires one `resolved`. Link updates in other notes, and the
+ *   `changed` they would cause, are not modelled.
+ * - `trashFile` fires, for each file, the metadata cache's `deleted` and the vault's `delete`, for
+ *   a folder its contents in the vault's order and the folder last; once the promise has resolved
+ *   (with `true`, although the d.ts says `Promise<void>`), one `resolved`. Which trash the user
+ *   chose makes no difference to that.
+ *
+ * "The vault's order" is the order entries joined the vault, a renamed entry joining again: that
+ * is how Obsidian 1.15.1 lists them (`vaultFacts`' `trashFolder`, `folderScenario`).
  */
 export class FileManager {
   constructor(
@@ -30,7 +36,9 @@ export class FileManager {
     await this.vault.beforeWrite(file.path);
     const text = this.vault.textOf(file);
     const split = splitFrontmatter(text);
-    const frontmatter = split === undefined ? {} : (parseYaml(split.yaml) ?? {});
+    const parsed: unknown = split === undefined ? {} : parseYaml(split.yaml);
+    // Not measured for YAML that is no map; the plugin no longer calls this.
+    const frontmatter = isMap(parsed) ? parsed : {};
     fn(frontmatter);
     const body = split === undefined ? text : split.body;
     const yaml = Object.keys(frontmatter).length === 0 ? "" : stringifyYaml(frontmatter);
@@ -39,8 +47,8 @@ export class FileManager {
 
   async renameFile(file: TAbstractFile, newPath: string): Promise<void> {
     await this.vault.beforeWrite(newPath);
-    if (!(file instanceof TFile)) throw new Error("test double: only files can be renamed");
     this.vault.move(file, newPath);
+    this.resolvedLater();
   }
 
   async trashFile(file: TAbstractFile): Promise<boolean> {
@@ -51,8 +59,15 @@ export class FileManager {
     for (const entry of entries) {
       if (entry instanceof TFile) this.metadataCache.forget(entry);
       this.vault.remove(entry);
-      if (entry instanceof TFile) this.metadataCache.trigger("resolved");
     }
+    this.resolvedLater();
     return true;
+  }
+
+  /** The `resolved` Obsidian fires a moment after a rename or a trash has resolved. */
+  private resolvedLater(): void {
+    setTimeout(() => {
+      this.metadataCache.trigger("resolved");
+    }, 0);
   }
 }

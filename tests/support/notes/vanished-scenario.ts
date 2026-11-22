@@ -1,4 +1,4 @@
-import type { App } from "obsidian";
+import type { App, TFile } from "obsidian";
 
 /** What `vanishedScenario` finds out. */
 export type VanishedReport = {
@@ -27,13 +27,17 @@ export type VanishedReport = {
  * between, so the watcher cannot have reported it. `executeObsidian` serialises the function, so
  * it uses only its arguments and what it defines itself.
  */
-export const vanishedScenario = async (
-  { app }: { readonly app: App },
-  settleMs: number,
-): Promise<VanishedReport> => {
+export const vanishedScenario = async ({ app }: { readonly app: App }): Promise<VanishedReport> => {
   const path = "Verschwunden.md";
-  const file = await app.vault.create(path, "---\na: 1\n---\n");
-  await new Promise((resolve) => setTimeout(resolve, settleMs));
+  // Created and indexed first: the delete must not race the metadata cache's first read.
+  const file = await new Promise<TFile>((done, fail) => {
+    const ref = app.metadataCache.on("changed", (changed) => {
+      if (changed.path !== path) return;
+      app.metadataCache.offref(ref);
+      done(changed);
+    });
+    app.vault.create(path, "---\na: 1\n---\n").catch(fail);
+  });
   type NodeRequire = (name: string) => {
     unlinkSync(path: string): void;
     join(...parts: string[]): string;

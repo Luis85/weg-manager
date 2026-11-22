@@ -293,24 +293,35 @@ export class Vault extends Events {
     this.indexer(file);
   }
 
-  /** Double-internal: `fileManager.renameFile` for a file. */
-  move(file: TFile, newPath: string): void {
-    if (this.entries.get(file.path) !== file) throw enoent(file.path, "rename");
+  /**
+   * Double-internal: `fileManager.renameFile`. A folder moves with everything inside it: `rename`
+   * fires for the folder, then for each entry inside in the vault's order, and each joins the
+   * vault's order again, as in Obsidian. A folder's `children` keep their order.
+   */
+  move(entry: TAbstractFile, newPath: string): void {
+    if (this.entries.get(entry.path) !== entry) throw enoent(entry.path, "rename");
     if (this.entries.has(newPath)) throw new Error("Destination file already exists!");
     if (this.getFolderByPath(parentOf(newPath)) === null) throw enoent(newPath, "rename");
-    if (this.collides(newPath, file)) throw eexist(newPath);
-    const oldPath = file.path;
-    this.unlink(file);
-    file.path = newPath;
-    this.link(file);
-    this.trigger("rename", file, oldPath);
+    if (this.collides(newPath, entry)) throw eexist(newPath);
+    const oldPath = entry.path;
+    const inside = entry instanceof TFolder ? this.contentsOf(entry) : [];
+    this.unlink(entry);
+    entry.path = newPath;
+    this.link(entry);
+    const moved = inside.map((child) => {
+      const old = child.path;
+      this.entries.delete(old);
+      child.path = `${newPath}${old.slice(oldPath.length)}`;
+      this.entries.set(child.path, child);
+      return [child, old] as const;
+    });
+    this.trigger("rename", entry, oldPath);
+    for (const [child, old] of moved) this.trigger("rename", child, old);
   }
 
-  /** Double-internal: the files and folders inside `folder`, deepest first. */
+  /** Double-internal: the files and folders inside `folder`, in the vault's order. */
   contentsOf(folder: TFolder): TAbstractFile[] {
-    return [...this.entries.values()]
-      .filter((entry) => entry.path.startsWith(`${folder.path}/`))
-      .toSorted((a, b) => b.path.split("/").length - a.path.split("/").length);
+    return [...this.entries.values()].filter((entry) => entry.path.startsWith(`${folder.path}/`));
   }
 
   /**

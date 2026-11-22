@@ -196,7 +196,7 @@ describe("VaultReady in Obsidian", function () {
   });
 
   it("fires changed, resolve and resolved around an edit as the double models it", async function () {
-    expect(await browser.executeObsidian(readinessScenario, 400)).toEqual(READINESS_FACTS);
+    expect(await browser.executeObsidian(readinessScenario)).toEqual(READINESS_FACTS);
     const after = await record();
     expect(after.counts["bus:VaultReady"]).toBe(1);
   });

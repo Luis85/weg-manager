@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as obsidian from "../../support/obsidian";
-import { App } from "../../support/obsidian";
+import { App, type TFile } from "../../support/obsidian";
 import {
   CLOSING_TEXTS,
   NORMALIZE_CASES,
@@ -51,5 +51,47 @@ describe("the Obsidian double", () => {
   it("fires changed, resolve and resolved around an edit as Obsidian does", async () => {
     const app = new App();
     expect(await readinessScenario({ app } as never, SETTLE_MS)).toEqual(READINESS_FACTS);
+  });
+});
+
+/** What a test can do to the double that Obsidian could do too: never index a file. */
+describe("the Obsidian double's withheld index", () => {
+  it("never indexes a withheld file, however often it changes, until it is restored", async () => {
+    const app = new App();
+    const events: string[] = [];
+    app.metadataCache.on("changed", (file: unknown) =>
+      events.push(`changed ${(file as TFile).path}`),
+    );
+    app.metadataCache.withholdIndex("Nie.md");
+    app.vault.seedFile("Nie.md", "---\na: 1\n---\n");
+    app.vault.seedFile("Da.md", "---\na: 1\n---\n");
+    await app.metadataCache.whenIndexed();
+    const never = app.vault.getFileByPath("Nie.md");
+    if (never === null) throw new Error("no Nie.md");
+    expect(app.metadataCache.getFileCache(never)).toBeNull();
+    expect(events).toEqual(["changed Da.md"]);
+    app.vault.seedFile("Nie.md", "---\na: 2\n---\n");
+    await app.metadataCache.whenIndexed();
+    expect(app.metadataCache.getFileCache(never)).toBeNull();
+
+    app.metadataCache.restoreIndex("Nie.md");
+    await app.metadataCache.whenIndexed();
+    expect(app.metadataCache.getFileCache(never)?.frontmatter).toEqual({ a: 2 });
+    expect(events).toEqual(["changed Da.md", "changed Nie.md"]);
+  });
+
+  it("lets a cold start skip a withheld file and wakes whenIndexed all the same", async () => {
+    const app = new App();
+    app.vault.seedFile("Nie.md", "---\na: 1\n---\n");
+    app.vault.seedFile("Da.md", "---\na: 1\n---\n");
+    await app.metadataCache.whenIndexed();
+    app.metadataCache.withholdIndex("Nie.md");
+    app.metadataCache.startCold();
+    await app.metadataCache.whenIndexed();
+    const cached = app.vault
+      .getMarkdownFiles()
+      .filter((file) => app.metadataCache.getFileCache(file) !== null)
+      .map((file) => file.path);
+    expect(cached).toEqual(["Da.md"]);
   });
 });

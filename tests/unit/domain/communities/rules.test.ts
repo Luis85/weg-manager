@@ -200,6 +200,17 @@ describe("firstFreeColor", () => {
   });
 });
 
+describe("validateCommunity: the data of an issue", () => {
+  it("is the value as the rules saw it: trimmed, the short code upper-case", () => {
+    expect(
+      validateCommunity({ ...INPUT, short_code: " tg ", color: " amber " }, { others: [TG] }),
+    ).toEqual([
+      { key: "short_code", code: "short-code.taken", value: "TG", other: "Tiefgarage" },
+      { key: "color", code: "color.unknown", value: "amber" },
+    ]);
+  });
+});
+
 describe("validateCommunity: the other community a taken short code belongs to", () => {
   it("names it by its short code when it has no valid name", () => {
     expect(

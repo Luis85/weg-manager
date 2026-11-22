@@ -173,15 +173,15 @@ export const validateCommunity = (
   const issues: CommunityFieldIssue[] = [];
   for (const key of communityType.keys) {
     const code = broken.get(key);
-    const value = draft[key] ?? "";
-    if (code === "color.unknown") issues.push({ key: "color", code, value });
+    if (code === "color.unknown") issues.push({ key: "color", code, value: input.color.trim() });
     else if (code !== undefined) issues.push({ key, code });
     else if (key === "short_code") {
+      const value = normalizeShortCode(input.short_code);
       const owner = takenBy(key, value, context);
       if (owner !== undefined) {
         issues.push({ key, code: "short-code.taken", value, other: owner.name ?? value });
       }
-    } else if (key === "color" && takenBy(key, value, context) !== undefined) {
+    } else if (key === "color" && takenBy(key, draft.color, context) !== undefined) {
       issues.push({ key, code: "color.taken" });
     }
   }

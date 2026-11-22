@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/vue-form";
-import { computed, nextTick, shallowRef } from "vue";
+import { computed, nextTick, onScopeDispose, shallowRef, watch } from "vue";
 import type { AppServices } from "../../application/app-services";
 import type { RecordRow, ReferenceSource } from "../../application/notes";
 import type { AppError } from "../../application/errors";
@@ -15,6 +15,7 @@ import {
 } from "../../domain/notes";
 import { useCommand, useMessages, useStream, type UseCaseFn } from "../shell";
 import { shownValue, type ConflictChoices } from "./conflict";
+import { useSheetGuard } from "./sheet-guard";
 
 /** A field's issue as the feature reports it: by key, with a code. */
 type KeyedIssue = { readonly key: string; readonly code: string };
@@ -72,7 +73,8 @@ export type RecordFormOptions<F extends NoteFields, Issue extends KeyedIssue> = 
  * focus to the first invalid field. A field shows the note's own issue until the user changes it.
  * An outside edit to a field the user changed too shows the conflict choice; the form then saves
  * again against the note's current values (ADR 0007). Save stays focusable: `blocked` says when it
- * does nothing (`aria-disabled`).
+ * does nothing (`aria-disabled`). Whether the form holds unsaved input (`dirty`, TanStack's
+ * `isDirty`) goes to the record screen around it, whose sheet then asks before it closes (PBI-72).
  */
 export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
   options: RecordFormOptions<F, Issue>,
@@ -180,6 +182,12 @@ export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
     return meta.isDirty ? false : (loadedIssue(key) ?? false);
   };
 
+  /** The user changed a field since the form opened: closing would discard input. */
+  const dirty = form.useSelector((state) => state.isDirty);
+  const report = useSheetGuard();
+  watch(dirty, report, { immediate: true });
+  onScopeDispose(() => report(false));
+
   const isSubmitting = form.useSelector((state) => state.isSubmitting);
   const fieldsValid = form.useSelector((state) => state.isFieldsValid);
   const pending = computed(() => isSubmitting.value || command.pending.value);
@@ -248,6 +256,7 @@ export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
     show,
     pending,
     blocked,
+    dirty,
     summary,
     notice,
   };

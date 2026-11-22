@@ -88,6 +88,13 @@ export const notesDe: NotesCatalog = {
     confirm: "In den Papierkorb verschieben",
     cancel: "Abbrechen",
   },
+  discard: {
+    title: "Eingaben verwerfen?",
+    detail:
+      "Deine Eingaben in diesem Formular sind noch nicht gespeichert. Wenn du sie verwirfst, sind sie verloren.",
+    confirm: "Verwerfen",
+    keep: "Weiter bearbeiten",
+  },
   dataIssues: {
     title: "Datenprobleme",
     intro:

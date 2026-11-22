@@ -73,6 +73,7 @@ const rendered = (notes: NotesCatalog) => ({
     theirs: notes.conflict.theirs("Tiefgarage"),
   },
   deletion: { ...notes.deletion, detail: notes.deletion.detail("Ahornweg 12") },
+  discard: notes.discard,
   dataIssues: {
     ...notes.dataIssues,
     count: [notes.dataIssues.count(1), notes.dataIssues.count(2)],
@@ -106,6 +107,13 @@ describe("the notes catalog's record texts", () => {
           "„Ahornweg 12“ wird in Obsidians Papierkorb verschoben. Dort kannst du die Notiz wiederherstellen.",
         confirm: "In den Papierkorb verschieben",
         cancel: "Abbrechen",
+      },
+      discard: {
+        title: "Eingaben verwerfen?",
+        detail:
+          "Deine Eingaben in diesem Formular sind noch nicht gespeichert. Wenn du sie verwirfst, sind sie verloren.",
+        confirm: "Verwerfen",
+        keep: "Weiter bearbeiten",
       },
       dataIssues: {
         title: "Datenprobleme",
@@ -143,6 +151,12 @@ describe("the notes catalog's record texts", () => {
         detail: "“Ahornweg 12” will be moved to Obsidian's trash, where you can restore it.",
         confirm: "Move to trash",
         cancel: "Cancel",
+      },
+      discard: {
+        title: "Discard your input?",
+        detail: "Your input in this form isn't saved yet. If you discard it, it's lost.",
+        confirm: "Discard",
+        keep: "Keep editing",
       },
       dataIssues: {
         title: "Data issues",

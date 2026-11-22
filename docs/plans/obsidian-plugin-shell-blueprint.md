@@ -253,11 +253,12 @@ Each lesson cost time in the source repository. The rule comes first, then the r
 30. **L30 · `aria-disabled`, never `disabled`, under the focus.** A control that turns `disabled` while focused drops the focus to the page; Nuxt UI's `loading` disables its button, so show a spinner icon instead. Task 09, Task 17.
 31. **L31 · A difference between the double and Obsidian is a bug in the double.** Run the same fidelity scenario on both and compare with one expectation; fix the double, never the expectation alone. Task 04, Task 13.
 32. **L32 · Release from two jobs.** The first release workflow held a write token while running `npm ci` and the repository's code; the job with write permissions must have no checkout and run no npm. Task 21.
-33. **L33 · Workflows that need a tag or a schedule cannot be proven before they run.** `release.yml` and `nightly-mutation.yml` were checked with `actionlint` only; expect fixes on the first tag and the first night. Task 21.
+33. **L33 · Workflows that need a tag or a schedule cannot be proven before they run.** `release.yml` and `nightly-mutation.yml` were checked with `actionlint` only; expect fixes on the first release and the first night. Task 21.
 34. **L34 · Overrides, not downgrades, for audit findings in tooling.** npm's suggested fixes were old majors (`@wdio/cli` 9, `eslint-plugin-obsidianmd` 0.0.2). Task 01.
 35. **L35 · Notices from the bundle, not from the tree.** The runtime tree had 248 packages; the production bundle holds 26. Generate the notices from the bundler's module list and check them in the gate. Task 20.
 36. **L36 · Waiting in e2e is on a condition, never a pause.** A pause before "nothing was written" passes empty if the effect comes later; a pause before a click races the indexer. Task 12.
 37. **L37 · Agent worktrees need real `node_modules` copies of `@nuxt/ui` and `.nuxt-ui`.** A symlinked `node_modules` breaks Tailwind's `@source not` excludes; Stryker's sandbox must ignore `.claude` and `.obsidian-cache` (symlinks, 1.3 GB). Task 08, Task 19.
+38. **L38 · Give the release a start that needs no tag push.** The first release here stopped at the last step: the agent that had prepared everything could push its working branch but no tag. `release.yml` therefore has a `workflow_dispatch` with the version as input and creates the tag itself, on `main` only, last, together with the release. Task 21.
 
 ## Definition of done
 

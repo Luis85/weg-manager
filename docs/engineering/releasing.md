@@ -60,11 +60,21 @@ When the gate says `THIRD-PARTY-NOTICES.txt is out of date`, for example on a De
 
 Before `gh release create`, the `release` job runs `actions/attest` (v4, pinned by commit SHA like every action) over the downloaded `release/weg-manager/main.js`, `manifest.json`, `styles.css` and `release/THIRD-PARTY-NOTICES.txt`. This is the step from the Obsidian developer docs' guide *Release your plugin with GitHub Actions*, which recommends it for a community-directory submission. It needs the permissions `contents: write`, `id-token: write` and `attestations: write`. `release.yml` grants them to the `release` job only, which runs no repository code and no install scripts; the workflow's default is `contents: read`.
 
-The attestation is a signed statement that the files were built by this workflow from this commit. Anyone can check a downloaded asset with the GitHub CLI:
+The attestation is a signed statement that the files were made by a GitHub Actions workflow of this repository. Check a downloaded asset with the GitHub CLI, and pin the workflow and the ref, not only the repository:
 
 ```sh
-gh attestation verify main.js --repo <owner>/weg-manager
+# release started by hand (the workflow runs on main)
+gh attestation verify main.js --repo <owner>/weg-manager \
+  --signer-workflow <owner>/weg-manager/.github/workflows/release.yml \
+  --source-ref refs/heads/main
+
+# release started by a pushed tag
+gh attestation verify main.js --repo <owner>/weg-manager \
+  --signer-workflow <owner>/weg-manager/.github/workflows/release.yml \
+  --source-ref refs/tags/0.3.0
 ```
+
+`--repo` alone accepts an attestation made by any workflow, on any branch or tag, of the repository: a run of a changed `release.yml` on a feature branch would pass it. `--signer-workflow` requires that `release.yml` signed it, and `--source-ref` that it ran on `main` (a start by hand) or on the tag (a start by tag), so a run of a changed `release.yml` on another branch no longer passes. The same holds for the other three assets. (`--cert-identity https://github.com/<owner>/weg-manager/.github/workflows/release.yml@refs/heads/main` is the exact-match form of the pair.) The flags are those of `gh attestation verify --help` in GitHub CLI 2.89.0; the command was not run against a real release for this note.
 
 The attested files are the same bytes that the release carries, because both steps read the one downloaded artifact.
 

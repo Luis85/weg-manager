@@ -143,7 +143,54 @@ describe("the community selection", () => {
       yield* NoteStore.use((store) => store.trash(`${FOLDER}/G2.md`));
       yield* indexed;
       assert.deepStrictEqual(yield* communitySelection, selection(communityId(1)));
+      // The rule's choice is not stored over the user's: the stored community may come back.
+      assert.strictEqual(yield* storedSelection, communityId(3));
+      // Gone for good: a second community then asks for a choice once.
+      fixture.memory.seed(`${FOLDER}/G4.md`, communityNote(4, { color: "rust" }));
+      yield* indexed;
+      assert.deepStrictEqual(yield* communitySelection, selection(undefined, true));
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("selects the stored community again when its note was gone for a moment", () => {
+    const fixture = communitiesFixture({ device: { [SELECTION_KEY]: communityId(2) } });
+    return Effect.gen(function* () {
+      seed(fixture, 2);
+      yield* ready;
+      yield* settle;
+      assert.deepStrictEqual(yield* communitySelection, selection(communityId(2)));
+      // Sync deletes the note and writes it again; broken YAML while typing does the same.
+      yield* NoteStore.use((store) => store.trash(`${FOLDER}/G2.md`));
+      yield* indexed;
+      assert.deepStrictEqual(yield* communitySelection, selection(communityId(1)));
+      fixture.memory.seed(`${FOLDER}/G2.md`, communityNote(2, { color: "violet" }));
+      yield* indexed;
+      assert.deepStrictEqual(yield* communitySelection, selection(communityId(2)));
+      assert.strictEqual(yield* storedSelection, communityId(2));
+      assert.strictEqual(fixture.deviceWrites(), 0);
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("stores the rule's choice over a stored value that is no community id", () => {
+    const fixture = communitiesFixture({ device: { [SELECTION_KEY]: "item-gone" } });
+    return Effect.gen(function* () {
+      seed(fixture, 1);
+      yield* ready;
+      yield* settle;
+      assert.deepStrictEqual(yield* communitySelection, selection(communityId(1)));
       assert.strictEqual(yield* storedSelection, communityId(1));
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("stores the user's choice over a stored community that is gone", () => {
+    const fixture = communitiesFixture({ device: { [SELECTION_KEY]: communityId(3) } });
+    return Effect.gen(function* () {
+      seed(fixture, 2);
+      yield* ready;
+      yield* settle;
+      yield* selectCommunity(communityId(2));
+      assert.deepStrictEqual(yield* communitySelection, selection(communityId(2)));
+      assert.strictEqual(yield* storedSelection, communityId(2));
     }).pipe(Effect.provide(fixture.layer));
   });
 

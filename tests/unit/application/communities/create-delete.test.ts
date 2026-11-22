@@ -7,7 +7,11 @@ import {
   createCommunity,
   deleteCommunity,
 } from "../../../../src/application/communities";
-import { NoteNotFoundError, NoteStore } from "../../../../src/application/notes";
+import {
+  NoteNotFoundError,
+  NoteStore,
+  NoteWriteRefusedError,
+} from "../../../../src/application/notes";
 import type { CommunityInput } from "../../../../src/domain/communities";
 import {
   FOLDER,
@@ -152,6 +156,24 @@ describe("deleteCommunity", () => {
       yield* indexed;
       yield* deleteCommunity(first);
       assert.deepStrictEqual(yield* listed, []);
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("refuses to trash either note when a copy with the same id appeared meanwhile", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      fixture.memory.seed(`${FOLDER}/Gemeinschaft 1.md`, communityNote(1));
+      yield* ready;
+      const [first] = (yield* communityList).communities;
+      if (first === undefined) throw new Error("no community");
+      fixture.memory.seed(`${FOLDER}/Gemeinschaft 1 (Kopie).md`, communityNote(1));
+      yield* indexed;
+      const error = yield* Effect.flip(deleteCommunity(first));
+      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "identity" }));
+      assert.deepStrictEqual(
+        (yield* listed).map((note) => note.path),
+        [`${FOLDER}/Gemeinschaft 1 (Kopie).md`, `${FOLDER}/Gemeinschaft 1.md`],
+      );
     }).pipe(Effect.provide(fixture.layer));
   });
 

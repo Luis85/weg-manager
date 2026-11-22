@@ -50,7 +50,7 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 
 ## Ablage und Dateiname
 
-- Das Plugin legt neue Gemeinschaften in `<Wurzelordner>/Gemeinschaften/` an. Der Wurzelordner ist die Einstellung `rootFolder`, vorgegeben `WEG Manager`. Der Ordnername `Gemeinschaften` ist in jeder Sprache deutsch, weil ein Vault zwischen Geräten geteilt wird.
+- Das Plugin legt neue Gemeinschaften in `<Wurzelordner>/Gemeinschaften/` an. Der Wurzelordner ist die Einstellung `rootFolder`, vorgegeben `WEG Manager`. Beginnt der Name eines seiner Ordner mit einem Punkt, ist er ungültig und es gilt die Vorgabe, weil Obsidian versteckte Ordner nicht einliest. Der Ordnername `Gemeinschaften` ist in jeder Sprache deutsch, weil ein Vault zwischen Geräten geteilt wird.
 - Der Dateiname ist der Name der Gemeinschaft. Zeichen, die ein Dateiname oder ein Wikilink nicht tragen kann (`\ / : * ? " < > | # ^ [ ]` und Steuerzeichen), werden je Folge durch einen Bindestrich ersetzt. Mehrere Leerzeichen werden zu einem; Punkte und Leerzeichen am Anfang und Ende fallen weg. Bleibt nichts übrig, heißt die Datei wie das Kürzel. Aus `Ahornweg 12/14` wird `Ahornweg 12-14.md`; `name` behält `Ahornweg 12/14`.
 - Ist der Name im Ordner schon vergeben (auch in anderer Groß- und Kleinschreibung), heißt die Datei `Name (2).md`, `Name (3).md` und so weiter.
 - Ändert der Mensch im Plugin den Namen, benennt das Plugin die Datei mit um, solange sie noch den Namen trägt, den das Plugin ihr gegeben hat (der alte Name, auch mit Zusatz ` (2)`). Hat der Mensch der Datei einen eigenen Namen gegeben, bleibt dieser. Klappt das Umbenennen nicht, bleibt die gespeicherte Notiz, wo sie ist.
@@ -58,7 +58,7 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 ## Was das Plugin schreibt
 
 - Beim Anlegen: `schema`, `id` und die fünf Felder in dieser Reihenfolge, der Text darunter leer.
-- Beim Speichern nur die Felder, die der Mensch im Formular geändert hat. Wurde ein Feld inzwischen außerhalb des Plugins geändert, gilt die Änderung des Feldes, das nur eine Seite geändert hat. Haben beide Seiten dasselbe Feld verschieden geändert, schreibt das Plugin nichts und lässt den Menschen je Feld wählen ([[DF-23 - Externe Bearbeitung ohne stilles Überschreiben]]).
+- Beim Speichern nur die Felder, die der Mensch im Formular geändert hat. Ein Feld, das er nicht angefasst hat, bleibt, wie es in der Notiz steht, auch mit Leerzeichen am Anfang oder Ende; ein geändertes Feld schreibt das Plugin ohne sie. Wurde ein Feld inzwischen außerhalb des Plugins geändert, gilt die Änderung des Feldes, das nur eine Seite geändert hat. Haben beide Seiten dasselbe Feld verschieden geändert, schreibt das Plugin nichts und lässt den Menschen je Feld wählen ([[DF-23 - Externe Bearbeitung ohne stilles Überschreiben]]).
 - Unbekannte Schlüssel, ihre Reihenfolge und der Text unter dem Frontmatter bleiben unverändert.
 - Das Plugin ändert nur die Zeilen der Schlüssel, die es schreibt. Kommentare, Anführungszeichen und Zahlenformen (`01067`), die Zeilenenden (LF oder CRLF) und ein BOM am Dateianfang bleiben, wie sie sind. Ein Frontmatter, das es so nicht ändern kann (etwa mit Ankern oder in einer Zeile `{…}`), schreibt es nicht und sagt es dem Menschen.
 - Löschen legt die Notiz in den Papierkorb, den der Mensch in Obsidian eingestellt hat.

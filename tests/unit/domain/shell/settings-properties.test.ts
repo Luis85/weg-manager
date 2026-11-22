@@ -34,8 +34,7 @@ const isNormalisedFolder = (value: string): boolean =>
       (segment) =>
         segment.length > 0 &&
         segment === segment.trim() &&
-        segment !== "." &&
-        segment !== ".." &&
+        !segment.startsWith(".") &&
         !/[*"\\<>:|?]/.test(segment) &&
         ![...segment].some((char) => isControl(char.codePointAt(0) ?? 0)),
     );

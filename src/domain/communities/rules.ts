@@ -1,4 +1,5 @@
 import { Schema } from "effect";
+import type { Frontmatter } from "../notes";
 import { COMMUNITY_KEYS, communityType, type CommunityKey } from "./community-type";
 
 /** What the community form holds: the text of each field as typed. */
@@ -66,6 +67,28 @@ export const communityValues = (input: CommunityInput): CommunityDraft => ({
   kind: blankAsUnset(input.kind),
   unit_label: blankAsUnset(input.unit_label),
 });
+
+/**
+ * The values an edit saves (DV-01: only the fields the person changed are written). A field whose
+ * input is still the text the form loaded keeps the note's value as written, surrounding spaces
+ * included, while that value is valid; every other field is what `communityValues` makes of it,
+ * so a broken value the form shows is repaired by a save.
+ */
+export const editedValues = (input: CommunityInput, loaded: Frontmatter): CommunityDraft => {
+  const draft = communityValues(input);
+  const broken = new Set(communityType.check(loaded).map((issue) => issue.key));
+  const kept = (key: CommunityKey): string | undefined => {
+    const value = loaded[key];
+    return value === input[key] && !broken.has(key) ? value : draft[key];
+  };
+  return {
+    name: kept("name"),
+    short_code: kept("short_code"),
+    color: kept("color"),
+    kind: kept("kind"),
+    unit_label: kept("unit_label"),
+  };
+};
 
 /** Each short code that more than one of `communities` has. */
 export const duplicateShortCodes = (

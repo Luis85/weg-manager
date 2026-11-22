@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
+import { Effect, Fiber, Layer } from "effect";
 import {
   InvalidCommunityError,
   canChangeShortCode,
@@ -23,6 +23,7 @@ import {
   ready,
   stored,
 } from "../../../support/communities/fixture";
+import { settle } from "../../../support/notes/index-fixture";
 
 const PATH = `${FOLDER}/Gemeinschaft 1.md`;
 const BODY = "Eigene Notizen\n";
@@ -95,6 +96,33 @@ describe("updateCommunity", () => {
         }),
       );
       assert.deepStrictEqual((yield* stored(PATH)).frontmatter, theirs);
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("leaves a field the user did not change as written, spaces included", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      const community = yield* loaded(fixture, { name: "Gemeinschaft 1 " });
+      const note = yield* updateCommunity(community, inputOf(community, { kind: "Haus" }));
+      assert.strictEqual(note.path, PATH);
+      assert.deepStrictEqual((yield* stored(PATH)).frontmatter, {
+        ...community.frontmatter,
+        kind: "Haus",
+      });
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("keeps an outside change to a field with spaces the user did not change", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      const community = yield* loaded(fixture, { name: "Gemeinschaft 1 " });
+      fixture.memory.seed(PATH, { ...community.frontmatter, name: "Ahornweg 14" }, BODY);
+      yield* updateCommunity(community, inputOf(community, { kind: "Haus" }));
+      assert.deepStrictEqual((yield* stored(PATH)).frontmatter, {
+        ...community.frontmatter,
+        name: "Ahornweg 14",
+        kind: "Haus",
+      });
     }).pipe(Effect.provide(fixture.layer));
   });
 
@@ -222,6 +250,26 @@ describe("updateCommunity", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
+  it.effect("still renames the file when an unload interrupts while the save is written", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      const community = yield* loaded(fixture);
+      fixture.memory.holdWrites();
+      const saving = yield* Effect.forkChild(
+        updateCommunity(community, inputOf(community, { name: "Neu" })),
+      );
+      yield* settle;
+      assert.strictEqual(fixture.memory.heldWrites(), 1);
+      // `ManagedRuntime.dispose` interrupts the command's fiber and waits for it.
+      const unloading = yield* Effect.forkChild(Fiber.interrupt(saving));
+      yield* settle;
+      fixture.memory.releaseWrites();
+      yield* Fiber.join(unloading);
+      assert.deepStrictEqual(yield* paths, [`${FOLDER}/Neu.md`]);
+      assert.strictEqual((yield* stored(`${FOLDER}/Neu.md`)).frontmatter["name"], "Neu");
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
   it.effect("tries up to the hundredth name", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {
@@ -276,6 +324,23 @@ describe("updateCommunity", () => {
       const note = yield* updateCommunity(community, inputOf(community, { kind: "Haus" }));
       assert.strictEqual(note.path, `${FOLDER}/Eigener Name.md`);
       assert.strictEqual((yield* stored(note.path)).frontmatter["kind"], "Haus");
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("refuses to write when a copy with the same id appeared meanwhile", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      const community = yield* loaded(fixture);
+      // Sorted by name, the copy comes first: neither of the two may be written (ADR 0007).
+      const copy = `${FOLDER}/Gemeinschaft 1 (Kopie).md`;
+      fixture.memory.seed(copy, communityNote(1), BODY);
+      yield* indexed;
+      const error = yield* Effect.flip(
+        updateCommunity(community, inputOf(community, { kind: "Haus" })),
+      );
+      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "identity" }));
+      assert.deepStrictEqual((yield* stored(PATH)).frontmatter, communityNote(1));
+      assert.deepStrictEqual((yield* stored(copy)).frontmatter, communityNote(1));
     }).pipe(Effect.provide(fixture.layer));
   });
 

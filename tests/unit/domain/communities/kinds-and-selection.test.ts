@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { kindSuggestions, selectedCommunity } from "../../../../src/domain/communities";
+import {
+  isCommunityChoice,
+  kindSuggestions,
+  selectedCommunity,
+} from "../../../../src/domain/communities";
 
 const BUILT_IN = [
   { kind: "WEG", unit_label: "Einheiten" },
@@ -64,5 +68,20 @@ describe("selectedCommunity: the selection rule", () => {
   it("selects none when there is no community", () => {
     expect(selectedCommunity(undefined, [])).toBeUndefined();
     expect(selectedCommunity(A, [])).toBeUndefined();
+  });
+});
+
+describe("isCommunityChoice: a stored selection worth keeping", () => {
+  const UUID = "3f2b8c1e-7a44-4d0b-9c2e-5b1f0a6d9e21";
+
+  it("is a community's id, whether its note exists or not", () => {
+    expect(isCommunityChoice(`community-${UUID}`)).toBe(true);
+  });
+
+  it("is not nothing, another type's id or no id", () => {
+    expect(isCommunityChoice(undefined)).toBe(false);
+    expect(isCommunityChoice(`item-${UUID}`)).toBe(false);
+    expect(isCommunityChoice("community-gone")).toBe(false);
+    expect(isCommunityChoice({ id: `community-${UUID}` })).toBe(false);
   });
 });

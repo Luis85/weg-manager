@@ -16,10 +16,11 @@ export {
   colorsInUse,
   communityValues,
   duplicateShortCodes,
+  editedValues,
   normalizeShortCode,
   validateCommunity,
   CommunityFieldIssue,
   type CommunityIssueCode,
   type CommunityInput,
 } from "./rules";
-export { selectedCommunity } from "./selection";
+export { isCommunityChoice, selectedCommunity } from "./selection";

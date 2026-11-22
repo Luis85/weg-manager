@@ -88,6 +88,32 @@ describe("deleting a community", () => {
     screen.notes.releaseWrites();
     await screen.until(() => expect(screen.q("delete-dialog")).toBeUndefined());
   });
+
+  it("keeps a delete cancelled while it runs out of the next community's dialog", async () => {
+    const screen = await openCommunities({ seed: TWO });
+    await screen.click(screen.button("Ahornweg 12 löschen"));
+    screen.notes.holdWrites();
+    await screen.click(screen.q("delete-confirm"));
+    await screen.click(screen.button("Abbrechen"));
+    await screen.click(screen.button("Tiefgarage löschen"));
+    const dialog = () => screen.root.querySelector("[role=dialog]");
+    expect(dialog()?.textContent).toContain("„Tiefgarage“ kommt in den Papierkorb");
+    expect((screen.q("delete-confirm") as HTMLButtonElement).disabled).toBe(false);
+    screen.notes.releaseWrites();
+    await screen.until(() => expect(screen.names()).toEqual(["Tiefgarage"]));
+    expect(dialog()?.textContent).toContain("„Tiefgarage“ kommt in den Papierkorb");
+  });
+
+  it("shows no earlier community's failure in the next dialog", async () => {
+    const screen = await openCommunities({ seed: TWO });
+    await screen.click(screen.button("Ahornweg 12 löschen"));
+    await screen.runtime.runPromise(NoteStore.use((store) => store.trash(`${FOLDER}/A.md`)));
+    await screen.click(screen.q("delete-confirm"));
+    expect(screen.root.querySelector("[role=dialog] [role=alert]")).not.toBeNull();
+    await screen.click(screen.button("Abbrechen"));
+    await screen.click(screen.button("Tiefgarage löschen"));
+    expect(screen.root.querySelector("[role=dialog] [role=alert]")).toBeNull();
+  });
 });
 
 describe("the community switch", () => {

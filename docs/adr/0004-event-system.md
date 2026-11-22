@@ -69,3 +69,7 @@ Decision:
 ## Amendment 22.11.2026: one service graph builds the adapter last
 
 - `shellLayer(plugin, options, followers)` is gone. The order lives in one place, `appServicesLayer(adapters, options)` (`src/application/app-services-layer.ts`): the shell's services, the notes module's, the feature modules', and the host event adapter (`AppAdapters.hostEvents`) last. The plugin passes `hostEventsLayer(plugin)` through `shellAdapters`, the harness an adapter that publishes `LayoutReady` and `VaultReady` at once, the tests none (`vaultReady()` publishes them).
+
+## Amendment 2026-11-22: unused events removed
+
+- `ActiveFileChanged`, `ColorSchemeChanged`, `isMarkdown` and the bus's `events` and `on` were removed as unused (PBI-62); the theme follows a `MutationObserver` instead, and `subscribe` is the only way to consume the bus. They come back when a feature needs them.

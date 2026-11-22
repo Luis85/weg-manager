@@ -2,7 +2,6 @@ import { Context, Effect, Exit, Fiber, Layer, Scope, Stream } from "effect";
 import { describe, expect, it } from "vitest";
 import { EventBus, EventBusLive } from "../../../../src/application/shell/event-bus";
 import { AppEvent } from "../../../../src/application/events";
-import { isMarkdown } from "../../../../src/application/shell/events";
 
 const created = (path: string) => AppEvent.FileCreated({ path, extension: "md" });
 const ready = AppEvent.LayoutReady();
@@ -32,40 +31,6 @@ describe("EventBus", () => {
     );
     const expected = [ready, created("a.md"), created("b.md")];
     expect(result).toEqual([expected, expected]);
-  });
-
-  it("narrows on(tag) to one member", async () => {
-    const paths = await run(
-      Effect.gen(function* () {
-        const bus = yield* EventBus;
-        const fiber = yield* bus.on("FileRenamed").pipe(
-          Stream.map((event) => `${event.oldPath}->${event.path}`),
-          Stream.take(1),
-          Stream.runCollect,
-          Effect.forkScoped,
-        );
-        yield* Effect.yieldNow;
-        yield* bus.publish(created("a.md"));
-        yield* bus.publish(
-          AppEvent.FileRenamed({ path: "b.md", oldPath: "a.md", extension: "md" }),
-        );
-        return yield* Fiber.join(fiber);
-      }),
-    );
-    expect(paths).toEqual(["a.md->b.md"]);
-  });
-
-  it("gives the whole stream through events", async () => {
-    const seen = await run(
-      Effect.gen(function* () {
-        const bus = yield* EventBus;
-        const fiber = yield* bus.events.pipe(Stream.take(1), Stream.runCollect, Effect.forkScoped);
-        yield* Effect.yieldNow;
-        yield* bus.publish(ready);
-        return yield* Fiber.join(fiber);
-      }),
-    );
-    expect(seen).toEqual([ready]);
   });
 
   it("shows a late subscriber only the events published after it subscribed", async () => {
@@ -135,17 +100,19 @@ describe("EventBus", () => {
 
   it("ends every running stream when its scope closes", async () => {
     const ended = await Effect.runPromise(
-      Effect.gen(function* () {
-        const scope = yield* Scope.make();
-        const bus = Context.get(yield* Layer.buildWithScope(EventBusLive, scope), EventBus);
-        // Detached: only the bus shutting down can end this stream.
-        const fiber = yield* bus.events.pipe(Stream.runCollect, Effect.forkDetach);
-        yield* Effect.yieldNow;
-        yield* bus.publish(ready);
-        yield* Scope.close(scope, Exit.void);
-        yield* bus.publish(created("after.md"));
-        return yield* Fiber.await(fiber).pipe(Effect.timeout("1 second"));
-      }),
+      Effect.scoped(
+        Effect.gen(function* () {
+          const scope = yield* Scope.make();
+          const bus = Context.get(yield* Layer.buildWithScope(EventBusLive, scope), EventBus);
+          const events = yield* bus.subscribe;
+          // Detached: only the bus shutting down can end this stream.
+          const fiber = yield* events.pipe(Stream.runCollect, Effect.forkDetach);
+          yield* bus.publish(ready);
+          yield* Scope.close(scope, Exit.void);
+          yield* bus.publish(created("after.md"));
+          return yield* Fiber.await(fiber).pipe(Effect.timeout("1 second"));
+        }),
+      ),
     );
     // Without a shutdown the stream never ends and the timeout rejects the test.
     const delivered = Exit.isSuccess(ended) ? ended.value : [];
@@ -167,13 +134,5 @@ describe("AppEvent", () => {
       extension: "md",
     });
     expect(AppEvent.$is("FileRenamed")(event)).toBe(true);
-  });
-
-  it("tells Markdown file events apart cheaply", () => {
-    expect(isMarkdown(created("a.md"))).toBe(true);
-    expect(isMarkdown(AppEvent.FileModified({ path: "a.png", extension: "png" }))).toBe(false);
-    expect(isMarkdown(AppEvent.MetadataChanged({ path: "a.md", extension: "md" }))).toBe(true);
-    expect(isMarkdown(AppEvent.ActiveFileChanged({ path: "a.md" }))).toBe(false);
-    expect(isMarkdown(ready)).toBe(false);
   });
 });

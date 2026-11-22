@@ -11,11 +11,6 @@ import {
 } from "../../../application/shell";
 import { cacheCompleteness } from "./cache-completeness";
 
-type ColorScheme = "light" | "dark";
-
-const currentScheme = (): ColorScheme =>
-  activeDocument.body.classList.contains("theme-dark") ? "dark" : "light";
-
 const ifFile =
   (make: (file: TFile) => AppEvent) =>
   (file: TAbstractFile): AppEvent | undefined =>
@@ -50,7 +45,6 @@ export const hostEventsLayer = (plugin: Plugin) =>
       let ready = false;
       let vaultReady = false;
       let active = true;
-      let scheme = currentScheme();
       const complete = cacheCompleteness(vault, metadataCache);
 
       const publish = (build: () => AppEvent | undefined): void => {
@@ -73,12 +67,6 @@ export const hostEventsLayer = (plugin: Plugin) =>
       };
       const checkReadiness = (): void => {
         if (ready && !vaultReady) publish(readiness);
-      };
-      const schemeChange = (): AppEvent | undefined => {
-        const next = currentScheme();
-        if (next === scheme) return undefined;
-        scheme = next;
-        return AppEvent.ColorSchemeChanged({ scheme: next });
       };
 
       yield* Effect.acquireRelease(
@@ -123,23 +111,6 @@ export const hostEventsLayer = (plugin: Plugin) =>
             ),
           ],
           [metadataCache, metadataCache.on("resolved", checkReadiness)],
-          [
-            workspace,
-            workspace.on(
-              "file-open",
-              whenReady((file: TFile | null) =>
-                AppEvent.ActiveFileChanged({ path: file?.path ?? null }),
-              ),
-            ),
-          ],
-          [
-            workspace,
-            workspace.on("css-change", () => {
-              // Track the scheme before the layout is ready too, so the first change is real.
-              if (ready) publish(schemeChange);
-              else scheme = currentScheme();
-            }),
-          ],
         ]).pipe(
           Effect.tap((refs) =>
             Effect.sync(() => {

@@ -66,3 +66,4 @@ Architektur-Review vom 22.11.2026, Optionen C3 und C4. [[PBI-54 - Index der Noti
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
 - 22.11.2026 (Interview nach der Review-Runde): Entscheidung zu Kriterium 3 eingetragen; `triage` auf `ready-for-agent`. Die Kriterien 1 und 2 entstehen mit dem zweiten Notiztyp.
+- 22.11.2026: Kriterium 3 ist umgesetzt: `ActiveFileChanged`, `ColorSchemeChanged`, `isMarkdown`, `EventBus.events` und `on` sind samt Tests, Workspace-Listenern des Adapters (`file-open`, `css-change`) und Doku-Erwähnungen gelöscht; ADR 0004 hat einen Amendment-Eintrag. `useQuery`, `useAppEvents` und `EventBus.subscribe` bleiben (`useAppEvents` baut auf `subscribe`). Die Kriterien 1 und 2 warten auf den zweiten Notiztyp, `finished` bleibt ungesetzt.

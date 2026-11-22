@@ -68,7 +68,7 @@ describe("the note index following the vault", () => {
       yield* publish(AppEvent.MetadataChanged({ path: "A.canvas", extension: "canvas" }));
       yield* publish(AppEvent.FileDeleted({ path: "A.pdf", extension: "pdf" }));
       yield* publish(AppEvent.FileRenamed({ path: "B.txt", oldPath: "A.txt", extension: "txt" }));
-      yield* publish(AppEvent.ActiveFileChanged({ path: "A.md" }));
+      yield* publish(AppEvent.LayoutReady());
       yield* TestClock.adjust(INDEX_BATCH_MAX);
       assert.strictEqual(fixture.reads(), 0);
     }).pipe(Effect.provide(fixture.layer));

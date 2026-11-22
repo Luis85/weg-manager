@@ -9,5 +9,3 @@ import type { ShellEvents } from "./shell";
 export type AppEvent = Data.TaggedEnum<ShellEvents>;
 
 export const AppEvent = Data.taggedEnum<AppEvent>();
-
-export type AppEventTag = AppEvent["_tag"];

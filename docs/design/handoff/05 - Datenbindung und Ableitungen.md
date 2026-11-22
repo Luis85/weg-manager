@@ -9,7 +9,7 @@ date: 2026-11-22
 
 # Handoff · Datenbindung und Ableitungen
 
-**Auf den Stand vom 22.11.2026 gebracht** nach [ADR 0007](../../adr/0007-vault-data-access.md) und den Entscheidungen vom 22.11.2026 (ein Kontakt hat eine Rolle, O-D10; Gemeinschaft als Notiz). Gebaut ist nur die Anzeige der Gemeinschaft und der Datenprobleme; die übrigen Zeilen sind Entwurf.
+**Auf den Stand vom 22.11.2026 gebracht** nach [ADR 0007](../../adr/0007-vault-data-access.md) und den Entscheidungen vom 22.11.2026 (eine Rolle je Gemeinschaft, O-D10; Gemeinschaft als Notiz). Gebaut ist nur die Anzeige der Gemeinschaft und der Datenprobleme; die übrigen Zeilen sind Entwurf.
 
 Welche fachlichen Angaben (Entitätsnotes `docs/entities`) wo erscheinen und wie abgeleitete Werte berechnet werden. Stichtag aller Berechnungen: Öffnen der Ansicht bzw. Start der Wochenarbeit (K-04), Zeitzone Europe/Berlin, Datum ohne Uhrzeit gilt bis Tagesende (DF-05).
 
@@ -28,7 +28,7 @@ Welche fachlichen Angaben (Entitätsnotes `docs/entities`) wo erscheinen und wie
 | Woche 5 | ENT-14 | Zählwerte, Schwerpunkte, Notiz, aktive Minuten, Doppelpflege |
 | Vorgangsakte | ENT-04, 05, 06, 07, 16 | Ergebnis, Verantwortlich, Fremdtermin + Herkunft, Wiedervorlage, nächster Schritt, Verlauf, Quellen mit Einstufung |
 | Postausgang | ENT-10 Entwurf, ENT-11 Versand | Empfänger, Gemeinschaft, enthaltene Vorgänge, Text je Sprache, Prüfstatus, Anlagen mit Einstufung |
-| Kontakte | ENT-02 Person und Rolle, ENT-04, ENT-10, ENT-11 | Art, Name, Organisation, genau eine Rolle, „Zuständig für“ (Liste der Gemeinschaften, O-D10), Kontaktdaten, Sprache, Kanal, aktiv; abgeleitet: verantwortete Vorgänge, offene Entwürfe, gesendete Nachrichten. Verteiler: Gemeinschaft, Anzahl, Sprachaufteilung, Quelle, Stand |
+| Kontakte | ENT-02 Person und Rolle, ENT-04, ENT-10, ENT-11 | Art, Name, Organisation, Rolle je Gemeinschaft („Zuständig für“ mit Rolle, O-D10), Kontaktdaten, Sprache, Kanal, aktiv; abgeleitet: verantwortete Vorgänge, offene Entwürfe, gesendete Nachrichten. Verteiler: Gemeinschaft, Anzahl, Sprachaufteilung, Quelle, Stand |
 | Ausgabe | ENT-15 Ausgabestand | Empfängerart, Auswahl, Bausteine, Standdatum |
 
 ## Abgeleitete Werte

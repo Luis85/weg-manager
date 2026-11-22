@@ -45,9 +45,9 @@ Befund des Architektur-Reviews (C2), geprüft am Code des Durchstichs:
 
 ## Entscheidung (22.11.2026)
 
-Zur Wahl standen für eine Rolle je Gemeinschaft: ein eigener Notiztyp für die Zuordnung, parallele Listen oder kodierte Texte in einer Liste. Der Produktverantwortliche hat die Frage davor entschieden (O-D10): **Ein Ansprechpartner hat eine Rolle**, dazu die Liste der Gemeinschaften, für die er zuständig ist. Hat dieselbe Person in zwei Gemeinschaften verschiedene Rollen, steht das in der Notiz des Ansprechpartners. Eine Rolle je Gemeinschaft kann später mit einer neuen Schemaversion folgen.
+Zur Wahl standen für eine Rolle je Gemeinschaft: ein eigener Notiztyp für die Zuordnung, parallele Listen oder kodierte Texte in einer Liste. Zuerst hatte der Produktverantwortliche entschieden, dass ein Kontakt eine Rolle hat (O-D10). Nach der Übernahme des WCS-Datenmodells hat er das am selben Tag geändert: **Eine Person hat je Gemeinschaft eine Rolle** ([[K-20 - WCS-Datenmodell als fachliche Grundlage]], [[ENT-02 - Person und Rolle]]).
 
-Damit bleibt die Notiz einer Person flach: ein Schlüssel für die Rolle (Code), ein Schlüssel mit der Liste der `id`s der Gemeinschaften. ADR 0007 bleibt bei flachen Schlüsseln; der Nachtrag vom 22.11.2026 hält das fest.
+Gespeichert wird das als **kodierte Liste**: ein Schlüssel `roles` in der Notiz der Person, je Eintrag `<id der Gemeinschaft>:<Rolle>`. Die Schlüssel bleiben flach und im Eigenschaften-Bereich von Obsidian bearbeitbar. Ein Eintrag nennt die `id` der Gemeinschaft, nie das Kürzel, weil das Kürzel änderbar wird. Ein fehlerhafter Eintrag oder eine unbekannte Gemeinschaft erscheint als Problem. Der Nachtrag zu ADR 0007 hält das fest.
 
 ## Akzeptanzkriterien
 

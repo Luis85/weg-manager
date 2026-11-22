@@ -23,7 +23,7 @@ Eine Person oder Organisation mit einer Rolle in einer Gemeinschaft, etwa die Ve
 | Art | `kind` | Text | P | Person oder Organisation (Firma). Bisherige Angabe unseres Modells. |
 | Name | `name` | Text | P | Name beziehungsweise Bezeichnung, z. B. „Verwaltung“, „Hausmeisterdienst“. |
 | Firma | `organization` | Text | O | Bei Personen die Organisation, für die sie handeln. |
-| Rollen je Gemeinschaft | `roles` | Liste | P | WCS „rolle“ und „gemeinschaft“: je Eintrag eine Gemeinschaft und eine Rolle aus der Rollenliste, etwa Beirat in der WEG und Eigentümer in der Tiefgarage (O-ENT02-1). |
+| Rollen je Gemeinschaft | `roles` | Liste | P | WCS „rolle“ und „gemeinschaft“: je Eintrag `<id der Gemeinschaft>:<Rolle>`, etwa Beirat in der WEG und Eigentümer in der Tiefgarage (O-ENT02-1). Kodierte Liste, damit die Schlüssel flach bleiben ([[docs/adr/0007-vault-data-access.md\|ADR 0007]], Nachtrag). Ein fehlerhafter Eintrag ist ein Problem. |
 | Privat | `private` | Checkbox | P | Wahr für Eigentümer und andere Privatpersonen. Aus privaten Notizen übernimmt das Plugin nie Inhalte in Entwürfe, Karten, Berichte oder Freigaben; ein Agent liest sie nicht (O-ENT02-2). |
 | Kontakt | `email`, `phone`, `address`, `preferred_channel` | Text | O | WCS „kontakt“. Bei privaten Personen nur, wo nötig; nie in geteilten Bereichen. |
 | Sprache | `language` | Text | O | WCS „sprache“: `de` oder `de+en`. Eigentümer immer `de+en`. |
@@ -72,7 +72,7 @@ Kontaktdaten sind personenbezogen. Seit dem 22.11.2026 werden alle Personen als 
 
 - Im WCS v1 ist die Person nur Text in `Vorgang.wer`. Bei uns ist sie eine eigene Note mit technischer `id`.
 - Die Rolle für den KI-Assistenten heißt „Agent“, nicht nach einem Produkt („Claude“), und ist optional.
-- Eine Person kann bei uns mehreren Gemeinschaften zugeordnet sein; im WCS hat jede Rolle genau eine Gemeinschaft.
+- Eine Person hat je Gemeinschaft eine Rolle, gespeichert als kodierte Liste `roles` in einer Notiz je Person; im WCS ist jede Rolle ein eigener Eintrag mit genau einer Gemeinschaft.
 - Art (Person/Firma), Firma, getrennte Kontaktfelder, Verteiler und „nicht mehr verwendet“ sind unsere Ergänzungen.
 
 ## Offene Punkte

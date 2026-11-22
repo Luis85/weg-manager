@@ -89,8 +89,14 @@ unit_label: Einheiten
 - **Failures.** What the plugin's own code throws inside the write (the merge, the serialiser) is a defect, not a `NoteWriteError` the user could retry (`asDefect`, `writeCommand`). A note deleted between the lookup and the write makes `vault.process` reject with ENOENT without calling back; the adapter reports `NoteNotFoundError` when the file is no longer at its path.
 - `fileManager.processFrontMatter` is no longer called by the plugin. The Obsidian double keeps it, because the fidelity scenarios still record what it does.
 
-## Amendment, 2026-11-22: a contact's role stays flat
+## Amendment, 2026-11-22: a contact's role stays flat (superseded the same day)
 
 - **Decision (owner, O-D10).** A contact has one role, and a list of the communities it is responsible for. The same person with a different role in another community is a remark in the contact's note for now.
 - **What it means here.** The contact record needs no nested value: one key for the role (a code) and one key with the list of community `id`s. The rule "flat keys only" stands, and no assignment record type, parallel lists or coded list entries are introduced.
 - **Later.** A role per community would come as a new schema version of the contact type, with its own decision on storage. The reference field kind, lookup by `id` and a source for "today" are PBI-61.
+
+## Amendment, 2026-11-22 (later): a role per community, as coded list entries
+
+- **Decision (owner, after the WCS data model was adopted, K-20).** A person has a role per community, as in the WCS data dictionary: the same person can be on the board of the WEG and an owner in the car park. This supersedes the amendment above.
+- **Storage.** One list key in the person's note, `roles`, each entry `<community id>:<role code>`, e.g. `community-3f2b…:board`. The keys stay flat and editable in Obsidian's properties panel. The entry uses the community's `id`, never its short code, because the short code can change (PBI-73). The codec reads each entry, reports a malformed entry or an unknown community as an issue and never repairs it silently.
+- **Rejected.** An assignment record type (one note per person and community: clean, but many small notes) and parallel lists (flat, but easy to break by hand).

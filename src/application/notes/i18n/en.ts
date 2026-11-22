@@ -81,7 +81,13 @@ export const notesEn: NotesCatalog = {
     cancel: "Cancel",
   },
   dataIssues: {
+    title: "Data issues",
+    intro:
+      "WEG Manager notes the plugin can't read or assign to a type are listed here. Open a note in Obsidian to fix it there.",
+    loading: "Checking notes…",
+    none: "Every WEG Manager note can be read.",
     otherNotes: "Other WEG Manager notes",
+    count: (notes) => (notes === 1 ? "1 note" : `${notes} notes`),
   },
   notices: {
     created: (name) => `“${name}” created`,

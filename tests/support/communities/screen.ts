@@ -1,6 +1,6 @@
 import { flushPromises } from "@vue/test-utils";
 import { vi } from "vitest";
-import { COMMUNITY_SETTINGS } from "../../../src/application/communities";
+import type { Route, SettingsSection } from "../../../src/application/routes";
 import { appSurface } from "../../../src/presentation/app-surface";
 import { memoryNavigation } from "../../../src/presentation/shell/host";
 import { testRuntime, type TestRuntimeOptions } from "../runtime";
@@ -38,25 +38,30 @@ export const closeAll = async () => {
 /** Waits until `check` passes: the index follows a write after its batch delay. */
 const until = (check: () => void) => vi.waitFor(check, { timeout: 2000, interval: 20 });
 
+/** The test id each settings section's root carries. */
+const SECTION_SCREENS: Readonly<Record<SettingsSection, string>> = {
+  communities: "communities-screen",
+  "data-issues": "data-issues-screen",
+};
+
 /**
- * The app on the community settings over the in-memory store, with handles to drive it: query by
- * test id, type into an input, click, and wait until the screen shows what a test expects (the
- * index follows a write about 100 ms later, as in Obsidian).
+ * The app on a section of the settings screen over the in-memory store, with handles to drive it:
+ * query by test id, type into an input, click, and wait until the screen shows what a test
+ * expects (the index follows a write about 100 ms later, as in Obsidian).
  */
-export const openCommunities = async (options: ScreenOptions = {}) => {
+export const openSettings = async (section: SettingsSection, options: ScreenOptions = {}) => {
   const test = testRuntime(options);
   options.seed?.(test.notes);
   const root = document.createElement("div");
   document.body.append(root);
-  const close = mountApp(root, test.runtime, {
-    navigation: memoryNavigation(appSurface, COMMUNITY_SETTINGS),
-  });
+  const route: Route = { name: "settings", section };
+  const close = mountApp(root, test.runtime, { navigation: memoryNavigation(appSurface, route) });
   opened.push({ close, dispose: () => test.runtime.dispose() });
   if (options.ready !== false) await test.vaultReady();
-  // The screen is a lazily loaded component: wait until it is there.
+  // The screen and its section are lazily loaded components: wait until they are there.
   await vi.waitFor(
     () => {
-      if (root.querySelector("[data-testid=communities-screen]") === null)
+      if (root.querySelector(`[data-testid=${SECTION_SCREENS[section]}]`) === null)
         throw new Error("no screen");
     },
     { timeout: 5000, interval: 10 },
@@ -84,6 +89,10 @@ export const openCommunities = async (options: ScreenOptions = {}) => {
   const names = () => all("community-name").map((element) => element.textContent.trim());
   return { ...test, root, close, all, q, text, input, type, click, button, until, names };
 };
+
+/** The app on the community settings, the start route. */
+export const openCommunities = (options: ScreenOptions = {}) =>
+  openSettings("communities", options);
 
 export type OpenScreen = Awaited<ReturnType<typeof openCommunities>>;
 

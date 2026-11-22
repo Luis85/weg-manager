@@ -44,7 +44,7 @@ const mounted = async (
 const shown = (root: ParentNode) => root.querySelector("[data-testid=screen] h2")?.textContent;
 const routeShown = (root: ParentNode) => root.querySelector("[data-testid=route]")?.textContent;
 const navButtons = (root: ParentNode) => [
-  ...root.querySelectorAll<HTMLButtonElement>("nav li button"),
+  ...root.querySelectorAll<HTMLButtonElement>("nav:not([data-testid=settings-sections]) li button"),
 ];
 /** Whether a navigation button carries the current page's bar (an inset shadow). */
 const barred = (button: HTMLButtonElement) =>

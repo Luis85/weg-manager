@@ -32,7 +32,14 @@ export {
   type LogEntry,
 } from "./ports";
 export { historyAt, stepBack, stepForward, visit, type RouteHistory } from "./history";
-export { routesOf, type RouteLike, type Routes } from "./routes";
+export {
+  SETTINGS,
+  routesOf,
+  settingsRoute,
+  type RouteLike,
+  type Routes,
+  type SettingsRoute,
+} from "./routes";
 export type { ShellServices } from "./services";
 export { SettingsService, SettingsServiceLive, type SettingsStatus } from "./settings-service";
 export { copyDiagnostics, setLogLevel } from "./use-cases";

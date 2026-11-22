@@ -133,3 +133,13 @@ export const useVaultTrash = () =>
       "local",
     );
   });
+
+/**
+ * Opens a section of the settings screen by the label of its entry in the screen's navigation
+ * ("Gemeinschaften", "Datenprobleme"), and waits until it is the current one.
+ */
+export const openSection = async (label: string) => {
+  const entry = browser.$(ROOT).$("[data-testid=settings-sections]").$(`button*=${label}`);
+  await entry.click();
+  await expect(entry).toHaveAttribute("aria-current", "page");
+};

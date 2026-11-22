@@ -21,6 +21,7 @@ export { notesEn } from "./i18n/en";
 export { openNote } from "./open-note";
 export { applyPatch } from "./patch";
 export { editChange, newRecordFrontmatter } from "./records";
+export { DATA_ISSUES_SECTION } from "./routes";
 export { defineRecords } from "./record-kit";
 export { fileNameOf, type RecordList, type RecordRow } from "./record-list";
 export {

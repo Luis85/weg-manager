@@ -83,7 +83,13 @@ export const notesDe: NotesCatalog = {
     cancel: "Abbrechen",
   },
   dataIssues: {
+    title: "Datenprobleme",
+    intro:
+      "Hier stehen Notizen von WEG Manager, die das Plugin nicht lesen oder keinem Typ zuordnen kann. Öffne eine Notiz in Obsidian und korrigiere sie dort.",
+    loading: "Notizen werden geprüft …",
+    none: "Alle Notizen von WEG Manager lassen sich lesen.",
     otherNotes: "Andere Notizen von WEG Manager",
+    count: (notes) => (notes === 1 ? "1 Notiz" : `${notes} Notizen`),
   },
   notices: {
     created: (name) => `„${name}“ angelegt`,

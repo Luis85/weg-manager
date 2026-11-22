@@ -98,10 +98,20 @@ export type NotesCatalog = {
     readonly confirm: string;
     readonly cancel: string;
   };
-  /** The notes the plugin cannot read or assign to a record type. */
+  /**
+   * The settings section of the notes the plugin cannot read or assign to a record type
+   * (glossary: data issues): its name in the navigation and as its heading.
+   */
   readonly dataIssues: {
+    readonly title: string;
+    readonly intro: string;
+    readonly loading: string;
+    /** There are none. */
+    readonly none: string;
     /** The heading of their list: WEG Manager notes that are no record. */
     readonly otherNotes: string;
+    /** The badge's number in words, for screen readers. */
+    count(notes: number): string;
   };
   /** The notices that confirm a record's write (handoff: Toast, only for short-lived success). */
   readonly notices: {

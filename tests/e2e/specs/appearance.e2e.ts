@@ -11,7 +11,14 @@ import {
   useScheme,
   type Measured,
 } from "../appearance";
-import { FOLDER, community, communityText, expectListed, writeNotes } from "../communities";
+import {
+  FOLDER,
+  community,
+  communityText,
+  expectListed,
+  openSection,
+  writeNotes,
+} from "../communities";
 import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
 
 /** A legal name of exactly 100 characters (the name rule's maximum), a German compound first. */
@@ -169,11 +176,38 @@ describe("appearance in Obsidian's default theme", function () {
       kindsIn(texts, {
         choice: testid("community-choice"),
         issue: testid("community-issues"),
-        problem: (text) => text.testid === "unindexed-notes" && !text.text.endsWith(".md"),
+        count: testid("data-issues-count"),
         remove: testid("community-remove"),
         add: testid("community-add"),
       }),
-    ).toEqual(["choice", "issue", "problem", "remove", "add"]);
+    ).toEqual(["choice", "issue", "count", "remove", "add"]);
+  });
+
+  it("keeps every text of the data issues section at 4.5:1, its issues and current entry included", async function () {
+    await openSection("Datenprobleme");
+    const texts = await textsInBothSchemes("data-issues");
+    expect(failing(texts)).toEqual([]);
+    expect(
+      kindsIn(texts, {
+        problem: (text) => text.testid === "unindexed-notes" && !text.text.endsWith(".md"),
+        path: (text) => text.testid === "unindexed-notes" && text.text.endsWith(".md"),
+        section: (text) =>
+          text.testid === "settings-sections" && text.text.includes("Datenprobleme"),
+      }),
+    ).toEqual(["problem", "path", "section"]);
+    // The current section is marked by a bar too, not by its colour alone.
+    const [current] = await stylesOf("[data-testid=settings-sections] button[aria-current=page]", [
+      "box-shadow",
+    ]);
+    expect(current?.["box-shadow"]).not.toBe("none");
+    await openSection("Gemeinschaften");
+    await expectListed([
+      "Ahornweg 12",
+      "Aus der Zukunft",
+      "Doppelt",
+      "Tiefgarage Ahornweg",
+      LONG_NAME,
+    ]);
   });
 
   it("marks the selected community and the current page beyond colour, at 4.5:1", async function () {
@@ -186,7 +220,7 @@ describe("appearance in Obsidian's default theme", function () {
         selected: (text) =>
           text.testid === "community-option-name" && text.text.endsWith("Tiefgarage Ahornweg"),
         marker: testid("community-selected"),
-        page: (text) => text.testid === "app-frame" && text.text.endsWith("Gemeinschaften"),
+        page: (text) => text.testid === "frame-navigation" && text.text.endsWith("Gemeinschaften"),
       }),
     ).toEqual(["selected", "marker", "page"]);
     // Not by colour alone: a check mark on the selected option, "Aktuell" on its card, a bar on
@@ -194,7 +228,9 @@ describe("appearance in Obsidian's default theme", function () {
     await expect(option("Tiefgarage Ahornweg").$("[data-testid=community-option-check]")).toExist();
     await expect(option(LONG_NAME).$("[data-testid=community-option-check]")).not.toExist();
     await expect(browser.$(ROOT).$("[data-testid=community-selected]")).toHaveText("Aktuell");
-    const [current] = await stylesOf("nav button[aria-current=page]", ["box-shadow"]);
+    const [current] = await stylesOf("[data-testid=frame-navigation] button[aria-current=page]", [
+      "box-shadow",
+    ]);
     expect(current?.["box-shadow"]).not.toBe("none");
   });
 

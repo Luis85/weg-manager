@@ -8,6 +8,7 @@ import {
   expectListed,
   fileText,
   fillForm,
+  openSection,
   saveForm,
   writeNotes,
 } from "../communities";
@@ -60,6 +61,12 @@ describe("communities: notes that break the file contract", function () {
     expect(await issuesOf("Kürzel B")).toEqual([duplicateCode("Kürzel A")]);
     expect(await issuesOf("Kopie A")).toEqual([duplicateId("Kopie B.md")]);
     expect(await issuesOf("Kopie B")).toEqual([duplicateId("Kopie A.md")]);
+    await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).not.toExist();
+    // The notes of no known type are the section "Datenprobleme", counted beside its entry.
+    await expect(browser.$(ROOT).$("[data-testid=data-issues-count]")).toHaveText(
+      expect.stringContaining("1 Notiz"),
+    );
+    await openSection("Datenprobleme");
     await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).toHaveText(
       expect.stringContaining(`${FOLDER}/Kaputt.md`),
     );
@@ -72,6 +79,7 @@ describe("communities: notes that break the file contract", function () {
 
   it("still saves the valid one and repairs a broken field, writing nothing else", async function () {
     const root = browser.$(ROOT);
+    await openSection("Gemeinschaften");
     await root.$("button[aria-label='Gut bearbeiten']").click();
     await fillForm({ kind: "Haus" });
     await saveForm();
@@ -100,6 +108,7 @@ describe("communities: notes that break the file contract", function () {
   it("opens a note it cannot write in another tab, and the view stays open", async function () {
     const activeFile = () =>
       browser.executeObsidian(({ app }) => app.workspace.getActiveFile()?.path ?? null);
+    await openSection("Datenprobleme");
     const opener = browser
       .$(ROOT)
       .$("[data-testid=unindexed-notes]")
@@ -110,6 +119,7 @@ describe("communities: notes that break the file contract", function () {
     });
     expect(await leafCount()).toBe(1);
     await openView();
+    await openSection("Gemeinschaften");
     const readOnly = browser.$(ROOT).$("button[aria-label='Kopie A in Obsidian öffnen']");
     await readOnly.click();
     await browser.waitUntil(async () => (await activeFile()) === `${FOLDER}/Kopie A.md`, {

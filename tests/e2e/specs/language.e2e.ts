@@ -68,7 +68,9 @@ describe("UI language in Obsidian", function () {
     await expect(root.$("[data-testid=communities-empty] p")).toHaveText(
       "Your communities appear here, such as a homeowners' association (WEG) and its underground car park.",
     );
-    await expect(root.$("nav li button[aria-current=page]")).toHaveText("Communities");
+    await expect(root.$("[data-testid=frame-navigation] li button[aria-current=page]")).toHaveText(
+      "Communities",
+    );
     await root.$("[data-testid=community-add]").click();
     await expect(root.$("[data-testid=community-save]")).toHaveText("Save");
     await browser.keys("Escape");

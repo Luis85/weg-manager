@@ -178,31 +178,19 @@ describe("the community settings", () => {
     expect(screen.all("community-read-only")).toHaveLength(2);
   });
 
-  it("lists notes of no known type with their issue, and keeps the others", async () => {
+  it("leaves the notes of no known type to the data issues section", async () => {
     const screen = await openCommunities({
       seed: (notes) => {
         notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A" }));
         notes.seed("WEG Manager/Gemeinschaften/Kaputt.md", "broken");
         notes.seed("Irgendwo/Fremd.md", { schema: "weg-manager.punkt" });
-        notes.seed("Irgendwo/Kaputt außen.md", "broken");
       },
     });
     expect(screen.names()).toEqual(["A"]);
-    const section = screen.q("unindexed-notes");
-    expect(section?.querySelector("h3")?.textContent).toBe(n.dataIssues.otherNotes);
-    expect(
-      [...(section?.querySelectorAll("li") ?? [])].map((item) =>
-        [...item.querySelectorAll(":scope > span")]
-          .map((part) => part.textContent.trim())
-          .join(" | "),
-      ),
-    ).toEqual([
-      `Irgendwo/Fremd.md | ${de.notes.unindexedIssues["schema.malformed"]({ code: "schema.malformed" })}`,
-      `WEG Manager/Gemeinschaften/Kaputt.md | ${de.notes.unindexedIssues["frontmatter.unreadable"]({ code: "frontmatter.unreadable" })}`,
-    ]);
+    expect(screen.q("unindexed-notes")).toBeUndefined();
   });
 
-  it("opens each other note and each read-only community in Obsidian, and only those", async () => {
+  it("opens each read-only community in Obsidian, and only those", async () => {
     const screen = await openCommunities({
       seed: (notes) => {
         notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A" }));
@@ -213,26 +201,10 @@ describe("the community settings", () => {
     const openers = screen.all("open-note");
     expect(openers.map((button) => button.getAttribute("aria-label"))).toEqual([
       n.openNote.labelFor("Neu"),
-      n.openNote.labelFor("Irgendwo/Fremd.md"),
     ]);
-    expect(openers.map((button) => button.textContent.trim())).toEqual([
-      n.openNote.label,
-      n.openNote.label,
-    ]);
-    await screen.click(openers[1]);
+    expect(openers.map((button) => button.textContent.trim())).toEqual([n.openNote.label]);
     await screen.click(openers[0]);
-    expect(screen.notes.opened()).toEqual(["Irgendwo/Fremd.md", `${FOLDER}/Neu.md`]);
-  });
-
-  it("says so when a note to open is gone", async () => {
-    const screen = await openCommunities({
-      seed: (notes) => notes.seed("Irgendwo/Fremd.md", { schema: "weg-manager.punkt" }),
-    });
-    screen.notes.removeOutside("Irgendwo/Fremd.md");
-    await screen.click(screen.q("open-note"));
-    expect(screen.q("unindexed-notes")?.querySelector("[role=alert]")?.textContent).toContain(
-      de.notes.errors.notFound.title,
-    );
+    expect(screen.notes.opened()).toEqual([`${FOLDER}/Neu.md`]);
   });
 
   it("speaks English in an English Obsidian", async () => {

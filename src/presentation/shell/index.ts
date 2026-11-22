@@ -2,6 +2,7 @@
 // that runs at plugin load imports `host.ts` instead.
 export { default as ErrorNotice } from "./components/ErrorNotice.vue";
 export { default as NotFoundState } from "./components/NotFoundState.vue";
+export { default as SettingsScreen } from "./components/SettingsScreen.vue";
 export { mountSurface } from "./mount";
 export { useHistory, useNavigate, useRoute } from "./navigation";
 export { useCommand, useMessages, useQuery, type UseCaseFn } from "./runtime/use-runtime";

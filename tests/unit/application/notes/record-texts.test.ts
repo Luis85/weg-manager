@@ -62,7 +62,10 @@ const rendered = (notes: NotesCatalog) => ({
     theirs: notes.conflict.theirs("Tiefgarage"),
   },
   deletion: { ...notes.deletion, detail: notes.deletion.detail("Ahornweg 12") },
-  dataIssues: notes.dataIssues,
+  dataIssues: {
+    ...notes.dataIssues,
+    count: [notes.dataIssues.count(1), notes.dataIssues.count(2)],
+  },
   notices: {
     created: notes.notices.created("Ahornweg 12"),
     saved: notes.notices.saved("Ahornweg 12"),
@@ -91,7 +94,15 @@ describe("the notes catalog's record texts", () => {
         confirm: "In den Papierkorb verschieben",
         cancel: "Abbrechen",
       },
-      dataIssues: { otherNotes: "Andere Notizen von WEG Manager" },
+      dataIssues: {
+        title: "Datenprobleme",
+        intro:
+          "Hier stehen Notizen von WEG Manager, die das Plugin nicht lesen oder keinem Typ zuordnen kann. Öffne eine Notiz in Obsidian und korrigiere sie dort.",
+        loading: "Notizen werden geprüft …",
+        none: "Alle Notizen von WEG Manager lassen sich lesen.",
+        otherNotes: "Andere Notizen von WEG Manager",
+        count: ["1 Notiz", "2 Notizen"],
+      },
       notices: {
         created: "„Ahornweg 12“ angelegt",
         saved: "„Ahornweg 12“ gespeichert",
@@ -118,7 +129,15 @@ describe("the notes catalog's record texts", () => {
         confirm: "Move to trash",
         cancel: "Cancel",
       },
-      dataIssues: { otherNotes: "Other WEG Manager notes" },
+      dataIssues: {
+        title: "Data issues",
+        intro:
+          "WEG Manager notes the plugin can't read or assign to a type are listed here. Open a note in Obsidian to fix it there.",
+        loading: "Checking notes…",
+        none: "Every WEG Manager note can be read.",
+        otherNotes: "Other WEG Manager notes",
+        count: ["1 note", "2 notes"],
+      },
       notices: {
         created: "“Ahornweg 12” created",
         saved: "“Ahornweg 12” saved",

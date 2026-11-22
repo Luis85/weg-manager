@@ -13,15 +13,16 @@ import {
   type Community,
 } from "../../../application/communities";
 import { communityType } from "../../../domain/communities";
-import { DeleteRecordDialog, OtherNotes, cardKey, useRecordScreen } from "../../notes";
+import { DeleteRecordDialog, cardKey, useRecordScreen } from "../../notes";
 import { ErrorNotice, useMessages, useStream } from "../../shell";
 import CommunityCard from "./CommunityCard.vue";
 import CommunityForm from "./CommunityForm.vue";
 
 /**
- * The community settings (VIEW-07, route `settings/communities`): the communities from the note
- * index with their issues, the selected one marked, create and edit in a sheet, delete with a
- * confirmation, and the other WEG Manager notes the index could not assign to a type. It follows
+ * The communities section of the settings (VIEW-07, route `settings/communities`): the
+ * communities from the note index with their issues, the selected one marked, create and edit in
+ * a sheet, delete with a confirmation. The notes of no known type are the notes module's section
+ * "Datenprobleme". It follows
  * the index: a write shows once Obsidian has indexed it. Loading, failure, the sheet, the dialog
  * and where the focus goes after them are the notes module's record screen (`useRecordScreen`);
  * this is the layout.
@@ -60,7 +61,7 @@ const isSelected = (community: Community) =>
 </script>
 
 <template>
-  <div ref="root" class="wm:m-3 wm:flex wm:flex-col wm:gap-4" data-testid="communities-screen">
+  <div ref="root" class="wm:flex wm:flex-col wm:gap-4" data-testid="communities-screen">
     <header class="wm:flex wm:flex-wrap wm:items-start wm:justify-between wm:gap-2">
       <div class="wm:flex wm:flex-col wm:gap-1">
         <h2 class="wm:text-lg wm:font-semibold">{{ t.screen.title }}</h2>
@@ -125,7 +126,6 @@ const isSelected = (community: Community) =>
         @remove="remove(community)"
       />
     </ul>
-    <OtherNotes />
     <USlideover
       v-model:open="sheetOpen"
       :title="sheetTitle"

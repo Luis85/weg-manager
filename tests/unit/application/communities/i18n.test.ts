@@ -1,8 +1,7 @@
-import { Schema } from "effect";
 import { describe, expect, it } from "vitest";
 import {
+  COMMUNITIES_SECTION,
   COMMUNITY_SETTINGS,
-  CommunitiesRoute,
   InvalidCommunityError,
   communitiesDe,
   communitiesEn,
@@ -327,11 +326,8 @@ describe("communities errors", () => {
 });
 
 describe("the communities route", () => {
-  it("is the community settings and decodes nothing else", () => {
-    const decode = Schema.decodeUnknownOption(CommunitiesRoute);
+  it("is the settings screen on the communities section", () => {
+    expect(COMMUNITIES_SECTION).toBe("communities");
     expect(COMMUNITY_SETTINGS).toEqual({ name: "settings", section: "communities" });
-    expect(decode(COMMUNITY_SETTINGS)._tag).toBe("Some");
-    expect(decode({ name: "settings", section: "other" })._tag).toBe("None");
-    expect(decode({ name: "other", section: "communities" })._tag).toBe("None");
   });
 });

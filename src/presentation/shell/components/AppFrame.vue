@@ -40,6 +40,7 @@ const forward = () => {
     <div class="wm:flex wm:h-full wm:flex-col wm:@min-[860px]:flex-row">
       <nav
         :aria-label="frame.navigation"
+        data-testid="frame-navigation"
         class="wm:flex wm:shrink-0 wm:flex-col wm:gap-2 wm:border-b wm:border-default wm:p-2 wm:@min-[860px]:w-56 wm:@min-[860px]:border-e wm:@min-[860px]:border-b-0"
       >
         <div

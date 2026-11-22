@@ -5,17 +5,30 @@ import { noteStoreLayer } from "../../../src/infrastructure/obsidian/notes";
 
 /** What a store call ended with, as plain data that survives `executeObsidian`. */
 export type Outcome<A> =
-  { readonly ok: true; readonly value: A } | { readonly ok: false; readonly tag: string };
+  | { readonly ok: true; readonly value: A }
+  | { readonly ok: false; readonly kind: FailureKind; readonly tag: string };
+
+/** A typed failure of the store (`fail`), or a defect (`die`): only a `fail` has a real tag. */
+export type FailureKind = "fail" | "die";
 
 /** An update as data: a patch to write, or a failure the change decides on instead. */
 export type ProbeChange =
   { readonly set?: Frontmatter; readonly remove?: readonly string[] } | { readonly refuse: string };
 
-const tagOf = (cause: Cause.Cause<unknown>): string => {
+/**
+ * A defect whose value happens to carry a `_tag` must not read as a typed failure, so the tag is
+ * taken from a failure only and every other cause is a `die` tagged "defect".
+ */
+const failureOf = (cause: Cause.Cause<unknown>): { kind: FailureKind; tag: string } => {
+  if (!Cause.hasFails(cause)) return { kind: "die", tag: "defect" };
   const error = Cause.squash(cause);
-  return typeof error === "object" && error !== null && "_tag" in error
-    ? String(error._tag)
-    : "defect";
+  return {
+    kind: "fail",
+    tag:
+      typeof error === "object" && error !== null && "_tag" in error
+        ? String(error._tag)
+        : "untagged",
+  };
 };
 
 /**
@@ -31,7 +44,7 @@ export const probeApi = (app: App) => {
     const exit = await runtime.runPromiseExit(NoteStore.use(use));
     return Exit.isSuccess(exit)
       ? { ok: true, value: exit.value }
-      : { ok: false, tag: tagOf(exit.cause) };
+      : { ok: false, ...failureOf(exit.cause) };
   };
   return {
     list: () => run((store) => store.list),

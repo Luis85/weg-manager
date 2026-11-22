@@ -52,6 +52,6 @@ export const trashFailureScenario = async ({ app, plugins }: ScenarioContext) =>
 export const TRASH_FAILURE_FACTS = {
   trashFile: { result: false, events: ["done"] },
   listedAfterTrashFile: true,
-  storeTrash: { result: { ok: false, tag: "NoteTrashError" }, events: ["done"] },
+  storeTrash: { result: { ok: false, kind: "fail", tag: "NoteTrashError" }, events: ["done"] },
   listedAfterStoreTrash: true,
 };

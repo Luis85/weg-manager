@@ -25,7 +25,12 @@ type Step<A> = { readonly result: A; readonly events: readonly string[] };
 /** What Obsidian's vault, metadata cache and file manager do, called directly. */
 export const vaultFacts = async (
   { app, obsidian }: Context,
-  input: { readonly paths: readonly string[]; readonly yaml: unknown; readonly text: string },
+  input: {
+    readonly paths: readonly string[];
+    readonly yaml: unknown;
+    readonly text: string;
+    readonly closings: readonly string[];
+  },
   settleMs: number,
 ) => {
   const events: string[] = [];
@@ -181,6 +186,24 @@ export const vaultFacts = async (
       }
       return { rejected: null, called };
     }),
+    // Where the metadata cache closes a block: each text has a candidate closing line on line 2
+    // and a plain `---` on line 4.
+    // Their events are left out: whether a file's index or the next create comes first varies.
+    createClosings: await (async () => {
+      await Promise.all(
+        input.closings.map((closing, index) => app.vault.create(`A/close-${index}.md`, closing)),
+      );
+      await settle();
+      return input.closings.length;
+    })(),
+    // The line the block ends on. Not the frontmatter: where the block runs on to line 4, the
+    // double's YAML copy rejects what Obsidian reads (` ---` continues `a: 1` as text).
+    closings: input.closings.map(
+      (_, index) =>
+        app.metadataCache
+          .getFileCache(file(`A/close-${index}.md`))
+          ?.sections?.find((section) => section.type === "yaml")?.position.end.line,
+    ),
     renameOntoFile: await step(() => app.fileManager.renameFile(file("A/plain.md"), "A/n.md")),
     renameIntoMissingFolder: await step(() =>
       app.fileManager.renameFile(file("A/plain.md"), "Fehlt/plain.md"),
@@ -271,6 +294,12 @@ export const storeScenario = async ({ app, plugins }: Context, settleMs: number)
     trash: await step(() => probe.trash("WEG Manager/Gemeinschaften/Ahornweg (2).md")),
     readTrashed: await step(() => probe.read("WEG Manager/Gemeinschaften/Ahornweg (2).md")),
     finalList: await step(() => probe.list()),
+    // A folder spelled in another case is the existing one: Linux would make a second.
+    caseFolder: await step(() =>
+      probe.create({ ...community, folder: "weg manager/GEMEINSCHAFTEN", name: "Linde" }),
+    ),
+    caseFolderChildren: app.vault.getRoot().children.filter((child) => /^weg/i.test(child.path))
+      .length,
   };
   for (const ref of refs) app.vault.offref(ref);
   for (const ref of cacheRefs) app.metadataCache.offref(ref);

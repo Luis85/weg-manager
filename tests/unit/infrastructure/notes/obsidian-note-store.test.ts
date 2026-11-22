@@ -178,11 +178,36 @@ describe("Obsidian NoteStore adapter", () => {
   );
 
   it.effect(
+    "writes into a block closed by `----` or `--- `, and the cache reads what it wrote",
+    () =>
+      Effect.gen(function* () {
+        const app = new App();
+        app.vault.seedFile("A.md", "---\nkind: WEG # Art\n----\nbody\n");
+        app.vault.seedFile("B.md", "---\r\nkind: WEG\r\n---  \r\nbody\r\n");
+        for (const path of ["A.md", "B.md"]) {
+          yield* run(app, (notes) =>
+            notes.update(path, () => Result.succeed({ set: { kind: "Haus" } })),
+          );
+        }
+        assert.strictEqual(rawText(app, "A.md"), "---\nkind: Haus # Art\n----\nbody\n");
+        assert.strictEqual(rawText(app, "B.md"), "---\r\nkind: Haus\r\n---  \r\nbody\r\n");
+        yield* Effect.promise(() => app.metadataCache.whenIndexed());
+        const read = yield* run(app, (notes) =>
+          Effect.all([notes.read("A.md"), notes.read("B.md")]),
+        );
+        assert.deepStrictEqual(
+          read.map((note) => note.frontmatter),
+          [{ kind: "Haus" }, { kind: "Haus" }],
+        );
+      }),
+  );
+
+  it.effect(
     "refuses a note whose frontmatter it cannot edit line by line, and writes nothing",
     () =>
       Effect.gen(function* () {
         const app = new App();
-        app.vault.seedFile("A.md", "---\na: 1\n----\nbody\n");
+        app.vault.seedFile("A.md", "---\na: 1\n-----\nbody\n");
         const modified = vi.fn<() => void>();
         app.vault.on("modify", modified);
         const error = yield* Effect.flip(

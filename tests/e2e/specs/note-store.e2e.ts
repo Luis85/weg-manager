@@ -1,6 +1,7 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
 import {
+  CLOSING_TEXTS,
   NORMALIZE_CASES,
   PARSE_SAMPLE,
   STORE_REPORT,
@@ -24,6 +25,7 @@ describe("note store in Obsidian", function () {
       paths: NORMALIZE_CASES.map(([path]) => path),
       yaml: STRINGIFY_SAMPLE.value,
       text: PARSE_SAMPLE.text,
+      closings: CLOSING_TEXTS,
     };
     const facts = await browser.executeObsidian(vaultFacts, input, SETTLE_MS);
     expect(facts).toEqual(VAULT_FACTS);

@@ -1,10 +1,11 @@
 import { Schema } from "effect";
-import { trimmedValues, type FormDraft, type FormInput } from "../notes";
+import { fitsFileName, trimmedValues, type FormDraft, type FormInput } from "../notes";
 import {
   COMMUNITY_COLORS,
   communityType,
   type CommunityColor,
   type CommunityFields,
+  type CommunityKey,
 } from "./community-type";
 
 /** What the community form holds: the text of each field as typed. */
@@ -17,6 +18,7 @@ export type CommunityDraft = FormDraft<CommunityFields>;
 const PlainIssueCode = Schema.Literals([
   "field.missing",
   "name.invalid",
+  "name.too-long",
   "short-code.invalid",
   "color.taken",
   "kind.invalid",
@@ -129,9 +131,46 @@ const takenBy = (
     : context.others.find((other) => other[key] === value);
 
 /**
- * The rules a community must meet to be saved (PBI-56): the field rules of the note type, a short
- * code no other community has, and a colour no other community uses. At most one issue per field,
- * in file order. The form's validators and the use cases call it, so the rule lives only here.
+ * Whether `name` gives a file name the disk cannot take (`fitsFileName`, PBI-65), unless the
+ * community already had it: a note named so outside the plugin keeps working.
+ */
+const tooLongForFileName = (input: CommunityInput, context: CommunityRuleContext): boolean => {
+  const name = input.name.trim();
+  return name !== context.loaded?.name && !fitsFileName(name, normalizeShortCode(input.short_code));
+};
+
+/**
+ * The issue of a field the note type accepts, by the rules beyond it: a short code or a colour
+ * another community has, a name too long for a file name.
+ */
+const ruleIssue = (
+  key: CommunityKey,
+  input: CommunityInput,
+  draft: CommunityDraft,
+  context: CommunityRuleContext,
+): CommunityFieldIssue | undefined => {
+  if (key === "short_code") {
+    const value = normalizeShortCode(input.short_code);
+    const owner = takenBy(key, value, context);
+    return owner === undefined
+      ? undefined
+      : { key, code: "short-code.taken", value, other: owner.name ?? value };
+  }
+  if (key === "color") {
+    return takenBy(key, draft.color, context) === undefined
+      ? undefined
+      : { key, code: "color.taken" };
+  }
+  return key === "name" && tooLongForFileName(input, context)
+    ? { key, code: "name.too-long" }
+    : undefined;
+};
+
+/**
+ * The rules a community must meet to be saved (PBI-56): the field rules of the note type, a name
+ * that fits a file name (PBI-65), a short code no other community has, and a colour no other
+ * community uses. At most one issue per field, in file order. The form's validators and the use
+ * cases call it, so the rule lives only here.
  */
 export const validateCommunity = (
   input: CommunityInput,
@@ -142,17 +181,13 @@ export const validateCommunity = (
   const issues: CommunityFieldIssue[] = [];
   for (const key of communityType.keys) {
     const code = broken.get(key);
-    if (code === "color.unknown") issues.push({ key: "color", code, value: input.color.trim() });
-    else if (code !== undefined) issues.push({ key, code });
-    else if (key === "short_code") {
-      const value = normalizeShortCode(input.short_code);
-      const owner = takenBy(key, value, context);
-      if (owner !== undefined) {
-        issues.push({ key, code: "short-code.taken", value, other: owner.name ?? value });
-      }
-    } else if (key === "color" && takenBy(key, draft.color, context) !== undefined) {
-      issues.push({ key, code: "color.taken" });
-    }
+    const issue =
+      code === "color.unknown"
+        ? { key: "color" as const, code, value: input.color.trim() }
+        : code === undefined
+          ? ruleIssue(key, input, draft, context)
+          : { key, code };
+    if (issue !== undefined) issues.push(issue);
   }
   return issues;
 };

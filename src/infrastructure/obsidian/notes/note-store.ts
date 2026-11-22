@@ -1,5 +1,12 @@
 import { Effect, Layer, Result } from "effect";
-import { normalizePath, parseYaml, type App, type CachedMetadata, type TFile } from "obsidian";
+import {
+  TFolder,
+  normalizePath,
+  parseYaml,
+  type App,
+  type CachedMetadata,
+  type TFile,
+} from "obsidian";
 import {
   NoteNotFoundError,
   NoteStore,
@@ -54,10 +61,11 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
   const { vault, metadataCache, fileManager } = app;
 
   /** Obsidian's lookups are case-sensitive (d.ts), so clashes are found among the children. */
-  const siblingsOf = (folder: string) =>
-    (folder === "/" ? vault.getRoot() : vault.getFolderByPath(folder))?.children.map(
-      (child) => child.path,
-    ) ?? [];
+  const childrenOf = (folder: string) =>
+    (folder === "/" ? vault.getRoot() : vault.getFolderByPath(folder))?.children ?? [];
+  const siblingsOf = (folder: string) => childrenOf(folder).map((child) => child.path);
+  const foldersIn = (folder: string) =>
+    childrenOf(folder).flatMap((child) => (child instanceof TFolder ? [child.path] : []));
 
   const frontmatterOf = (file: TFile) =>
     copyFrontmatter(metadataCache.getFileCache(file)?.frontmatter);
@@ -71,15 +79,20 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
     });
 
   const create = (note: NewNote) =>
-    createNote(note, normalizePath, siblingsOf, async ({ folder, path, frontmatter }, body) => {
-      if (folder !== "/" && vault.getFolderByPath(folder) === null) {
-        await vault.createFolder(folder);
-      }
-      await vault.create(
-        path,
-        asDefect(() => newNoteText(frontmatter, body)),
-      );
-    });
+    createNote(
+      note,
+      normalizePath,
+      { siblingsOf, foldersIn },
+      async ({ folder, path, frontmatter }, body) => {
+        if (folder !== "/" && vault.getFolderByPath(folder) === null) {
+          await vault.createFolder(folder);
+        }
+        await vault.create(
+          path,
+          asDefect(() => newNoteText(frontmatter, body)),
+        );
+      },
+    );
 
   /**
    * `change` decides inside `vault.process`, on the frontmatter parsed from the text Obsidian has
@@ -143,6 +156,7 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
             .filter((file) => hasUnreadableFrontmatter(metadataCache.getFileCache(file)))
             .map((file) => file.path),
           normalizePath(folder),
+          foldersIn,
         ),
       ),
     read: (path) =>

@@ -77,6 +77,19 @@ describe("createCommunity", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
+  it.effect("refuses a name too long for a file name at the field and writes nothing", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      yield* ready;
+      const error = yield* Effect.flip(createCommunity({ ...INPUT, name: "漢".repeat(83) }));
+      assert.deepStrictEqual(
+        error,
+        new InvalidCommunityError({ issues: [{ key: "name", code: "name.too-long" }] }),
+      );
+      assert.deepStrictEqual(yield* listed, []);
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
   it.effect("refuses a short code and a colour another community has", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {

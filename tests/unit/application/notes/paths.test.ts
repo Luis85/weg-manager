@@ -8,6 +8,7 @@ import {
   freeNotePath,
   pathsInFolder,
   renamedNotePath,
+  vaultFolder,
 } from "../../../../src/application/notes/paths";
 import { isInFolder, recordFolder } from "../../../../src/application/notes/folders";
 import { defineNoteType } from "../../../../src/domain/notes";
@@ -49,15 +50,70 @@ describe("isInFolder", () => {
   });
 });
 
+/** A vault whose folders are `folders`, by path. */
+const foldersOf = (folders: readonly string[]) => (folder: string) =>
+  folders.filter((path) =>
+    folder === "/"
+      ? !path.includes("/")
+      : path.startsWith(`${folder}/`) && !path.slice(folder.length + 1).includes("/"),
+  );
+
+describe("vaultFolder", () => {
+  it("is the vault root for the root, and the folder as asked in a vault without it", () => {
+    const asked: string[] = [];
+    const lookup = (folder: string) => {
+      asked.push(folder);
+      return [];
+    };
+    assert.strictEqual(vaultFolder("/", lookup), "/");
+    assert.deepStrictEqual(asked, []);
+    assert.strictEqual(
+      vaultFolder("WEG Manager/Gemeinschaften", foldersOf([])),
+      "WEG Manager/Gemeinschaften",
+    );
+  });
+
+  it("finds each segment regardless of case and Unicode form, in the vault's spelling", () => {
+    const folders = foldersOf(["weg manager", "weg manager/GEMEINSCHAFTEN", "Müller", "Andere"]);
+    assert.strictEqual(
+      vaultFolder("WEG Manager/Gemeinschaften", folders),
+      "weg manager/GEMEINSCHAFTEN",
+    );
+    assert.strictEqual(vaultFolder("Müller", folders), "Müller");
+    assert.strictEqual(vaultFolder("WEG Manager/Neu/Tief", folders), "weg manager/Neu/Tief");
+    assert.strictEqual(vaultFolder("Andere Zeit/x", folders), "Andere Zeit/x");
+  });
+
+  it("takes the folder spelled as asked, else the first by code unit", () => {
+    const folders = foldersOf([
+      "weg manager",
+      "WEG Manager",
+      "Weg manager",
+      "Weg manager/b",
+      "WEG Manager/B",
+    ]);
+    assert.strictEqual(vaultFolder("weg manager", folders), "weg manager");
+    assert.strictEqual(vaultFolder("Weg manager/B", folders), "Weg manager/b");
+    assert.strictEqual(vaultFolder("wEG mANAGER/b", folders), "WEG Manager/B");
+  });
+});
+
 describe("pathsInFolder", () => {
   it("keeps the paths in the folder, sorted by code unit", () => {
     assert.deepStrictEqual(
       pathsInFolder(
         new Set(["W/b.md", "Privat/a.md", "W/A.md", "W/Ä.md", "W Alt/a.md", "W/a/z.md"]),
         "W",
+        foldersOf(["W", "W/a", "W Alt", "Privat"]),
       ),
       ["W/A.md", "W/a/z.md", "W/b.md", "W/Ä.md"],
     );
+  });
+
+  it("keeps the paths in the vault's own spelling of the folder", () => {
+    const paths = ["w/a.md", "W/b.md", "x/c.md"];
+    assert.deepStrictEqual(pathsInFolder(paths, "W", foldersOf(["w", "x"])), ["w/a.md"]);
+    assert.deepStrictEqual(pathsInFolder(paths, "W", foldersOf(["w", "W"])), ["W/b.md"]);
   });
 });
 
@@ -133,7 +189,7 @@ describe("checkNoteName", () => {
 });
 
 describe("planNewNote", () => {
-  it.effect("normalizes the folder, finds a free path and copies the frontmatter", () =>
+  it.effect("normalizes the folder, takes the vault's spelling, finds a free path", () =>
     Effect.gen(function* () {
       const frontmatter = { tags: ["a"] };
       const asked: string[] = [];
@@ -142,15 +198,16 @@ describe("planNewNote", () => {
         normalize,
         (folder) => {
           asked.push(folder);
-          return ["F/G/A.md", "F/G/B.md"];
+          return ["f/G/A.md", "f/G/B.md"];
         },
+        foldersOf(["f", "f/G"]),
       );
       assert.deepStrictEqual(plan, {
-        folder: "F/G",
-        path: "F/G/A (2).md",
+        folder: "f/G",
+        path: "f/G/A (2).md",
         frontmatter: { tags: ["a"] },
       });
-      assert.deepStrictEqual(asked, ["F/G"]);
+      assert.deepStrictEqual(asked, ["f/G"]);
       assert.notStrictEqual(plan.frontmatter, frontmatter);
     }),
   );
@@ -159,7 +216,12 @@ describe("planNewNote", () => {
     Effect.gen(function* () {
       const siblings = ["F/AHORNWEG.md", "F/ahornweg (2).md", "F/Mu\u0308ller.md", "F/Ordner.md"];
       const plan = (name: string) =>
-        planNewNote({ folder: "F", name, frontmatter: {} }, normalize, () => siblings);
+        planNewNote(
+          { folder: "F", name, frontmatter: {} },
+          normalize,
+          () => siblings,
+          foldersOf([]),
+        );
       assert.strictEqual((yield* plan("Ahornweg")).path, "F/Ahornweg (3).md");
       assert.strictEqual((yield* plan("M\u00FCller")).path, "F/M\u00FCller (2).md");
       assert.strictEqual((yield* plan("ordner")).path, "F/ordner (2).md");
@@ -171,10 +233,18 @@ describe("planNewNote", () => {
     Effect.gen(function* () {
       let asked = 0;
       const error = yield* Effect.flip(
-        planNewNote({ folder: "F", name: "", frontmatter: {} }, normalize, () => {
-          asked += 1;
-          return [];
-        }),
+        planNewNote(
+          { folder: "F", name: "", frontmatter: {} },
+          normalize,
+          () => {
+            asked += 1;
+            return [];
+          },
+          () => {
+            asked += 1;
+            return [];
+          },
+        ),
       );
       assert.strictEqual(error._tag, "InvalidNoteNameError");
       assert.strictEqual(asked, 0);

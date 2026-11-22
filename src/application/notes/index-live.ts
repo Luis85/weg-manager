@@ -1,5 +1,5 @@
 import { Deferred, Effect, Layer, Option, Queue, Result, Stream, SubscriptionRef } from "effect";
-import type { NoteFields, NoteType } from "../../domain/notes";
+import { clashKey, type NoteFields, type NoteType } from "../../domain/notes";
 import {
   EventBus,
   Logger,
@@ -132,7 +132,8 @@ export const noteIndexLayer = (registry: NoteTypeRegistry) =>
           else trackedByPath.set(path, tracked);
           return {
             failed: false,
-            candidate: tracked === undefined && isInFolder(path, rootFolder),
+            // By `clashKey`, as the store finds the root folder; `unreadable` then decides.
+            candidate: tracked === undefined && isInFolder(clashKey(path), clashKey(rootFolder)),
           };
         });
 

@@ -58,6 +58,10 @@ describe("splitNoteText", () => {
     ["an empty block", "---\n---\nbody\n", ""],
     ["a closing fence with CRLF after an LF block", "---\na: 1\n---\r\nbody", "a: 1\n"],
     ["a document end marker inside", "---\na: 1\n...\n---\n", "a: 1\n...\n"],
+    ["a closing fence with spaces after it", "---\na: 1\n---  \nbody\n", "a: 1\n"],
+    ["a closing fence with a tab after it", "---\r\na: 1\r\n---\t\r\nbody\r\n", "a: 1\r\n"],
+    ["a closing line of four dashes", "---\na: 1\n----\nbody\n", "a: 1\n"],
+    ["a closing line of four dashes at the end of the file", "---\na: 1\n----", "a: 1\n"],
   ])("finds the frontmatter of a note with %s", (_, text, yaml) => {
     expect(frontmatterYaml(split(text))).toBe(yaml);
   });
@@ -75,14 +79,16 @@ describe("splitNoteText", () => {
 
   it.each([
     ["a closing fence with text after it", "---\na: 1\n--- x\n---\n"],
-    ["a closing fence with spaces after it", "---\na: 1\n---  \nbody\n"],
-    ["a closing line of four dashes", "---\na: 1\n----\nbody\n"],
+    ["a closing fence with a comment after it", "---\na: 1\n--- # end\n"],
+    ["a closing fence with a letter after it", "---\na: 1\n---x\n"],
+    ["a closing line of five dashes", "---\na: 1\n-----\nbody\n"],
+    ["a closing line of four dashes and a space", "---\na: 1\n---- \nbody\n"],
     ["lone carriage returns", "---\ra: 1\r---\rbody\r"],
     ["an opening fence of four dashes", "----\na: 1\n---\n"],
     ["an opening fence with text after it", "--- x\na: 1\n---\n"],
     ["an opening fence with text and a space after it", "---x \na: 1\n---\n"],
     ["only a fence", "---"],
-  ])("refuses a note with %s, where Obsidian's own readers disagree", (_, text) => {
+  ])("refuses a note with %s, which it does not write into", (_, text) => {
     expect(splitNoteText(text)).toEqual(Result.fail("layout"));
   });
 });
@@ -92,6 +98,22 @@ describe("editNoteText", () => {
     expect(edited(REVIEWED, { set: { kind: "Haus" } })).toBe(
       REVIEWED.replace("kind: WEG", "kind: Haus"),
     );
+  });
+
+  it.each(["--- ", "---\t", "---  \t", "----"])(
+    "writes into a block closed by %j and keeps that line byte for byte",
+    (closing) => {
+      const text = `---\nschema: x\nkind: WEG\n${closing}\nBody\n`;
+      expect(edited(text, { set: { kind: "Haus", added: 1 } })).toBe(
+        `---\nschema: x\nkind: Haus\nadded: 1\n${closing}\nBody\n`,
+      );
+      expect(edited(text, { remove: ["schema", "kind"] })).toBe("Body\n");
+    },
+  );
+
+  it("keeps a closing line of four dashes with CRLF and at the end of the file", () => {
+    expect(edited("---\r\nk: 1\r\n----\r\n", { set: { k: 2 } })).toBe("---\r\nk: 2\r\n----\r\n");
+    expect(edited("---\nk: 1\n----", { set: { k: 2 } })).toBe("---\nk: 2\n----");
   });
 
   it("keeps a BOM and writes the note's line break", () => {
@@ -182,6 +204,11 @@ describe("editNoteText", () => {
     expect(edited(text, { set: { 'a "b"': 3, "c 'd'": 4 } })).toBe(
       "---\na \"b\": 3\nc 'd': 4\n---\n",
     );
+  });
+
+  it("reads a plain key with a backslash or two quotes as it is written", () => {
+    const text = "---\na\\nb: 1\nc''d: 2\n---\n";
+    expect(edited(text, { set: { "a\\nb": 3, "c''d": 4 } })).toBe("---\na\\nb: 3\nc''d: 4\n---\n");
   });
 
   it("finds a key written in single quotes with a quote in it", () => {

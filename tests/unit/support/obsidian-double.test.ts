@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import * as obsidian from "../../support/obsidian";
 import { App } from "../../support/obsidian";
 import {
+  CLOSING_TEXTS,
   NORMALIZE_CASES,
   PARSE_SAMPLE,
   STORE_REPORT,
@@ -33,6 +34,7 @@ describe("the Obsidian double", () => {
       paths: NORMALIZE_CASES.map(([path]) => path),
       yaml: STRINGIFY_SAMPLE.value,
       text: PARSE_SAMPLE.text,
+      closings: CLOSING_TEXTS,
     };
     const context = { app: new App(), obsidian, plugins: {} };
     expect(await vaultFacts(context as never, input, SETTLE_MS)).toEqual(VAULT_FACTS);

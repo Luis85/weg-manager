@@ -33,6 +33,7 @@ const rendered = (catalog: CommunitiesCatalog) => {
     suggestion: catalog.suggestion({ kind: "WEG", unit_label: "Einheiten" }),
     issues: {
       "name.invalid": issues["name.invalid"](plain, "Feld"),
+      "name.too-long": issues["name.too-long"]({ key: "name", code: "name.too-long" }, "Feld"),
       "short-code.invalid": issues["short-code.invalid"](
         { key: "short_code", code: "short-code.invalid" },
         "Feld",
@@ -136,6 +137,8 @@ describe("the communities catalog", () => {
       },
       issues: {
         "name.invalid": "Gib für „Feld“ eine Zeile mit höchstens 100 Zeichen ein.",
+        "name.too-long":
+          "„Feld“ ergibt einen zu langen Dateinamen, weil manche Zeichen mehr Platz brauchen. Kürze den Namen.",
         "short-code.invalid": "Das Kürzel braucht 2 bis 5 Buchstaben (A–Z) oder Ziffern.",
         "short-code.taken": "„Ahornweg 12“ hat schon das Kürzel AW. Wähle ein anderes.",
         "short-code.duplicate":
@@ -226,6 +229,8 @@ describe("the communities catalog", () => {
       },
       issues: {
         "name.invalid": "Enter one line of at most 100 characters for “Feld”.",
+        "name.too-long":
+          "“Feld” makes a file name that is too long, because some characters take more space. Shorten the name.",
         "short-code.invalid": "The short code needs 2–5 letters (A–Z) or digits.",
         "short-code.taken": "“Ahornweg 12” already uses AW. Choose another short code.",
         "short-code.duplicate":

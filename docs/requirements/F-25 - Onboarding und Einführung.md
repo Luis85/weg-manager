@@ -1,7 +1,7 @@
 ---
 type: Feature
 parent: "[[E-05 - Im Alltag unabhängig arbeitsfähig bleiben]]"
-order: 96000
+order: 101000
 release: "[[MVP - Beirat Support]]"
 status: ""
 started: ""
@@ -17,7 +17,7 @@ iteration: ""
 
 # F-25 · Onboarding und Einführung
 
-**Planungsstand:** Angelegt am 22.11.2026 auf Wunsch des Produktverantwortlichen; Konzeptentwurf · **Umfang:** MVP für Verzeichniseintrag, Einrichtung und Ankunft auf der Lage (PBI-68 bis PBI-71, PBI-73); Hinweise im Kontext (PBI-72) nach dem MVP ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]], O-19a)
+**Planungsstand:** Angelegt am 22.11.2026 auf Wunsch des Produktverantwortlichen; Konzeptentwurf · **Umfang:** MVP für Verzeichniseintrag, Einrichtung und Ankunft auf der Lage (PBI-73 bis PBI-76, PBI-78); Hinweise im Kontext (PBI-77) nach dem MVP ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]], O-19a)
 
 ## Fähigkeit und Ergebnis
 
@@ -35,12 +35,12 @@ Der vollständige Ablauf mit Abbrüchen und Sonderfällen steht in [[FLOW-09 - E
 
 ## User Stories
 
-- [[PBI-68 - Plugin im Community-Verzeichnis finden und installieren]]
-- [[PBI-69 - Beim ersten Aktivieren in die Einrichtung geführt werden]]
-- [[PBI-70 - Gemeinschaften im Einrichtungsassistenten anlegen]]
-- [[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]
-- [[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]
-- [[PBI-73 - Kürzel einer Gemeinschaft nachträglich ändern]] (unter [[F-01 - Gemeinschaften, Personen und Rollen]], Voraussetzung für den Assistenten)
+- [[PBI-73 - Plugin im Community-Verzeichnis finden und installieren]]
+- [[PBI-74 - Beim ersten Aktivieren in die Einrichtung geführt werden]]
+- [[PBI-75 - Gemeinschaften im Einrichtungsassistenten anlegen]]
+- [[PBI-76 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]
+- [[PBI-77 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]
+- [[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]] (unter [[F-01 - Gemeinschaften, Personen und Rollen]], Voraussetzung für den Assistenten)
 
 ## Abnahme und Abgrenzung
 

@@ -8,6 +8,7 @@ import { SettingsService } from "../../../../src/application/shell";
 import {
   built,
   decoded,
+  expectedSnapshot,
   indexFixture,
   item,
   paths,
@@ -33,22 +34,20 @@ describe("the note index when reads fail", () => {
     return Effect.gen(function* () {
       yield* vaultReady;
       yield* untilUnindexed((next) => next.failure !== undefined);
-      assert.deepStrictEqual(yield* snapshotOf(testItem), {
-        ready: false,
-        failure: new NoteIndexReadError(),
-        notes: [],
-      });
+      assert.deepStrictEqual(
+        yield* snapshotOf(testItem),
+        expectedSnapshot({ ready: false, failure: new NoteIndexReadError() }),
+      );
       yield* settle;
       assert.deepStrictEqual(fixture.logger.entries(), [
         { level: "warn", event: "notes.index.build.failed" },
       ]);
       fixture.memory.setFailReads(false);
       yield* rebuildNoteIndex;
-      assert.deepStrictEqual(yield* snapshotOf(testItem), {
-        ready: true,
-        failure: undefined,
-        notes: [decoded("A.md", item(1))],
-      });
+      assert.deepStrictEqual(
+        yield* snapshotOf(testItem),
+        expectedSnapshot({ ready: true, failure: undefined }, [decoded("A.md", item(1))]),
+      );
     }).pipe(Effect.provide(fixture.layer));
   });
 
@@ -139,11 +138,10 @@ describe("the note index when reads fail", () => {
       yield* publish(AppEvent.MetadataChanged({ path: "Weg.md", extension: "md" }));
       yield* TestClock.adjust(quiet);
       yield* settle;
-      assert.deepStrictEqual(yield* snapshotOf(testItem), {
-        ready: true,
-        failure: undefined,
-        notes: [decoded("A.md", item(1))],
-      });
+      assert.deepStrictEqual(
+        yield* snapshotOf(testItem),
+        expectedSnapshot({ ready: true, failure: undefined }, [decoded("A.md", item(1))]),
+      );
       assert.strictEqual(fixture.reads(), 2);
     }).pipe(Effect.provide(fixture.layer));
   });

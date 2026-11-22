@@ -1,12 +1,16 @@
 import type { Component } from "vue";
 import type { Catalog } from "../../application/messages";
+import type { AppModuleName } from "../../application/modules";
+import type { Route, RouteNameOf, SectionIdOf } from "../../application/routes";
 import {
+  SETTINGS,
   historyAt,
   stepBack,
   stepForward,
   visit,
   type RouteHistory,
   type RouteLike,
+  type SettingsRoute,
   type Routes,
 } from "../../application/shell";
 
@@ -38,6 +42,23 @@ export type SettingsSectionPart = {
 };
 
 /**
+ * What module `Name` adds to every view (ADR 0006, amendment 2026-11-22): the screen of each route
+ * its manifest adds (the shell's: the settings screen), the part of each settings section it adds,
+ * its entries in the frame's navigation and what it puts into the frame's context area. A module
+ * writes it in its `screens.ts`, which code at plugin load imports: it loads its components only
+ * through `import()`, so it evaluates no Vue. Typecheck fails while a route or a section of the
+ * module's manifest has no part here, or a part has no route or section.
+ */
+export type ModuleScreens<Name extends AppModuleName> = {
+  readonly screens: { readonly [RouteName in RouteNameOf<Name>]: ScreenLoader };
+  readonly sections: {
+    readonly [Section in SectionIdOf<Name>]: SettingsSectionPart;
+  };
+  readonly menu?: readonly MenuEntry<Route>[];
+  readonly context?: ScreenLoader;
+};
+
+/**
  * What a surface shows: the routes, the screen of each, the frame's navigation and its context
  * area. `src/presentation/app-surface.ts` composes the app's from the modules' parts; tests build
  * their own with test routes.
@@ -56,6 +77,27 @@ export type SurfaceDefinition<R extends RouteLike> = Routes<R> & {
    * navigation shows them. `src/presentation/app-surface.ts` types them by `SettingsSection`.
    */
   readonly sections?: Readonly<Record<string, SettingsSectionPart>>;
+};
+
+/**
+ * The entries of the frame's navigation (ADR 0008, amendment 2026-11-22): the modules' entries,
+ * then the shell's settings entry when any module adds a settings section. The entry opens the
+ * settings screen on the section that comes first in `sections`, which the composition orders
+ * (`SETTINGS_SECTIONS`); it is current on every section, as every entry is on every route of its
+ * screen.
+ */
+export const frameMenu = <R extends RouteLike>(
+  definition: SurfaceDefinition<R>,
+): readonly MenuEntry<RouteLike>[] => {
+  const [first] = Object.keys(definition.sections ?? {});
+  if (first === undefined) return definition.menu;
+  const route: SettingsRoute = { name: SETTINGS, section: first };
+  const settings: MenuEntry<RouteLike> = {
+    route,
+    label: (catalog) => catalog.shell.frame.settings,
+    icon: "i-lucide-settings",
+  };
+  return [...definition.menu, settings];
 };
 
 /**

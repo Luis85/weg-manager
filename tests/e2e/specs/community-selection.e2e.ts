@@ -1,7 +1,15 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
 import { FOLDER, community, communityText, expectListed, writeNote } from "../communities";
-import { ROOT, VIEW_TYPE, installConsoleSpy, openView, pluginProblems } from "../support";
+import {
+  ROOT,
+  VIEW_TYPE,
+  eventually,
+  installConsoleSpy,
+  openView,
+  pluginProblems,
+} from "../support";
+import { de } from "../texts";
 
 const AW = communityText(community(1, { name: "Ahornweg 12", short_code: "AW" }));
 const TG = communityText(
@@ -100,7 +108,13 @@ describe("the community selection in Obsidian", function () {
     await browser.waitUntil(async () => (await selectedInViews())[0] === "", {
       timeoutMsg: "the view kept a selection",
     });
-    expect(await choiceText()).toBe("Wähle die Gemeinschaft, in der du arbeitest.");
+    // The request for a choice is drawn by the switch, which can follow a moment after the
+    // selection is gone.
+    await eventually(
+      choiceText,
+      de.communities.switcher.choose,
+      "the switch's request for a choice",
+    );
   });
 
   it("logged no error or warning from the plugin and no uncaught error", async function () {

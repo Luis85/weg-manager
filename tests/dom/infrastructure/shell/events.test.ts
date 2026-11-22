@@ -8,6 +8,7 @@ import {
   sequentialIncidents,
   testMessages,
 } from "../../../support/layers";
+import { asObsidianPlugin } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -29,7 +30,7 @@ const started = async (options: { readonly layoutReady?: boolean } = {}) => {
   const bus = recordingEventBus();
   const logger = recordingLogger();
   const notifier = recordingNotifier();
-  const layer = hostEventsLayer(plugin as never).pipe(
+  const layer = hostEventsLayer(asObsidianPlugin(plugin)).pipe(
     Layer.provideMerge(
       Layer.mergeAll(bus.layer, logger.layer, notifier.layer, sequentialIncidents(), testMessages),
     ),

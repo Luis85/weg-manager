@@ -91,7 +91,7 @@ describe("a handle that was disposed", () => {
     const rowBefore = tab.containerEl.firstElementChild;
     expect(rowBefore).not.toBeNull();
     await handle.dispose();
-    const loadData = vi.spyOn(plugin as unknown as { loadData(): Promise<unknown> }, "loadData");
+    const loadData = vi.spyOn(plugin, "loadData");
     registry.writeExternally({ logLevel: "debug" });
     await expect(handle.reloadSettings()).resolves.toBeUndefined();
     expect(loadData).not.toHaveBeenCalled();

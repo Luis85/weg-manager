@@ -168,6 +168,23 @@ describe("readPackage", () => {
     expect(entry?.text).not.toContain("example.org");
   });
 
+  it("marks an entry whose standard text the script wrote, and no other", () => {
+    const root = repo({
+      none: { json: { license: "MIT", author: "Jane" } },
+      file: licensed("Ann"),
+      verbatim: { json: { license: "ISC" } },
+      copyright: {},
+    });
+    const overrides = {
+      verbatim: { license: "ISC", text: "Upstream text" },
+      copyright: { license: "MIT", copyright: "Copyright (c) 2025 unovue" },
+    };
+    expect(read(root, "none", overrides).generated).toBe(true);
+    expect(read(root, "copyright", overrides).generated).toBe(true);
+    expect(read(root, "file", overrides)).not.toHaveProperty("generated");
+    expect(read(root, "verbatim", overrides)).not.toHaveProperty("generated");
+  });
+
   it("writes the standard ISC text from an author object", () => {
     const root = repo({ a: { json: { license: "ISC", author: { name: "Joe" } } } });
     expect(read(root, "a").texts[0]?.text).toContain("ISC License\n\nCopyright (c) Joe\n");
@@ -258,6 +275,21 @@ describe("renderNotices", () => {
     expect(text.indexOf("@s/a")).toBeLessThan(text.indexOf("\nm "));
   });
 
+  it("marks a package whose licence text was generated, in the index and in its section", () => {
+    const generated = { ...entry("gen", "Jane"), generated: true as const };
+    const text = renderNotices([entry("real", "Ann"), generated]);
+    expect(text).toContain("gen (MIT, licence text generated)\nreal (MIT)\n");
+    expect(text).toMatch(
+      /gen\nLicence: MIT\nLicence text: generated from the standard text, the package ships no licence file\n/,
+    );
+    expect(text.match(/Licence text: generated/g)).toHaveLength(1);
+  });
+
+  it("keeps a generated entry apart from a package with the same text from a file", () => {
+    const text = renderNotices([entry("a", "Ann"), { ...entry("b", "Ann"), generated: true }]);
+    expect(text.match(/Copyright \(c\) Ann/g)).toHaveLength(2);
+  });
+
   it("labels a NOTICE file", () => {
     const text = renderNotices([
       {
@@ -283,6 +315,21 @@ describe("runNotices", () => {
     expect(written(root)).toContain("Copyright (c) Ann");
     expect(written(root)).not.toContain("9.8.7");
     expect(written(root)).not.toContain(root);
+  });
+
+  it("names the packages with a generated licence text, when it writes and when it checks", () => {
+    const root = repo({ ...packages, gen: { json: { license: "MIT", author: "Jane" } } });
+    const wrote = runNotices({ root, check: false });
+    expect(wrote.message).toContain("licence text generated (no licence file): gen");
+    expect(wrote.message).not.toMatch(/: .*\ba\b/);
+    const checked = runNotices({ root, check: true });
+    expect(checked.ok).toBe(true);
+    expect(checked.message).toContain("licence text generated (no licence file): gen");
+  });
+
+  it("says nothing about generated texts when there are none", () => {
+    const root = repo(packages);
+    expect(runNotices({ root, check: false }).message).not.toContain("generated");
   });
 
   it("passes the check when the file is current", () => {

@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-22
 horizon: ""
 start: ""
 due: ""
@@ -23,7 +23,7 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-64 · Laufzeit und Kosten von Gate und CI senken
@@ -66,3 +66,7 @@ Test-Review vom 22.11.2026, Abschnitt C. `docs/engineering/testing.md`, `docs/en
 ## Kommentare
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
+- 22.11.2026: Kriterien 1 und 2 sind umgesetzt und getestet (Branch `gate-cost`): `scripts/verify.mjs` startet Formatprüfung, Lint und Typprüfung gleichzeitig (Ausgabe je Schritt gepuffert und am Ende des Schritts ganz gedruckt; ein Fehler lässt die beiden anderen enden und hält dann das Gate; `AGENTS.md` angepasst), und der Hook startet `scripts/pre-push.mjs`, das bei einem Push nur aus `docs/**` und `*.md` allein die Formatprüfung fährt. Die Kriterien 3 bis 5 sind erfüllt, soweit es ohne CI-Lauf geht, und bis zum ersten CI-Lauf ungeprüft: der e2e-Job nutzt `xvfb-run` ohne `apt-get` und ohne Fenstermanager (das ist das Risiko, siehe `github-setup.md`), `scanner-lint` ist der letzte Schritt von `verify` (zwei `npm ci` je Lauf), der Obsidian-Cache wird getrennt wiederhergestellt und nach dem Lauf gespeichert, auch nach fehlgeschlagenen Tests, und gehalten werden die aktuelle und die vorige Version (`github-setup.md`). ESLint `--cache` ist bewusst nicht übernommen: Es meldet bei einer geänderten Abhängigkeit ein veraltetes Ergebnis für typbewusste Regeln (belegt in `testing.md`). Kriterium 6 ist offen, bis der Pull Request die Zahlen trägt: Gate gemessen (vorher 101 bis 115 s bei geringer Last, nachher auf ruhiger Maschine erwartet 81 bis 91 s; unter hoher Last im Wechsel 194 und 249 s gegen 319 bis 347 s), CI nur erwartet; deshalb bleiben `finished` und `triage` unverändert.
+- 22.11.2026 (nach dem ersten CI-Lauf): Kriterium 3 bleibt offen. Der erste Lauf ohne Fenstermanager scheiterte an einer Kontrastmessung, die 400 ms nach dem Themenwechsel las, bevor der Wechsel gezeichnet war; ohne Fenstermanager zeichnet das Fenster auf dem Runner später. Der Fenstermanager bleibt deshalb vorerst, bis die e2e-Specs auf Bedingungen warten ([[PBI-63 - Obsidian-Testdouble und Ende-zu-Ende-Tests belastbarer machen]], Kriterien 6 bis 8); danach wird der Versuch wiederholt. Die übrigen Änderungen (Gate, Hook, ein `npm ci` weniger, Obsidian-Cache) sind davon unberührt.
+- 22.11.2026 (zweiter Versuch): Nachdem die e2e-Specs auf Bedingungen warten (PR #54), läuft der e2e-Job wieder ohne Fenstermanager und ohne `apt-get` (`xvfb-run`). Kriterium 3 gilt als erfüllt, sobald der Job so einige Läufe ohne Ausfall bestanden hat; `docs/engineering/github-setup.md` nennt, worauf zu achten ist und wie der Fenstermanager zurückkommt.
+- 22.11.2026 (Abschluss): Die Kriterien 3 und 6 sind erfüllt, damit alle sechs. Kriterium 3: Seit der Korrektur in PR #56 hat der e2e-Job ohne Fenstermanager und ohne `apt-get` vier Läufe hintereinander bestanden (zwei auf Pull Requests, zwei auf `main`, der letzte mit den drei neuen Specs aus PR #57). Die beiden Ausfälle davor (der Lauf auf `main` nach PR #55, noch mit Fenstermanager, und der erste Lauf von PR #56) lagen nicht am Fenstermanager, sondern an der Hilfsfunktion `settleColours`, die eine beendete Animation als laufend zählte; PR #56 hat das behoben. Kriterium 6, gemessen: Gate auf ruhiger Maschine vorher 101 bis 115 s, nachher 84 bis 99 s. CI je Lauf, aus den Job-Zeiten von GitHub: vorher (drei Läufe, PRs #49 bis #51) `verify` 109 bis 132 s, `e2e` 105 bis 151 s, dazu der eigene Job `scanner-lint` mit 25 bis 31 s; nachher (vier Läufe, PRs #56 und #57) `verify` 106 bis 132 s einschließlich Scanner-Lint, `e2e` 88 bis 123 s. Im e2e-Job entfällt der Schritt „Anzeige und Fenstermanager“ (16 bis 17 s je Lauf). Die Wartezeit bis zum Ergebnis ändert sich kaum, weil die Jobs nebeneinander laufen; gespart werden Runner-Minuten: ein Job und ein `npm ci` weniger, kein `apt-get`. Die Zahlen stehen auch im Pull Request, der diese Note schließt.

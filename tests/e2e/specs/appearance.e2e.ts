@@ -18,10 +18,12 @@ import {
   community,
   communityText,
   expectListed,
+  listedNames,
   openSection,
   writeNotes,
 } from "../communities";
 import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
+import { de } from "../texts";
 
 /** A legal name of exactly 100 characters (the name rule's maximum), a German compound first. */
 const LONG_NAME =
@@ -206,6 +208,9 @@ describe("appearance in Obsidian's default theme", function () {
   });
 
   it("keeps every text of the list at 4.5:1, warnings and the primary action included", async function () {
+    // The count beside "Datenprobleme" is a lazily loaded part that follows its own snapshot of
+    // the index, so it can come after the list: measure only once it is there.
+    await expect(browser.$(ROOT).$("[data-testid=data-issues-count]")).toBeDisplayed();
     const texts = await textsInBothSchemes("list");
     expect(failing(texts)).toEqual([]);
     expect(
@@ -220,7 +225,11 @@ describe("appearance in Obsidian's default theme", function () {
   });
 
   it("keeps every text of the data issues section at 4.5:1, its issues and current entry included", async function () {
-    await openSection("Datenprobleme");
+    await openSection(de.notes.dataIssues.title);
+    // The screen is a lazily loaded part: measure its notes once they are drawn.
+    await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).toHaveText(
+      expect.stringContaining(`${FOLDER}/Kaputt.md`),
+    );
     const texts = await textsInBothSchemes("data-issues");
     expect(failing(texts)).toEqual([]);
     expect(
@@ -228,7 +237,7 @@ describe("appearance in Obsidian's default theme", function () {
         problem: (text) => text.testid === "unindexed-notes" && !text.text.endsWith(".md"),
         path: (text) => text.testid === "unindexed-notes" && text.text.endsWith(".md"),
         section: (text) =>
-          text.testid === "settings-sections" && text.text.includes("Datenprobleme"),
+          text.testid === "settings-sections" && text.text.includes(de.notes.dataIssues.title),
       }),
     ).toEqual(["problem", "path", "section"]);
     // The current section is marked by a bar too, not by its colour alone.
@@ -241,7 +250,7 @@ describe("appearance in Obsidian's default theme", function () {
       "box-shadow",
     ]);
     expect(entry?.["box-shadow"]).not.toBe("none");
-    await openSection("Gemeinschaften");
+    await openSection(de.communities.screen.title);
     await expectListed([
       "Ahornweg 12",
       "Aus der Zukunft",
@@ -261,14 +270,17 @@ describe("appearance in Obsidian's default theme", function () {
         selected: (text) =>
           text.testid === "community-option-name" && text.text.endsWith("Tiefgarage Ahornweg"),
         marker: testid("community-selected"),
-        page: (text) => text.testid === "frame-navigation" && text.text.endsWith("Einstellungen"),
+        page: (text) =>
+          text.testid === "frame-navigation" && text.text.endsWith(de.shell.frame.settings),
       }),
     ).toEqual(["selected", "marker", "page"]);
-    // Not by colour alone: a check mark on the selected option, "Aktuell" on its card, a bar on
-    // the current page.
+    // Not by colour alone: a check mark on the selected option, the word "selected" on its card, a
+    // bar on the current page.
     await expect(option("Tiefgarage Ahornweg").$("[data-testid=community-option-check]")).toExist();
     await expect(option(LONG_NAME).$("[data-testid=community-option-check]")).not.toExist();
-    await expect(browser.$(ROOT).$("[data-testid=community-selected]")).toHaveText("Aktuell");
+    await expect(browser.$(ROOT).$("[data-testid=community-selected]")).toHaveText(
+      de.communities.screen.selected,
+    );
     const [current] = await stylesOf("[data-testid=frame-navigation] button[aria-current=page]", [
       "box-shadow",
     ]);
@@ -304,7 +316,19 @@ describe("appearance in Obsidian's default theme", function () {
     await browser.execute((selector) => {
       document.querySelector<HTMLElement>(selector)?.style.setProperty("max-width", "320px");
     }, ROOT);
-    await browser.pause(300);
+    // The frame lays itself out inside the narrowed root (the root keeps 12 px on each side):
+    // measure once its width has followed.
+    await browser.waitUntil(
+      () =>
+        browser.execute((selector) => {
+          const frame = document
+            .querySelector(selector)
+            ?.querySelector("[data-testid=app-frame]")
+            ?.getBoundingClientRect().width;
+          return frame !== undefined && frame <= 320;
+        }, ROOT),
+      { timeoutMsg: "the frame never fitted the narrowed root" },
+    );
     expect(await fits()).toEqual({ inNav: true, truncated: true, titleFits: true });
     expect(await overflow()).toEqual({ scroll: 0, past: [] });
     await browser.execute((selector) => {
@@ -325,14 +349,14 @@ describe("appearance in Obsidian's default theme", function () {
     const sheet = `${ROOT} [role=dialog]`;
     await browser.waitUntil(
       async () =>
-        (await measureTexts(sheet)).some((text) => text.text.includes("Gib einen Namen ein.")),
+        (await measureTexts(sheet)).some((text) => text.text.includes(de.communities.missing.name)),
       { timeoutMsg: "the sheet never showed the missing fields" },
     );
     const texts = await textsInBothSchemes("sheet", sheet);
     expect(failing(texts)).toEqual([]);
     expect(
       kindsIn(texts, {
-        error: (text) => text.text.includes("Gib einen Namen ein."),
+        error: (text) => text.text.includes(de.communities.missing.name),
         summary: testid("form-summary"),
         save: testid("community-save"),
       }),
@@ -364,7 +388,10 @@ describe("appearance in Obsidian's default theme", function () {
   });
 
   it("keeps the delete confirmation and its failure at 4.5:1", async function () {
-    await browser.$(ROOT).$("[aria-label='Doppelt löschen']").click();
+    await browser
+      .$(ROOT)
+      .$(`[aria-label='${de.communities.screen.removeLabel("Doppelt")}']`)
+      .click();
     await expect(browser.$(ROOT).$("[data-testid=delete-confirm]")).toBeDisplayed();
     const dialog = `${ROOT} [role=alertdialog], ${ROOT} [role=dialog]`;
     const texts = await textsInBothSchemes("delete", dialog);
@@ -376,6 +403,12 @@ describe("appearance in Obsidian's default theme", function () {
       const file = app.vault.getFileByPath(path);
       if (file !== null) await app.vault.delete(file);
     }, `${FOLDER}/Doppelt.md`);
+    // The list behind the dialog follows the delete a moment later. Wait for that, so the click
+    // never lands before or after it by luck: the dialog has to cope with the vanished note, as
+    // for a person who confirms later.
+    await browser.waitUntil(async () => !(await listedNames()).includes("Doppelt"), {
+      timeoutMsg: "the list kept the deleted community",
+    });
     await browser.$(ROOT).$("[data-testid=delete-confirm]").click();
     await expect(browser.$(ROOT).$("[role=dialog] [role=alert]")).toBeDisplayed();
     const failure = await textsInBothSchemes(

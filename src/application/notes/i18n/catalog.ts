@@ -1,6 +1,7 @@
 import type {
   FieldIssue,
   KindIssueCode,
+  MissingReference,
   NoteNameIssue,
   RecordIssue,
   UnindexedIssue,
@@ -21,6 +22,11 @@ type RecordIssueTexts = {
  */
 type FieldIssueTexts = { readonly [Code in FieldIssue["code"]]: (label: string) => string };
 
+/** One sentence per issue between a reference and its target, with the issue's data and the label. */
+type ReferenceIssueTexts = {
+  readonly [Code in MissingReference["code"]]: (issue: MissingReference, label: string) => string;
+};
+
 /** One sentence per reason why a note belongs to no known type; the issue's data fills it. */
 type UnindexedIssueTexts = {
   readonly [Code in UnindexedIssue["code"]]: (
@@ -37,13 +43,13 @@ type IssueOf<Issue extends KeyedIssue, Code extends string> = [
 
 /**
  * One sentence per code of a feature's field issues, filled with the issue's data and the field's
- * label: every code but `field.missing` and the field kinds' codes, which the notes catalog words.
+ * label: every code but `field.missing`, the field kinds' codes and `reference.missing`, which the
+ * notes catalog words.
  */
 export type IssueSentences<Issue extends KeyedIssue> = {
-  readonly [Code in Exclude<Issue["code"], "field.missing" | KindIssueCode>]: (
-    issue: IssueOf<Issue, Code>,
-    label: string,
-  ) => string;
+  readonly [
+    Code in Exclude<Issue["code"], "field.missing" | KindIssueCode | MissingReference["code"]>
+  ]: (issue: IssueOf<Issue, Code>, label: string) => string;
 };
 
 /**
@@ -72,6 +78,7 @@ export type NotesCatalog = {
     readonly unreadable: Text;
     readonly write: Text;
     readonly trash: Text;
+    readonly open: Text;
     readonly editConflict: Text;
     readonly writeRefused: {
       readonly title: string;
@@ -121,5 +128,6 @@ export type NotesCatalog = {
   };
   readonly recordIssues: RecordIssueTexts;
   readonly fieldIssues: FieldIssueTexts;
+  readonly referenceIssues: ReferenceIssueTexts;
   readonly unindexedIssues: UnindexedIssueTexts;
 };

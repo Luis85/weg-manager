@@ -33,6 +33,11 @@ export class NoteWriteError extends Schema.TaggedError<NoteWriteError>()("NoteWr
   cause: Schema.Defect(),
 }) {}
 
+/** Obsidian could not open the note in a tab: its own failure, which the user can retry. */
+export class NoteOpenError extends Schema.TaggedError<NoteOpenError>()("NoteOpenError", {
+  cause: Schema.Defect(),
+}) {}
+
 /** Obsidian could not move the note to the trash: the disk, the file system or the trash folder. */
 export class NoteTrashError extends Schema.TaggedError<NoteTrashError>()("NoteTrashError", {
   cause: Schema.Defect(),
@@ -70,21 +75,21 @@ export type NotesError =
   | NoteUnreadableError
   | NoteWriteError
   | NoteTrashError
+  | NoteOpenError
   | NoteEditConflictError
   | NoteWriteRefusedError
   | NoteIndexReadError;
 
 /** One key per member of `NotesError`; typecheck fails while one is missing or extra. */
-const NOTES_ERROR_TAG_KEYS = {
+export const NOTES_ERROR_TAG_KEYS = {
   NoteNotFoundError: true,
   NotePathTakenError: true,
   InvalidNoteNameError: true,
   NoteUnreadableError: true,
   NoteWriteError: true,
   NoteTrashError: true,
+  NoteOpenError: true,
   NoteEditConflictError: true,
   NoteWriteRefusedError: true,
   NoteIndexReadError: true,
 } satisfies Record<NotesError["_tag"], true>;
-
-export const NOTES_ERROR_TAGS: ReadonlySet<string> = new Set(Object.keys(NOTES_ERROR_TAG_KEYS));

@@ -1,3 +1,5 @@
+import { eitherOrder } from "./event-order";
+
 /**
  * What real Obsidian 1.15.1 does, as data shared by the e2e spec (which checks it against the real
  * app, `tests/e2e/specs/note-store.e2e.ts`) and the unit tests (which check the double and the
@@ -57,46 +59,86 @@ export const PARSE_SAMPLE = {
   },
 };
 
-/** The report of `vaultFacts` (`scenarios.ts`): each step's result and the events it fired. */
+/**
+ * Candidate closing lines of a frontmatter block, each on line 2 of `---`, `a: 1`, the candidate,
+ * `b: 2`, `---`, a body: `vaultFacts` records where the metadata cache closes the block.
+ */
+export const CLOSING_LINES: readonly string[] = [
+  "---",
+  "--- ",
+  "---\t",
+  "---  \t ",
+  "----",
+  "---- ",
+  "-----",
+  "--- x",
+  "---x",
+  "--- # c",
+  " ---",
+  "...",
+];
+
+/** The texts of `CLOSING_LINES`, and one with CRLF line breaks. */
+export const CLOSING_TEXTS: readonly string[] = [
+  ...CLOSING_LINES.map((closing) => `---\na: 1\n${closing}\nb: 2\n---\nbody\n`),
+  "---\r\na: 1\r\n--- \r\nb: 2\r\n---\r\nbody\r\n",
+];
+
+/**
+ * The report of `vaultFacts` (`scenarios.ts`): each step's result and the events it fired, in
+ * order up to its fence; `done` is where the call's promise settled. Measured in Obsidian 1.15.1
+ * over eight runs, three on an idle machine and five beside eight busy processes: the vault's own
+ * events fire before the promise settles, the metadata cache's `changed` after it.
+ */
 export const VAULT_FACTS = {
   normalized: NORMALIZE_CASES.map(([, output]) => output),
   stringified: STRINGIFY_SAMPLE.text,
   parsed: PARSE_SAMPLE.value,
-  createInMissingFolder: { result: "Error: ENOENT", events: [] },
+  createInMissingFolder: { result: "Error: ENOENT", events: ["done"] },
+  // Parents first, each before the promise settles.
   createFolders: {
     result: "A/B/C",
-    events: ["vault:create A", "vault:create A/B", "vault:create A/B/C"],
+    events: ["vault:create A", "vault:create A/B", "vault:create A/B/C", "done"],
   },
-  createFolderAgain: { result: "Error: Folder already exists.", events: [] },
+  createFolderAgain: { result: "Error: Folder already exists.", events: ["done"] },
   // The cache has nothing yet when `create` resolves; `changed` follows a moment later.
-  create: { result: null, events: ["vault:create A/n.md", "metadataCache:changed A/n.md"] },
-  createAgain: { result: "Error: File already exists.", events: [] },
+  create: {
+    result: null,
+    events: ["vault:create A/n.md", "done", "metadataCache:changed A/n.md"],
+  },
+  createAgain: { result: "Error: File already exists.", events: ["done"] },
   cacheAfterCreate: { a: 1, b: 2 },
   children: ["A/B", "A/n.md"],
   rootChildren: true,
   lookupInOtherCase: null,
-  processUnchanged: { result: "---\na: 1\nb: 2\n---\nbody\n", events: [] },
-  frontmatterUnchanged: { events: [] },
-  frontmatterThrows: { result: "Error: stop", events: [] },
+  processUnchanged: { result: "---\na: 1\nb: 2\n---\nbody\n", events: ["done"] },
+  frontmatterUnchanged: { events: ["done"] },
+  frontmatterThrows: { result: "Error: stop", events: ["done"] },
   // Right after `processFrontMatter` the cache still holds the old frontmatter.
   frontmatterChanged: {
     result: { a: 1, b: 2 },
-    events: ["vault:modify A/n.md", "metadataCache:changed A/n.md"],
+    events: ["vault:modify A/n.md", "done", "metadataCache:changed A/n.md"],
   },
   textAfterChange: "---\na: 5\nb: 2\nc:\n  - x\n---\nbody\n",
-  createPlain: { events: ["vault:create A/plain.md", "metadataCache:changed A/plain.md"] },
+  createPlain: {
+    events: ["vault:create A/plain.md", "done", "metadataCache:changed A/plain.md"],
+  },
+  // These two steps read the file after the write, and whether that read or the index of the
+  // write comes first varies (four runs of eight each way for `plain`).
   plain: {
     result: "---\nk: v\n---\n# Plain\n",
-    events: ["vault:modify A/plain.md", "metadataCache:changed A/plain.md"],
+    events: ["vault:modify A/plain.md", eitherOrder("metadataCache:changed A/plain.md", "done")],
   },
   allKeysDeleted: {
     result: "# Plain\n",
-    events: ["vault:modify A/plain.md", "metadataCache:changed A/plain.md"],
+    events: ["vault:modify A/plain.md", eitherOrder("metadataCache:changed A/plain.md", "done")],
   },
-  createBroken: { events: ["vault:create A/broken.md", "metadataCache:changed A/broken.md"] },
+  createBroken: {
+    events: ["vault:create A/broken.md", "done", "metadataCache:changed A/broken.md"],
+  },
   brokenCache: { position: false },
   createEmptyBlock: {
-    events: ["vault:create A/empty.md", "metadataCache:changed A/empty.md"],
+    events: ["vault:create A/empty.md", "done", "metadataCache:changed A/empty.md"],
   },
   blocks: [
     { path: "A/broken.md", frontmatter: false, yaml: [0, 2] },
@@ -104,134 +146,45 @@ export const VAULT_FACTS = {
     { path: "A/n.md", frontmatter: true, yaml: [0, 5] },
     { path: "A/plain.md", frontmatter: false, yaml: null },
   ],
-  brokenYaml: { result: "YAMLParseError", events: [] },
-  createBom: { events: ["vault:create A/bom.md", "metadataCache:changed A/bom.md"] },
+  brokenYaml: { result: "YAMLParseError", events: ["done"] },
+  createClosings: CLOSING_TEXTS.length,
+  // Measured in Obsidian 1.15.1: every line that starts with `---` closes the block, whatever
+  // follows (`----`, `--- x`, `---x`), with LF or CRLF; ` ---` and `...` do not. Up to line 4,
+  // ` ---` continues `a: 1` as text, while `...` ends the YAML document and the rest is an error.
+  closings: [...CLOSING_LINES.slice(0, 10).map(() => [2, true]), [4, true], [4, false], [2, true]],
+  createBom: { events: ["vault:create A/bom.md", "done", "metadataCache:changed A/bom.md"] },
   bomCache: { a: 1 },
   bomRead: "---\r",
   processBom: {
-    result: ["\uFEFF---\r\na: 1\r\n---\r\nbody\r\n", "\uFEFF---\r\na: 2\r\n---\r\nbody\r\n"],
-    events: ["vault:modify A/bom.md", "metadataCache:changed A/bom.md"],
+    result: ["﻿---\r\na: 1\r\n---\r\nbody\r\n", "﻿---\r\na: 2\r\n---\r\nbody\r\n"],
+    events: ["vault:modify A/bom.md", "done", "metadataCache:changed A/bom.md"],
   },
   // What the callback throws comes out unchanged.
-  processThrows: { result: "TypeError", events: [] },
-  createGone: { events: ["vault:create A/gone.md", "metadataCache:changed A/gone.md"] },
+  processThrows: { result: "TypeError", events: ["done"] },
+  createGone: { events: ["vault:create A/gone.md", "done", "metadataCache:changed A/gone.md"] },
   processGone: {
     result: { rejected: "ENOENT", called: false },
-    events: ["metadataCache:deleted A/gone.md", "vault:delete A/gone.md"],
+    events: ["metadataCache:deleted A/gone.md", "vault:delete A/gone.md", "done"],
   },
-  renameOntoFile: { result: "Error: Destination file already exists!", events: [] },
-  renameIntoMissingFolder: { result: "Error: ENOENT", events: [] },
+  renameOntoFile: { result: "Error: Destination file already exists!", events: ["done"] },
+  renameIntoMissingFolder: { result: "Error: ENOENT", events: ["done"] },
   rename: {
     result: { same: true, path: "A/B/moved.md" },
-    events: ["vault:rename A/plain.md -> A/B/moved.md"],
+    events: ["vault:rename A/plain.md -> A/B/moved.md", "done"],
   },
   // `trashFile` resolves with `true`, although the d.ts says `Promise<void>`.
-  trashFile: { result: true, events: ["metadataCache:deleted A/n.md", "vault:delete A/n.md"] },
+  trashFile: {
+    result: true,
+    events: ["metadataCache:deleted A/n.md", "vault:delete A/n.md", "done"],
+  },
+  // The folder's contents in the vault's order (`moved.md` joined it last), the folder last.
   trashFolder: {
     events: [
       "vault:delete A/B/C",
       "metadataCache:deleted A/B/moved.md",
       "vault:delete A/B/moved.md",
       "vault:delete A/B",
+      "done",
     ],
-  },
-};
-
-const COMMUNITY = { schema: "weg-manager.community/v1", name: "Ahornweg 12", tags: ["a", "b"] };
-const FIRST = "WEG Manager/Gemeinschaften/Ahornweg.md";
-const SECOND = "WEG Manager/Gemeinschaften/Ahornweg (2).md";
-const BY_CASE = "WEG Manager/Gemeinschaften/ahornweg (3).md";
-const OUTSIDE = {
-  schema: "weg-manager.community/v1",
-  zeta: 1,
-  name: "Alt",
-  unknown: "kept",
-  gone: true,
-};
-const UPDATED = {
-  schema: "weg-manager.community/v1",
-  zeta: 1,
-  name: "Neu",
-  unknown: "kept",
-  added: "x",
-};
-const UPDATED_TEXT =
-  "---\nschema: weg-manager.community/v1\nzeta: 1\nname: Neu\nunknown: kept\nadded: x\n---\n# Fremd\n\nText bleibt.\n";
-
-/** The report of `storeScenario` (`scenarios.ts`): the store's results and the events fired. */
-export const STORE_REPORT = {
-  create: {
-    result: { ok: true, value: { path: FIRST, frontmatter: COMMUNITY } },
-    events: [
-      "vault:create WEG Manager",
-      "vault:create WEG Manager/Gemeinschaften",
-      `vault:create ${FIRST}`,
-      `metadataCache:changed ${FIRST}`,
-    ],
-  },
-  createdText:
-    "---\nschema: weg-manager.community/v1\nname: Ahornweg 12\ntags:\n  - a\n  - b\n---\n# Ahornweg\n",
-  clash: {
-    result: { ok: true, value: { path: SECOND, frontmatter: COMMUNITY } },
-    events: [`vault:create ${SECOND}`, `metadataCache:changed ${SECOND}`],
-  },
-  // Recognised by `schema` anywhere; `Ohne Schema.md` and `Kaputt.md` are not records.
-  list: {
-    result: {
-      ok: true,
-      value: [
-        { path: "Archiv/Fremd.md", frontmatter: OUTSIDE },
-        { path: SECOND, frontmatter: COMMUNITY },
-        { path: FIRST, frontmatter: COMMUNITY },
-      ],
-    },
-    events: [],
-  },
-  // Found by the `yaml` section the cache keeps for a block it could not read; in the folder only.
-  unreadable: { result: { ok: true, value: ["Archiv/Kaputt.md"] }, events: [] },
-  // Names clash regardless of case: "ahornweg" and "ahornweg (2)" are taken.
-  caseClash: {
-    result: { ok: true, value: { path: BY_CASE, frontmatter: COMMUNITY } },
-    events: [`vault:create ${BY_CASE}`, `metadataCache:changed ${BY_CASE}`],
-  },
-  update: {
-    result: { ok: true, value: { path: "Archiv/Fremd.md", frontmatter: UPDATED } },
-    events: ["vault:modify Archiv/Fremd.md", "metadataCache:changed Archiv/Fremd.md"],
-  },
-  // Key order, the unknown key and the body survive.
-  updatedText: UPDATED_TEXT,
-  // A patch that changes nothing writes nothing.
-  unchanged: {
-    result: { ok: true, value: { path: "Archiv/Fremd.md", frontmatter: UPDATED } },
-    events: [],
-  },
-  refused: { result: { ok: false, tag: "Conflict" }, events: [] },
-  broken: { result: { ok: false, tag: "NoteUnreadableError" }, events: [] },
-  rename: {
-    result: { ok: true, value: { path: "Archiv/Umbenannt.md", frontmatter: UPDATED } },
-    events: ["vault:rename Archiv/Fremd.md -> Archiv/Umbenannt.md"],
-  },
-  renamedText: UPDATED_TEXT,
-  // A note may take its own name in another case.
-  renameCase: {
-    result: { ok: true, value: { path: "Archiv/UMBENANNT.md", frontmatter: UPDATED } },
-    events: ["vault:rename Archiv/Umbenannt.md -> Archiv/UMBENANNT.md"],
-  },
-  renameTaken: { result: { ok: false, tag: "NotePathTakenError" }, events: [] },
-  trash: {
-    result: { ok: true },
-    events: [`metadataCache:deleted ${SECOND}`, `vault:delete ${SECOND}`],
-  },
-  readTrashed: { result: { ok: false, tag: "NoteNotFoundError" }, events: [] },
-  finalList: {
-    result: {
-      ok: true,
-      value: [
-        { path: "Archiv/UMBENANNT.md", frontmatter: UPDATED },
-        { path: FIRST, frontmatter: COMMUNITY },
-        { path: BY_CASE, frontmatter: COMMUNITY },
-      ],
-    },
-    events: [],
   },
 };

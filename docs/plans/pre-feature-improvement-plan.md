@@ -4,6 +4,7 @@
 - Reviewed: PR #4 at `e10ce37` (branch `claude/upbeat-lovelace-v4rir1`), all of `src/`, `harness/`, `configs/`, `scripts/`, the workflows, `docs/engineering/`, ADR 0001–0005, the handoff, and the product backlog as the source of what features will demand.
 - Status (2026-11-21): every step of the plan has landed; this documentation step (4.1, PBI-59) is the last. Section 4 says where each step landed, section 5 which readiness criteria are met and what is still open. Sections 1 to 3 are the review as it was written; section 6 lists what the owner decided since.
 - Review round (2026-11-22): four independent reviews of the result and the fixes that followed are in section 8.
+- Blueprint (2026-11-22): the groundwork as built is written up as an implementation plan for other plugins, [obsidian-plugin-shell-blueprint/](obsidian-plugin-shell-blueprint/README.md); it replaces the archived blueprint for that purpose. The folder is self-contained: it names neither this repository nor its backlog and is written to be copied into a new repository and executed there.
 
 ## Verdict
 
@@ -170,7 +171,7 @@ Checked on 2026-11-21 against `71e39c4`. "Met" means the code and a test in the 
 
 ## 8. Review round (2026-11-22)
 
-After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its own: architecture and design, correctness and robustness, UX and accessibility in real Obsidian 1.15.1, and tests, tooling and release readiness. Their findings were checked against the code before anything was changed. Clear defects were fixed by implementers, one pull request per step, each merged after the gate, the real-Obsidian suite and mutation testing were green. What is not fixed is in the backlog (PBI-60 to PBI-67).
+After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its own: architecture and design, correctness and robustness, UX and accessibility in real Obsidian 1.15.1, and tests, tooling and release readiness. Their findings were checked against the code before anything was changed. Clear defects were fixed by implementers, one pull request per step, each merged after the gate, the real-Obsidian suite and mutation testing were green. What stays open is in the backlog: PBI-62, PBI-66 and PBI-67 (PBI-60, PBI-61, PBI-63, PBI-64 and PBI-65 are finished).
 
 ### What the reviews found
 
@@ -193,19 +194,31 @@ After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its 
 | #34 | The communities screen: focus and modality, only communities without issues selectable, texts in plain words that name their data, notices after writes, notes the plugin cannot write open in Obsidian. |
 | #35 | The backlog notes PBI-60 to PBI-67 and the owner decisions of the first interview; an e2e spec waits for the list before it clicks. |
 | #37 | Tests for the edge layers where planted mutations survived, a shared wait budget and counted work instead of wall-clock bounds, a second, non-gating mutation run for those layers with its own nightly job; the diagnostics name an iOS or Android app correctly. |
+| #38 | The owner decisions of the second interview: the 0.2.0 scope, the module manifest, the third-party notices, a contact's role and the palette. |
 | #39 | Generic record handling moved from `communities` into `notes` in every layer (`defineRecords`, `useRecordForm`, `useRecordScreen`); the settings screen belongs to the shell and has one section per module, with the new section "Datenprobleme". |
 | #40 | Third-party notices generated from the bundle (26 packages: 25 MIT, 1 ISC), checked by the gate, staged and attested as a fourth release asset. |
 | #41 | The unhandled events `ActiveFileChanged` and `ColorSchemeChanged`, `isMarkdown` and the event bus's unused subscription are deleted (PBI-62, criterion 3). |
 | #42 | `amber` replaces the community colour `cyan`; the main entry is "Einstellungen" and current on every settings section. |
+| #43 | The design handoff documents and the event-flow diagram follow the current state. |
+| #44 | The module manifest: one per module and layer side; a new module registers in two shared places; the lint and fallow module lists are generated (PBI-60). |
+| #45 | The frame's settings entry belongs to the shell; the architecture diagram is regenerated. |
+| #46 | Four cases from PBI-65: more closing lines are writable, a line comment is kept, the root folder is found in any case, file names are limited to 255 bytes. |
+| #47 | Version 0.2.0 in `package.json`, `manifest.json` and `versions.json`; the release guide describes the bump through a pull request. |
+| #48 | The plugin shell blueprint for other Obsidian plugins, derived from the code after PRs #27 to #47: an entry file and one file per task. |
+| #49 | A release can be started by hand on `main` with the version as input; the workflow creates the tag on the built commit, together with the release. |
+| #50 | The blueprint becomes a standalone folder: every link stays inside it, and it names no repository it came from. |
+| #51 | The nightly mutation jobs get 120 minutes, the time a full run needs after a lockfile change, and a job cut off by its limit is reported. |
+| #52 | The gate starts format check, lint and type check together; a push of documents only runs the format check; CI installs once less and keeps the Obsidian download after a failed run (PBI-64, criteria 1, 2, 4, 5). |
+| #53 | The three cases left in PBI-65: `VaultReady` after a 10 s deadline when a file is never indexed, a note deleted outside reports "not found" at the first write, and a failed save after its view closed says the input is lost. |
+| #54 | E2e specs wait on what they can observe, read texts from the catalog and record what depends on the machine (PBI-63, criteria 6 to 8). |
+| #55 | Reference fields with a missing-target issue, lookup by id in the index, and a `Today` service; nothing uses them yet (PBI-61). |
+| #56 | The e2e job runs without a window manager and installs nothing per run (PBI-64, criterion 3). |
+| #57 | The Obsidian double agrees with the real app: difficult frontmatter, tabs and deferred views, event orders on a fence instead of settle times, each double class checked against `obsidian.d.ts`, and the `NoteStore` contract run in real Obsidian (40 of 51 cases, 11 skipped with their reason); a block of only comments is no longer unreadable (PBI-63, criteria 1 to 5). |
+| #58 | The blueprint in line with the code, this plan up to #57, PBI-64 finished. |
 
-### Still open before the 0.2.0 tag
+### The 0.2.0 pre-release
 
-One pull request each (owner decisions of the second interview):
-
-1. The module manifest: two entries per module, the lint and fallow module lists generated from the one module list (PBI-60).
-2. Write fixes and two rare cases: the closing lines `---` with trailing spaces and `----` are accepted, a comment at the end of a written line stays, a root folder that differs only in case is found, a file name is limited to 255 bytes (PBI-65).
-
-The architecture diagram under `docs/archify/` is regenerated after the manifest; it does not hold the tag.
+Everything the owner asked for before the tag is on `main` (PRs #39 to #46). The version bump to 0.2.0 went through its own pull request (#47). Version 0.2.0 was released on 2026-11-22 as a pre-release through the release workflow, started by hand on `main` (#49: the workflow creates the tag itself, because the agent session may not push tags). Both jobs passed on the first run; the release carries `main.js`, `manifest.json`, `styles.css` and `THIRD-PARTY-NOTICES.txt`, and the attestation step passed. The start by a pushed tag has not run yet. The plugin-shell blueprint for other plugins was written beside it (#48, #50) and did not hold the tag.
 
 ### Owner decisions (2026-11-22)
 
@@ -238,17 +251,43 @@ The architecture diagram under `docs/archify/` is regenerated after the manifest
 | `CI / e2e` required | Not yet. | PBI-67 |
 | Main entry | The frame's main entry is "Einstellungen", current on every settings section. | ADR 0008 amendment |
 | Data issues | Whether readable records with a problem of their own (duplicate id, newer version) are also listed under "Datenprobleme" is decided with the second record type. | this plan |
-| After the tag | References and dates (PBI-61), the test double and e2e (PBI-63), gate and CI cost (PBI-64), while the owner checks 0.2.0. | this plan |
+| After the tag | References and dates (PBI-61), the test double and e2e (PBI-63), gate and CI cost (PBI-64) and the three cases left in PBI-65, while the owner checks 0.2.0. | this plan |
+| Fonts | Obsidian's fonts stay; Geist is not bundled (O-D12). | K-13 amendment |
+| First feature | Decided after the manual check of 0.2.0. | this plan |
+| Manual check | The owner installs 0.2.0 through BRAT on Windows and checks theme (light, dark) and zoom. Keyboard-only use, a screen reader and other plugins stay unchecked. | PBI-66 |
+| Dependabot and notices | An agent may push the regenerated notices file onto a Dependabot branch; an unusual licence goes to the owner. | [github-setup](../engineering/github-setup.md) |
+| Nightly mutation run | The agent starts it by hand once after the tag. | PBI-67 |
 
-### Not fixed, in the backlog
+### The backlog now
 
-| Note | What |
+As the notes under `docs/requirements/` say it (2026-11-22).
+
+| Note | State |
 | --- | --- |
-| PBI-60 | The module manifest: decided, before the 0.2.0 tag. |
-| PBI-61 | References between records, lookup by id, a source for "today": after the tag. The contact role is decided. |
-| PBI-62 | One index snapshot across types (with the second note type). The unused machinery is decided, before the 0.2.0 tag. |
-| PBI-63 | Fidelity of the Obsidian double, fixed pauses and literal sentences in e2e specs. |
-| PBI-64 | Run time and cost of the gate and CI. |
-| PBI-65 | Four cases before the 0.2.0 tag; three stay open (no `VaultReady` fallback, two wrong messages). |
-| PBI-66 | Manual accessibility checks, the focus ring on inputs, three small points from the UX step; the palette and the documents are decided. |
-| PBI-67 | The first release: workflows that have never run; `CI / e2e` as a required check is postponed. |
+| PBI-60 | Finished (PRs #44, #45). |
+| PBI-61 | Finished (PR #55): references, lookup by id and `Today` are built; no feature uses them yet. |
+| PBI-62 | Open, `ready-for-agent`. Criterion 3 is done (PR #41); criteria 1 and 2, one index snapshot across types, wait for the second note type. |
+| PBI-63 | Finished (PRs #54, #57). |
+| PBI-64 | Finished (PRs #52, #56). The e2e job has passed four runs in a row without a window manager; the measured times of gate and CI are in the note. |
+| PBI-65 | Finished (PRs #46, #53). |
+| PBI-66 | Open, `ready-for-human`: the manual checks (the owner checks theme and zoom with 0.2.0 on Windows; keyboard only, screen reader and other plugins have no tester), the focus ring on inputs, hyphenation, three small points from the UX step. |
+| PBI-67 | Open, `ready-for-human`. Criterion 1 (0.2.0 through the release workflow) and criterion 4 (third-party notices) are met; criterion 2 is partly met (a scheduled run passed; a second run that uses the first one's results and the failure issue are not shown yet); criterion 3 (the first Dependabot run) is open; criterion 5 (`CI / e2e` required) is postponed. |
+| PBI-68 | Finished: the findings on the note store and the test double (a failed system trash, reads of a note deleted outside, queued renames measured, typed error for a note that does not open, `Today` guarded). |
+| PBI-69 | Open, `ready-for-agent`: the fixes to release, CI and scripts are merged (#60); the changed release and nightly workflows have not run yet. |
+| PBI-70 | Not written yet: e2e negative checks that can pass empty, and write failures in the real app. |
+| PBI-71 | Open, `ready-for-agent`: record forms for every field kind, before the second record type. |
+| PBI-72 | Open, `needs-triage`: typed input in the community sheet is lost on Escape or a click outside; the owner decides. |
+
+### Review round 2 (2026-11-22)
+
+After #58 four independent reviewers looked at `65eb006`, each on its own: the product code, the tests, CI and release, and the blueprint with this repository's documents. Their findings were checked against the code before they were sorted below. Nothing in `src/` changed in this round; the document corrections are in the pull request that carries this section, the rest is filed in the backlog. PBI-68, PBI-69 and PBI-70 are written by other steps of this round.
+
+| Finding | Where it goes |
+| --- | --- |
+| The record kit's forms handle text fields only: a list or reference value is deleted, and a number or a checkbox is written back as text, when the user saves another field. No current type is affected; a second record type is. Also: feature services cannot depend on an earlier feature's services, and each feature would build the shown name of a referenced record on its own. | PBI-71 |
+| Typed input in the community sheet is lost on Escape or a click outside, without a question. The owner decides whether to ask before discarding or to wait for a draft store. | PBI-72 |
+| `rename` returns the metadata cache's frontmatter, so a write does not return the note as written; the double's `trashFile`, `cachedRead` and `renameFile` do not model what Obsidian does (a failed trash resolves `false`, `cachedRead` of a deleted file returns the cached text, a rename waits behind link updates); real write failures are never produced in the e2e contract; opening a note labels a host failure as a defect. | PBI-68 |
+| The release job is not tied to `main` or to the owner by anything but the workflow file; the attestation check in the release guide is weaker than its sentence; the released files are built after the e2e run; a half-failed run can leave a draft release; the nightly cache key misses shared inputs; the CLI guard of the scripts fails open through a symlink; the concurrency comment is too strong; the tag check treats any API error as "no tag"; cheap version checks run last. | PBI-69 |
+| E2e negative checks that pass empty or start from the state they check (the two pauses of `vault-ready-fallback.e2e.ts`, the badge check in `communities-invalid.e2e.ts`, the fallback checks of `settings-sections` and `navigation`); `note-index.e2e.ts` calls an edit through `vault.process` an outside edit; the probe reports a defect as a failure with a tag; the contract's pass count is pinned without its total. | PBI-70 |
+| The blueprint claimed more than had been run or measured (the plugin without note data, the example feature, sizes, one pause, the ribbon, the diagnostics language, the Nuxt UI locale, the inputs a fresh project decides first). `AGENTS.md` pointed a new note type at the derived `appNoteTypes`; the index budget was described as a timing test; four pauses stay in the e2e suite, not one; ADR 0001 lacked `yaml`; "listeners through `this.register*`" was listed as if lint checked it; the glossary gave a German route for a settings section; this section lacked #38 and #58 and a wrong list of open notes. | This pull request |
+| `appSurface` keeps only the first module's frame `context`; a time zone that `Intl` rejects would stop the plugin from loading through `Today`, and the real clock of `Today` has no test; an arrow key pressed while a community selection is saving moves the focus but not the choice. | PBI-68 |

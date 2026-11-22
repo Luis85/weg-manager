@@ -35,7 +35,7 @@ Eine Route ist ein typisiertes Datum (`Route` in `src/application/routes.ts`), k
 | `ausgabe/<gemeinschaft>` | [[VIEW-06 - Sachstand ausgeben]] | Empfängerart | Vorgänge | Entwurf |
 | `kontakte` | [[VIEW-08 - Kontakte]] | Segment, Suche | — | Entwurf |
 | Modal `kontakt/<id>` | Kontakt (über jeder Ansicht) | Kontakt-ID | schließt zurück zur Ansicht | Entwurf |
-| `einrichtung/<schritt>` | [[VIEW-09 - Einrichtung]] | Schritt 1–2 (`gemeinschaften`, `pruefen`) | keiner; nur ohne Gemeinschaft erreichbar, danach `lage` | Entwurf ([[PBI-69 - Beim ersten Aktivieren in die Einrichtung geführt werden]]) |
+| `einrichtung/<schritt>` | [[VIEW-09 - Einrichtung]] | Schritt 1–2 (`gemeinschaften`, `pruefen`) | keiner; nur ohne Gemeinschaft erreichbar, danach `lage` | Entwurf ([[PBI-74 - Beim ersten Aktivieren in die Einrichtung geführt werden]]) |
 | Sheet `erfassen` | [[VIEW-05 - Erfassen]] | optional Vorgangsnummer | schließt zurück zur Ansicht | Entwurf |
 
 Die Gemeinschaft steht in keiner Route; die Auswahl ist ein Dienst (siehe Navigationsregeln).
@@ -65,8 +65,8 @@ Ohne Standard-Hotkeys (Obsidian-Richtlinie); Namen in Satzanfang-Großschreibung
 | `open-matter` | Vorgang öffnen … (Suche) | Entwurf |
 | `backup-now` | Jetzt sichern | Entwurf |
 | `open-settings` | Einstellungen öffnen | Entwurf |
-| `reset-hints` | Hinweise erneut zeigen (ohne Tastenkürzel, [[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]) | Entwurf |
-| `show-first-steps` | Erste Schritte wieder einblenden (ohne Tastenkürzel, [[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]) | Entwurf |
+| `reset-hints` | Hinweise erneut zeigen (ohne Tastenkürzel, [[PBI-77 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]) | Entwurf |
+| `show-first-steps` | Erste Schritte wieder einblenden (ohne Tastenkürzel, [[PBI-76 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]) | Entwurf |
 
 Ein Befehl öffnet eine Route über eine Funktion, die eine vorhandene View zeigt oder eine neue anlegt.
 

@@ -1,5 +1,6 @@
 import { Effect } from "effect";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { viewOf } from "../support/obsidian/real";
 import { preloadSurface } from "../support/preload";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
@@ -183,7 +184,7 @@ describe("bootstrap handle", () => {
     const handle = await bootstrap(plugin);
     const leaf = app.workspace.getLeaf(true);
     await leaf.setViewState({ type: SHELL_VIEW_TYPE });
-    const { contentEl } = leaf.view as unknown as { contentEl: HTMLElement };
+    const { contentEl } = viewOf<{ contentEl: HTMLElement }>(leaf);
     vi.spyOn(contentEl.classList, "remove").mockImplementation(() => {
       throw new Error("surface release failed");
     });

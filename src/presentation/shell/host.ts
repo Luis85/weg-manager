@@ -5,6 +5,7 @@ export { releaseAll } from "./release";
 export {
   memoryNavigation,
   type MemoryNavigation,
+  type ModuleScreens,
   type ScreenLoader,
   type SettingsSectionPart,
   type SurfaceDefinition,

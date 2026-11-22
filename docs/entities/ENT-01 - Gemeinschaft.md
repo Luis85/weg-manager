@@ -23,7 +23,7 @@ Für die Felder bis `unit_label` gilt der Dateivertrag [[DV-01 - Gemeinschaft v1
 | Technische Identität | `id` | Text | P | `community-<uuid>`, einmal vergeben, nie geändert ([[docs/adr/0007-vault-data-access.md\|ADR 0007]]). Andere Notes verweisen mit `community_id` darauf. |
 | Schema | `schema` | Text | P | Genau `weg-manager.community/v1`. |
 | Name | `name` | Text | P | Offizieller oder gewohnter Name, eine Zeile, höchstens 100 Zeichen. Beispiel: „Wohnanlage Lindenstraße 12“. |
-| Kürzel | `short_code` | Text | P | WCS-„id“ (Kurzschlüssel). 2 bis 5 Zeichen `A`–`Z`, `0`–`9`, unter allen Gemeinschaften eindeutig. Änderbar nach [[PBI-73 - Kürzel einer Gemeinschaft nachträglich ändern]]; Verweise laufen nie über das Kürzel. |
+| Kürzel | `short_code` | Text | P | WCS-„id“ (Kurzschlüssel). 2 bis 5 Zeichen `A`–`Z`, `0`–`9`, unter allen Gemeinschaften eindeutig. Änderbar nach [[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]]; Verweise laufen nie über das Kürzel. |
 | Farbe | `color` | Text | P | Name aus der festen Palette, je Gemeinschaft verschieden. Trägt nie allein Bedeutung. |
 | Art | `kind` | Text | P | WCS-„typ“. Freier Text, eine Zeile, höchstens 50 Zeichen, mit Vorschlägen (siehe Wertelisten). Aus der Art folgt weder Rechtsform noch Befugnis. |
 | Einheitenbezeichnung | `unit_label` | Text | P | Wie die Gemeinschaft ihre Einheiten nennt, z. B. Einheiten, Stellplätze. |
@@ -69,7 +69,7 @@ Die Gemeinschaft selbst enthält keine personenbezogenen Daten anderer Eigentüm
 
 - **O-ENT01-1:** Konkrete Organisationsform und Zuständigkeiten der Tiefgarage (bisher O-05).
 - **O-ENT01-2:** Ab wann wird die Gemeinschaft im WCS als eigenes Objekt geführt statt als Zeichenkette (WCS PRD Q9)? Bei uns ist sie schon eine Note; offen ist nur die Übernahme der WCS-Altdaten.
-- **O-ENT01-3:** [[DV-01 - Gemeinschaft v1]] und `GLOSSARY.md` nennen das Kürzel noch „nach dem Anlegen fest“. Nach PBI-73 ist es änderbar; Vertrag und Glossar sind nachzuziehen.
+- **O-ENT01-3:** [[DV-01 - Gemeinschaft v1]] und `GLOSSARY.md` nennen das Kürzel noch „nach dem Anlegen fest“. Nach PBI-78 ist es änderbar; Vertrag und Glossar sind nachzuziehen.
 - **O-ENT01-4:** Wie wird „nur teilbare Daten“ bei einer Viertel-Gemeinschaft geprüft: als Regel beim Anlegen oder nur als Hinweis?
 - **O-ENT01-5:** Wann kommen `plot_ids`, `manager_id`, `fiscal_year_start` und `filing_folder` in eine neue Vertragsversion?
 
@@ -77,6 +77,6 @@ Die Gemeinschaft selbst enthält keine personenbezogenen Daten anderer Eigentüm
 
 WCS-Data-Dictionary vom 22.11.2026 (PRD 0.2 Abschnitt 7, Roadmap-Vision v0.2): Gemeinschaft, FR-ROL3, FR-V11, V1. Unser [MVP-PRD](../02-MVP-PRD.md): B-FR-01, AT-B01. Regeln: [[DF-12 - Gemeinschaftstrennung]], [[DF-22 - Notizen als maßgeblicher Datenbestand]]. Entscheidungen: [[K-02 - Zwei Gemeinschaften für einen Bearbeiter]], [[K-20 - WCS-Datenmodell als fachliche Grundlage]].
 
-[[PBI-01 - Gemeinschaftskontext wählen]], [[PBI-02 - Personen und Rollen zuordnen]], [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]], [[PBI-70 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-73 - Kürzel einer Gemeinschaft nachträglich ändern]].
+[[PBI-01 - Gemeinschaftskontext wählen]], [[PBI-02 - Personen und Rollen zuordnen]], [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]], [[PBI-75 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]].
 
 [[00 - Fachliches Domänenmodell]] · [[Product Backlog.base#Design Foundations|Entitätsnotes]]

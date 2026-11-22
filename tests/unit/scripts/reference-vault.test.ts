@@ -14,9 +14,11 @@ const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12
 const SNAKE_CASE = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/;
 
 /** Each note's frontmatter, or `undefined` for a plain note. */
-const frontmatterOf = (text: string) => {
+const frontmatterOf = (text: string): Record<string, unknown> | undefined => {
   const split = splitFrontmatter(text);
-  return split === undefined ? undefined : (parseYaml(split.yaml) ?? {});
+  if (split === undefined) return undefined;
+  const parsed: unknown = parseYaml(split.yaml);
+  return (parsed as Record<string, unknown> | null) ?? {};
 };
 
 const records = (vault: ReadonlyMap<string, string>) =>

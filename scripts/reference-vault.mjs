@@ -1,7 +1,7 @@
 // @ts-check
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { isCli } from "./is-cli.mjs";
 
 /**
  * The desktop reference profile of F-21 for the note index: two communities, 200 Punkte and
@@ -194,9 +194,7 @@ export const writeReferenceVault = (target, options = {}) => {
   return { files: vault.size, records: vault.size - plain, plain };
 };
 
-const isCli =
-  process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isCli) {
+if (isCli(import.meta.url)) {
   const target = process.argv[2];
   if (target === undefined) {
     console.error("usage: node scripts/reference-vault.mjs <target folder>");

@@ -91,6 +91,31 @@ export const expectListed = (names: readonly string[]) =>
     timeoutMsg: `the view never listed ${JSON.stringify(names)}`,
   });
 
+/** The kind and unit label line of each card the open view lists, by community name. */
+const summaries = () =>
+  browser.execute(
+    (selector) =>
+      Object.fromEntries(
+        [
+          ...(document.querySelector(selector)?.querySelectorAll("[data-testid=community]") ?? []),
+        ].map((card) => [
+          card.querySelector("[data-testid=community-name]")?.textContent?.trim() ?? "",
+          card.querySelector("[data-testid=community-summary]")?.textContent?.trim() ?? "",
+        ]),
+      ),
+    ROOT,
+  );
+
+/**
+ * Waits until the card of `name` shows `summary` (kind and unit label, as the catalog writes them).
+ * The card follows a write about 100 ms later, so this is what to wait for before a click or a read
+ * that needs the view to know the write: a form opened sooner starts from the old values.
+ */
+export const expectSummary = (name: string, summary: string) =>
+  browser.waitUntil(async () => (await summaries())[name] === summary, {
+    timeoutMsg: `the card of ${name} never showed ${summary}`,
+  });
+
 /** Types into a field of the open community form. */
 export const typeInto = async (key: string, value: string) => {
   const input = browser.$(ROOT).$(`[data-testid=field-${key}]`);

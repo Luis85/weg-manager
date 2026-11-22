@@ -9,7 +9,18 @@ import {
   openSection,
   writeNotes,
 } from "../communities";
-import { ROOT, VIEW_TYPE, installConsoleSpy, openView, pluginProblems } from "../support";
+import {
+  ROOT,
+  VIEW_TYPE,
+  eventually,
+  installConsoleSpy,
+  openView,
+  pluginProblems,
+} from "../support";
+import { de } from "../texts";
+
+const COMMUNITIES_TITLE = de.communities.screen.title;
+const DATA_ISSUES_TITLE = de.notes.dataIssues.title;
 
 const SECTIONS = "[data-testid=settings-sections]";
 
@@ -46,35 +57,42 @@ describe("the settings screen's sections in Obsidian", function () {
     await openView();
     await expectListed(["Ahornweg 12"]);
     const navigation = browser.$(ROOT).$(SECTIONS);
-    await expect(navigation).toHaveAttribute("aria-label", "Bereiche der Einstellungen");
+    await expect(navigation).toHaveAttribute("aria-label", de.shell.frame.settingsSections);
     const entries = async () =>
       (await navigation.$$("button").map((entry) => entry.getText())).map((text) =>
         text.replace(/\s+/g, " "),
       );
     // The badge is a lazily loaded part and follows its own snapshot of the index, so it can come
-    // a moment after the communities are listed.
-    await browser.waitUntil(async () => (await entries())[1] !== "Datenprobleme", {
-      timeoutMsg: "the data issues entry never showed its count",
-    });
-    expect(await entries()).toEqual(["Gemeinschaften", "Datenprobleme 1 1 Notiz"]);
-    await expect(navigation.$("button*=Gemeinschaften")).toHaveAttribute("aria-current", "page");
-    expect(await route()).toEqual({ name: "settings", section: "communities" });
+    // a moment after the communities are listed: the number once as a figure, once in words.
+    await eventually(
+      entries,
+      [COMMUNITIES_TITLE, `${DATA_ISSUES_TITLE} 1 ${de.notes.dataIssues.count(1)}`],
+      "the navigation's entries",
+    );
+    await expect(navigation.$(`button*=${COMMUNITIES_TITLE}`)).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await eventually(route, { name: "settings", section: "communities" }, "the route");
   });
 
   it("opens the data issues as a route of its own and keeps the focus on the entry", async function () {
-    await browser.$(ROOT).$(SECTIONS).$("button*=Datenprobleme").click();
+    await browser.$(ROOT).$(SECTIONS).$(`button*=${DATA_ISSUES_TITLE}`).click();
     await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).toHaveText(
       expect.stringContaining(`${FOLDER}/Kaputt.md`),
     );
     expect(await route()).toEqual({ name: "settings", section: "data-issues" });
-    expect(await focused()).toContain("Datenprobleme");
+    expect(await focused()).toContain(DATA_ISSUES_TITLE);
     await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).not.toExist();
     // The frame's one entry, "Einstellungen", is the current page on every section.
     await expect(
       browser.$(ROOT).$("[data-testid=frame-navigation] li button[aria-current=page]"),
-    ).toHaveText("Einstellungen");
+    ).toHaveText(de.shell.frame.settings);
     // The frame's back control returns to the section before.
-    await browser.$(ROOT).$("[data-testid=frame-navigation] button[aria-label='Zurück']").click();
+    await browser
+      .$(ROOT)
+      .$(`[data-testid=frame-navigation] button[aria-label='${de.shell.frame.back}']`)
+      .click();
     await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();
   });
 
@@ -84,7 +102,7 @@ describe("the settings screen's sections in Obsidian", function () {
     await restore({ route: { name: "settings", section: "communities" } });
     await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();
     await restore({ route: { name: "settings", section: "contacts" } });
-    expect(await route()).toEqual({ name: "settings", section: "communities" });
+    await eventually(route, { name: "settings", section: "communities" }, "the route");
     await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();
   });
 
@@ -97,17 +115,17 @@ describe("the settings screen's sections in Obsidian", function () {
         .querySelector<HTMLElement>(`${selector} [data-testid=settings-sections] button`)
         ?.focus();
     }, ROOT);
-    expect(await focused()).toBe("Gemeinschaften");
+    expect(await focused()).toBe(COMMUNITIES_TITLE);
     await browser.keys("Tab");
-    expect(await focused()).toContain("Datenprobleme");
+    expect(await focused()).toContain(DATA_ISSUES_TITLE);
     await browser.keys("Enter");
     await expect(browser.$(ROOT).$("[data-testid=data-issues-screen]")).toBeDisplayed();
-    expect(await focused()).toContain("Datenprobleme");
+    expect(await focused()).toContain(DATA_ISSUES_TITLE);
     expect(await overflow()).toEqual({ scroll: 0, past: [] });
     await browser.execute((selector) => {
       document.querySelector<HTMLElement>(selector)?.style.removeProperty("max-width");
     }, ROOT);
-    await openSection("Gemeinschaften");
+    await openSection(COMMUNITIES_TITLE);
   });
 
   it("logged no error or warning from the plugin and no uncaught error", async function () {

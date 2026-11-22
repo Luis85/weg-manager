@@ -1,3 +1,5 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 export type RecordedNotice = {
   readonly text: string;
   readonly message: string | DocumentFragment;
@@ -25,7 +27,10 @@ const textOf = (message: string | DocumentFragment): string =>
   typeof message === "string" ? message : (message.textContent ?? "");
 
 /** Records every notice; `messageEl` holds the rendered message for DOM assertions. */
-export class Notice {
+export class Notice implements Uses<
+  Obsidian.Notice,
+  "messageEl" | "containerEl" | "setMessage" | "hide"
+> {
   readonly noticeEl: HTMLElement;
   readonly messageEl: HTMLElement;
   readonly containerEl: HTMLElement;

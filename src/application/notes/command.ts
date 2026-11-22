@@ -1,7 +1,13 @@
 import { Effect, Result } from "effect";
 import { copyFrontmatter } from "./frontmatter";
 import { NoteTrashError, NoteWriteError, type NewNote, type Note } from "./index";
-import { planNewNote, type Normalize, type PlannedNote, type SiblingsOf } from "./paths";
+import {
+  planNewNote,
+  type FoldersIn,
+  type Normalize,
+  type PlannedNote,
+  type SiblingsOf,
+} from "./paths";
 
 /** What plugin code threw inside a vault write, carried past the vault call to `writeCommand`. */
 class WriteDefect extends Error {
@@ -23,6 +29,18 @@ export const asDefect = <A>(run: () => A): A => {
     throw new WriteDefect(defect);
   }
 };
+
+/**
+ * True when a rejected vault write says the file is not there: Node's `ENOENT` (`code`), which
+ * Obsidian's desktop adapter passes on unchanged. Measured in Obsidian 1.15.1: `vault.process`
+ * on a file deleted outside rejects so while the vault still lists the file, until its file
+ * watcher reports the delete. Only the `code` counts, never the message text.
+ */
+export const isFileGone = (rejection: unknown): boolean =>
+  typeof rejection === "object" &&
+  rejection !== null &&
+  "code" in rejection &&
+  rejection.code === "ENOENT";
 
 type Settled<A, E> = { readonly result: Result.Result<A, E> } | { readonly rejected: unknown };
 
@@ -53,29 +71,40 @@ export const writeCommand = <A, E>(
     }),
   );
 
+/** What `NoteTrashError.cause` holds for a move to the trash that reported its own failure. */
+const TRASH_REPORTED_FAILURE = "the host reported that the move to the trash failed";
+
 /**
  * `NoteStore.trash` for any adapter: runs `write` (the move to the trash) as a command; a rejected
  * move is a `NoteTrashError`, so the user reads that the note was not deleted, not that it was not
- * saved. What came through `asDefect` stays a defect.
+ * saved. A move that resolves `false` failed too: Obsidian 1.15.1's `fileManager.trashFile` does
+ * so, without rejecting, when the system trash fails (`trash-failure-scenario.ts`). Only `false`
+ * counts: Obsidian resolves `true` on success while its d.ts promises `void`, so `undefined` (an
+ * adapter that keeps to the d.ts) is a success. What came through `asDefect` stays a defect.
  */
 export const trashCommand = (write: () => Promise<unknown>): Effect.Effect<void, NoteTrashError> =>
   writeCommand(async () => {
-    await write();
-    return Result.succeed(undefined);
-  }).pipe(Effect.mapError(({ cause }) => new NoteTrashError({ cause })));
+    const moved = await write();
+    return moved === false ? Result.fail(TRASH_REPORTED_FAILURE) : Result.succeed(undefined);
+  }).pipe(
+    Effect.mapError(
+      (failed) => new NoteTrashError({ cause: typeof failed === "string" ? failed : failed.cause }),
+    ),
+  );
 
 /**
- * `NoteStore.create` for any adapter: checks the name, picks a free path (`siblingsOf` says what
- * the folder holds) and runs `write` as one command. `write` creates the folder when missing and
+ * `NoteStore.create` for any adapter: checks the name, finds the folder in the vault's spelling
+ * (`foldersIn` says which folders a folder holds), picks a free path (`siblingsOf` says what the
+ * folder holds) and runs `write` as one command. `write` creates the folder when missing and
  * the note with `body`.
  */
 export const createNote = (
   note: NewNote,
   normalize: Normalize,
-  siblingsOf: SiblingsOf,
+  { siblingsOf, foldersIn }: { readonly siblingsOf: SiblingsOf; readonly foldersIn: FoldersIn },
   write: (plan: PlannedNote, body: string) => Promise<void>,
 ) =>
-  Effect.flatMap(planNewNote(note, normalize, siblingsOf), (plan) =>
+  Effect.flatMap(planNewNote(note, normalize, siblingsOf, foldersIn), (plan) =>
     writeCommand(async () => {
       await write(plan, note.body ?? "");
       return Result.succeed<Note>({

@@ -34,6 +34,10 @@ export const notesDe: NotesCatalog = {
       title: "Notiz nicht gelöscht",
       detail: "Obsidian konnte die Notiz nicht in den Papierkorb verschieben. Versuche es erneut.",
     },
+    open: {
+      title: "Notiz nicht geöffnet",
+      detail: "Obsidian konnte die Notiz nicht in einem Tab öffnen. Versuche es erneut.",
+    },
     editConflict: {
       title: "Notiz geändert, während du bearbeitet hast",
       detail:
@@ -121,6 +125,14 @@ export const notesDe: NotesCatalog = {
     "field.date": (label) =>
       `„${label}“ ist kein gültiges Datum. Gib ein Datum im Format JJJJ-MM-TT ein.`,
     "field.list": (label) => `„${label}“ ist keine Liste von Texten. Gib eine Liste ein.`,
+    "field.reference": (label) =>
+      `„${label}“ ist kein gültiger Verweis auf einen Datensatz. Wähle den Datensatz neu aus.`,
+    "field.references": (label) =>
+      `„${label}“ enthält einen ungültigen Verweis auf einen Datensatz. Wähle die Datensätze neu aus.`,
+  },
+  referenceIssues: {
+    "reference.missing": ({ id }, label) =>
+      `„${label}“ verweist auf einen Datensatz, den es nicht gibt („${id}“). Stelle seine Notiz wieder her oder entferne den Verweis.`,
   },
   unindexedIssues: {
     "schema.malformed": () =>

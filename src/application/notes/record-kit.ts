@@ -5,10 +5,9 @@ import {
   followsTitle,
   recordFileName,
   type FieldDeclaration,
-  type FieldIssue,
-  type FieldIssueCode,
   type NoteFields,
   type NoteType,
+  type RecordFieldIssue,
   type RecordValues,
 } from "../../domain/notes";
 import { Logger, Messages, Notifier, SettingsService } from "../shell";
@@ -56,14 +55,16 @@ const confirm = (title: (notices: NotesCatalog["notices"]) => string) =>
 /**
  * Gives the note the file name `target`; a taken name gets ` (2)`, ` (3)`, … up to the hundredth.
  * A rename that fails keeps the note where it is and is logged (`<log>.rename.failed`, no data):
- * the record is saved, and the file name is only for people.
+ * the record is saved, and the file name is only for people. The note it returns is the one just
+ * written at the path of the rename: `NoteStore.rename` gives the frontmatter as the store reads
+ * it after the move, which in Obsidian can still be the state before the save.
  */
 const renameTo = (note: Note, target: string, log: string) =>
   Effect.gen(function* () {
     const store = yield* NoteStore;
     for (let attempt = 1; attempt <= MAX_NAME_ATTEMPTS; attempt += 1) {
       const renamed = yield* Effect.result(store.rename(note.path, clashName(target, attempt)));
-      if (Result.isSuccess(renamed)) return renamed.success;
+      if (Result.isSuccess(renamed)) return { ...note, path: renamed.success.path };
       if (renamed.failure._tag !== "NotePathTakenError") break;
     }
     yield* (yield* Logger).log({ level: "warn", event: `${log}.rename.failed` });
@@ -86,10 +87,7 @@ const renameTo = (note: Note, target: string, log: string) =>
  * id, both are read-only and the write is refused (`duplicate-id`) rather than guessing which note
  * the form loaded. A note that is gone is `NoteNotFoundError`.
  */
-export const defineRecords = <
-  F extends NoteFields,
-  Issue extends KeyedIssue = FieldIssue<FieldIssueCode<F>>,
->(
+export const defineRecords = <F extends NoteFields, Issue extends KeyedIssue = RecordFieldIssue<F>>(
   kind: RecordKind<F, Issue>,
 ) => {
   type Row = RecordRow<F, Issue>;
@@ -104,16 +102,11 @@ export const defineRecords = <
 
   /** Where the record lives now: by its id, and refused while another note carries the id too. */
   const pathOf = (row: Row) =>
-    Effect.flatMap(list, ({ records }) => {
-      const found = records.filter(
-        (candidate) => candidate.id !== undefined && candidate.id === row.id,
-      );
-      const duplicated = found.some((candidate) =>
-        candidate.issues.some((issue) => issue.code === "id.duplicate"),
-      );
-      return duplicated
+    Effect.flatMap(noteSnapshot(type), ({ byId }) => {
+      const found = row.id === undefined ? undefined : byId.get(row.id);
+      return found?.issues.some((issue) => issue.code === "id.duplicate")
         ? Effect.fail(new NoteWriteRefusedError({ reason: "duplicate-id" }))
-        : Effect.succeed(found[0]?.path ?? row.path);
+        : Effect.succeed(found?.path ?? row.path);
     });
 
   /** The file follows a new title while it carries the old one; a name the user gave it stays. */

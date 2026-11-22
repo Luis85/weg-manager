@@ -49,6 +49,10 @@
         "publicFiles": ["index.ts"]
       },
       {
+        "name": "application-module",
+        "patterns": ["src/application/module.ts"]
+      },
+      {
         "name": "application-describe-error",
         "patterns": ["src/application/user-messages.ts"]
       },
@@ -73,12 +77,16 @@
       {
         "name": "presentation/shell",
         "patterns": ["src/presentation/shell/**"],
-        "publicFiles": ["src/presentation/shell/index.ts", "src/presentation/shell/host.ts"]
+        "publicFiles": [
+          "src/presentation/shell/index.ts",
+          "src/presentation/shell/host.ts",
+          "src/presentation/shell/screens.ts"
+        ]
       },
       {
         "name": "presentation",
         "autoDiscover": ["src/presentation"],
-        "publicFiles": ["index.ts"]
+        "publicFiles": ["index.ts", "screens.ts"]
       },
       {
         "name": "presentation-composition",
@@ -101,16 +109,22 @@
           "application/shell",
           "application/notes",
           "application/communities",
+          "application-module",
           "application-composition"
         ]
       },
       {
+        "from": "application-module",
+        "allow": [],
+        "allowTypeOnly": ["application/shell", "application/notes"]
+      },
+      {
         "from": "application-describe-error",
-        "allow": ["application", "application-composition"]
+        "allow": ["application", "application-module", "application-composition"]
       },
       {
         "from": "application-composition",
-        "allow": ["domain", "application"]
+        "allow": ["domain", "application", "application-module"]
       },
       {
         "from": "adapters",
@@ -171,12 +185,12 @@
       },
       {
         "from": "application/shell",
-        "allow": ["domain/shell"],
+        "allow": ["domain/shell", "application-module"],
         "allowTypeOnly": ["application-composition"]
       },
       {
         "from": "application/notes",
-        "allow": ["domain/shell", "domain/notes", "application/shell"],
+        "allow": ["domain/shell", "domain/notes", "application/shell", "application-module"],
         "allowTypeOnly": ["application-composition"]
       },
       {

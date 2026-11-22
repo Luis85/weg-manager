@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-22
 horizon: ""
 start: ""
 due: ""
@@ -23,7 +23,7 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-60 · Modulmanifest als eine Stelle je Modul prüfen
@@ -77,3 +77,5 @@ Architektur-Review vom 22.11.2026, Option C1. ADR `docs/adr/0006-module-structur
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
 - 22.11.2026 (Interview nach der Review-Runde): Entscheidung „jetzt einführen, zwei Einträge je Modul, Lint- und fallow-Listen erzeugt“ eingetragen; `triage` auf `ready-for-agent`. Umsetzung nach dem Schritt „Datensatz-Baukasten in `notes`“, vor dem Tag 0.2.0.
+- 22.11.2026: Kriterien 2 und 4 erfüllt: je Modul ein Manifest der Anwendung (`module.ts`, `defineModule`) und eines der Bildschirme (`screens.ts`, ohne Vue beim Start); ein neues Modul trägt sich an zwei gemeinsamen Stellen ein (`APP_MODULES` in `src/application/modules.ts` und `MODULE_SCREENS` in `src/presentation/app-surface.ts`), und `configs/fallow.json` wird mit `npm run fallow:config` erzeugt. ESLint liest die Modulliste aus `APP_MODULES`, das Gate scheitert an einer veralteten fallow-Konfiguration, ein fehlender Teil scheitert an Typprüfung oder Test, der Test zum späten Laden der Oberfläche bleibt grün, `npm run verify` endet mit Exit 0. Offen: eigene Ereignisse eines Moduls (`src/application/events.ts`) und neue Ports (`AppAdapters`) bleiben eigene Stellen.
+- 22.11.2026: Abgeschlossen mit PR #44 und PR #45. Ein neues Modul trägt sich an zwei gemeinsamen Stellen ein (`APP_MODULES`, `MODULE_SCREENS`); `configs/fallow.json` wird erzeugt und vom Gate geprüft; der Eintrag „Einstellungen“ gehört der Shell. Kriterium 3 ist mit der Entscheidung entfallen.

@@ -10,9 +10,10 @@ import {
   openView,
   pluginProblems,
 } from "../support";
+import { de } from "../texts";
 
 const RIBBON = '.side-dock-ribbon-action[aria-label="WEG Manager"]';
-const EMPTY = "Hier erscheinen deine Gemeinschaften, etwa eine WEG und ihre Tiefgarage.";
+const EMPTY = de.communities.screen.empty;
 
 /**
  * The plugin's live entries in Obsidian's ribbon list, which also feeds the ribbon's context menu.
@@ -37,10 +38,12 @@ describe("plugin lifecycle in Obsidian", function () {
     await openView();
     const root = browser.$(ROOT);
     await expect(root).toBeDisplayed();
-    await expect(root.$("[data-testid=communities-screen] h2")).toHaveText("Gemeinschaften");
+    await expect(root.$("[data-testid=communities-screen] h2")).toHaveText(
+      de.communities.screen.title,
+    );
     await expect(root.$("[data-testid=communities-empty] p")).toHaveText(EMPTY);
     await expect(root.$("[data-testid=community-switch]")).toHaveText(
-      expect.stringContaining("Noch keine Gemeinschaft"),
+      expect.stringContaining(de.communities.switcher.none),
     );
   });
 

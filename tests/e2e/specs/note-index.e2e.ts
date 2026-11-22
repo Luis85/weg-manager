@@ -9,12 +9,12 @@ import { installConsoleSpy, pluginProblems } from "../support";
 const REFERENCE_VAULT = "tests/e2e/vaults/reference";
 
 /**
- * Generous bounds, not the targets: this container is not the F-21 reference machine. B-NFR-04
- * gives 300 ms for an interaction and 5 s for the first overview; the index's own share of the
- * start is measured at tens of milliseconds and an edit at about the batch delay (100 ms), so
- * these bounds fail only on a real regression, not on a slow runner.
+ * The one bound here is a promise of the docs: PBI-54 batches the index's reads after 100 ms of
+ * quiet and at most after 1 s (`INDEX_BATCH_MAX`), so an outside edit shows within that. How soon
+ * the index is ready after `VaultReady` promises no doc (B-NFR-04's five seconds are for the first
+ * overview on the reference machine), so it is recorded in `reports/e2e/note-index-timings.json`
+ * and only its order is asserted: the index is ready after `VaultReady`, never before.
  */
-const READY_AFTER_VAULT_READY_MS = 1000;
 const EDIT_SHOWN_MS = 1000;
 const EDITS = 3;
 
@@ -85,21 +85,19 @@ const timings: Record<string, unknown> = {};
 describe("the note index in Obsidian", function () {
   this.timeout(120_000);
 
-  it("is ready shortly after VaultReady on a cold start, with every record", async function () {
+  it("is ready after VaultReady on a cold start, with every record", async function () {
     await browser.reloadObsidian({ vault: REFERENCE_VAULT });
     const cold = readiness(await whenIndexReady());
     expect(await counts()).toEqual(FULL);
     expect(cold.afterVaultReadyMs).toBeGreaterThanOrEqual(0);
-    expect(cold.afterVaultReadyMs).toBeLessThan(READY_AFTER_VAULT_READY_MS);
     timings["cold"] = cold;
   });
 
-  it("is ready shortly after VaultReady on a warm restart", async function () {
+  it("is ready after VaultReady on a warm restart", async function () {
     await browser.reloadObsidian();
     const warm = readiness(await whenIndexReady());
     expect(await counts()).toEqual(FULL);
     expect(warm.afterVaultReadyMs).toBeGreaterThanOrEqual(0);
-    expect(warm.afterVaultReadyMs).toBeLessThan(READY_AFTER_VAULT_READY_MS);
     timings["warm"] = warm;
   });
 

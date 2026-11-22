@@ -1,8 +1,10 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import { Events } from "./events";
 import { normalizePath } from "./paths";
 
 /** Obsidian's file tree node; `path` is vault-relative and changes when the file is renamed. */
-export abstract class TAbstractFile {
+export abstract class TAbstractFile implements Uses<Obsidian.TAbstractFile, "path" | "name"> {
   constructor(public path: string) {}
 
   get name(): string {
@@ -10,7 +12,10 @@ export abstract class TAbstractFile {
   }
 }
 
-export class TFile extends TAbstractFile {
+export class TFile
+  extends TAbstractFile
+  implements Uses<Obsidian.TFile, "path" | "name" | "basename" | "extension" | "stat">
+{
   stat = { ctime: 0, mtime: 0, size: 0 };
 
   get extension(): string {
@@ -24,7 +29,10 @@ export class TFile extends TAbstractFile {
   }
 }
 
-export class TFolder extends TAbstractFile {
+export class TFolder
+  extends TAbstractFile
+  implements Uses<Obsidian.TFolder, "path" | "name" | "children" | "isRoot">
+{
   /** The files and folders directly inside, kept up to date by the vault. */
   children: TAbstractFile[] = [];
 
@@ -36,14 +44,26 @@ export class TFolder extends TAbstractFile {
 /** Where the double pretends the vault lies; Obsidian's own messages carry absolute paths too. */
 const VAULT_ROOT = "/vault";
 
+/**
+ * What Node's `fs` rejects with on desktop, measured in Obsidian 1.15.1 for `process` on a file
+ * deleted outside (`tests/support/notes/vanished-scenario.ts`): an `Error` with `code`, `errno`
+ * and `syscall`.
+ */
 const enoent = (path: string, call = "open") =>
-  new Error(`ENOENT: no such file or directory, ${call} '${VAULT_ROOT}/${path}'`);
+  Object.assign(new Error(`ENOENT: no such file or directory, ${call} '${VAULT_ROOT}/${path}'`), {
+    errno: -2,
+    code: "ENOENT",
+    syscall: call,
+  });
 
 const eacces = (path: string) =>
   new Error(`EACCES: permission denied, open '${VAULT_ROOT}/${path}'`);
 
 const eexist = (path: string) =>
   new Error(`EEXIST: file already exists, open '${VAULT_ROOT}/${path}'`);
+
+/** Obsidian 1.15.1's `vault.cacheLimit`: the longest text it keeps for `cachedRead`. */
+const KEPT_TEXT_LIMIT = 64 * 1024;
 
 /** How a case-insensitive, normalising file system (Windows, macOS) compares two names. */
 const diskKey = (path: string) => path.normalize("NFC").toLowerCase();
@@ -86,8 +106,13 @@ const gate = () => {
  * callback throws rejects unchanged. Paths are vault-relative; the double refuses a path that `normalizePath` would
  * change, so an adapter that skips it fails here.
  *
+ * A file deleted from outside Obsidian is gone from the disk at once and from the vault a moment
+ * later, when its file watcher reports it: `vanish` is that moment, `remove` the report. Between
+ * them the file is still listed, and `process` rejects with ENOENT.
+ *
  * Test knobs: `failReads` (listing and the metadata cache throw), `failWrites` (every write
- * rejects without changing anything), `holdWrites`/`releaseWrites`/`heldWrites`,
+ * rejects without changing anything), `adapter.trashSystem` (answer `false`: the system trash
+ * fails, and `fileManager.trashFile` resolves `false` as in Obsidian), `holdWrites`/`releaseWrites`/`heldWrites`,
  * `setMarkdownFileCount`, and `seedFile` for a file that appears from outside (Sync, another app),
  * also under a path that is not normalized.
  *
@@ -96,21 +121,57 @@ const gate = () => {
  * of its own name works. Lookups stay exact, as the d.ts documents them ("case sensitive"), so an
  * adapter has to find such a clash itself.
  */
-export class Vault extends Events {
+export class Vault
+  extends Events
+  implements
+    Uses<
+      Obsidian.Vault,
+      | "getRoot"
+      | "getAbstractFileByPath"
+      | "getFileByPath"
+      | "getFolderByPath"
+      | "getFiles"
+      | "getMarkdownFiles"
+      | "read"
+      | "cachedRead"
+      | "create"
+      | "createFolder"
+      | "process"
+      | "offref"
+      | "trigger"
+    >
+{
   failReads = false;
   failWrites = false;
   caseInsensitive = false;
   readonly root = new TFolder("/");
+  /**
+   * The one member of Obsidian's `DataAdapter` the double has: what `fileManager.trashFile` asks
+   * when the trash option is "system". It answers `true`; a test (or a fidelity scenario, as in
+   * Obsidian) replaces it with one that answers `false`, the system trash failing.
+   */
+  readonly adapter = { trashSystem: (_path: string): Promise<boolean> => Promise.resolve(true) };
+  private readonly config = new Map<string, unknown>([["trashOption", "system"]]);
   /** Double-internal: the metadata cache indexes each file whose text changed. */
   indexer: (file: TFile) => void = () => undefined;
   /** Double-internal: the metadata cache holds a file's metadata at once, as after a warm start. */
   indexedAtStartup: (file: TFile) => void = () => undefined;
   private readonly entries = new Map<string, TAbstractFile>();
   private readonly texts = new Map<TFile, string>();
+  private readonly kept = new WeakMap<TFile, string>();
   private readonly writes = gate();
 
   getRoot(): TFolder {
     return this.root;
+  }
+
+  /** Obsidian's vault settings; the double knows only `trashOption`, "system" as on desktop. */
+  getConfig(key: string): unknown {
+    return this.config.get(key) ?? null;
+  }
+
+  setConfig(key: string, value: unknown): void {
+    this.config.set(key, value);
   }
 
   getAbstractFileByPath(path: string): TAbstractFile | null {
@@ -136,13 +197,25 @@ export class Vault extends Events {
     return this.getFiles().filter((file) => file.extension === "md");
   }
 
-  /** The text without a BOM, as Obsidian's `read` decodes it; `process` hands over the raw text. */
-  read(file: TFile): Promise<string> {
-    return Promise.resolve(this.textOf(file).replace(/^\uFEFF/, ""));
+  /**
+   * The text without a BOM, as Obsidian's `read` decodes it; `process` hands over the raw text. A
+   * file gone from the disk rejects with ENOENT.
+   */
+  async read(file: TFile): Promise<string> {
+    const text = this.textOf(file).replace(/^\uFEFF/, "");
+    this.keep(file, text);
+    return text;
   }
 
+  /**
+   * The text Obsidian keeps of the file, else `read`. Obsidian keeps a Markdown file's text (up to
+   * 64 KiB) once it has read it: `read`, `process` and the metadata cache's indexing read do. So
+   * for an indexed note deleted outside, this gives the old text while `read` rejects
+   * (`vanishedScenario`).
+   */
   cachedRead(file: TFile): Promise<string> {
-    return this.read(file);
+    const kept = this.kept.get(file);
+    return kept === undefined ? this.read(file) : Promise.resolve(kept);
   }
 
   async create(path: string, data: string): Promise<TFile> {
@@ -184,6 +257,7 @@ export class Vault extends Events {
     await this.beforeWrite(file.path);
     const next = fn(this.textOf(file));
     this.write(file, next);
+    this.keep(file, next);
     return next;
   }
 
@@ -207,9 +281,12 @@ export class Vault extends Events {
   /**
    * Test helper: a file written from outside Obsidian (a person, Sync, an agent) as Obsidian then
    * sees it: missing folders and the file appear with `create`, an existing file changes with
-   * `modify`, and the metadata cache indexes it. No checks, no waiting, no failure knobs.
+   * `modify`, and the metadata cache indexes it. No checks, no waiting, no failure knobs. A name
+   * written in NFD (as macOS writes them) is listed in NFC, as Obsidian 1.15.1 lists it (measured
+   * on Linux: the file keeps its NFD name on the disk, the vault knows it only in NFC).
    */
-  seedFile(path: string, text: string): void {
+  seedFile(written: string, text: string): void {
+    const path = written.normalize("NFC");
     const segments = path.split("/");
     for (let depth = 1; depth < segments.length; depth += 1) {
       const prefix = segments.slice(0, depth).join("/");
@@ -220,6 +297,8 @@ export class Vault extends Events {
     }
     const existing = this.getFileByPath(path);
     if (existing !== null) {
+      // The watcher's report of an outside change drops the kept text; the index reads it again.
+      this.kept.delete(existing);
       this.write(existing, text);
       return;
     }
@@ -240,6 +319,11 @@ export class Vault extends Events {
 
   heldWrites(): number {
     return this.writes.held();
+  }
+
+  /** Double-internal: the text of a file on the disk, or `undefined` when the disk lost it. */
+  onDisk(file: TFile): string | undefined {
+    return this.texts.get(file);
   }
 
   /** Double-internal: the text of a file in the vault, or Obsidian's ENOENT. */
@@ -272,32 +356,68 @@ export class Vault extends Events {
     this.indexer(file);
   }
 
-  /** Double-internal: `fileManager.renameFile` for a file. */
-  move(file: TFile, newPath: string): void {
-    if (this.entries.get(file.path) !== file) throw enoent(file.path, "rename");
+  /**
+   * Double-internal: `fileManager.renameFile`. A folder moves with everything inside it: `rename`
+   * fires for the folder, then for each entry inside in the vault's order, and each joins the
+   * vault's order again, as in Obsidian. A folder's `children` keep their order.
+   */
+  move(entry: TAbstractFile, newPath: string): void {
+    if (this.entries.get(entry.path) !== entry) throw enoent(entry.path, "rename");
     if (this.entries.has(newPath)) throw new Error("Destination file already exists!");
     if (this.getFolderByPath(parentOf(newPath)) === null) throw enoent(newPath, "rename");
-    if (this.collides(newPath, file)) throw eexist(newPath);
-    const oldPath = file.path;
-    this.unlink(file);
-    file.path = newPath;
-    this.link(file);
-    this.trigger("rename", file, oldPath);
+    if (this.collides(newPath, entry)) throw eexist(newPath);
+    const oldPath = entry.path;
+    const inside = entry instanceof TFolder ? this.contentsOf(entry) : [];
+    this.unlink(entry);
+    entry.path = newPath;
+    this.link(entry);
+    const moved = inside.map((child) => {
+      const old = child.path;
+      this.entries.delete(old);
+      child.path = `${newPath}${old.slice(oldPath.length)}`;
+      this.entries.set(child.path, child);
+      return [child, old] as const;
+    });
+    this.trigger("rename", entry, oldPath);
+    for (const [child, old] of moved) this.trigger("rename", child, old);
   }
 
-  /** Double-internal: the files and folders inside `folder`, deepest first. */
+  /** Double-internal: the files and folders inside `folder`, in the vault's order. */
   contentsOf(folder: TFolder): TAbstractFile[] {
-    return [...this.entries.values()]
-      .filter((entry) => entry.path.startsWith(`${folder.path}/`))
-      .toSorted((a, b) => b.path.split("/").length - a.path.split("/").length);
+    return [...this.entries.values()].filter((entry) => entry.path.startsWith(`${folder.path}/`));
+  }
+
+  /**
+   * Test helper: the file at `path` is deleted on the disk, outside Obsidian. The vault still
+   * lists it, as Obsidian does until its file watcher reports the delete, and every read or write
+   * of it rejects with ENOENT. No event fires; `remove` is the watcher's report.
+   */
+  vanish(path: string): void {
+    const file = this.getFileByPath(path);
+    if (file === null) throw new Error(`test double: no file at ${path}`);
+    this.texts.delete(file);
   }
 
   /** Double-internal: removes one entry and fires `delete`. */
   remove(entry: TAbstractFile): void {
     if (this.entries.get(entry.path) !== entry) throw enoent(entry.path, "unlink");
     this.unlink(entry);
-    if (entry instanceof TFile) this.texts.delete(entry);
+    if (entry instanceof TFile) {
+      this.texts.delete(entry);
+      this.kept.delete(entry);
+    }
     this.trigger("delete", entry);
+  }
+
+  /**
+   * Double-internal: what Obsidian keeps of a file's text for `cachedRead`, without a BOM (as
+   * `read` and the indexing read decode it), and nothing above 64 KiB. Which text `process`
+   * keeps for a note with a BOM until the index reads it again is not measured.
+   */
+  keep(file: TFile, text: string): void {
+    const stripped = text.replace(/^﻿/, "");
+    if (stripped.length <= KEPT_TEXT_LIMIT) this.kept.set(file, stripped);
+    else this.kept.delete(file);
   }
 
   /** On a case-insensitive disk: another entry already holds `path` in another case or form. */

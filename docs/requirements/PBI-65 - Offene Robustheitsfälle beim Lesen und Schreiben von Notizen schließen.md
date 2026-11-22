@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-22
 horizon: ""
 start: ""
 due: ""
@@ -23,7 +23,7 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-65 · Offene Robustheitsfälle beim Lesen und Schreiben von Notizen schließen
@@ -71,3 +71,5 @@ Korrektheits-Review vom 22.11.2026 (Verdachtsfälle), Berichte zu PR #29 und PR 
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
 - 22.11.2026 (Interview nach der Review-Runde): Entscheidungen eingetragen; `triage` auf `ready-for-agent`. Kriterien 2, 3 und 5 vor dem Tag 0.2.0; Kriterien 1, 4 und 6 bleiben offen.
+- 22.11.2026 (Umsetzung vor 0.2.0): Kriterien 2, 3 und 5 erfüllt. Kriterium 2: Wurzelordner und Unterordner werden Ordner für Ordner nach `clashKey` gefunden und in der Schreibweise des Vaults beschrieben, auch beim Suchen unlesbarer Notizen (NoteStore-Vertrag für alle Adapter, Szenario im echten Obsidian; die Prüfung auf Windows und macOS steht unter „Manual checks“ in `docs/engineering/testing.md`). Kriterium 3: `fitsFileName` begrenzt den Dateinamen samt ` (100).md` auf 255 Bytes in UTF-8, am Feld als `name.too-long`; ein schon vorhandener längerer Name bleibt speicherbar. Kriterium 5: Gemessen in Obsidian 1.15.1 schließt jede Zeile, die mit `---` beginnt, den Block; das Plugin schreibt jetzt auch bei `---` mit Leerzeichen dahinter und bei `----` und lässt die Zeile stehen, andere Abschlusszeilen, Flow-Schreibweise, Anker und ungewöhnliche Schlüssel bleiben abgelehnt; ein Kommentar am Ende einer geschriebenen Zeile bleibt hinter dem neuen Wert (DV-01, ADR 0007, Nachtrag vom 22.11.2026). Kriterien 1, 4 und 6 bleiben offen.
+- 22.11.2026 (Umsetzung der drei offenen Punkte): Kriterien 1, 4 und 6 erfüllt, damit alle sieben. Kriterium 1: nach 10 s ohne Lebenszeichen des Metadaten-Caches (gezählt ab dem Layout und ab dem letzten `resolved`, sodass eine noch laufende Indexierung die Frist nie erreicht) kommt `VaultReady` trotzdem, die Zahl der fehlenden Dateien wird einmal ohne Pfade protokolliert (`vault.ready.fallback`); eine später indexierte Datei kommt über `MetadataChanged` in den Index, `VaultReady` bleibt einmalig, kein Timer überlebt das Entladen (Double unter `TestClock`, ganze Zusammensetzung, echtes Obsidian mit einem Cache, der für eine Datei `null` meldet, weil Obsidian sich nicht dazu bringen lässt, eine Datei auszulassen). Kriterium 4: in Obsidian 1.15.1 gemessen, dass `vault.process` für eine außen gelöschte, noch gelistete Datei mit `code: "ENOENT"` ablehnt; das ist jetzt `NoteNotFoundError` schon beim ersten Versuch (Vertragsfall für beide Adapter, Double bildet das Fenster nach, `note-vanished.e2e.ts`). Offen bleibt dort nur Obsidian mobil, dessen Ablehnung nicht gesehen wurde. Kriterium 6: Die Meldung nach geschlossener Ansicht sagt, dass die Eingabe mit der Ansicht verloren ging und wie es weitergeht (`detailAfterClose`, beide Sprachen, `forClosedView`). ADR 0004 und 0007 (Nachträge vom 22.11.2026), `docs/engineering/architecture.md` § Events und `error-handling.md` sind nachgeführt.

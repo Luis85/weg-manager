@@ -15,6 +15,7 @@ import { appServicesLayer } from "../../../../src/application/app-services-layer
 import { useStream } from "../../../../src/presentation/shell";
 import { host } from "../../../support/composable";
 import { FULL, testItem } from "../../../support/notes/test-note-type";
+import { asObsidianPlugin } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -47,7 +48,7 @@ afterEach(async () => {
  */
 const start = async (plugin: InstanceType<typeof Bare>) => {
   const layer: Layer.Layer<AppServices> = appServicesLayer(
-    { ...shellAdapters(plugin as never), ...notesAdapters(plugin as never) },
+    { ...shellAdapters(asObsidianPlugin(plugin)), ...notesAdapters(asObsidianPlugin(plugin)) },
     { developmentMode: false, language: "de", noteTypes: [...appNoteTypes, testItem] },
   );
   const runtime: AppRuntime = ManagedRuntime.make(layer);
@@ -79,7 +80,12 @@ describe("the note index on the Obsidian double", () => {
       unindexed: useStream(unindexedSnapshot, unindexedChanges),
     }));
     app.workspace.markLayoutReady();
-    expect(exposed.notes.value).toEqual({ ready: false, failure: undefined, notes: [] });
+    expect(exposed.notes.value).toEqual({
+      ready: false,
+      failure: undefined,
+      notes: [],
+      byId: new Map(),
+    });
     const ready = await next(runtime, (snapshot) => snapshot.ready);
     expect(ready.notes.map((note) => [note.path, note.kind])).toEqual([
       ["Privat/B.md", "editable"],

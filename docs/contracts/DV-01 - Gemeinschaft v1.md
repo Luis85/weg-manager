@@ -37,7 +37,7 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 | --- | --- | --- | --- |
 | `schema` | Text | Genau `weg-manager.community/v1`. Erkennt die Notiz als Gemeinschaft, egal in welchem Ordner sie liegt. | `weg-manager.community/v1` |
 | `id` | Text | `community-` und eine UUID in Kleinbuchstaben. Einmal vergeben, nie geändert. | `community-3f2b8c1e-7a44-4d0b-9c2e-5b1f0a6d9e21` |
-| `name` | Text | Eine Zeile, nicht leer, höchstens 100 Zeichen. So, wie der Mensch ihn schreibt. | `Ahornweg 12` |
+| `name` | Text | Eine Zeile, nicht leer, höchstens 100 Zeichen. So, wie der Mensch ihn schreibt. Der Dateiname, der daraus wird, darf mit ` (100).md` höchstens 255 Bytes in UTF-8 haben (siehe unten). | `Ahornweg 12` |
 | `short_code` | Text | 2 bis 5 Zeichen, nur `A`–`Z` und `0`–`9`, in Großbuchstaben. Unter allen Gemeinschaften eindeutig. Nach dem Anlegen fest. | `AW` |
 | `color` | Text | Ein Name der Palette: `teal`, `violet`, `blue`, `rust`, `slate`, `amber`, `pink`, `olive`. Jede Gemeinschaft eine andere Farbe. Die Farbtöne je Theme legt das Plugin fest. `cyan` war bis 22.11.2026 ein Name der Palette und gilt jetzt als unbekannt (`color.unknown`): das Plugin ersetzt ihn nicht von selbst, der Mensch wählt eine Farbe und speichert neu. | `teal` |
 | `kind` | Text | Die Art in eigenen Worten. Eine Zeile, nicht leer, höchstens 50 Zeichen. Aus ihr folgt weder Rechtsform noch Befugnis. | `WEG`, `Tiefgarage` |
@@ -52,8 +52,10 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 ## Ablage und Dateiname
 
 - Das Plugin legt neue Gemeinschaften in `<Wurzelordner>/Gemeinschaften/` an. Der Wurzelordner ist die Einstellung `rootFolder`, vorgegeben `WEG Manager`. Beginnt der Name eines seiner Ordner mit einem Punkt, ist er ungültig und es gilt die Vorgabe, weil Obsidian versteckte Ordner nicht einliest. Der Ordnername `Gemeinschaften` ist in jeder Sprache deutsch, weil ein Vault zwischen Geräten geteilt wird.
+- Beide Ordner findet das Plugin unabhängig von Groß- und Kleinschreibung und Unicode-Form, Ordner für Ordner: Gibt es `weg manager/gemeinschaften/`, legt es dort an und schreibt den Pfad so, wie der Vault ihn schreibt. Gibt es mehrere Ordner, die sich nur darin unterscheiden (das erlaubt nur ein Linux-Datenträger), gilt der genau so geschriebene, sonst der erste in Zeichenfolge. Derselbe Ordner gilt als Wurzelordner, wenn das Plugin unlesbare Notizen sucht.
 - Der Dateiname ist der Name der Gemeinschaft. Zeichen, die ein Dateiname oder ein Wikilink nicht tragen kann (`\ / : * ? " < > | # ^ [ ]` und Steuerzeichen), werden je Folge durch einen Bindestrich ersetzt. Mehrere Leerzeichen werden zu einem; Punkte und Leerzeichen am Anfang und Ende fallen weg. Bleibt nichts übrig, heißt die Datei wie das Kürzel. Aus `Ahornweg 12/14` wird `Ahornweg 12-14.md`; `name` behält `Ahornweg 12/14`.
-- Ist der Name im Ordner schon vergeben (auch in anderer Groß- und Kleinschreibung), heißt die Datei `Name (2).md`, `Name (3).md` und so weiter.
+- Ist der Name im Ordner schon vergeben (auch in anderer Groß- und Kleinschreibung), heißt die Datei `Name (2).md`, `Name (3).md` und so weiter, bis `Name (100).md`.
+- Der Dateiname hat höchstens 255 Bytes in UTF-8, die Grenze von Linux und macOS, gerechnet mit ` (100)` und `.md`. Ein Umlaut zählt zwei Bytes, ein chinesisches oder japanisches Zeichen drei: 100 solche Zeichen passen nicht. Einen solchen Namen nimmt das Formular nicht an (`name.too-long`, am Feld). Eine Notiz, die ihn schon trägt, bleibt gültig und lässt sich speichern, solange der Name gleich bleibt.
 - Ändert der Mensch im Plugin den Namen, benennt das Plugin die Datei mit um, solange sie noch den Namen trägt, den das Plugin ihr gegeben hat (der alte Name, auch mit Zusatz ` (2)`). Hat der Mensch der Datei einen eigenen Namen gegeben, bleibt dieser. Klappt das Umbenennen nicht, bleibt die gespeicherte Notiz, wo sie ist.
 
 ## Was das Plugin schreibt
@@ -62,6 +64,9 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 - Beim Speichern nur die Felder, die der Mensch im Formular geändert hat. Ein Feld, das er nicht angefasst hat, bleibt, wie es in der Notiz steht, auch mit Leerzeichen am Anfang oder Ende; ein geändertes Feld schreibt das Plugin ohne sie. Wurde ein Feld inzwischen außerhalb des Plugins geändert, gilt die Änderung des Feldes, das nur eine Seite geändert hat. Haben beide Seiten dasselbe Feld verschieden geändert, schreibt das Plugin nichts und lässt den Menschen je Feld wählen ([[DF-23 - Externe Bearbeitung ohne stilles Überschreiben]]).
 - Unbekannte Schlüssel, ihre Reihenfolge und der Text unter dem Frontmatter bleiben unverändert.
 - Das Plugin ändert nur die Zeilen der Schlüssel, die es schreibt. Kommentare, Anführungszeichen und Zahlenformen (`01067`), die Zeilenenden (LF oder CRLF) und ein BOM am Dateianfang bleiben, wie sie sind. Ein Frontmatter, das es so nicht ändern kann (etwa mit Ankern oder in einer Zeile `{…}`), schreibt es nicht und sagt es dem Menschen.
+- Ein Kommentar am Ende einer Zeile, die das Plugin schreibt (`kind: WEG # Art`), bleibt hinter dem neuen Wert stehen, mit den Leerzeichen davor (`kind: Haus # Art`). Wird der Wert eine Liste, bleibt der Kommentar in der Zeile des Schlüssels. Ein `#` in Anführungszeichen oder ohne Leerzeichen davor ist kein Kommentar. Kommentare in den weiteren Zeilen eines mehrzeiligen Werts (etwa an Listeneinträgen) gehören zum Wert und werden mit ihm ersetzt.
+- Entfernt das Plugin einen Schlüssel, gehen seine Zeilen mit ihren Kommentaren. Kommentarzeilen davor und danach bleiben.
+- Das Frontmatter endet an der ersten Zeile, die mit `---` beginnt, so liest es Obsidian. Das Plugin schreibt in eine Notiz, deren Abschlusszeile `---`, `---` mit Leerzeichen oder Tabs dahinter oder `----` ist, und lässt diese Zeile, wie sie ist. Andere Abschlusszeilen (`-----`, `---- `, `--- Text`) schreibt es nicht und sagt es dem Menschen.
 - Löschen legt die Notiz in den Papierkorb, den der Mensch in Obsidian eingestellt hat.
 - Welche Gemeinschaft gerade ausgewählt ist, steht nicht in der Notiz. Das Plugin merkt es sich je Gerät.
 
@@ -81,6 +86,7 @@ Eine Notiz, die den Vertrag bricht, wird nie still repariert. Das Plugin zeigt s
 | --- | --- | --- |
 | `field.missing` | Ein Schlüssel fehlt oder ist leer. | Zeigt das Problem am Feld; im Formular reparierbar. |
 | `name.invalid`, `kind.invalid`, `unit-label.invalid` | Kein Text, leer, zu lang oder mehrzeilig. | Wie oben. |
+| `name.too-long` | Nur beim Speichern eines neuen oder geänderten Namens: Der Dateiname hätte mehr als 255 Bytes. | Zeigt das Problem am Feld und schreibt nichts. |
 | `short-code.invalid` | Nicht 2 bis 5 Zeichen aus `A`–`Z` und `0`–`9`, etwa in Kleinbuchstaben. | Wie oben; das Kürzel ist dann im Formular änderbar. |
 | `short-code.duplicate` | Eine andere Gemeinschaft hat dasselbe Kürzel. | Zeigt es an beiden; das Kürzel ist im Formular änderbar. |
 | `color.unknown` | Kein Name der Palette, auch nicht das frühere `cyan`. | Wie oben; die Notiz wird nicht umgeschrieben, bis der Mensch eine Farbe wählt und speichert. |

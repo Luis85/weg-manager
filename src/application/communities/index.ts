@@ -1,6 +1,6 @@
 // The public face of the communities module's application layer (ADR 0006): other layers and the
 // composition files import only this.
-export { InvalidCommunityError, type CommunitiesError } from "./errors";
+export { InvalidCommunityError } from "./errors";
 export type { CommunitiesCatalog } from "./i18n/catalog";
 export { communitiesDe } from "./i18n/de";
 export { describeCommunityIssue } from "./i18n/describe";
@@ -12,6 +12,7 @@ export {
   type Community,
   type CommunityNoteIssue,
 } from "./list";
+export { communitiesModule } from "./module";
 export { COMMUNITIES_SECTION, COMMUNITY_SETTINGS } from "./routes";
 export {
   CommunitySelectionService,
@@ -21,7 +22,6 @@ export {
   selectCommunity,
   type CommunitySelection,
 } from "./selection";
-export type { CommunitiesServices } from "./services";
 export {
   communityList,
   communityListChanges,
@@ -29,4 +29,4 @@ export {
   deleteCommunity,
   updateCommunity,
 } from "./use-cases";
-export { describeCommunitiesError, isCommunitiesError } from "./user-messages";
+export { describeCommunitiesError } from "./user-messages";

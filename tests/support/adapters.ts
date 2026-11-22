@@ -1,8 +1,9 @@
 import { Layer } from "effect";
 import type { AppAdapters } from "../../src/application/app-services-layer";
 import type { DeviceValue } from "../../src/application/shell";
+import type { CalendarDay } from "../../src/domain/shell";
 import { memoryNoteStore, sequentialIdGenerator } from "../../src/infrastructure/memory/notes";
-import { deviceStoreInMemory } from "../../src/infrastructure/memory/shell";
+import { deviceStoreInMemory, memoryToday } from "../../src/infrastructure/memory/shell";
 import {
   inMemoryStore,
   recordingClipboard,
@@ -13,19 +14,24 @@ import {
   type StoreOptions,
 } from "./layers";
 
+/** The day the tests' `Today` starts on unless a test sets another. */
+const TEST_TODAY: CalendarDay = "2026-11-22";
+
 export type TestAdaptersOptions = {
   readonly store?: StoreOptions;
   /** What the device store holds at start, e.g. a stored community selection. */
   readonly device?: Readonly<Record<string, DeviceValue>>;
   /** The host event adapter; none by default, so a test publishes `VaultReady` itself. */
   readonly hostEvents?: AppAdapters["hostEvents"];
+  /** The local day `Today` starts on; `TEST_TODAY` by default. */
+  readonly today?: CalendarDay;
 };
 
 /**
  * In-memory adapters for every port, as `appServicesLayer` takes them, with handles to inspect
  * them: `store` (`data.json`), `notifier`, `clipboard`, `logger` (what the log sink received; the
- * runtime's logger runs in development mode, so every level), and `notes`, the in-memory
- * `NoteStore`.
+ * runtime's logger runs in development mode, so every level), `notes`, the in-memory
+ * `NoteStore`, and `today`, whose `set` makes another day the day.
  */
 export const testAdapters = (options: TestAdaptersOptions = {}) => {
   const store = inMemoryStore(options.store);
@@ -33,6 +39,7 @@ export const testAdapters = (options: TestAdaptersOptions = {}) => {
   const clipboard = recordingClipboard();
   const logger = recordingSink();
   const notes = memoryNoteStore();
+  const today = memoryToday(options.today ?? TEST_TODAY);
   const adapters: AppAdapters = {
     settingsStore: store.layer,
     notifier: notifier.layer,
@@ -41,10 +48,11 @@ export const testAdapters = (options: TestAdaptersOptions = {}) => {
     deviceStore: deviceStoreInMemory(options.device),
     incidents: sequentialIncidents(),
     logSink: logger.layer,
+    today: today.layer,
     noteStore: notes.layer,
     idGenerator: sequentialIdGenerator().layer,
     noteOpener: notes.opener,
     hostEvents: options.hostEvents ?? Layer.empty,
   };
-  return { adapters, store, notifier, clipboard, logger, notes };
+  return { adapters, store, notifier, clipboard, logger, notes, today };
 };

@@ -37,7 +37,7 @@ Bei Gegenbelegen Felder oder Schritte des Assistenten reduzieren, Begriffe ände
 
 ## Bezüge
 
-[[PBI-68 - Plugin im Community-Verzeichnis finden und installieren]], [[PBI-70 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]], [[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]], [[H-03 - Wochenarbeit bleibt innerhalb einer Stunde]].
+[[PBI-73 - Plugin im Community-Verzeichnis finden und installieren]], [[PBI-75 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-76 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]], [[PBI-77 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]], [[H-03 - Wochenarbeit bleibt innerhalb einer Stunde]].
 
 ## Prüfergebnis
 

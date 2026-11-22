@@ -2,6 +2,7 @@ import { assert, describe, it } from "@effect/vitest";
 import { Effect } from "effect";
 import { vi } from "vitest";
 import { DeviceStore } from "../../../../src/application/shell/ports";
+import { asObsidianPlugin } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -12,7 +13,7 @@ class Bare extends Plugin {}
 
 const setup = () => {
   const { plugin, app } = createTestPlugin(Bare);
-  return { app, layer: shellAdapters(plugin as never).deviceStore };
+  return { app, layer: shellAdapters(asObsidianPlugin(plugin)).deviceStore };
 };
 
 /** The Obsidian adapter of `DeviceStore`: the vault's local storage, not `data.json`. */

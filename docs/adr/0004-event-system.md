@@ -73,3 +73,13 @@ Decision:
 ## Amendment 2026-11-22: unused events removed
 
 - `ActiveFileChanged`, `ColorSchemeChanged`, `isMarkdown` and the bus's `events` and `on` were removed as unused (PBI-62); the theme follows a `MutationObserver` instead, and `subscribe` is the only way to consume the bus. They come back when a feature needs them.
+
+## Amendment 2026-11-22: `VaultReady` after a deadline
+
+Owner decision of 2026-11-22 (PBI-65, case 1). The guarantee of `VaultReady` changes from "every Markdown file has a cache entry" to "every Markdown file has a cache entry, or the cache has been silent for `VAULT_READY_DEADLINE`".
+
+- **Why.** The adapter waited for an entry for every file. A reviewer found no file in Obsidian 1.15.1 that never got one (null bytes, a binary `.md`, 30 MB, excluded files, symlinks, an unreadable file all did), so this is a safety net, not a known bug. But one such file would keep the note index from building, and every view would wait for good.
+- **The rule.** After 10 s (`VAULT_READY_DEADLINE`, `src/infrastructure/obsidian/shell/events.ts`) without a sign of life, the adapter publishes `VaultReady` anyway and logs `vault.ready.fallback` once at `warn`, with the number of files without an entry (`data: { missing }`) and no path. A sign of life is the layout becoming ready or a `resolved` while files are missing. So the 10 s are counted from the layout and from the last `resolved`: a cold start fires one about every millisecond, and a vault that is still being indexed never reaches the deadline, however large.
+- **Still an edge.** `VaultReady` is published once per load, fallback or not. A file indexed afterwards fires `changed`, which is `MetadataChanged`, and the index reads it (rule 3 of [architecture](../engineering/architecture.md#events)); nothing special is needed. A consumer sees no difference between the two ways of getting `VaultReady`.
+- **Lifecycle.** The wait is a fiber forked into the layer's scope. When the scope closes (unload, a failed or aborted bootstrap) it is interrupted, so no timer outlives the plugin. A fallback that cannot read the cache reports a defect once and does not retry.
+- **Tests.** The double can hold one file's indexing back (`metadataCache.withholdIndex`, `restoreIndex`); the cases run under `TestClock` (`tests/dom/infrastructure/shell/vault-ready-fallback.test.ts`), through the whole composition (`note-index-fallback.test.ts`) and in real Obsidian (`vault-ready-fallback.e2e.ts`, where the metadata cache is told to answer `null` for one file in a running app, because real Obsidian cannot be made to skip a file).

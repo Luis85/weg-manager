@@ -39,7 +39,7 @@ date: 2026-11-22
 | O-D10 | Kann derselbe Kontakt je Gemeinschaft eine andere Rolle haben (z. B. Verwaltung in AW, Eigentümer in TG)? | **Entschieden am 22.11.2026:** ja. Eine Person hat je Gemeinschaft eine Rolle, wie im WCS-Datenmodell ([[K-20 - WCS-Datenmodell als fachliche Grundlage]], [[ENT-02 - Person und Rolle]]). Gespeichert als kodierte Liste `roles` mit Einträgen `<id der Gemeinschaft>:<Rolle>` ([ADR 0007](../../adr/0007-vault-data-access.md), Nachtrag). Das ersetzt die frühere Entscheidung vom selben Tag (eine Rolle je Kontakt). AT-B01, PBI-02 und PBI-61 sind angepasst |
 | O-D11 | Benennung des nativen Chats (PBI-47) vs. Schreibregel „kein KI in Labels“ ([[06 - Texte und Begriffe]]) | Vorschlag: Regel gilt für die regelbasierte Kernreise; der Chat heißt nach seiner Funktion („Chat mit Claude“) und zeigt den Abrechnungsmodus |
 | O-D6 | Vorgangsliste als Bases-View oder eigene Liste | Spike: Bases-View für Lesen, eigene Liste für Bearbeitung |
-| O-D12 | Schrift: Geist lokal bündeln (Entwurf vom 15.11.2026, [[K-13 - Nuxt UI als Frontend-Komponentenbasis]]) oder die Schrift des Hosts behalten? | Offen. Gebaut ist die Schrift des Hosts (`--font-interface`, `--font-monospace`); Geist ist nicht eingebaut und keine Entscheidung ersetzt sie |
+| O-D12 | Schrift: Geist lokal bündeln (Entwurf vom 15.11.2026, [[K-13 - Nuxt UI als Frontend-Komponentenbasis]]) oder die Schrift des Hosts behalten? | **Entschieden am 22.11.2026:** die Schrift des Hosts (`--font-interface`, `--font-monospace`) bleibt; Geist wird nicht gebündelt (Nachtrag in K-13) |
 | O-D14 | Onboarding: erledigt am 22.11.2026. Release, Speicherort und Ablageordner sind entschieden; das Verhalten von `onUserEnable` ist per Spike geklärt (K-19, O-19d). | [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]; Ansicht [[VIEW-09 - Einrichtung]] |
 | O-D15 | Routen, Befehls-IDs und Mockups nach den WCS-Begriffen nachziehen (K-20) | Erledigt am 22.11.2026: Routen `vorgaenge` und `vorgang/<id>`, Befehl `open-matter` (Handoff 03); Prototyp und seine Screenshots umgestellt (`docs/design/prototype/screenshots.mjs`); alle übrigen Mockups aus Quellen in `docs/design/mockups` neu gebaut; abgelöste Mockups zu Erststart und Tour entfernt ([[K-20 - WCS-Datenmodell als fachliche Grundlage]]). |
 
@@ -56,6 +56,6 @@ Weitere Lücken: Erststart Schritt 2 (Kontakte) und 3 (Register, entspricht dem 
 ## Technische Spikes
 
 1. Erledigt: Nuxt UI (Vue) in einer Obsidian-`ItemView` inkl. CSS-Kapselung und Theme-Wechsel (ADR 0002, ADR 0008); Mobile erst nach dem MVP.
-2. Icons ohne Netz sind gelöst (Liste in `SHELL_ICONS`, kein Abruf zur Laufzeit); lokale Schriften offen, siehe O-D12.
+2. Icons ohne Netz sind gelöst (Liste in `SHELL_ICONS`, kein Abruf zur Laufzeit); lokale Schriften entfallen, das Plugin nutzt die Schrift des Hosts (O-D12).
 3. Nach dem MVP: `visualViewport`-Verhalten der Aktionsleisten mit Obsidian-Mobile-Tastatur.
 4. Leistung: Lage mit 500 Vorgängen < 5 s Start, < 300 ms Filtern (B-NFR-04). Gemessen ist bisher der Notizindex mit 2.000 Datensätzen (`docs/engineering/architecture.md`, Abschnitt „The index“), nicht die Lage.

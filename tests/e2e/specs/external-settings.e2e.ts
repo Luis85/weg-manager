@@ -18,6 +18,9 @@ import {
   settingsTabContent,
   writeData,
 } from "../support";
+import { de } from "../texts";
+
+const INTRO = (folder: string) => de.communities.screen.intro(folder);
 
 /** PBI-48: `data.json` changed outside Obsidian (Sync, another program) reaches the plugin. */
 describe("settings changed outside Obsidian", function () {
@@ -25,22 +28,16 @@ describe("settings changed outside Obsidian", function () {
     await installConsoleSpy();
     await openView();
     const intro = browser.$(ROOT).$("[data-testid=communities-intro]");
-    await expect(intro).toHaveText(
-      "Jede Gemeinschaft ist eine Notiz im Ordner „WEG Manager/Gemeinschaften“.",
-    );
+    await expect(intro).toHaveText(INTRO("WEG Manager/Gemeinschaften"));
     await writeData({ schemaVersion: 1, rootFolder: "Beirat", logLevel: "info" });
-    await expect(intro).toHaveText(
-      "Jede Gemeinschaft ist eine Notiz im Ordner „Beirat/Gemeinschaften“.",
-    );
+    await expect(intro).toHaveText(INTRO("Beirat/Gemeinschaften"));
   });
 
   it("falls back from a hidden root folder, so a created community is listed", async function () {
     // Obsidian does not index a folder whose name starts with a dot: notes there would vanish.
     await writeData({ schemaVersion: 1, rootFolder: ".weg", logLevel: "info" });
     const intro = browser.$(ROOT).$("[data-testid=communities-intro]");
-    await expect(intro).toHaveText(
-      "Jede Gemeinschaft ist eine Notiz im Ordner „WEG Manager/Gemeinschaften“.",
-    );
+    await expect(intro).toHaveText(INTRO("WEG Manager/Gemeinschaften"));
     await browser.$(ROOT).$("[data-testid=community-add]").click();
     await fillForm({
       name: "Ahornweg 12",
@@ -71,12 +68,20 @@ describe("settings changed outside Obsidian", function () {
       timeoutMsg: "the settings tab never turned read-only",
     });
     expect((await settingsTabContent()).names).toEqual([
-      "Protokollstufe",
-      "Einstellungen schreibgeschützt",
+      de.shell.settingsTab.logLevel.name,
+      de.shell.errors.readOnly.title,
     ]);
     await logLevelControl("info");
-    await browser.pause(300);
-    expect(await readData()).toEqual(newer);
+    // "Never overwrites" is a negative check, and a late save would make it pass empty. So let
+    // the plugin prove it has followed the file after the refused change: a second file from a
+    // newer version, written from outside, reaches the tab, and only then must `data.json` still
+    // be that file (a save of the refused change would have replaced it).
+    const later = { schemaVersion: 100, logLevel: "warn" };
+    await writeData(later);
+    await browser.waitUntil(async () => (await logLevelControl()).value === "warn", {
+      timeoutMsg: "the settings tab never showed the later file's log level",
+    });
+    expect(await readData()).toEqual(later);
   });
 
   it("logged no error or warning from the plugin and no uncaught error", async function () {

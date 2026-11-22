@@ -15,6 +15,7 @@ import type { Catalog } from "../../../application/messages";
 import {
   Messages,
   Notifier,
+  forClosedView,
   reportDefect,
   reportUnexpected,
   type UserMessage,
@@ -205,8 +206,9 @@ export const useQuery = <Args extends unknown[], A, E extends AppError>(
  *   arguments are ignored. Disable the control on `pending`.
  * - While the scope lives, the outcome lands as in `useQuery`.
  * - After the scope ended, the run still completes and the component's refs stay untouched. A
- *   success is silent, a typed failure becomes a notice through `Notifier`, a defect is reported
- *   once. `run` resolves to the outcome either way.
+ *   success is silent, a typed failure becomes a notice through `Notifier` worded for a closed
+ *   view (`forClosedView`: the input is gone, not kept), a defect is reported once. `run`
+ *   resolves to the outcome either way, with the same text.
  */
 export const useCommand = <Args extends unknown[], A, E extends AppError>(
   fn: UseCaseFn<Args, A, E>,
@@ -229,8 +231,11 @@ export const useCommand = <Args extends unknown[], A, E extends AppError>(
   const execute = async (args: Args): Promise<RunOutcome<A, E>> => {
     const outcome = await outcomeOf(runtime, messages, await exitOf(runtime, fn, args));
     if (alive) return refs.settle(outcome);
-    if (outcome._tag === "failure") await notify(outcome.message);
-    return outcome;
+    if (outcome._tag !== "failure") return outcome;
+    // The view and its form are gone, so the text must not say the input is kept.
+    const closed = { ...outcome, message: forClosedView(outcome.message) };
+    await notify(closed.message);
+    return closed;
   };
 
   const run = (...args: Args): Promise<RunOutcome<A, E>> => {

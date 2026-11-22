@@ -53,7 +53,7 @@ Eine Gemeinschaft hat genau eine Farbe aus einer festen Palette, nie frei gewäh
 
 Schrift ist die des Hosts: `--wm-font` folgt `--font-interface`, `--wm-font-mono` folgt `--font-monospace` (IDs, Daten, Zahlen mit `tabular-nums`). Die Schriftgrößen folgen Obsidians Oberflächengrößen und damit der Einstellung des Nutzers: Tailwinds `text-xs` bis `text-lg` sind `--font-ui-smaller`, `--font-ui-small`, `--font-ui-medium`, `--font-ui-large`; `text-xl` und `text-2xl` bleiben auf Tailwinds Skala, weil Obsidian keine größere Oberflächengröße hat. Die Stufen der Planung (Kennzahl, Seitentitel, Schritt-Frage, Abschnittstitel, Fließtext, Metadaten, Labels in Versalien) gelten als Rangfolge, nicht als Pixelwerte.
 
-Die Schrift Geist, die der Entwurf vom 15.11.2026 mit lokaler Bündelung vorsah, ist nicht eingebaut. Ob sie kommt, ist offen ([[09 - Offene Punkte vor Implementierung]], O-D12).
+Die Schrift Geist, die der Entwurf vom 15.11.2026 mit lokaler Bündelung vorsah, entfällt: Entschieden am 22.11.2026 bleibt die Schrift des Hosts ([[09 - Offene Punkte vor Implementierung]], O-D12; Nachtrag in [[K-13 - Nuxt UI als Frontend-Komponentenbasis]]).
 
 ## Abstände und Formen
 

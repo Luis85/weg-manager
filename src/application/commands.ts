@@ -1,14 +1,15 @@
 import type { AppServices } from "./app-services";
 import type { Catalog } from "./messages";
+import { commandsOf } from "./module";
+import { APP_MODULES } from "./modules";
 import type { Route } from "./routes";
-import { shellCommands, type PluginCommand } from "./shell";
+import type { PluginCommand } from "./shell";
 
 /** A command of the plugin: its label from the whole catalog, a route of the app, any service. */
 export type AppCommand = PluginCommand<Catalog, Route, AppServices>;
 
 /**
- * Every command of the plugin, composed from the modules' parts (ADR 0006): composition only, like
- * `note-types.ts`. A feature adds its commands here, from its application index; bootstrap
+ * Every command of the plugin, from the modules' manifests in module order (ADR 0006); bootstrap
  * registers each (`registerCommands`).
  */
-export const appCommands: readonly AppCommand[] = [...shellCommands];
+export const appCommands: readonly AppCommand[] = commandsOf(APP_MODULES);

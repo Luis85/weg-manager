@@ -15,6 +15,7 @@ import { incidentsLayer } from "../../logging/incidents";
 import { deviceStoreLayer } from "./device-store";
 import { hostEventsLayer } from "./events";
 import { showMessage } from "./notices";
+import { todayLayer } from "./today";
 
 export { NOTICE_DURATION } from "./notices";
 
@@ -73,13 +74,14 @@ export type ShellAdapters = Pick<
   | "deviceStore"
   | "incidents"
   | "logSink"
+  | "today"
   | "hostEvents"
 >;
 
 /**
  * The Obsidian adapters of the shell's ports for one plugin load: `data.json`, notices, the
- * clipboard, host info, the vault's local storage, incident ids, the console, and the host event
- * adapter, which `appServicesLayer` builds last.
+ * clipboard, host info, the vault's local storage, incident ids, the console, the machine's clock
+ * for today, and the host event adapter, which `appServicesLayer` builds last.
  */
 export const shellAdapters = (plugin: Plugin): ShellAdapters => ({
   settingsStore: storeLayer(plugin),
@@ -89,5 +91,6 @@ export const shellAdapters = (plugin: Plugin): ShellAdapters => ({
   deviceStore: deviceStoreLayer(plugin),
   incidents: incidentsLayer,
   logSink: consoleSinkLayer,
+  today: todayLayer(plugin),
   hostEvents: hostEventsLayer(plugin),
 });

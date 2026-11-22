@@ -2,7 +2,17 @@
 # Stryker re-tests only the mutants whose code or tests changed since the cached
 # reports/stryker-incremental.json. A by-hand run can ask for every mutant (`full`). A failed run
 # opens, or adds a comment to, the one issue "Nightly mutation run failed", so that a red night
-# reaches somebody. Never run so far; see docs/engineering/github-setup.md.
+# reaches somebody. A job that runs into its time limit counts as failed for that issue.
+#
+# The cache key holds everything the results depend on that Stryker's incremental mode does not
+# track (it tracks the mutated sources and the test files only): the lockfile, the Stryker config,
+# the Vitest config it points at and what that imports, the tsconfigs of the type checker and the
+# test support code (the Obsidian double, the fixtures). A change to any of them makes the first run
+# after it test every mutant: the time limits are set for that full run (the first manual run on
+# 2026-11-22 was cut off at 45 minutes without a report).
+#
+# Monday to Saturday the run is incremental. On Sunday it tests every mutant, which also re-tests
+# the survivors against tests written since (an incremental run does not, see testing.md).
 #
 # A second job, `mutation-edge`, mutates the edge layers the gated run skips (Obsidian adapters,
 # presentation `.ts` files, bootstrap) with its own config, cache and report. It has no threshold:
@@ -12,7 +22,10 @@ name: Nightly mutation
 
 on:
   schedule:
-    - cron: "17 2 * * *"
+    # Incremental, Monday to Saturday.
+    - cron: "17 2 * * 1-6"
+    # Every mutant, on Sunday. The `full` test below matches this exact string.
+    - cron: "17 2 * * 0"
   workflow_dispatch:
     inputs:
       full:
@@ -26,7 +39,7 @@ permissions:
 jobs:
   mutation:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -36,18 +49,23 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # What the results depend on besides the mutated sources and the test files (see the top):
+      # the gated run's tests import tests/support, and its Vitest config imports vitest.config.ts.
+      - name: Hash the inputs of the results
+        id: inputs
+        run: echo "hash=${{ hashFiles('configs/stryker.config.mjs', 'configs/vitest.stryker.config.ts', 'configs/vitest.config.ts', 'configs/tsconfig.app.json', 'configs/tsconfig.base.json', 'tests/support/**', 'package-lock.json') }}" >> "$GITHUB_OUTPUT"
       # A cache entry never changes, so each run saves under its own key and the next run restores
-      # the newest one with the same Stryker config and lockfile (restore-keys).
+      # the newest one with the same inputs (restore-keys).
       - name: Restore the incremental results
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: reports/stryker-incremental.json
-          key: stryker-${{ runner.os }}-${{ hashFiles('configs/stryker.config.mjs', 'configs/vitest.stryker.config.ts', 'package-lock.json') }}-${{ github.run_id }}
+          key: stryker-${{ runner.os }}-${{ steps.inputs.outputs.hash }}-${{ github.run_id }}
           restore-keys: |
-            stryker-${{ runner.os }}-${{ hashFiles('configs/stryker.config.mjs', 'configs/vitest.stryker.config.ts', 'package-lock.json') }}-
+            stryker-${{ runner.os }}-${{ steps.inputs.outputs.hash }}-
       - name: Mutation testing
         env:
-          SCRIPT: ${{ inputs.full && 'test:mutation:full' || 'test:mutation' }}
+          SCRIPT: ${{ (inputs.full || github.event.schedule == '17 2 * * 0') && 'test:mutation:full' || 'test:mutation' }}
         run: npm run "$SCRIPT"
       # Also after a failed threshold: the incremental file is what the next run builds on.
       - name: Save the incremental results
@@ -55,7 +73,7 @@ jobs:
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: reports/stryker-incremental.json
-          key: stryker-${{ runner.os }}-${{ hashFiles('configs/stryker.config.mjs', 'configs/vitest.stryker.config.ts', 'package-lock.json') }}-${{ github.run_id }}
+          key: stryker-${{ runner.os }}-${{ steps.inputs.outputs.hash }}-${{ github.run_id }}
       - name: Upload mutation report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -76,24 +94,32 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # The edge run's dom tests also go through vite.shared.ts (and the two scripts it imports),
+      # and need the setup file under tests/support.
+      - name: Hash the inputs of the results
+        id: inputs
+        run: echo "hash=${{ hashFiles('configs/stryker.edge.config.mjs', 'configs/vitest.stryker.edge.config.ts', 'configs/vitest.config.ts', 'configs/vite.shared.ts', 'scripts/no-head-plugins.mjs', 'scripts/scope-css.mjs', 'configs/tsconfig.app.json', 'configs/tsconfig.base.json', 'tests/support/**', 'package-lock.json') }}" >> "$GITHUB_OUTPUT"
       # Same cache scheme as the gated job, under its own key and file.
       - name: Restore the incremental results
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: reports/stryker-edge-incremental.json
-          key: stryker-edge-${{ runner.os }}-${{ hashFiles('configs/stryker.edge.config.mjs', 'configs/vitest.stryker.edge.config.ts', 'package-lock.json') }}-${{ github.run_id }}
+          key: stryker-edge-${{ runner.os }}-${{ steps.inputs.outputs.hash }}-${{ github.run_id }}
           restore-keys: |
-            stryker-edge-${{ runner.os }}-${{ hashFiles('configs/stryker.edge.config.mjs', 'configs/vitest.stryker.edge.config.ts', 'package-lock.json') }}-
+            stryker-edge-${{ runner.os }}-${{ steps.inputs.outputs.hash }}-
       - name: Mutation testing of the edge layers
         env:
-          FORCE: ${{ inputs.full && '--force' || '' }}
-        run: npm run test:mutation:edge -- $FORCE
+          FORCE: ${{ (inputs.full || github.event.schedule == '17 2 * * 0') && '--force' || '' }}
+        run: |
+          # $FORCE is empty or --force, so it stays unquoted.
+          # shellcheck disable=SC2086
+          npm run test:mutation:edge -- $FORCE
       - name: Save the incremental results
         if: ${{ !cancelled() }}
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: reports/stryker-edge-incremental.json
-          key: stryker-edge-${{ runner.os }}-${{ hashFiles('configs/stryker.edge.config.mjs', 'configs/vitest.stryker.edge.config.ts', 'package-lock.json') }}-${{ github.run_id }}
+          key: stryker-edge-${{ runner.os }}-${{ steps.inputs.outputs.hash }}-${{ github.run_id }}
       - name: Upload mutation report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -104,7 +130,9 @@ jobs:
 
   report-failure:
     needs: [mutation, mutation-edge]
-    if: ${{ failure() }}
+    # A job cut off by its time limit ends as "cancelled", which failure() does not see, so the
+    # results are read directly. A run a person cancels reports too; close that comment by hand.
+    if: ${{ always() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

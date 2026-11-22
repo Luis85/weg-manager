@@ -181,6 +181,35 @@ describe("updating a record", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
+  // `NoteStore.rename` gives the frontmatter as the store reads it after the move; in Obsidian a
+  // rename that joined another one's link update returns before the cache has indexed the save.
+  it.effect("returns the values it saved with the renamed path, whatever the rename read", () => {
+    const fixture = recordFixture();
+    const lagging = Layer.effect(
+      NoteStore,
+      NoteStore.useSync((store) =>
+        NoteStore.of({
+          ...store,
+          rename: (path, newName) =>
+            Effect.map(store.rename(path, newName), (note) => ({
+              ...note,
+              frontmatter: sampleNote(1),
+            })),
+        }),
+      ),
+    );
+    return Effect.gen(function* () {
+      const record = yield* loaded(fixture);
+      const note = yield* samples
+        .update(record, { ...LOADED, title: "Neu", note: "frisch" })
+        .pipe(Effect.provide(lagging));
+      assert.deepStrictEqual(note, {
+        path: `${SAMPLE_FOLDER}/Neu.md`,
+        frontmatter: sampleNote(1, { title: "Neu", note: "frisch" }),
+      });
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
   it.effect("stops trying names when the rename fails for another reason", () => {
     const fixture = recordFixture();
     let renames = 0;

@@ -10,22 +10,32 @@ import {
   communityText,
   expectFormClosed,
   expectListed,
+  expectSummary,
   fileText,
   fillForm,
   saveForm,
   writeNote,
 } from "../communities";
 import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
+import { de } from "../texts";
 
 const BOM = "\uFEFF";
 
-/** Saves the community `name` through the form with another kind, as a person does. */
+/**
+ * Saves the community `name` through the form with another kind, as a person does, and returns
+ * once the view shows the saved kind: the list follows the write a moment later, and the next
+ * click must not land on a card that is about to be redrawn.
+ */
 const saveKind = async (name: string, kind: string) => {
-  await browser.$(ROOT).$(`button[aria-label='${name} bearbeiten']`).click();
+  await browser
+    .$(ROOT)
+    .$(`button[aria-label='${de.communities.screen.editLabel(name)}']`)
+    .click();
   await expect(browser.$(ROOT).$("[data-testid=community-form]")).toBeDisplayed();
   await fillForm({ kind });
   await saveForm();
   await expectFormClosed();
+  await expectSummary(name, de.communities.screen.summary(kind, "Einheiten"));
 };
 
 /** Waits until the file's text is `expected`; the form closes before the write lands. */
@@ -44,32 +54,31 @@ describe("note write fidelity", function () {
   it("saves a changed kind by changing only its line, whatever else the note holds", async function () {
     await installConsoleSpy();
     const path = `${FOLDER}/Ahornweg 12.md`;
-    const before = communityText(
-      community(1, { name: "Ahornweg 12", short_code: "AW" }),
-      "Body\n",
-    ).replace(
-      "---\nschema",
-      [
-        "---",
-        "# Kommentar des Beirats",
-        "plz: 01067",
-        "version: 1.10",
-        "iban_nr: 12345678901234567890",
-        "flow: [a, b]",
-        "seit: 2024-01-01",
-        "zeit: 12:30",
-        "quoted: 'yes'",
-        '"verwalter": "Müller & Söhne" # mit Kommentar',
-        "liste:",
-        "- eins",
-        "-   zwei",
-        "text: |",
-        "  Zeile 1",
-        "",
-        "  Zeile 3",
-        "schema",
-      ].join("\n"),
-    );
+    const before = communityText(community(1, { name: "Ahornweg 12", short_code: "AW" }), "Body\n")
+      .replace(
+        "---\nschema",
+        [
+          "---",
+          "# Kommentar des Beirats",
+          "plz: 01067",
+          "version: 1.10",
+          "iban_nr: 12345678901234567890",
+          "flow: [a, b]",
+          "seit: 2024-01-01",
+          "zeit: 12:30",
+          "quoted: 'yes'",
+          '"verwalter": "Müller & Söhne" # mit Kommentar',
+          "liste:",
+          "- eins",
+          "-   zwei",
+          "text: |",
+          "  Zeile 1",
+          "",
+          "  Zeile 3",
+          "schema",
+        ].join("\n"),
+      )
+      .replace("kind: WEG", "kind: WEG  # Art des Objekts");
     await writeNote(path, before);
     await openView();
     await expectListed(["Ahornweg 12"]);
@@ -96,6 +105,23 @@ describe("note write fidelity", function () {
     await expectListed(["Ahornweg 12", "Bom", "Crlf"]);
     await saveKind("Crlf", "Haus");
     await expectText(path, before.replace("kind: WEG", "kind: Haus"));
+  });
+
+  it("saves notes whose block closes with `----` or `---` and blanks, keeping that line", async function () {
+    const closed = [
+      ["Vier", community(4, { name: "Vier", short_code: "VI", color: "violet" }), "----"],
+      ["Leer", community(5, { name: "Leer", short_code: "LE", color: "slate" }), "--- \t"],
+    ] as const;
+    const textOf = (fields: Readonly<Record<string, string>>, closing: string) =>
+      communityText(fields, "Body\n").replace("---\nBody", `${closing}\nBody`);
+    for (const [name, fields, closing] of closed) {
+      await writeNote(`${FOLDER}/${name}.md`, textOf(fields, closing));
+    }
+    await expectListed(["Ahornweg 12", "Bom", "Crlf", "Leer", "Vier"]);
+    for (const [name, fields, closing] of closed) {
+      await saveKind(name, "Haus");
+      await expectText(`${FOLDER}/${name}.md`, textOf({ ...fields, kind: "Haus" }, closing));
+    }
   });
 
   it("writes values that Obsidian's parseYaml reads back exactly", async function () {
@@ -153,23 +179,42 @@ describe("note write fidelity", function () {
       "\n---\na: 1\n---\n",
       "--- \na: 1\n---\n",
       "---\na: 1\nbody\n",
+      "---\na: 1\n----\nbody\n",
+      "---\na: 1\n---  \nbody\n",
+      "---\r\na: 1\r\n---\t\r\nbody\r\n",
     ];
     const found = texts.map((text) => {
       const note = splitNoteText(text);
       return Result.isSuccess(note) && note.success.block !== undefined;
     });
-    const cached = await browser.executeObsidian(async ({ app }, notes) => {
+    const paths = await browser.executeObsidian(async ({ app }, notes) => {
       const files = await Promise.all(
         notes.map((text, index) => app.vault.create(`Fences ${index}.md`, text)),
       );
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return files.map(
-        (file) =>
-          app.metadataCache
-            .getFileCache(file)
-            ?.sections?.some((section) => section.type === "yaml") ?? false,
-      );
+      return files.map((file) => file.path);
     }, texts.map(String));
+    // A new file has no cache entry until Obsidian has indexed it: wait for all of them.
+    await browser.waitUntil(
+      () =>
+        browser.executeObsidian(
+          ({ app }, files) =>
+            files.every((path) => {
+              const file = app.vault.getFileByPath(path);
+              return file !== null && app.metadataCache.getFileCache(file) !== null;
+            }),
+          paths,
+        ),
+      { timeoutMsg: "Obsidian never indexed the notes with the fences" },
+    );
+    const cached = await browser.executeObsidian(
+      ({ app }, files) =>
+        files.map((path) => {
+          const file = app.vault.getFileByPath(path);
+          const cache = file === null ? null : app.metadataCache.getFileCache(file);
+          return cache?.sections?.some((section) => section.type === "yaml") ?? false;
+        }),
+      paths,
+    );
     expect(found).toEqual(cached);
   });
 

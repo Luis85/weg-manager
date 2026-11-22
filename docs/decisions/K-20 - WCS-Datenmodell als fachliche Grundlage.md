@@ -25,7 +25,7 @@ Das Glossar und das Data-Dictionary des WEG Control System (WCS) sind die Grundl
 3. **Gemeinschaft:** Die Art bleibt freier Text mit Vorschlägen. „WEG“, „Tiefgarage“ und „Viertel“ sind Vorschläge, kein geschlossener Typ.
    - Die fachliche WCS-„id“ (Kurzschlüssel) ist unser Kürzel.
    - Die technische Identität bleibt die `id` nach [[docs/adr/0007-vault-data-access.md|ADR 0007]].
-   - Das Kürzel ist änderbar ([[PBI-73 - Kürzel einer Gemeinschaft nachträglich ändern]]).
+   - Das Kürzel ist änderbar ([[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]]).
 4. **KI, Gmail und Drive:** Diese Teile des WCS übernehmen wir neutral und optional.
    - Statt „Claude“ gibt es die optionale Rolle „Agent“.
    - Statt der Gmail-Thread-ID gibt es eine allgemeine Nachrichtenreferenz.

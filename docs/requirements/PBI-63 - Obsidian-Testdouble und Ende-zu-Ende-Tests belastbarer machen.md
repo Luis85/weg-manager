@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-22
 horizon: ""
 start: ""
 due: ""
@@ -23,7 +23,7 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-63 · Obsidian-Testdouble und Ende-zu-Ende-Tests belastbarer machen
@@ -68,3 +68,5 @@ Test-Review vom 22.11.2026, Befunde B2, B3 und B4. `docs/engineering/testing.md`
 ## Kommentare
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
+- 22.11.2026: Die Kriterien 6 bis 8 sind erfüllt (e2e-Specs ohne feste Wartezeit auf eine Wirkung bis auf die begründete Sekunde in `no-network.e2e.ts`, maschinenabhängige Beobachtungen in `vault-ready.e2e.ts` aufgezeichnet statt geprüft, Texte über den Katalog, e2e-Suite mehrfach hintereinander grün); die Kriterien 1 bis 5 sind offen.
+- 22.11.2026: Die Kriterien 1 bis 5 sind erfüllt, damit alle acht: Szenario „Notiz mit schwierigem Frontmatter“ (26 Notizen; das Double liest YAML jetzt mit dem Paket `yaml`, wie Obsidian), Szenario für Tabs und Ansichten mit verzögert geladenem Hintergrund-Tab und einer Route dorthin, Reihenfolge der Ereignisse festgehalten (wechselnde ausdrücklich als `eitherOrder`) samt „Schreiben direkt nach dem Anlegen“, Zaun statt fester Wartezeit, `implements Uses<…>` je Klasse gegen `obsidian.d.ts` (Casts in `tests/` von 96 auf 61), Vertrag des Notizspeichers im echten Obsidian (40 von 51 Fällen, 11 begründet übersprungen); dabei behoben: ein Frontmatter-Block nur aus Kommentaren galt als unlesbar. `npm run verify` grün, e2e fünfmal hintereinander grün.

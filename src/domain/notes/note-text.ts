@@ -1,5 +1,6 @@
 import { Result } from "effect";
 import type { Frontmatter, FrontmatterPatch } from "./note-type";
+import { lineComment } from "./line-comment";
 import { yamlEntry } from "./yaml-text";
 
 /**
@@ -30,8 +31,16 @@ export type NoteText = {
   readonly rest: string;
 };
 
-/** One top-level key and the lines it spans, `end` exclusive. */
-type Entry = { readonly key: string; readonly start: number; end: number };
+/**
+ * One top-level key, the lines it spans (`end` exclusive) and the comment at the end of its key
+ * line, with the blanks before it (`lineComment`).
+ */
+type Entry = {
+  readonly key: string;
+  readonly start: number;
+  end: number;
+  readonly comment: string;
+};
 
 /** The lines of `text`, each with its own line break (`\n` or `\r\n`); a lone `\r` is content. */
 const linesOf = (text: string): string[] =>
@@ -62,13 +71,20 @@ const unfenced = (bom: string, content: string): NoteText => ({
 });
 
 /**
+ * The closing lines the plugin writes into, kept byte for byte (owner decision of 2026-11-22):
+ * `---`, `---` with spaces or tabs after it, and `----`. Obsidian's metadata cache closes the block
+ * at any line that starts with `---` (measured in 1.15.1); the others (`-----`, `---- `, `--- x`,
+ * `---x`) stay `"layout"`.
+ */
+const WRITABLE_CLOSE = /^(?:---[ \t]*|----)$/;
+
+/**
  * The note's frontmatter block, where Obsidian's metadata cache finds it (measured in Obsidian
  * 1.15.1): after an optional BOM, a first line `---`, up to the next line that starts with
- * `---`. Without such a line, or with spaces after the first `---`, there is no block. Where
- * Obsidian's own readers disagree, or it is not known that they agree, this refuses
- * (`"layout"`): a closing line that only starts with `---` (`----`, `---  `) closes the block for
- * the metadata cache but not for `getFrontMatterInfo`, and the cache reads a block after lone
- * carriage returns, `getFrontMatterInfo` does not. A first line `----` or `---x` is refused too.
+ * `---`. Without such a line, or with spaces after the first `---`, there is no block. A closing
+ * line other than `WRITABLE_CLOSE` is refused (`"layout"`), and so are lone carriage returns, after
+ * which the cache reads a block and `getFrontMatterInfo` does not, and a first line `----` or
+ * `---x`.
  */
 export const splitNoteText = (text: string): Result.Result<NoteText, "layout"> => {
   const bom = text.startsWith(BOM) ? BOM : "";
@@ -83,7 +99,7 @@ export const splitNoteText = (text: string): Result.Result<NoteText, "layout"> =
     : -1;
   const close = lines[closing];
   if (close === undefined) return Result.succeed(unfenced(bom, content));
-  if (contentOf(close) !== FENCE) return Result.fail("layout");
+  if (!WRITABLE_CLOSE.test(contentOf(close))) return Result.fail("layout");
   return Result.succeed({
     bom,
     eol: lineBreakOf(first),
@@ -103,20 +119,26 @@ const SINGLE_QUOTED_KEY = /^'((?:[^']|'')*)'[ \t]*:(?:[ \t]|$)/;
 const decodeDoubleQuoted = (inner: string): string | undefined =>
   Result.getOrUndefined(Result.try(() => JSON.parse(`"${inner}"`) as string));
 
+/** A top-level key line: its key, and the text after the key's colon. */
+type KeyLine = { readonly key: string; readonly value: string };
+
+/** The key as YAML reads it from what the key pattern matched; `undefined` if YAML reads none. */
+const readKey = (line: string, inner: string): string | undefined => {
+  if (line.startsWith('"')) return decodeDoubleQuoted(inner);
+  if (line.startsWith("'")) return inner.replaceAll("''", "'");
+  return /[ \t]#/.test(inner) ? undefined : inner;
+};
+
 /** The key a top-level line starts with, written plain or quoted; `undefined` if none. */
-const keyOf = (line: string): string | undefined => {
-  const double = DOUBLE_QUOTED_KEY.exec(line);
+const keyOf = (line: string): KeyLine | undefined => {
+  const match =
+    DOUBLE_QUOTED_KEY.exec(line) ?? SINGLE_QUOTED_KEY.exec(line) ?? PLAIN_KEY.exec(line);
+  if (match === null) return undefined;
   // Stryker disable next-line StringLiteral: the group always takes part in a match.
-  if (double !== null) return decodeDoubleQuoted(double[1] ?? "");
-  const single = SINGLE_QUOTED_KEY.exec(line);
-  if (single !== null) {
-    // Stryker disable next-line StringLiteral: the group always takes part in a match.
-    const inner = single[1] ?? "";
-    return inner.replaceAll("''", "'");
-  }
-  const plain = PLAIN_KEY.exec(line)?.[1];
-  // Stryker disable next-line ConditionalExpression: `test` of undefined is false, so either way it returns undefined.
-  return plain === undefined || /[ \t]#/.test(plain) ? undefined : plain;
+  const [written, inner = ""] = match;
+  const key = readKey(line, inner);
+  // The match may end with the blank after the colon; the value keeps it.
+  return key === undefined ? undefined : { key, value: line.slice(written.trimEnd().length) };
 };
 
 /** A line that continues the entry above it: indented, or an item of a list at column 0. */
@@ -138,9 +160,10 @@ const entriesOf = (lines: readonly string[]): Result.Result<Entry[], "layout"> =
       last.end = index + 1;
       continue;
     }
-    const key = keyOf(content);
-    if (key === undefined) return Result.fail("layout");
-    entries.push({ key, start: index, end: index + 1 });
+    const found = keyOf(content);
+    if (found === undefined) return Result.fail("layout");
+    const comment = lineComment(found.value);
+    entries.push({ key: found.key, start: index, end: index + 1, comment });
   }
   return Result.succeed(entries);
 };
@@ -155,9 +178,16 @@ const sameKeys = (entries: readonly Entry[], current: Frontmatter): boolean => {
   );
 };
 
+/** `entry`, the lines `yamlEntry` wrote, with `comment` at the end of its first line. */
+const withComment = (entry: string, comment: string, eol: string): string => {
+  const end = entry.indexOf(eol);
+  return `${entry.slice(0, end)}${comment}${entry.slice(end)}`;
+};
+
 /**
- * The block's lines with `patch` applied: each entry the patch sets is replaced, each it removes
- * dropped, every other line kept; new keys follow at the end, in the patch's order.
+ * The block's lines with `patch` applied: each entry the patch sets is replaced, with the comment
+ * of its key line behind the new value, each it removes dropped with its comment, every other line
+ * kept; new keys follow at the end, in the patch's order.
  */
 const rewrite = (
   lines: readonly string[],
@@ -169,10 +199,11 @@ const rewrite = (
   const removed = new Set(patch.remove);
   const written: string[] = [];
   let next = 0;
-  for (const { key, start, end } of entries) {
+  for (const { key, start, end, comment } of entries) {
     written.push(...lines.slice(next, start));
     next = end;
-    if (Object.hasOwn(set, key)) written.push(yamlEntry(key, set[key], eol));
+    if (Object.hasOwn(set, key))
+      written.push(withComment(yamlEntry(key, set[key], eol), comment, eol));
     else if (!removed.has(key)) written.push(...lines.slice(start, end));
   }
   written.push(...lines.slice(next));
@@ -201,8 +232,10 @@ const assemble = (
 
 /**
  * `note` with `patch` applied as lines: a key that is set and exists gets new lines in its place,
- * a new key is appended at the end of the block (a block is added when there is none), a removed
- * key's lines go, and a block left without any line goes with its fences, as Obsidian does. Every
+ * with the comment at the end of its key line kept behind the new value (comments on the lines of
+ * a value that spans lines go with that value), a new key is appended at the end of the block (a
+ * block is added when there is none), a removed key's lines go with their comments, and a block
+ * left without any line goes with its fences, as Obsidian does. Every
  * other byte stays, and new lines use the note's line break. `current` is the frontmatter YAML
  * read from `note`; when the keys found by line differ from it, the edit is `"layout"`. An empty
  * patch returns the text unchanged. Throws for a value no record holds (see `yamlEntry`).

@@ -9,6 +9,7 @@ import {
   testMessages,
 } from "../../../support/layers";
 import { STORE_EVENT_STEPS } from "../../../support/notes/store-events";
+import { asObsidian, asObsidianPlugin } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -37,8 +38,8 @@ describe("the Obsidian NoteStore with the host event adapter", () => {
       testMessages,
     );
     const layer = Layer.mergeAll(
-      hostEventsLayer(plugin as never).pipe(Layer.provideMerge(support)),
-      noteStoreLayer(app as never),
+      hostEventsLayer(asObsidianPlugin(plugin)).pipe(Layer.provideMerge(support)),
+      noteStoreLayer(asObsidian(app)),
     );
     const runtime = ManagedRuntime.make(layer);
     await runtime.runPromise(Effect.void);

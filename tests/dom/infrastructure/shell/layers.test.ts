@@ -8,6 +8,7 @@ import {
   SettingsStore,
 } from "../../../../src/application/shell/ports";
 import { ISSUES_URL } from "../../../../src/application/shell";
+import { asObsidianPlugin } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -24,7 +25,7 @@ const NO_PLATFORM = Object.fromEntries(Object.keys(Platform).map((flag) => [flag
 
 const setup = (options: { data?: unknown; failLoadData?: boolean } = {}) => {
   const { plugin, registry, app } = createTestPlugin(Bare, options);
-  const adapters = shellAdapters(plugin as never);
+  const adapters = shellAdapters(asObsidianPlugin(plugin));
   const layer = Layer.mergeAll(
     adapters.settingsStore,
     adapters.notifier,

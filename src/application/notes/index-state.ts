@@ -1,6 +1,7 @@
 import { Array as Arr, Equal, Order } from "effect";
 import {
   markDuplicateIds,
+  markMissingReferences,
   parseSchemaMarker,
   type NoteFields,
   type UnindexedIssue,
@@ -61,7 +62,8 @@ export type Contents = {
 
 /**
  * The notes per registered type and the unindexed ones, each sorted by path, after
- * `markDuplicateIds` over the records of every type: an id is unique across types too.
+ * `markDuplicateIds` and `markMissingReferences` over the records of every type: an id is unique
+ * across types too, and a reference may name a record of any type.
  */
 export const contentsOf = (types: TypesByName, trackedNotes: Iterable<TrackedNote>): Contents => {
   const sorted = Arr.sort(Arr.fromIterable(trackedNotes), byPath);
@@ -71,10 +73,32 @@ export const contentsOf = (types: TypesByName, trackedNotes: Iterable<TrackedNot
     if (tracked.kind === "record") records.push(tracked);
     else unindexed.push(tracked.note);
   }
-  const marked = markDuplicateIds(records.map((tracked) => tracked.note));
+  const deduplicated = markDuplicateIds(records.map((tracked) => tracked.note));
+  const marked = markMissingReferences(
+    records.map((tracked, at) => ({
+      // A tracked record is of a registered type, and `markDuplicateIds` keeps the order.
+      fields: (types.get(tracked.type) as IndexedType).fields,
+      note: deduplicated[at] as AnyRecord,
+    })),
+  );
   const byType = new Map<string, AnyRecord[]>(Arr.map([...types.keys()], (name) => [name, []]));
   records.forEach((tracked, at) => byType.get(tracked.type)?.push(marked[at] as AnyRecord));
   return { records: byType, unindexed };
+};
+
+/**
+ * The notes by id, for a snapshot's lookup: a note without an id is left out, and of the notes
+ * that share an id (each read-only with `id.duplicate`) the first in `notes` stays, the first by
+ * path in a snapshot.
+ */
+export const notesById = <N extends { readonly id: string | undefined }>(
+  notes: readonly N[],
+): ReadonlyMap<string, N> => {
+  const byId = new Map<string, N>();
+  for (const note of notes) {
+    if (note.id !== undefined && !byId.has(note.id)) byId.set(note.id, note);
+  }
+  return byId;
 };
 
 /**

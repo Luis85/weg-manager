@@ -1,6 +1,6 @@
 # ADR 0006 · Modules inside the layers, English in code
 
-- Status: accepted; public entries of `presentation/shell` and the enforcement amended on 2026-11-21; composition seams and the `application/notes` adapter entry amended on 22.11.2026; the record kit in `notes` and the presentation module `notes` amended on 22.11.2026 (see the notes at the end)
+- Status: accepted; public entries of `presentation/shell` and the enforcement amended on 2026-11-21; composition seams and the `application/notes` adapter entry amended on 22.11.2026; the record kit in `notes` and the presentation module `notes` amended on 22.11.2026; the module manifest amended on 2026-11-22 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -76,3 +76,17 @@ Decision (owner, 22.11.2026):
 - **A feature keeps what is its own:** its note type, its rules (for communities: unique short code and colour, the fixed short code, the kinds, the selection), its texts and its layout.
 
 Consequence: a new record type declares its type, its rules and its texts, and gets lists, writes, the form's flow and the conflict UI from `notes`. The modules are `shell`, `notes` and `communities`, now with a `notes` folder in every layer, presentation included.
+
+## Amendment, 2026-11-22: one manifest per module and side, one module list
+
+Context: a new module still registered itself in about twelve shared places (PBI-60): the module lists of ESLint and fallow, seven root files of the application, `app-surface.ts`, the service graph, the harness and the test runtime. Only some of them failed when a line was missing; the navigation entry and the frame parts failed nowhere.
+
+Decision (owner, 22.11.2026):
+
+- **Two manifests per module.** The application side is `src/application/<module>/module.ts`, written with `defineModule` (`src/application/module.ts`) as plain data: `name` (the folder name), `catalog` (`de`, `en`), `errors` (`tags`, one per member of the module's error union, and `describe`), `noteTypes`, `routes` (schemas of its own screens), `sections` (settings section ids with an `order`), `services` (its Layer, built on `shell` and `notes`) and `commands`; a part the module has not is left out. The screens are `src/presentation/<module>/screens.ts`, typed `ModuleScreens<"<module>">`: `screens` (one per route of its manifest; the shell's is the settings screen), `sections` (one part per section id), `menu`, `context`. It loads components only through `import()`, so code at plugin load may import it.
+- **One module list.** `APP_MODULES` (`src/application/modules.ts`) lists the application manifests in load order, core modules first. The root files derive from it: `Catalog`, `de`, `en`, `AppError`, `describeError`, `Route`, `SETTINGS_SECTIONS`, `appNoteTypes`, `appCommands`, `AppServices` and the feature modules' part of `appServicesLayer`. `appSurface` takes the screens from a map typed by the module names, so a module of the list without screens does not compile.
+- **The tools read the list.** ESLint takes its module list from `APP_MODULES` (`scripts/modules.mjs` parses the file without running it). fallow reads only JSON and has no placeholder, so `configs/fallow.json` is generated from `configs/fallow.config.mjs` and the list (`npm run fallow:config`); `npm run analyze`, a step of the gate, fails while the file is stale.
+- **A third entry per presentation module.** `screens.ts` is public for `src/presentation/*.ts` only (ESLint); fallow lists it as a public file of every presentation zone. ESLint refuses a value import of Vue, a `.vue` file or a presentation `index.ts` in it; `tests/dom/lazy-presentation.test.ts` proves it at runtime.
+- **Guards gave way to tags.** `isNotesError`, `isCommunitiesError` and their tag sets are gone: `describeError` finds an error's module by the manifests' tags.
+
+Consequence: a new module writes its two manifests and edits two shared places, `APP_MODULES` and the screens map in `app-surface.ts`, then regenerates `configs/fallow.json`. A module with events of its own still adds its record in `src/application/events.ts`; a new port still adds a field to `AppAdapters` and an adapter in each host. Feature services are merged side by side on the core services, so a feature whose service needs another feature's does not compile until the graph orders them.

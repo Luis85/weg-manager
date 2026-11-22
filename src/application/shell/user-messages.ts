@@ -13,9 +13,24 @@ export type UserMessage = {
   readonly severity: "info" | "warning" | "error";
   readonly title: string;
   readonly detail: string;
+  /**
+   * What the text says once the view that held the user's input is closed, when `detail` talks
+   * about that view (a form that keeps the input). `forClosedView` swaps it in.
+   */
+  readonly detailAfterClose?: string;
   readonly action?: UserMessageAction;
   /** A web page that helps with the message, shown as a link: the plugin's issues (`ISSUES_URL`). */
   readonly link?: string;
+};
+
+/**
+ * The message for a failure that is reported after the view it belongs to is closed, as a notice
+ * (`useCommand`): the text for a closed view where the message has one, and no action, because
+ * the retry button was the view's. A message that does not depend on the view stays as it is.
+ */
+export const forClosedView = (message: UserMessage): UserMessage => {
+  const { detailAfterClose, action: _action, ...rest } = message;
+  return detailAfterClose === undefined ? message : { ...rest, detail: detailAfterClose };
 };
 
 /** The text of a shell error. `describeError` (`src/application/user-messages.ts`) hands it here. */

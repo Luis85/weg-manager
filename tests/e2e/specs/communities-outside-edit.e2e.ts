@@ -6,12 +6,14 @@ import {
   communityText,
   expectFormClosed,
   expectListed,
+  expectSummary,
   fileText,
   fillForm,
   saveForm,
   writeNote,
 } from "../communities";
 import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
+import { de } from "../texts";
 
 const PATH = `${FOLDER}/Ahornweg 12.md`;
 const AW = community(1, { name: "Ahornweg 12", short_code: "AW" });
@@ -20,8 +22,15 @@ const AW = community(1, { name: "Ahornweg 12", short_code: "AW" });
 const text = (change: Readonly<Record<string, string>> = {}) =>
   communityText({ ...AW, ...change }, "Notizen\n");
 
+/** What the card of `AW` shows under its name for a kind (the unit label is the one of `AW`). */
+const shows = (kind: string, unitLabel = "Einheiten") =>
+  expectSummary("Ahornweg 12", de.communities.screen.summary(kind, unitLabel));
+
 const openEdit = async () => {
-  await browser.$(ROOT).$("button[aria-label='Ahornweg 12 bearbeiten']").click();
+  await browser
+    .$(ROOT)
+    .$(`button[aria-label='${de.communities.screen.editLabel("Ahornweg 12")}']`)
+    .click();
   await expect(browser.$(ROOT).$("[data-testid=community-form]")).toBeDisplayed();
 };
 
@@ -34,7 +43,8 @@ describe("communities: an outside edit while the form is open", function () {
     await expectListed(["Ahornweg 12"]);
     await openEdit();
     await writeNote(PATH, text({ unit_label: "Wohnungen" }));
-    await browser.pause(300);
+    // The card behind the sheet follows the note: the user types after the view knows the change.
+    await shows("WEG", "Wohnungen");
     await fillForm({ kind: "Haus" });
     await saveForm();
     await expectFormClosed();
@@ -43,18 +53,22 @@ describe("communities: an outside edit while the form is open", function () {
 
   it("writes nothing on a conflict, shows the values and saves the user's choice", async function () {
     await writeNote(PATH, text());
-    await browser.pause(300);
+    // The form starts from what the view knows. Opened before the view followed the write, it
+    // would start from the kind of the test before and find no conflict below.
+    await shows("WEG");
     await openEdit();
     await writeNote(PATH, text({ kind: "Tiefgarage" }));
-    await browser.pause(300);
+    await shows("Tiefgarage");
     await fillForm({ kind: "Haus" });
     await saveForm();
     const conflict = browser.$(ROOT).$("[data-testid=conflict-kind]");
     // The conflict takes the focus to its heading: Save, which held it, does nothing now.
     await expect(browser.$(ROOT).$("[data-testid=record-conflict] h3")).toBeFocused();
-    await expect(conflict).toHaveText(expect.stringContaining("Beim Öffnen: WEG"));
-    await expect(conflict).toHaveText(expect.stringContaining("Deine Eingabe: Haus"));
-    await expect(conflict).toHaveText(expect.stringContaining("Jetzt in der Notiz: Tiefgarage"));
+    await expect(conflict).toHaveText(expect.stringContaining(de.notes.conflict.loaded("WEG")));
+    await expect(conflict).toHaveText(expect.stringContaining(de.notes.conflict.mine("Haus")));
+    await expect(conflict).toHaveText(
+      expect.stringContaining(de.notes.conflict.theirs("Tiefgarage")),
+    );
     expect(await fileText(PATH)).toBe(text({ kind: "Tiefgarage" }));
     await conflict.$("[data-testid=choose-theirs]").click();
     await browser.$(ROOT).$("[data-testid=conflict-apply]").click();
@@ -65,7 +79,7 @@ describe("communities: an outside edit while the form is open", function () {
   it("saves the user's value when the user keeps it", async function () {
     await openEdit();
     await writeNote(PATH, text({ kind: "Garage" }));
-    await browser.pause(300);
+    await shows("Garage");
     await fillForm({ kind: "Haus" });
     await saveForm();
     await expect(browser.$(ROOT).$("[data-testid=record-conflict]")).toBeDisplayed();

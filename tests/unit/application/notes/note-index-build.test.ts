@@ -8,6 +8,7 @@ import {
   TYPES,
   built,
   decoded,
+  expectedSnapshot,
   indexFixture,
   item,
   itemId,
@@ -30,10 +31,10 @@ describe("the note index before VaultReady", () => {
     return Effect.gen(function* () {
       yield* publish(AppEvent.LayoutReady());
       yield* TestClock.adjust(INDEX_BATCH_QUIET);
-      const before = { ready: false, failure: undefined, notes: [] };
-      assert.deepStrictEqual(yield* snapshotOf(testItem), before);
-      assert.deepStrictEqual(yield* snapshotOf(testOther), before);
-      assert.deepStrictEqual(yield* unindexed, before);
+      const status = { ready: false, failure: undefined };
+      assert.deepStrictEqual(yield* snapshotOf(testItem), expectedSnapshot(status));
+      assert.deepStrictEqual(yield* snapshotOf(testOther), expectedSnapshot(status));
+      assert.deepStrictEqual(yield* unindexed, { ...status, notes: [] });
     }).pipe(Effect.provide(fixture.layer));
   });
 
@@ -215,11 +216,10 @@ describe("the note index's registry", () => {
     return Effect.gen(function* () {
       yield* vaultReady;
       yield* built;
-      assert.deepStrictEqual(yield* snapshotOf(testOther), {
-        ready: true,
-        failure: undefined,
-        notes: [],
-      });
+      assert.deepStrictEqual(
+        yield* snapshotOf(testOther),
+        expectedSnapshot({ ready: true, failure: undefined }),
+      );
     }).pipe(Effect.provide(fixture.layer));
   });
 });

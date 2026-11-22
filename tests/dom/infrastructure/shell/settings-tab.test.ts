@@ -7,7 +7,6 @@ const { default: WegManagerPlugin } = await import("../../../../src/main");
 
 type Select = { selectEl: HTMLSelectElement };
 type Control = { disabled: boolean };
-type External = { onExternalSettingsChange(): Promise<void> };
 
 const openTab = async (data?: unknown) => {
   const { registry, plugin } = createTestPlugin(WegManagerPlugin, { data });
@@ -79,7 +78,7 @@ describe("settings tab", () => {
   it("shows a log level that arrives from outside while it is open", async () => {
     const { rows, registry, plugin } = await openTab({ logLevel: "warn" });
     registry.writeExternally({ logLevel: "debug" });
-    await (plugin as unknown as External).onExternalSettingsChange();
+    await plugin.onExternalSettingsChange();
     expect(control<Select>(rows(), 0).selectEl.value).toBe("debug");
     expect(registry.saved).toEqual([]);
     plugin.unload();
@@ -88,7 +87,7 @@ describe("settings tab", () => {
   it("turns read-only while open when a file from a newer version arrives", async () => {
     const { rows, tab, registry, plugin } = await openTab({ greeting: "Moin" });
     registry.writeExternally({ schemaVersion: 2, greeting: "Zukunft" });
-    await (plugin as unknown as External).onExternalSettingsChange();
+    await plugin.onExternalSettingsChange();
     for (const row of rows().slice(0, 1)) {
       expect(row.components.every((component: Control) => component.disabled)).toBe(true);
     }

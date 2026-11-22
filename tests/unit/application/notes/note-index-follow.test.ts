@@ -181,6 +181,26 @@ describe("the note index following the vault", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
+  it.effect("shows an unreadable note in a root folder spelled in another case", () => {
+    const fixture = indexFixture();
+    fixture.memory.seed("weg manager/A.md", item(1));
+    fixture.memory.seed("weg manager/Kaputt.md", "broken");
+    return Effect.gen(function* () {
+      yield* ready;
+      const unreadable = { code: "frontmatter.unreadable" } as const;
+      assert.deepStrictEqual((yield* unindexed).notes, [
+        { path: "weg manager/Kaputt.md", issue: unreadable },
+      ]);
+      fixture.memory.seed("weg manager/A.md", "broken");
+      yield* TestClock.adjust(quiet);
+      const next = yield* untilUnindexed((snapshot) => snapshot.notes.length === 2);
+      assert.deepStrictEqual(next.notes, [
+        { path: "weg manager/A.md", issue: unreadable },
+        { path: "weg manager/Kaputt.md", issue: unreadable },
+      ]);
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
   it.effect("turns a burst of changes into one publish", () => {
     const fixture = indexFixture();
     return Effect.gen(function* () {

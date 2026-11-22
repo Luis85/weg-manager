@@ -7,11 +7,11 @@ version: "1.1"
 date: 2026-11-22
 navigation: Erststart, ohne Navigationseintrag
 requirements:
-  - "[[PBI-69 - Beim ersten Aktivieren in die Einrichtung geführt werden]]"
-  - "[[PBI-70 - Gemeinschaften im Einrichtungsassistenten anlegen]]"
-  - "[[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]"
-  - "[[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]"
-  - "[[PBI-73 - Kürzel einer Gemeinschaft nachträglich ändern]]"
+  - "[[PBI-74 - Beim ersten Aktivieren in die Einrichtung geführt werden]]"
+  - "[[PBI-75 - Gemeinschaften im Einrichtungsassistenten anlegen]]"
+  - "[[PBI-76 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]"
+  - "[[PBI-77 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]"
+  - "[[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]]"
 entities:
   - "[[docs/entities/ENT-01 - Gemeinschaft]]"
 business-rules:
@@ -30,7 +30,7 @@ mockups:
 
 # VIEW-09 · Einrichtung
 
-Ansicht für den ersten Start in einem Vault ohne Gemeinschaft. Sie erscheint einmal beim Aktivieren des Plugins und immer dann, wenn der Nutzer die Plugin-Ansicht öffnet, solange es keine Gemeinschaft gibt ([[PBI-69 - Beim ersten Aktivieren in die Einrichtung geführt werden]]). Sie hat keinen Navigationseintrag: Die übrige Navigation ist ausgeblendet, bis die erste Gemeinschaft angelegt ist. Ablauf und Sonderfälle: [[FLOW-09 - Erststart, Einrichtung und Einführung]]. Abwägungen und Entscheidungen: [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]].
+Ansicht für den ersten Start in einem Vault ohne Gemeinschaft. Sie erscheint einmal beim Aktivieren des Plugins und immer dann, wenn der Nutzer die Plugin-Ansicht öffnet, solange es keine Gemeinschaft gibt ([[PBI-74 - Beim ersten Aktivieren in die Einrichtung geführt werden]]). Sie hat keinen Navigationseintrag: Die übrige Navigation ist ausgeblendet, bis die erste Gemeinschaft angelegt ist. Ablauf und Sonderfälle: [[FLOW-09 - Erststart, Einrichtung und Einführung]]. Abwägungen und Entscheidungen: [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]].
 
 Desktop zuerst; die mobile Fassung folgt mit der mobilen Wochenarbeit nach dem MVP ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]).
 
@@ -74,13 +74,13 @@ Desktop zuerst; die mobile Fassung folgt mit der mobilen Wochenarbeit nach dem M
 
 ![[v2-D21-Lage-Erste-Schritte.png]]
 
-Die Lage ([[VIEW-01 - Lage]]) zeigt oben die Karte „Erste Schritte“ ([[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]): Fortschritt „1 von 4“, Einträge mit Haken, wenn der Vault sie erfüllt, und je einen Knopf, der die Aktion nennt. „Ersten Vorgang erfassen“ ist hervorgehoben. Jeder leere Bereich sagt, dass er leer ist, wie er sich füllt, und bietet die Aktion an. Es erscheint kein Modal und kein Tour-Angebot.
+Die Lage ([[VIEW-01 - Lage]]) zeigt oben die Karte „Erste Schritte“ ([[PBI-76 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]): Fortschritt „1 von 4“, Einträge mit Haken, wenn der Vault sie erfüllt, und je einen Knopf, der die Aktion nennt. „Ersten Vorgang erfassen“ ist hervorgehoben. Jeder leere Bereich sagt, dass er leer ist, wie er sich füllt, und bietet die Aktion an. Es erscheint kein Modal und kein Tour-Angebot.
 
 ## Hinweise im Kontext
 
 ![[v2-D22-Hinweis-Wochenarbeit.png]]
 
-Beim ersten Benutzen eines Bereichs erscheint ein einzelner Hinweis neben dem wichtigsten Element, etwa beim ersten Öffnen der Wochenarbeit am Schritt „Eingang sichten“ ([[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]], nach dem MVP). Er hat Titel, einen Satz und „Verstanden“. Er dunkelt nichts ab, sperrt nichts und zählt keine Schritte. Umsetzung mit `UPopover` und Bezugselement. Er ersetzt die Tour aus [[VIEW-07 - Einstellungen und Einrichtung]].
+Beim ersten Benutzen eines Bereichs erscheint ein einzelner Hinweis neben dem wichtigsten Element, etwa beim ersten Öffnen der Wochenarbeit am Schritt „Eingang sichten“ ([[PBI-77 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]], nach dem MVP). Er hat Titel, einen Satz und „Verstanden“. Er dunkelt nichts ab, sperrt nichts und zählt keine Schritte. Umsetzung mit `UPopover` und Bezugselement. Er ersetzt die Tour aus [[VIEW-07 - Einstellungen und Einrichtung]].
 
 ## Zustände
 

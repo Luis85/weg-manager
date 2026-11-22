@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { runtimes } from "../../../support/composable";
 import { preloadSurface } from "../../../support/preload";
 import { testSurface, type TestRoute } from "../../../support/surface";
+import { asDoubleView, asObsidianLeaf, asObsidianWorkspace } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -41,9 +42,8 @@ const workspaceWithANoteOpen = async () => {
   const app = new App();
   const surfaces = new Set<() => void>();
   app.workspace.registerViewCreator(NOTE_VIEW_TYPE, (leaf) => new NoteView(leaf));
-  app.workspace.registerViewCreator(
-    SHELL_VIEW_TYPE,
-    (leaf) => new ShellView<TestRoute>(leaf as never, runtime, surfaces, testSurface()) as never,
+  app.workspace.registerViewCreator(SHELL_VIEW_TYPE, (leaf) =>
+    asDoubleView(new ShellView<TestRoute>(asObsidianLeaf(leaf), runtime, surfaces, testSurface())),
   );
   const usersTab = app.workspace.getLeaf(true);
   await usersTab.setViewState({ type: NOTE_VIEW_TYPE });
@@ -63,7 +63,7 @@ afterEach(async () => {
 describe("openRoute", () => {
   it("opens the view in a new tab and leaves the tab the user is in alone", async () => {
     const { app, usersTab } = await workspaceWithANoteOpen();
-    await openRoute(app.workspace as never, { name: "second" });
+    await openRoute(asObsidianWorkspace(app.workspace), { name: "second" });
     await settle();
     expect(usersTab.getViewState().type).toBe(NOTE_VIEW_TYPE);
     const opened = app.workspace.getLeavesOfType(SHELL_VIEW_TYPE);
@@ -73,7 +73,7 @@ describe("openRoute", () => {
 
   it("does the same without a route", async () => {
     const { app, usersTab } = await workspaceWithANoteOpen();
-    await openRoute(app.workspace as never);
+    await openRoute(asObsidianWorkspace(app.workspace));
     await settle();
     expect(usersTab.getViewState().type).toBe(NOTE_VIEW_TYPE);
     expect(app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)).toHaveLength(1);
@@ -82,7 +82,7 @@ describe("openRoute", () => {
   it("asks Obsidian to make the tab it sets up the active one", async () => {
     const { app } = await workspaceWithANoteOpen();
     const setViewState = vi.spyOn(WorkspaceLeaf.prototype, "setViewState");
-    await openRoute(app.workspace as never, { name: "second" });
+    await openRoute(asObsidianWorkspace(app.workspace), { name: "second" });
     await settle();
     expect(setViewState).toHaveBeenCalledWith(
       expect.objectContaining({ type: SHELL_VIEW_TYPE, active: true }),
@@ -91,10 +91,10 @@ describe("openRoute", () => {
 
   it("sets a route on the view that is open with one view state, which activates the tab too", async () => {
     const { app } = await workspaceWithANoteOpen();
-    await openRoute(app.workspace as never);
+    await openRoute(asObsidianWorkspace(app.workspace));
     await settle();
     const setViewState = vi.spyOn(WorkspaceLeaf.prototype, "setViewState");
-    await openRoute(app.workspace as never, { name: "item", id: "7" });
+    await openRoute(asObsidianWorkspace(app.workspace), { name: "item", id: "7" });
     await settle();
     expect(setViewState).toHaveBeenCalledTimes(1);
     expect(setViewState).toHaveBeenCalledWith({

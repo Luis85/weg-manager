@@ -1,48 +1,78 @@
-import { COMMUNITY_SETTINGS } from "../application/communities";
-import { appRoutes, type Route, type SettingsSection } from "../application/routes";
-import type { ScreenLoader, SettingsSectionPart, SurfaceDefinition } from "./shell/host";
+import { APP_MODULES, type AppModuleName } from "../application/modules";
+import {
+  SETTINGS_SECTIONS,
+  appRoutes,
+  type Route,
+  type SettingsSection,
+} from "../application/routes";
+import { communitiesScreens } from "./communities/screens";
+import { notesScreens } from "./notes/screens";
+import type {
+  ModuleScreens,
+  ScreenLoader,
+  SettingsSectionPart,
+  SurfaceDefinition,
+} from "./shell/host";
+import { shellScreens } from "./shell/screens";
 
 /**
- * The screen of every route, by name. A module that adds routes to `Route` adds their screens here;
- * typecheck fails until each name has one. Screens load lazily, so bootstrap can import this file
- * at plugin load without loading Vue. The settings screen is the shell's.
+ * The screens of every module, by its name (ADR 0006, amendment 2026-11-22): each module's
+ * `screens.ts`, which loads its components lazily, so bootstrap can import this file at plugin
+ * load without loading Vue. Typecheck fails until every module of `APP_MODULES` has its entry,
+ * and each entry until it has a screen for each of its module's routes and a part for each of its
+ * settings sections.
  */
-const screens: { readonly [Name in Route["name"]]: ScreenLoader } = {
-  settings: () => import("./shell").then(({ SettingsScreen }) => SettingsScreen),
+export const MODULE_SCREENS: { readonly [Name in AppModuleName]: ModuleScreens<Name> } = {
+  shell: shellScreens,
+  notes: notesScreens,
+  communities: communitiesScreens,
 };
 
+/** The modules' screens in module order (`APP_MODULES`). */
+const parts = APP_MODULES.map(({ name }): ModuleScreens<AppModuleName> => MODULE_SCREENS[name]);
+
 /**
- * The settings screen's sections, one per module that contributes one, in the order its
- * navigation shows them (ADR 0008, amendment 22.11.2026). Typed by `SettingsSection`: typecheck
- * fails while a section id has no part here, and for a part no module's id names.
+ * The frame has one context area (the community switch), so at most one module may fill it. A
+ * second one would otherwise be dropped without a word; this throws at plugin load instead, and
+ * `tests/unit/presentation/app-surface.test.ts` fails first. The type of `ModuleScreens` cannot
+ * say "only one module" without each module declaring what the others do.
  */
-const sections: { readonly [Section in SettingsSection]: SettingsSectionPart } = {
-  communities: {
-    label: (catalog) => catalog.communities.route,
-    component: () => import("./communities").then(({ communitiesSettings }) => communitiesSettings),
-  },
-  "data-issues": {
-    label: (catalog) => catalog.notes.dataIssues.title,
-    component: () => import("./notes").then(({ DataIssues }) => DataIssues),
-    badge: () => import("./notes").then(({ DataIssuesBadge }) => DataIssuesBadge),
-  },
+export const frameContextOf = (
+  modules: readonly { readonly name: string; readonly context?: ScreenLoader | undefined }[],
+): ScreenLoader | undefined => {
+  const filling = modules.filter((module) => module.context !== undefined);
+  if (filling.length > 1) {
+    const names = filling.map((module) => module.name);
+    throw new Error(
+      `the frame has one context area, but the modules ${names.slice(0, -1).join(", ")} and ${names.at(-1) ?? ""} each define \`context\` in their screens.ts`,
+    );
+  }
+  return filling[0]?.context;
 };
+
+// Each route name and each section id belongs to one module, whose entry has its part (typed
+// above); merged, they cover `Route` and `SettingsSection`. The casts only name the merge.
+const screens = Object.fromEntries(parts.flatMap((part) => Object.entries(part.screens))) as {
+  readonly [Name in Route["name"]]: ScreenLoader;
+};
+const sectionParts = Object.fromEntries(parts.flatMap((part) => Object.entries(part.sections))) as {
+  readonly [Section in SettingsSection]: SettingsSectionPart;
+};
+
+/** The frame has one context area; the module that fills it (the community switch). */
+const context = frameContextOf(
+  APP_MODULES.map(({ name }) => ({ name, context: MODULE_SCREENS[name].context })),
+);
 
 /**
  * What every view of the plugin shows (ADR 0008): the app's routes, their screens, the settings
- * screen's sections, the frame's navigation and its context area (the community switch), composed
- * from the modules' parts. It holds no rule of its own.
+ * screen's sections in the order of `SETTINGS_SECTIONS`, the frame's navigation and its context
+ * area, composed from the modules' parts. It holds no rule of its own.
  */
 export const appSurface: SurfaceDefinition<Route> = {
   ...appRoutes,
   screen: (route) => screens[route.name],
-  menu: [
-    {
-      route: COMMUNITY_SETTINGS,
-      label: (catalog) => catalog.shell.frame.settings,
-      icon: "i-lucide-settings",
-    },
-  ],
-  context: () => import("./communities").then(({ communitiesFrame }) => communitiesFrame.context),
-  sections,
+  menu: parts.flatMap((part) => part.menu ?? []),
+  ...(context === undefined ? {} : { context }),
+  sections: Object.fromEntries(SETTINGS_SECTIONS.map((id) => [id, sectionParts[id]])),
 };

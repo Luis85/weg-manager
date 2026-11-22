@@ -97,7 +97,7 @@ Die Dokumentation ist als Obsidian-Vault mit verknüpften Notizen angelegt. Anfo
 Voraussetzung: Node 24 (`.nvmrc`) und npm 11.
 
 ```sh
-npm ci            # installiert und setzt den pre-push-Hook (npm run verify)
+npm ci            # installiert und setzt den pre-push-Hook (Qualitätstor; nur Dokumente: Formatprüfung)
 npm run dev:ui    # Browser-Harness, ?scenario=loaded|empty|invalid|readonly|failure
 npm run dev       # Watch-Build; mit OBSIDIAN_PLUGIN_DIR in .env.local direkt in einen Test-Vault
 npm run verify    # Qualitätstor: Format, Lint, Typen, Tests mit Coverage, Analyse, Build, dist-Prüfung

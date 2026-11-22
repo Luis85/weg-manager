@@ -16,7 +16,13 @@ describe("no network at runtime", function () {
     await expect(root.$("[data-testid=communities-empty]")).toBeDisplayed();
     await root.$("[data-testid=community-add]").click();
     await expect(root.$("[data-testid=community-form]")).toBeDisplayed();
-    // Iconify asks for a missing icon a moment after it is drawn; let a request show up.
+    // The one wait in the suite that lets real time pass, and it stays on purpose. This is a
+    // negative check ("no request left"), and when the plugin works nothing happens, so there is
+    // no signal to wait for instead: `@iconify/vue` asks for a missing icon through two chained
+    // zero-delay timers after the icon is drawn, and a request that left would show as a resource
+    // entry only when its response (or its failure) came, a network round trip later. The chain
+    // itself is a few milliseconds; the rest of the second is the allowance for that round trip.
+    // It is time spent only on a passing run: a leak would show up inside it and fail below.
     await browser.pause(1000);
 
     const external = await browser.executeObsidian(() =>

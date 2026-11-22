@@ -1,5 +1,12 @@
 import { Effect, Layer, Result } from "effect";
-import { normalizePath, parseYaml, type App, type CachedMetadata, type TFile } from "obsidian";
+import {
+  TFolder,
+  normalizePath,
+  parseYaml,
+  type App,
+  type CachedMetadata,
+  type TFile,
+} from "obsidian";
 import {
   NoteNotFoundError,
   NoteStore,
@@ -13,6 +20,7 @@ import {
   asDefect,
   copyFrontmatter,
   createNote,
+  isFileGone,
   newNoteText,
   pathsInFolder,
   recordNotes,
@@ -54,10 +62,11 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
   const { vault, metadataCache, fileManager } = app;
 
   /** Obsidian's lookups are case-sensitive (d.ts), so clashes are found among the children. */
-  const siblingsOf = (folder: string) =>
-    (folder === "/" ? vault.getRoot() : vault.getFolderByPath(folder))?.children.map(
-      (child) => child.path,
-    ) ?? [];
+  const childrenOf = (folder: string) =>
+    (folder === "/" ? vault.getRoot() : vault.getFolderByPath(folder))?.children ?? [];
+  const siblingsOf = (folder: string) => childrenOf(folder).map((child) => child.path);
+  const foldersIn = (folder: string) =>
+    childrenOf(folder).flatMap((child) => (child instanceof TFolder ? [child.path] : []));
 
   const frontmatterOf = (file: TFile) =>
     copyFrontmatter(metadataCache.getFileCache(file)?.frontmatter);
@@ -71,21 +80,28 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
     });
 
   const create = (note: NewNote) =>
-    createNote(note, normalizePath, siblingsOf, async ({ folder, path, frontmatter }, body) => {
-      if (folder !== "/" && vault.getFolderByPath(folder) === null) {
-        await vault.createFolder(folder);
-      }
-      await vault.create(
-        path,
-        asDefect(() => newNoteText(frontmatter, body)),
-      );
-    });
+    createNote(
+      note,
+      normalizePath,
+      { siblingsOf, foldersIn },
+      async ({ folder, path, frontmatter }, body) => {
+        if (folder !== "/" && vault.getFolderByPath(folder) === null) {
+          await vault.createFolder(folder);
+        }
+        await vault.create(
+          path,
+          asDefect(() => newNoteText(frontmatter, body)),
+        );
+      },
+    );
 
   /**
    * `change` decides inside `vault.process`, on the frontmatter parsed from the text Obsidian has
    * just read from the file, and only lines of keys the patch changes are rewritten. Returning the
    * text unchanged writes nothing. A note deleted after `find` makes `vault.process` reject
-   * (ENOENT) without calling back: that is `NoteNotFoundError`, not a write to retry.
+   * (ENOENT) without calling back: that is `NoteNotFoundError`, not a write to retry. Obsidian may
+   * still list the file then, until its file watcher reports the delete (measured in 1.15.1), so
+   * the rejection itself says it, as well as the file being gone from the vault.
    */
   const update = <E>(path: string, change: FrontmatterChange<E>) =>
     Effect.flatMap(find(path), (file) =>
@@ -98,9 +114,8 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
             return Result.isSuccess(outcome) ? outcome.success.text : text;
           });
         } catch (cause) {
-          if (decided.outcome === undefined && vault.getFileByPath(file.path) !== file) {
-            return Result.fail(new NoteNotFoundError());
-          }
+          const unlisted = decided.outcome === undefined && vault.getFileByPath(file.path) !== file;
+          if (unlisted || isFileGone(cause)) return Result.fail(new NoteNotFoundError());
           throw cause;
         }
         if (decided.outcome === undefined) throw new Error("vault.process did not call back");
@@ -112,7 +127,8 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
     );
 
   const trash = (path: string) =>
-    // Obsidian 1.15 resolves with `true` although its d.ts says `void`; the port promises void.
+    // Obsidian 1.15 resolves `true` although its d.ts says `void`, and `false`, without
+    // rejecting, when the system trash fails: `trashCommand` makes that a `NoteTrashError`.
     Effect.flatMap(find(path), (file) => trashCommand(() => fileManager.trashFile(file)));
 
   const rename = (path: string, newName: string) =>
@@ -136,15 +152,48 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
       ),
     ),
     unreadable: (folder) =>
-      vaultRead(() =>
-        pathsInFolder(
+      Effect.gen(function* () {
+        const candidates = yield* vaultRead(() =>
           vault
             .getMarkdownFiles()
-            .filter((file) => hasUnreadableFrontmatter(metadataCache.getFileCache(file)))
-            .map((file) => file.path),
-          normalizePath(folder),
-        ),
-      ),
+            .filter((file) => hasUnreadableFrontmatter(metadataCache.getFileCache(file))),
+        );
+        const inFolder = new Set(
+          yield* vaultRead(() =>
+            pathsInFolder(
+              candidates.map((file) => file.path),
+              normalizePath(folder),
+              foldersIn,
+            ),
+          ),
+        );
+        // The cache shows a block of only comments or blank lines as it shows broken YAML
+        // (measured in Obsidian 1.15.1, `tests/support/notes/difficult-fidelity.ts`), so the
+        // note's text decides, read as `update` reads it: what `update` can write is readable.
+        // It is read from the disk (`vault.read`), not from what Obsidian keeps (`cachedRead`):
+        // Obsidian keeps the text of every note it has indexed, also after the note is deleted
+        // outside (measured in 1.15.1, `vanishedScenario`), and a candidate deleted while the
+        // vault still lists it is gone, not unreadable. Candidates are only the notes whose
+        // block the cache could not read, so this costs a disk read for each of those alone.
+        const unreadable = yield* Effect.filter(
+          candidates.filter((file) => inFolder.has(file.path)),
+          (file) =>
+            Effect.tryPromise({
+              try: async () =>
+                Result.isFailure(
+                  updateNoteText(await vault.read(file), () => Result.succeed({}), parseYaml),
+                ),
+              catch: (cause) => cause,
+            }).pipe(
+              Effect.catch((cause) =>
+                isFileGone(cause)
+                  ? Effect.succeed(false)
+                  : Effect.fail(new VaultReadError({ cause })),
+              ),
+            ),
+        );
+        return [...inFolder].filter((path) => unreadable.some((file) => file.path === path));
+      }),
     read: (path) =>
       Effect.flatMap(find(path), (file) =>
         vaultRead(() => ({ path: file.path, frontmatter: frontmatterOf(file) })),

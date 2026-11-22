@@ -101,6 +101,7 @@ export const memoryNoteStore = () => {
 
   const siblingsOf = (folder: string) =>
     [...notes.keys(), ...folders].filter((path) => folderOf(path) === folder);
+  const foldersIn = (folder: string) => [...folders].filter((path) => folderOf(path) === folder);
   const addFolders = (folder: string) => {
     for (const ancestor of ancestors(folder)) folders.add(ancestor);
   };
@@ -142,12 +143,17 @@ export const memoryNoteStore = () => {
     });
 
   const create = (note: NewNote) =>
-    createNote(note, normalizePath, siblingsOf, async ({ folder, path, frontmatter }, body) => {
-      await disk();
-      addFolders(folder);
-      notes.set(path, { frontmatter, body });
-      created(path);
-    });
+    createNote(
+      note,
+      normalizePath,
+      { siblingsOf, foldersIn },
+      async ({ folder, path, frontmatter }, body) => {
+        await disk();
+        addFolders(folder);
+        notes.set(path, { frontmatter, body });
+        created(path);
+      },
+    );
 
   const update = <E>(path: string, change: FrontmatterChange<E>) =>
     Effect.flatMap(find(path), (found) =>
@@ -203,6 +209,7 @@ export const memoryNoteStore = () => {
             frontmatter === undefined ? [path] : [],
           ),
           normalizePath(folder),
+          foldersIn,
         ),
       ),
     read: (path) =>

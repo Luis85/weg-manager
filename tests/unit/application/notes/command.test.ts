@@ -1,9 +1,18 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Cause, Effect, Exit, Fiber, Result } from "effect";
-import { asDefect, createNote, writeCommand } from "../../../../src/application/notes/command";
+import {
+  asDefect,
+  createNote,
+  isFileGone,
+  trashCommand,
+  writeCommand,
+} from "../../../../src/application/notes/command";
 import type { PlannedNote } from "../../../../src/application/notes/paths";
 
 const normalize = (path: string) => path.replace(/\/+/g, "/").replace(/^\/|\/$/g, "") || "/";
+
+/** A vault without files or folders. */
+const unfoldered = { siblingsOf: () => [], foldersIn: () => [] };
 
 describe("writeCommand", () => {
   it.effect("succeeds with what the write returns", () =>
@@ -77,27 +86,54 @@ describe("writeCommand", () => {
   );
 });
 
+describe("isFileGone", () => {
+  it("is true for what Node rejects with when the file is not there", () => {
+    const rejection = Object.assign(new Error("ENOENT: no such file or directory, open 'a.md'"), {
+      errno: -2,
+      code: "ENOENT",
+      syscall: "open",
+    });
+    assert.isTrue(isFileGone(rejection));
+    assert.isTrue(isFileGone({ code: "ENOENT" }));
+  });
+
+  it("is false for every other rejection, also one that only says ENOENT", () => {
+    assert.isFalse(isFileGone(Object.assign(new Error("EACCES"), { code: "EACCES" })));
+    assert.isFalse(isFileGone(new Error("ENOENT: no such file or directory")));
+    assert.isFalse(isFileGone({ code: "enoent" }));
+    assert.isFalse(isFileGone({ cause: { code: "ENOENT" } }));
+    for (const other of ["ENOENT", 2, null, undefined, {}, []]) {
+      assert.isFalse(isFileGone(other));
+    }
+  });
+});
+
 describe("createNote", () => {
-  it.effect("writes the planned note with its body and returns it with its own frontmatter", () =>
-    Effect.gen(function* () {
-      const writes: [PlannedNote, string][] = [];
-      const frontmatter = { tags: ["a"] };
-      const note = yield* createNote(
-        { folder: "/F/", name: "A", frontmatter, body: "# A\n" },
-        normalize,
-        (folder) => (folder === "F" ? ["F/a.md"] : []),
-        (plan, body) => {
-          writes.push([plan, body]);
-          return Promise.resolve();
-        },
-      );
-      assert.deepStrictEqual(note, { path: "F/A (2).md", frontmatter: { tags: ["a"] } });
-      assert.deepStrictEqual(writes, [
-        [{ folder: "F", path: "F/A (2).md", frontmatter: { tags: ["a"] } }, "# A\n"],
-      ]);
-      assert.notStrictEqual(note.frontmatter, writes[0]?.[0].frontmatter);
-      assert.notStrictEqual(note.frontmatter, frontmatter);
-    }),
+  it.effect(
+    "writes the planned note in the vault's folder and returns it with its own frontmatter",
+    () =>
+      Effect.gen(function* () {
+        const writes: [PlannedNote, string][] = [];
+        const frontmatter = { tags: ["a"] };
+        const note = yield* createNote(
+          { folder: "/f/", name: "A", frontmatter, body: "# A\n" },
+          normalize,
+          {
+            siblingsOf: (folder) => (folder === "F" ? ["F/a.md"] : []),
+            foldersIn: (folder) => (folder === "/" ? ["F"] : []),
+          },
+          (plan, body) => {
+            writes.push([plan, body]);
+            return Promise.resolve();
+          },
+        );
+        assert.deepStrictEqual(note, { path: "F/A (2).md", frontmatter: { tags: ["a"] } });
+        assert.deepStrictEqual(writes, [
+          [{ folder: "F", path: "F/A (2).md", frontmatter: { tags: ["a"] } }, "# A\n"],
+        ]);
+        assert.notStrictEqual(note.frontmatter, writes[0]?.[0].frontmatter);
+        assert.notStrictEqual(note.frontmatter, frontmatter);
+      }),
   );
 
   it.effect("writes an empty body when the note has none", () =>
@@ -106,7 +142,7 @@ describe("createNote", () => {
       yield* createNote(
         { folder: "", name: "A", frontmatter: {} },
         normalize,
-        () => [],
+        { siblingsOf: () => [], foldersIn: () => [] },
         (_, body) => {
           bodies.push(body);
           return Promise.resolve();
@@ -126,13 +162,37 @@ describe("createNote", () => {
           return Promise.reject(new Error("EACCES"));
         };
         const invalid = yield* Effect.flip(
-          createNote({ folder: "", name: ".x", frontmatter: {} }, normalize, () => [], write),
+          createNote({ folder: "", name: ".x", frontmatter: {} }, normalize, unfoldered, write),
         );
         assert.deepStrictEqual([invalid._tag, calls], ["InvalidNoteNameError", 0]);
         const failed = yield* Effect.flip(
-          createNote({ folder: "", name: "x", frontmatter: {} }, normalize, () => [], write),
+          createNote({ folder: "", name: "x", frontmatter: {} }, normalize, unfoldered, write),
         );
         assert.deepStrictEqual([failed._tag, calls], ["NoteWriteError", 1]);
       }),
+  );
+});
+
+describe("trashCommand", () => {
+  it.effect("succeeds when the move resolves true, or nothing as the d.ts promises", () =>
+    Effect.gen(function* () {
+      yield* trashCommand(() => Promise.resolve(true));
+      yield* trashCommand(() => Promise.resolve());
+    }),
+  );
+
+  it.effect("fails with NoteTrashError when the move resolves false: Obsidian's failed trash", () =>
+    Effect.gen(function* () {
+      const error = yield* Effect.flip(trashCommand(() => Promise.resolve(false)));
+      assert.strictEqual(error._tag, "NoteTrashError");
+    }),
+  );
+
+  it.effect("fails with NoteTrashError and the cause when the move rejects", () =>
+    Effect.gen(function* () {
+      const cause = new Error("EACCES");
+      const error = yield* Effect.flip(trashCommand(() => Promise.reject(cause)));
+      assert.deepStrictEqual([error._tag, error.cause], ["NoteTrashError", cause]);
+    }),
   );
 });

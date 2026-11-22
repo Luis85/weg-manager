@@ -1,19 +1,21 @@
 import { readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { appNoteTypes } from "../../../src/application/note-types";
 import * as communities from "../../../src/domain/communities";
 import * as notes from "../../../src/domain/notes";
-import * as shell from "../../../src/domain/shell";
-
-/** Every module's domain index, by folder name; the first test fails while a folder is missing. */
-const DOMAIN_INDEXES: Readonly<Record<string, Readonly<Record<string, unknown>>>> = {
-  shell,
-  notes,
-  communities,
-};
 
 const DOMAIN = fileURLToPath(new URL("../../../src/domain/", import.meta.url));
+
+/** The domain index of every module folder. */
+const domainIndexes = (): Promise<readonly Readonly<Record<string, unknown>>[]> =>
+  Promise.all(
+    readdirSync(DOMAIN, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) =>
+        vi.importActual<Record<string, unknown>>(`../../../src/domain/${entry.name}/index.ts`),
+      ),
+  );
 
 /** The keys of every `defineNoteType` result; an export with exactly these is a note type. */
 const NOTE_TYPE_KEYS = Object.keys(
@@ -27,18 +29,11 @@ const isNoteType = (value: unknown): boolean =>
   value !== null &&
   Object.keys(value).toSorted().join() === NOTE_TYPE_KEYS;
 
-/** The registry is composition: a type missing here is a note the index never shows. */
+/** The registry is composition: a type missing in a manifest is a note the index never shows. */
 describe("appNoteTypes", () => {
-  it("is checked against the domain index of every module folder", () => {
-    const folders = readdirSync(DOMAIN, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name);
-    expect(Object.keys(DOMAIN_INDEXES).toSorted()).toEqual(folders.toSorted());
-  });
-
-  it("registers every note type a domain index exports, each once", () => {
+  it("registers every note type a module's domain index exports, each once", async () => {
     const exported = new Set(
-      Object.values(DOMAIN_INDEXES).flatMap((index) => Object.values(index).filter(isNoteType)),
+      (await domainIndexes()).flatMap((index) => Object.values(index).filter(isNoteType)),
     );
     expect(exported).toContain(communities.communityType);
     expect(appNoteTypes).toHaveLength(exported.size);

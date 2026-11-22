@@ -1,0 +1,78 @@
+# Task 02 · Toolchain and the gate
+
+Phase A. Needs: Tasks 00 and 01.
+
+**Goal.** Type checking, two linters, a formatter and the test runner, each enforcing its part of the global constraints, run by one gate script from now on. Every rule is proven with a planted violation before it counts.
+
+## Files
+
+Create: `tsconfig.json`, `configs/tsconfig.base.json`, `configs/tsconfig.app.json`, `configs/tsconfig.node.json`, `src/env.d.ts`, `.oxlintrc.json`, `eslint.config.mjs`, `.prettierrc.json`, `.prettierignore`, `configs/vitest.config.ts`, `scripts/verify.mjs`, `scripts/pre-push.mjs`, `scripts/install-hooks.mjs`, `.githooks/pre-push`, `tests/unit/scripts/verify.test.ts`, `tests/unit/scripts/pre-push.test.ts`, `tests/unit/scripts/install-hooks.test.ts`, `tests/unit/obsidian-guard.test.ts`. Modify: `package.json`.
+
+Install (versions from ADR 0001, all `devDependencies`): `typescript`, `vue-tsc`, `@types/node`, `oxlint`, `eslint`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-vue`, `vue-eslint-parser`, `eslint-plugin-obsidianmd`, `eslint-plugin-oxlint`, `globals`, `prettier`, `vitest`, `@vitest/coverage-v8`, and `obsidian` (the API types: `tests/unit/obsidian-guard.test.ts` imports `obsidian`, which typecheck cannot resolve without the package; Task 03 lists it in fallow's `ignoreDependencies`).
+
+## Where configs live
+
+Tool configs go into `configs/` only where the tool takes an explicit path and keeps resolving from the repository root. These stay at the root: `.oxlintrc.json` (oxlint resolves `ignorePatterns` and `overrides` relative to its file; moved into `configs/`, the layer bans silently stopped applying, L17), `eslint.config.mjs` (flat-config patterns resolve from its folder), `tsconfig.json` (editors), `.prettierrc.json` and `.prettierignore` (editors search upward), and the dotfiles of Task 00.
+
+## Steps
+
+- [ ] **1. TypeScript projects.** `configs/tsconfig.base.json` holds exactly the compiler options of global constraint 2: `target: "ES2022"`, `module: "ESNext"`, `moduleResolution: "Bundler"`, `lib: ["ES2023", "DOM", "DOM.Iterable"]`, `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax`, `noEmit`, `skipLibCheck`, `isolatedModules`, `resolveJsonModule`, `forceConsistentCasingInFileNames`. `configs/tsconfig.app.json` extends it with `jsx: "preserve"`, `types: ["node"]`, `paths: { "@test/obsidian": ["../tests/support/obsidian/index.ts"] }`, `allowJs: true`, and includes `../src/**/*.{ts,vue}`, `../tests/**/*.{ts,vue}`, `../harness/**/*.{ts,vue}`, `../src/env.d.ts`, excluding `../tests/e2e/**`. `configs/tsconfig.node.json` extends it with `lib: ["ES2023"]` (no DOM), `types: ["node"]`, `allowJs`, `checkJs`, `allowImportingTsExtensions`, and includes `*.ts`, `*.mjs`, `../*.mjs`, `../scripts/**/*.mjs` (the configs and scripts; scripts carry `// @ts-check` and JSDoc types). The root `tsconfig.json` has `files: []` and references both (Task 12 adds `tests/e2e/tsconfig.json`). `src/env.d.ts` declares `*.vue` and `*.css` modules and `ImportMetaEnv` with `MODE` only.
+- [ ] **2. Script `typecheck`:** `vue-tsc -p configs/tsconfig.app.json && vue-tsc -p configs/tsconfig.node.json` (Task 12 appends `&& tsc -p tests/e2e/tsconfig.json`).
+- [ ] **3. oxlint** (`.oxlintrc.json`): plugins `typescript`, `vue`, `import`, `unicorn`, `vitest`; categories `correctness`, `suspicious`, `perf` as errors; rules `no-console`, `eqeqeq`, `typescript/no-non-null-assertion`, `no-underscore-dangle` allowing `_tag`, `import/no-unassigned-import` allowing `**/*.css`; `ignorePatterns` for `docs/**`, `dist/**`, `release/**`, `reports/**`, `.stryker-tmp/**`, `.obsidian-cache/**` and each folder of vendored agent tooling the repository holds (for example `.claude/**`). Overrides, one per path, each a `no-restricted-imports` group (the layer rules of global constraint 3):
+  - `scripts/**`, `src/infrastructure/logging/**`: `no-console` off;
+  - `src/domain/**`, `src/application/**`: ban `obsidian`, `electron`, `vue`, `@nuxt/*`, `@tanstack/*`, `@vue/*`;
+  - `src/infrastructure/**`: ban `obsidian` and the UI packages; `src/infrastructure/obsidian/**`: ban the UI packages only;
+  - `src/presentation/**`: ban `obsidian`, `effect`, `effect/*`, `**/infrastructure/**`; `src/presentation/shell/runtime/**`: ban `obsidian` and `**/infrastructure/**` only;
+  - `src/main.ts`: ban `effect`, `effect/*` and the UI packages; `src/bootstrap.ts`: ban the UI packages;
+  - `harness/**`: ban `obsidian` and `**/infrastructure/obsidian/**`;
+  - `tests/e2e/**`: `no-await-in-loop` and `unicorn/consistent-function-scoping` off (serialised `executeObsidian` callbacks cannot use outer helpers).
+  Script `lint:ox`: `oxlint --deny-warnings`. Module rules do **not** go here (L16).
+- [ ] **4. ESLint** (`eslint.config.mjs`, flat config, in this order):
+  - global `ignores` (as oxlint's, plus `node_modules/**`, `**/dist/**`, `.obsidian/**`);
+  - `...obsidianmd.configs.recommended` (it includes the eslint and typescript-eslint presets and checks `manifest.json` and `LICENSE`);
+  - `parserOptions.project` with the TypeScript projects for `**/*.{ts,mts,mjs}`;
+  - `@typescript-eslint/switch-exhaustiveness-check` for `**/*.{ts,mts,vue}` (a `switch` with `default` over a union does not pass; write the cases out);
+  - `eslint-plugin-vue` `flat/recommended` scoped to `**/*.vue`, its layout rules off (Prettier owns template layout), `vue-eslint-parser` with the typescript-eslint parser and the same projects, `extraFileExtensions: [".vue"]`;
+  - the obsidianmd rules re-scoped to `.vue`: filter `obsidianmd.configs.recommended` for the blocks whose `files` is exactly `["**/*.{ts,cts,mts,tsx}"]`, keep the rules starting with `obsidianmd/` and `no-unsanitized/`, and emit each block again with `files: ["**/*.vue"]` and its own `ignores` (the plugin scopes them to JS and TS, so `.vue` files would get none); plus `vue/no-v-html: "error"`;
+  - for `src/**/*.{ts,vue}`: `no-restricted-syntax` banning `process.env` and every `import.meta.env` member except `MODE`;
+  - Node globals for `scripts/**/*.mjs`, `configs/**/*.{ts,mjs}`, `*.config.mjs`; `obsidianmd/prefer-active-doc` and `obsidianmd/prefer-create-el` off for `harness/**` (a plain browser page);
+  - `max-lines` 400 with `skipBlankLines` and `skipComments` for `**/*.{ts,vue,mjs}` outside `tests/**`, 450 for `tests/**/*.{ts,vue}`;
+  - `...oxlint.buildFromOxlintConfigFile("./.oxlintrc.json")` last but one (turns off in ESLint what oxlint owns), and Task 03's module blocks after it.
+  Scripts: `lint:es`: `eslint --max-warnings 0 .`; `lint`: `npm run lint:ox && npm run lint:es`.
+- [ ] **5. Prettier.** `.prettierrc.json`: `printWidth: 100`, `semi: true`, `singleQuote: false`, `trailingComma: "all"`. `.prettierignore`: `docs/`, `*.md`, `package-lock.json`, `node_modules/`, `dist/`, `release/`, `reports/`, `.stryker-tmp/`, `.obsidian-cache/`, `.obsidian/`, and each folder of vendored agent tooling. Scripts `format`: `prettier --write .`, `format:check`: `prettier --check .`.
+- [ ] **6. Vitest** (`configs/vitest.config.ts`). First line `process.env.TZ = "UTC";` (before any import that reads time). `root` is the repository root. An `obsidianGuard()` plugin (`enforce: "pre"`) resolves `obsidian` to a virtual module that throws `OBSIDIAN_REQUIRES_TEST_DOUBLE: add vi.mock("obsidian", () => import("@test/obsidian"))`; alias `@test/obsidian` → `tests/support/obsidian/index.ts` (Task 04). Export `obsidianGuard`, `testAlias` and `ROOT` for the Stryker configs. Projects: `unit` (`tests/unit/**/*.test.ts`, environment `node`) and `dom` (`tests/dom/**/*.test.ts`, `happy-dom`; Task 04 adds `setupFiles: ["tests/support/dom-setup.ts"]` with the file, Task 08 the plugins and `define` of `sharedConfig`). Vitest fails a project that finds no test file, so add the `dom` project in Task 04 with its first test. Coverage: provider `v8`, include `src/**/*.{ts,vue}`, exclude `src/main.ts`, `src/styles/**`, `src/env.d.ts`, reporters `text`, `html`, `cobertura` into `reports/coverage`, thresholds of global constraint 16. Reporters: `default`, plus `junit` into `reports/junit.xml` when `CI` is set. Scripts `test`: `vitest run --config configs/vitest.config.ts`; `test:coverage`: the same with `--coverage`. Test first: `tests/unit/obsidian-guard.test.ts` imports `obsidian` (`await import("obsidian")`) and expects the guard's error; a second case resolves the alias `@test/obsidian`; write it as `it.todo("resolves the test double by its alias")` without a body, because typecheck cannot resolve the alias before Task 04 creates the double, and Task 04 gives it its body.
+- [ ] **7. The gate** (`scripts/verify.mjs`). The gate is a list of stages: the steps of one stage start together, the next stage starts when all of them have ended. Tests first in `tests/unit/scripts/verify.test.ts`, with an injected fake spawn whose steps end when the test says so: the three checks of the first stage start together and the next stage waits for the slowest; a step that shares a stage is buffered and printed whole when it ends, framed by `--- <name> ---` and `--- <name>: ok, 12.3 s ---` (or `FAIL (exit <code>)`), so lines of two steps never mix; when a step of a stage fails, the others of that stage still finish and print, and then no later stage starts; the exit code is that of the first failed step in stage order, else 0; `summary` marks `ok`, `FAIL` and `not run` with seconds and ends with the wall-clock total. Add two tests that start real `node` processes for the buffering. Then implement:
+  - `PARALLEL = ["format:check", "lint", "typecheck"]` (they read the sources and write nothing, so they do not disturb each other; lint sets the pace) and `SERIAL`, the later npm scripts, each a stage of its own and in this order; the final list is `test:coverage`, `analyze`, `build`, `check:dist`, `check:notices` (the last two read the fresh `dist/`). Add each when its script exists: now `test:coverage`, `analyze` in Task 03, `build` and `check:dist` in Task 08, `check:notices` in Task 20. `STAGES = [PARALLEL, ...SERIAL.map((step) => [step])]`. The test pins the current list.
+  - `FULL_STAGES = [...STAGES, [test:mutation]]` (Task 19 adds the script); `FORMAT_STAGES = [[format:check]]` for the hook (step 8).
+  - `spawnStep(step, buffer)`: a step alone keeps the terminal (`stdio: "inherit"`), a buffered one pipes stdout and stderr (with `FORCE_COLOR=1` when the terminal has colours and `NO_COLOR` is unset); `shell: process.platform === "win32"` (npm is a `.cmd` shim on Windows); a spawn error counts as code 1.
+  - `runStages(stages, spawn, print)`, `summary(results, steps, totalMs)`, `exitCode(results)` and `runGate(stages, io)`, which runs, prints the summary and returns the code. CLI: `--full` picks `FULL_STAGES`; `process.exitCode` is `runGate`'s result.
+  Scripts `verify`: `node scripts/verify.mjs`; `verify:full`: `node scripts/verify.mjs --full`. Do not add ESLint's `--cache` to `lint`: its cache keys on a file's own content and the config, while a type-aware finding can depend on another file. Planted and measured: `a.ts` switches over every member of a union from `b.ts`; after only `b.ts` gains a member, `eslint --cache` still exits 0 (with `--cache-strategy metadata` and `content`) and the same run without the cache fails `switch-exhaustiveness-check`. If lint gets slow, use fewer type-aware rules or a smaller project, not a cache.
+- [ ] **8. Hook.** `scripts/install-hooks.mjs` exports `installHooks(env, git)`: returns `skipped: CI` when `CI`, `TF_BUILD` or `GITHUB_ACTIONS` is set, `skipped: no git` outside a work tree, else runs `git config core.hooksPath .githooks`. Test both skips and the install with a fake `git`. `.githooks/pre-push` is a two-line launcher, `#!/bin/sh` and `exec node scripts/pre-push.mjs "$@"` (mark it executable: `git update-index --chmod=+x .githooks/pre-push`). `scripts/pre-push.mjs` decides how much of the gate the push needs and runs it through the same `runGate`: only `FORMAT_STAGES` when every changed file is a document (`isDocumentPath`: a path under `docs/` or a name ending in `.md`, which no gate step reads: `.prettierignore`, oxlint, ESLint and fallow ignore them and no TypeScript project includes them), else `STAGES`. Tests first in `tests/unit/scripts/pre-push.test.ts`:
+  - `parsePushLines(stdin)` reads git's `<local ref> <local sha> <remote ref> <remote sha>` per line and gives `undefined` for any line that is not four fields with two object ids;
+  - `chooseGate(pushes, git)` on a fake git: per ref the files that differ between the remote's commit and the pushed one; for a ref the remote lacks (remote sha all zeros) the base is the merge-base with the remote's default branch; a deleted ref (local sha all zeros) adds no file; a tag counts like a branch; a push of one other file, no lines, an unreadable line, no base, or a range git cannot compare runs the whole gate;
+  - `realGit(remote, cwd)` on a real repository in a temporary folder: the default branch is `refs/remotes/<remote>/HEAD`, else `main`, else `master`; `git diff --name-only --no-renames -z` so a file moved into `docs/` counts with both paths; a new branch, an annotated tag, a missing object, a remote without a default branch.
+  The CLI prints one line with the choice and its reason. `git push --no-verify` still skips the hook. Script `prepare`: `node scripts/install-hooks.mjs`.
+- [ ] **9. Coverage with little source.** Untested proposal: running the gate with `test:coverage` from this task on, while `src/` holds only `env.d.ts`. If Vitest fails the thresholds or finds nothing to cover, keep `test:coverage` out of `SERIAL` and run `test` in its place until Task 05 adds the first source files; record which was needed in the task's commit message.
+
+## Discriminating checks
+
+Plant each, run the named command, see it fail naming the file, delete the plant, see it pass:
+
+| Plant | Fails |
+| --- | --- |
+| a type error in `src/domain/_p.ts`, in `tests/unit/_p.test.ts`, in `scripts/_p.mjs`, in `configs/_p.ts` (one at a time) | `npm run typecheck` |
+| `src/domain/_p.ts` importing `obsidian`; `src/application/_p.ts` with `import type { App } from "obsidian"` | `npm run lint` (oxlint) |
+| `src/presentation/_p.ts` importing `effect`; `src/presentation/_p.ts` importing `../infrastructure/runtime` | `npm run lint` (oxlint) |
+| `src/main.ts` importing `effect` | `npm run lint` (oxlint) |
+| `a == b`; `value!`; `console.log` in `src/domain/_p.ts` | `npm run lint` (oxlint) |
+| a `switch` over a union that misses a member | `npm run lint` (ESLint) |
+| `src/application/_p.ts` reading `process.env.X`; one reading `import.meta.env.DEV` | `npm run lint` (ESLint) |
+| `el.innerHTML = "x"` in `src/infrastructure/obsidian/_p.ts` | `npm run lint` (ESLint, obsidianmd) |
+| a generated `src/domain/_long.ts` with 401 lines of code (passes at 400); `tests/unit/_long.test.ts` with 451 (passes at 450) | `npm run lint` (ESLint `max-lines`) |
+| a type error in `src/domain/_p.ts` | `npm run verify`: exit non-zero, summary `FAIL typecheck`, later steps `not run` |
+
+A rule that cannot be shown to fail on a plant does not belong in the config.
+
+## Done when
+
+`npm run verify` exits 0; every plant above was seen to fail and is deleted; `git config core.hooksPath` prints `.githooks`. Commit `chore: toolchain, layer rules and the gate`.

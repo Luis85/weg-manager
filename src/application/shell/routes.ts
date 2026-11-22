@@ -49,5 +49,5 @@ export type SettingsRoute<S extends string = string> = {
  * contribute, which the application root composes (`SETTINGS_SECTIONS`, `src/application/routes.ts`).
  * An unknown section decodes as no route at all, so a view falls back to the start route.
  */
-export const settingsRoute = <const S extends readonly [string, ...string[]]>(sections: S) =>
+export const settingsRoute = <const S extends readonly string[]>(sections: S) =>
   Schema.Struct({ name: Schema.Literal(SETTINGS), section: Schema.Literals(sections) });

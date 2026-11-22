@@ -1,7 +1,8 @@
 import { Layer } from "effect";
 import type { AppServices } from "./app-services";
-import { communitySelectionLayer } from "./communities";
 import { messagesLayer } from "./messages";
+import { servicesLayerOf } from "./module";
+import { APP_MODULES } from "./modules";
 import { appNoteTypes } from "./note-types";
 import {
   noteIndexLayer,
@@ -20,10 +21,13 @@ import {
   type Incidents,
   type Language,
   type LogSink,
+  type Logger,
   type LoggerOptions,
+  type Messages,
   type Notifier,
   type SettingsStore,
   type ShellServices,
+  type Today,
 } from "./shell";
 
 /**
@@ -43,6 +47,8 @@ export type AppAdapters = {
   readonly incidents: Layer.Layer<Incidents>;
   /** Where the logger writes the entries it accepts. */
   readonly logSink: Layer.Layer<LogSink>;
+  /** The user's local day; built on the logger and the notifier, which a defect is reported to. */
+  readonly today: Layer.Layer<Today, never, Incidents | Logger | Messages | Notifier>;
   /** Built on the shell's services: the in-memory store publishes its writes on the event bus. */
   readonly noteStore: Layer.Layer<NoteStore, never, ShellServices>;
   readonly idGenerator: Layer.Layer<IdGenerator>;
@@ -65,9 +71,11 @@ export type AppServicesOptions = LoggerOptions & {
 
 /**
  * Every application service of one load, built from the host's adapters (ADR 0006): the shell's
- * services first (settings, then the logger on them, the event bus), the notes module's on them,
- * the feature modules' on both, the host event adapter last. Typed `Layer<AppServices>`: a module
- * service that is missing or needs a service built after it fails typecheck here, in one place.
+ * services first (settings, then the logger on them, the event bus, today on the logger), the notes
+ * module's on them,
+ * the feature modules' Layers from their manifests on both, the host event adapter last. Typed
+ * `Layer<AppServices>`: a feature service that needs a service no module built before it fails
+ * typecheck here, in one place.
  */
 export const appServicesLayer = (
   adapters: AppAdapters,
@@ -84,7 +92,9 @@ export const appServicesLayer = (
   );
   const settings = SettingsServiceLive.pipe(Layer.provideMerge(ports));
   const logger = LoggerLive(options).pipe(Layer.provide(adapters.logSink));
-  const shell = Layer.mergeAll(logger.pipe(Layer.provideMerge(settings)), EventBusLive);
+  const shell = adapters.today.pipe(
+    Layer.provideMerge(Layer.mergeAll(logger.pipe(Layer.provideMerge(settings)), EventBusLive)),
+  );
   const notes = noteIndexLayer(options.noteTypes ?? appNoteTypes).pipe(
     Layer.provideMerge(
       Layer.mergeAll(adapters.noteStore, adapters.idGenerator, adapters.noteOpener).pipe(
@@ -92,6 +102,6 @@ export const appServicesLayer = (
       ),
     ),
   );
-  const features = communitySelectionLayer.pipe(Layer.provideMerge(notes));
+  const features = servicesLayerOf(APP_MODULES).pipe(Layer.provideMerge(notes));
   return adapters.hostEvents.pipe(Layer.provideMerge(features));
 };

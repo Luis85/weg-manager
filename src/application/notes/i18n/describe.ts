@@ -1,4 +1,10 @@
-import type { KindIssueCode, NoteIssue, RecordIssue, UnindexedIssue } from "../../../domain/notes";
+import type {
+  KindIssueCode,
+  MissingReference,
+  NoteIssue,
+  RecordIssue,
+  UnindexedIssue,
+} from "../../../domain/notes";
 import type { KeyedIssue } from "../record-list";
 import type { NotesCatalog, RecordTexts } from "./catalog";
 
@@ -8,10 +14,13 @@ import type { NotesCatalog, RecordTexts } from "./catalog";
  * feature that declares its own field issue codes words them itself.
  */
 export const describeNoteIssue = (
-  issue: NoteIssue,
+  issue: NoteIssue | MissingReference,
   messages: NotesCatalog,
   label: (key: string) => string,
 ): string => {
+  if (issue.code === "reference.missing") {
+    return messages.referenceIssues[issue.code](issue, label(issue.key));
+  }
   if ("key" in issue) return messages.fieldIssues[issue.code](label(issue.key));
   const texts = messages.recordIssues;
   switch (issue.code) {
@@ -47,7 +56,8 @@ export const describeUnindexedIssue = (issue: UnindexedIssue, messages: NotesCat
 
 /**
  * One issue of a feature's record or form as a sentence: first the cause, then the action. Issues
- * of the note as a whole and the field kinds' codes are the notes catalog's; a missing field asks
+ * of the note as a whole, the field kinds' codes and a missing reference target are the notes
+ * catalog's; a missing field asks
  * in the feature's words where it has them; every other code is the feature's own sentence, filled
  * with the issue's data and the field's label (`RecordTexts`, in the feature's part of the catalog).
  */
@@ -61,6 +71,10 @@ export const describeRecordIssue = <Issue extends KeyedIssue>(
   const field = label(issue.key);
   if (issue.code === "field.missing") {
     return texts.missing?.[issue.key as Issue["key"]] ?? notes.fieldIssues["field.missing"](field);
+  }
+  if (issue.code === "reference.missing") {
+    // The code tells it: a feature's issue union holds `MissingReference` for this code.
+    return notes.referenceIssues["reference.missing"](issue as unknown as MissingReference, field);
   }
   // `IssueSentences` gives each code its sentence; a code without one is a field kind's.
   const sentences = texts.issues as unknown as Readonly<

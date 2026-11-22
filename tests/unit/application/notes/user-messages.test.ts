@@ -8,13 +8,13 @@ import {
   NoteIndexReadError,
   NoteNotFoundError,
   NotePathTakenError,
+  NoteOpenError,
   NoteTrashError,
   NoteUnreadableError,
   NoteWriteError,
   NoteWriteRefusedError,
 } from "../../../../src/application/notes/errors";
-import { isNotesError } from "../../../../src/application/notes/user-messages";
-import { StorageError, VaultReadError } from "../../../../src/application/shell/errors";
+import { describeNotesError } from "../../../../src/application/notes/user-messages";
 import type { UserMessage } from "../../../../src/application/shell/user-messages";
 import { describeError } from "../../../../src/application/user-messages";
 
@@ -41,6 +41,7 @@ const ALL: readonly AppError[] = [
   new NoteUnreadableError({ cause: null }),
   new NoteWriteError({ cause: null }),
   new NoteTrashError({ cause: null }),
+  new NoteOpenError({ cause: null }),
   new NoteEditConflictError({
     conflicts: [{ key: "title", base: "a", edited: "b", current: "c" }],
   }),
@@ -53,15 +54,15 @@ const ALL: readonly AppError[] = [
   new NoteIndexReadError(),
 ];
 
-describe("isNotesError", () => {
-  it("is true for every notes error and false for the shell's", () => {
-    for (const error of ALL) expect(isNotesError(error)).toBe(true);
-    expect(isNotesError(new VaultReadError({ cause: null }))).toBe(false);
-    expect(isNotesError(new StorageError({ cause: null }))).toBe(false);
-  });
-});
-
 describe.each([de, en])("describeError for notes ($shell.language)", (messages) => {
+  it("hands every notes error to the notes module's describer, with its part of the catalog", () => {
+    for (const error of ALL) {
+      expect(describeError(error, messages)).toEqual(
+        describeNotesError(error as Parameters<typeof describeNotesError>[0], messages.notes),
+      );
+    }
+  });
+
   it("words every notes error plainly", () => {
     expect.hasAssertions();
     for (const error of ALL) expectPlain(describeError(error, messages));
@@ -113,6 +114,7 @@ describe.each([de, en])("describeError for notes ($shell.language)", (messages) 
       property(content, (text) => {
         for (const error of [
           new NoteWriteError({ cause: new Error(text) }),
+          new NoteOpenError({ cause: new Error(text) }),
           new NoteUnreadableError({ cause: new Error(text) }),
         ]) {
           expectPlain(describeError(error, messages), text);
@@ -173,6 +175,12 @@ describe("notes message texts", () => {
         "error",
         "Notiz nicht gelöscht",
         "Obsidian konnte die Notiz nicht in den Papierkorb verschieben. Versuche es erneut.",
+        "retry",
+      ],
+      [
+        "error",
+        "Notiz nicht geöffnet",
+        "Obsidian konnte die Notiz nicht in einem Tab öffnen. Versuche es erneut.",
         "retry",
       ],
       [
@@ -266,6 +274,7 @@ describe("notes message texts", () => {
         "Obsidian couldn't move the note to the trash. Try again.",
         "retry",
       ],
+      ["error", "Note not opened", "Obsidian couldn't open the note in a tab. Try again.", "retry"],
       [
         "warning",
         "Note changed while you were editing",

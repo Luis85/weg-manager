@@ -11,8 +11,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
-  # Only a pull request's older run is stale. Two merges to main in a row must each finish.
+  # A pull request has one group, so a newer push cancels its older run. Every push to main has a
+  # group of its own (the commit), so none is cancelled, and none waits behind another: in one group
+  # GitHub keeps a single pending run and drops the pending one when a newer arrives, which would
+  # leave the middle one of three quick merges without a run.
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -21,6 +24,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
@@ -41,25 +46,17 @@ jobs:
         with:
           name: plugin
           path: dist/
-
-  # Approximates the community directory's source scan (docs/engineering/testing.md). Informational:
-  # findings are visible in the log but never fail the workflow (owner's decision, 2026-11-21).
-  scanner-lint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      # Step-level continue-on-error keeps the job (and the PR check) green; the annotation
-      # below and the step log show the findings.
+      # Approximates the community directory's source scan (docs/engineering/testing.md).
+      # Informational: findings are visible in the log but never fail the job or the workflow
+      # (owner's decision, 2026-11-21). A step of this job, not a job of its own, so that it shares
+      # the install; it comes last, so that the reports and the build are uploaded first.
+      # Step-level continue-on-error keeps the job (and the PR check) green; the annotation below
+      # and the step log show the findings.
       - id: scan
+        if: ${{ !cancelled() }}
         run: npm run lint:scanner
         continue-on-error: true
-      - if: steps.scan.outcome == 'failure'
+      - if: ${{ !cancelled() && steps.scan.outcome == 'failure' }}
         run: echo "::warning title=Scanner lint::Findings in the community-scan approximation (known - .claude/skills/archify/explainer/reader.js). See the 'npm run lint:scanner' step log and docs/engineering/testing.md."
 
   # End-to-end tests in a real Obsidian app (wdio-obsidian-service). Runs beside verify and is
@@ -71,6 +68,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
@@ -81,23 +80,41 @@ jobs:
           node tests/e2e/wdio.conf.mts | grep 'obsidian-cache-key:' > obsidian-versions-lock.txt
           cat obsidian-versions-lock.txt
           rm -rf .obsidian-cache
-      - name: Cache Obsidian
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      # The download is restored here and saved after the run (below), so that a run whose tests
+      # fail still keeps it for the retry. A cache entry never changes, so a hit is not saved again.
+      - name: Restore Obsidian
+        id: obsidian-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .obsidian-cache
           key: obsidian-cache-${{ runner.os }}-${{ hashFiles('obsidian-versions-lock.txt') }}
-      - name: Start a virtual display and window manager
-        run: |
-          sudo apt-get update -q
-          sudo apt-get install -q -y herbstluftwm
-          echo "DISPLAY=:99" >> "$GITHUB_ENV"
-          Xvfb :99 -screen 0 1280x1024x24 +extension GLX -noreset &
-          sleep 1
-          DISPLAY=:99 herbstluftwm &
-          sleep 1
-      - run: npm run test:e2e
+      # xvfb-run is on the runner image (package xvfb, Ubuntu 24.04 and 26.04), so nothing is
+      # installed. No window manager: docs/engineering/github-setup.md, "The e2e display and the
+      # Obsidian cache", says what to watch for and how to put it back.
+      - name: End-to-end tests under a virtual display
+        run: xvfb-run -a -s "-screen 0 1280x1024x24 +extension GLX -noreset" npm run test:e2e
         env:
           WDIO_MAX_INSTANCES: 2
+      # Obsidian is downloaded as app, installer and chromedriver, each into its own folder once
+      # complete. Save only when all three are there, because an entry that lacks one would be
+      # restored by every later run, and could not be replaced.
+      - name: Check that the Obsidian download is complete
+        id: obsidian-download
+        if: ${{ always() && steps.obsidian-cache.outputs.cache-hit != 'true' }}
+        run: |
+          if compgen -G ".obsidian-cache/obsidian-app/*.asar" > /dev/null \
+            && compgen -G ".obsidian-cache/obsidian-installer/*/Obsidian-*" > /dev/null \
+            && compgen -G ".obsidian-cache/electron-chromedriver/*/*" > /dev/null; then
+            echo "complete=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning title=Obsidian download::.obsidian-cache is incomplete, so it is not saved."
+          fi
+      - name: Save Obsidian
+        if: ${{ always() && steps.obsidian-cache.outputs.cache-hit != 'true' && steps.obsidian-download.outputs.complete == 'true' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .obsidian-cache
+          key: ${{ steps.obsidian-cache.outputs.cache-primary-key }}
       - name: Upload e2e logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

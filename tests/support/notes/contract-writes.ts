@@ -204,6 +204,27 @@ export const writeContract = (make: () => NoteStoreFixture) => {
       }),
     );
 
+    it.effect(
+      "fails with NoteNotFoundError at the first attempt when the note is deleted outside and the host has not noticed",
+      () =>
+        Effect.gen(function* () {
+          const fixture = make();
+          yield* promise(() => seedForUpdate(fixture));
+          fixture.removeOutsideUnnoticed("F/A.md");
+          let asked = false;
+          const error = yield* Effect.flip(
+            run(fixture, (store) =>
+              store.update("F/A.md", () => {
+                asked = true;
+                return Result.succeed({ set: { a: 1 } });
+              }),
+            ),
+          );
+          assert.instanceOf(error, NoteNotFoundError);
+          assert.isFalse(asked);
+        }),
+    );
+
     it.effect("completes an update that has started, also when interrupted", () =>
       Effect.gen(function* () {
         const fixture = make();
@@ -267,6 +288,38 @@ export const writeContract = (make: () => NoteStoreFixture) => {
         assert.strictEqual(yield* promise(() => fixture.body("F/Neu.md")), "text\n");
         assert.isUndefined(yield* promise(() => fixture.body("F/Alt.md")));
         assert.deepStrictEqual(yield* run(fixture, (store) => store.list), [note]);
+      }),
+    );
+
+    // Directly after a write, before anyone waited for the metadata cache: the rename returns
+    // the note as it is now, not as the cache knew it before the write.
+    it.effect("returns the frontmatter an update just wrote", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        yield* promise(() => seedForRename(fixture));
+        const renamed = yield* run(fixture, (store) =>
+          Effect.flatMap(
+            store.update("F/Alt.md", () => Result.succeed({ set: { name: "Neu" } })),
+            ({ path }) => store.rename(path, "Neu"),
+          ),
+        );
+        assert.deepStrictEqual(renamed, {
+          path: "F/Neu.md",
+          frontmatter: { ...COMMUNITY, name: "Neu" },
+        });
+      }),
+    );
+
+    it.effect("returns the frontmatter a create just wrote", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        const renamed = yield* run(fixture, (store) =>
+          Effect.flatMap(
+            store.create({ folder: "F", name: "Neu", frontmatter: COMMUNITY }),
+            ({ path }) => store.rename(path, "Umbenannt"),
+          ),
+        );
+        assert.deepStrictEqual(renamed, { path: "F/Umbenannt.md", frontmatter: COMMUNITY });
       }),
     );
 

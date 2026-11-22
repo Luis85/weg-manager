@@ -1,0 +1,75 @@
+---
+type: PBI
+parent: "[[F-24 - Technische Plugin-Grundlagen]]"
+order: 99000
+actors:
+  - "[[ACT-01-Beirat]]"
+  - "[[ACT-05-Obsidian]]"
+release: ""
+status: ""
+started: ""
+finished: ""
+horizon: ""
+start: ""
+due: ""
+risk: ""
+priority: ""
+assignee: ""
+iteration: ""
+entities: []
+business-rules: []
+decisions: []
+hypotheses: []
+pages: []
+user-flows: []
+dependsOn: []
+triage: ready-for-agent
+---
+
+# PBI-71 · Formulare des Datensatz-Bausteins für alle Feldarten tragfähig machen
+
+**Planungsstand:** Befund bestätigt, nichts umgesetzt; vor dem zweiten Notiztyp zu erledigen · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, Review-Runde 2 vom 22.11.2026)
+
+## User Story
+
+Als Beirat möchte ich, dass beim Speichern eines Datensatzes nur die Felder geändert werden, die ich bearbeitet habe, damit Listen, Verweise, Zahlen und Häkchen in anderen Feldern weder verschwinden noch ihre Form ändern.
+
+## Ausgangslage
+
+**Befund 1: Die Formulare des Bausteins kennen nur Text.** Der Datensatz-Baustein in `notes` (`useRecordForm`, `editedValues`, `mergeEdit`, `ConflictChoice`) behandelt jedes Feld als Text. Heute hat kein Notiztyp ein anderes Feld als Text oder Datum, deshalb ist kein Nutzer betroffen. Ein zweiter Typ ist es: Der geplante Ansprechpartner trägt `community_ids: references("community")`.
+
+Die Stellen:
+
+- `src/presentation/notes/use-record-form.ts`: `rawText` (Zeilen 23 bis 26) macht aus einem Array `""`; `loaded` wird damit gebaut (Zeilen 97 bis 99); die Wahl „theirs“ in `resolve` setzt `rawText(conflict.current)` (Zeile 193).
+- `src/domain/notes/form.ts`: `FormInput` besteht nur aus Zeichenketten (Zeile 5); `editedValues` behält den geladenen Wert nur bei `===` mit dem Eingabetext (Zeilen 31 bis 44).
+- `src/domain/notes/write.ts`: `mergeEdit` vergleicht den bearbeiteten mit dem geladenen Wert (Zeilen 142 und 143).
+- `src/presentation/notes/components/ConflictChoice.vue`: zeigt eine Liste als „leer“ (Zeilen 34 bis 37).
+- Der Cast, der es verdeckt: `values as CommunityValues` in `src/application/communities/use-cases.ts` (Zeile 66).
+
+**Szenario A (Liste oder Verweis wird gelöscht).** Ein Ansprechpartner mit `community_ids` wird im Formular geöffnet. Das Feld zeigt `""`, weil `rawText` ein Array nicht kennt. Die Person ändert nur den Namen und speichert. Der Entwurf für `community_ids` ist `undefined`; in `mergeEdit` ist `same(undefined, [ids])` falsch und die Notiz hat sich nicht geändert, also kommt der Schlüssel in `remove`. Der Ansprechpartner verliert seine Gemeinschaften.
+
+**Szenario B (Zahl oder Häkchen wird als Text geschrieben).** Ein Zahlenfeld mit `5` erscheint als `"5"`. `editedValues` liefert den Entwurf `"5"`, der Merge sieht eine Änderung, der Serialisierer schreibt `"5"` in Anführungszeichen, und das nächste Lesen meldet `field.number`. Ebenso `true` und `"true"` bei einem Häkchen.
+
+Der Reviewer hat den ganzen Weg vom Laden des Formulars über `editedValues`, `mergeEdit` und `toPatch` bis `editNoteText` gelesen; kein Test deckt ihn ab, weil es nur Textfelder gibt.
+
+**Verbesserung 2: Feature-Dienste können nicht von früheren Features abhängen.** `servicesLayerOf` (`src/application/module.ts`, Zeile 184) mischt die Layer der Features nebeneinander (`Layer.mergeAll`), `appServicesLayer` setzt das Ergebnis über `notes` (`src/application/app-services-layer.ts`, Zeile 105). Ein Feature für Ansprechpartner, das auf die gewählte Gemeinschaft begrenzt ist, braucht den `CommunitySelectionService` und sieht ihn nicht.
+
+**Verbesserung 5: Der angezeigte Name eines referenzierten Datensatzes fehlt im Baustein.** Eine Zeile mit `community_ids` hält nackte Ids. Jeder Typ braucht „angezeigter Name zur Id“ über `byId` des Zieltyps, für Karten, Konflikte und den Text zu `reference.missing`. Das gehört einmal in `notes`, nicht in jedes Feature.
+
+## Akzeptanzkriterien
+
+1. Jede Feldart (Text, Datum, Zahl, Häkchen, Liste, Verweis, Verweisliste) hat im Domain-Code eine Abbildung zwischen gespeichertem Wert und Formularwert (`toInput` und `fromInput`: Zeichenkette für Text und Datum, Liste von Zeichenketten für Liste und Verweise, Wahrheitswert, Zahl oder leer). `FormInput<F>` folgt der Feldart statt überall `string` zu sein.
+2. `editedValues` vergleicht je Feldart (`Equal.equals`) den Formularwert mit dem geladenen Rohwert. Ein unberührtes Feld behält den Wert der Notiz, solange der gültig ist.
+3. Die Use Cases kommen ohne Casts aus: `values as CommunityValues` und die Casts `as Input` und `as never` in `use-record-form.ts` entfallen.
+4. Zu jeder Feldart gibt es einen Test: Beim Speichern eines anderen Feldes behält ein unberührtes Feld seine Bytes in der Datei. Der Konfliktdialog zeigt Listen und Verweise mit ihren Werten, nicht als „leer“, und die Wahl „theirs“ setzt den Formularwert über dieselbe Abbildung.
+5. Feature-Dienste dürfen von Diensten eines früheren Features abhängen: Die Layer werden in der Reihenfolge von `APP_MODULES` gefaltet (je `provideMerge` auf das vorige), und `Layer<AppServices>` prüft das Ergebnis weiter. Ein Test mit zwei Modulen, von denen das spätere einen Dienst des früheren braucht, zeigt es.
+6. Ein Helfer in `notes` liefert den angezeigten Namen eines referenzierten Datensatzes über `byId` des Zieltyps; Karten, Konflikte und der Text zu `reference.missing` benutzen ihn, kein Feature baut ihn selbst.
+7. `npm run verify` endet mit Exit 0 und `npm run test:e2e` (unter `xvfb-run -a`) ebenfalls, weil Formular- und Notizverhalten sich ändern.
+
+## Herkunft und Bezüge
+
+Review-Runde vom 22.11.2026 am Stand `65eb006`, Bericht zum Produktcode: Befund 1 sowie die Verbesserungen 2 und 5 vor dem zweiten Notiztyp. [[PBI-61 - Beziehungen zwischen Datensätzen und abgeleitete Werte vorbereiten]] (Verweisfelder und Suche nach Id sind gebaut, kein Feature nutzt sie), [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]] (der erste Typ, auf dessen Textfelder der Baustein zugeschnitten ist).
+
+## Kommentare
+
+- 22.11.2026: Angelegt aus der Review-Runde nach dem Stand `65eb006` (vier unabhängige Reviews: Produktcode, Tests, CI und Release, Blueprint und Dokumente). Befund 1 und die Verbesserungen 2 und 5 stammen aus dem Bericht zum Produktcode und sind gegen den Code gelesen, aber nicht ausgeführt; nichts davon ist umgesetzt. `triage` ist `ready-for-agent`, weil Kriterien und Lösungsrichtung feststehen; kein heutiger Typ ist betroffen.

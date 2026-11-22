@@ -115,6 +115,28 @@ describe("validateCommunity", () => {
     ).toEqual([{ key: "color", code: "color.taken" }]);
   });
 
+  it("refuses a name whose file name would be longer than 255 bytes, within 100 characters", () => {
+    const long = "漢".repeat(83);
+    expect(validateCommunity({ ...INPUT, name: long }, { others: [] })).toEqual([
+      { key: "name", code: "name.too-long" },
+    ]);
+    expect(validateCommunity({ ...INPUT, name: ` ${"漢".repeat(82)} ` }, { others: [] })).toEqual(
+      [],
+    );
+    expect(validateCommunity({ ...INPUT, name: "x".repeat(101) }, { others: [] })).toEqual([
+      { key: "name", code: "name.invalid" },
+    ]);
+  });
+
+  it("keeps a name that is too long for a file name when the community already had it", () => {
+    const long = "漢".repeat(90);
+    const loaded = { name: long, short_code: "AW", color: "teal" };
+    expect(validateCommunity({ ...INPUT, name: ` ${long}` }, { others: [], loaded })).toEqual([]);
+    expect(validateCommunity({ ...INPUT, name: `${long}字` }, { others: [], loaded })).toEqual([
+      { key: "name", code: "name.too-long" },
+    ]);
+  });
+
   it("reports a broken short code as broken, not as taken", () => {
     expect(
       validateCommunity({ ...INPUT, short_code: "T" }, { others: [{ short_code: "T" }] }),

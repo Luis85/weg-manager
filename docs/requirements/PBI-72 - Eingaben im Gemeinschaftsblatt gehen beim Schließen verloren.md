@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-22
 horizon: ""
 start: ""
 due: ""
@@ -23,7 +23,7 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-72 · Eingaben im Gemeinschaftsblatt gehen beim Schließen verloren
@@ -63,3 +63,4 @@ Review-Runde vom 22.11.2026 am Stand `65eb006`, Bericht zum Produktcode, Befund 
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Stand `65eb006` (vier unabhängige Reviews: Produktcode, Tests, CI und Release, Blueprint und Dokumente). Der Befund ist gegen den Code gelesen, nicht in Obsidian ausgeführt, und nicht umgesetzt. `triage` ist `needs-triage`, weil die Entscheidung zwischen Rückfrage und Warten auf den Entwurfsspeicher beim Eigentümer liegt.
 - 22.11.2026 (viertes Interview): Der Eigentümer hat entschieden, vor dem Verwerfen zu fragen, in jedem Formular des Datensatz-Bausteins und nur bei nicht gespeicherten Eingaben (Abschnitt „Entscheidung des Eigentümers“, Kriterien 2 und 3). `triage` ist `ready-for-agent`. Die Version 0.2.1 wird veröffentlicht, wenn [[PBI-71 - Formulare des Datensatz-Bausteins für alle Feldarten tragfähig machen]] und diese Note zusammengeführt und grün sind; der Agent startet die Veröffentlichung dann. Vorher gibt es keine.
+- 22.11.2026 (Umsetzung): Umgesetzt im Zweig `forms-kit`, einmal im Datensatz-Baustein. Ein Formular meldet `isDirty` von TanStack an den Bildschirm um es herum (`useRecordForm` über `sheet-guard.ts`). Das neue `RecordSheet` in `notes` setzt dann `dismissible: false`; Escape, ein Klick neben das Blatt, sein Schließen-Knopf und „Abbrechen“ im Formular öffnen `DiscardInputDialog` („Eingaben verwerfen?“, „Verwerfen“, „Weiter bearbeiten“; Texte in beiden Katalogen). „Weiter bearbeiten“ hat zuerst den Fokus und ist auch, was Escape im Dialog wählt; danach kehrt der Fokus dorthin zurück, wo er war. Ohne Eingaben und nach dem Speichern schließt das Blatt wie bisher. Die Gemeinschaften nutzen `RecordSheet`; jedes künftige Formular des Bausteins bekommt die Rückfrage mit. Tests: `tests/dom/presentation/notes/discard-input.test.ts` (alle vier Wege, mit und ohne Eingaben, Name, Fokus, Weiter bearbeiten, Verwerfen), `tests/e2e/specs/communities-discard.e2e.ts` (Escape und Klick daneben in Obsidian). `npm run verify` mit Exit 0, `npm run test:e2e` unter `xvfb-run -a` dreimal hintereinander grün (26 von 26 Specs, je 93 bis 96 s); ein früherer dritter Lauf scheiterte an einem Wettlauf in `note-vanished.e2e.ts` (Obsidian las eine von außen geschriebene Datei nach dem Löschen nochmals, vermutlich weil es sie zuerst halb geschrieben gelesen hatte; nicht gezielt nachgestellt), der Spec schreibt seine Dateien jetzt ganz hinein. Weiter offen, wie entschieden: Eingaben nach dem Schließen der View oder von Obsidian wiederherstellen (Entwurfsspeicher, Handoff 03) und eine Rückfrage beim Wechsel der Route. Die Darstellung bei 320 px und in beiden Farbschemata ist nicht eigens gemessen; der Dialog nutzt dasselbe `UModal` und dieselben Klassen wie der Löschdialog, den `appearance.e2e.ts` misst.

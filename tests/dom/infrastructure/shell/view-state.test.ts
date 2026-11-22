@@ -2,6 +2,7 @@ import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import { vi } from "vitest";
 import type { ViewNavigation } from "../../../../src/presentation/shell/host";
+import { preloadSurface } from "../../../support/preload";
 import { runtimes } from "../../../support/composable";
 import { testSurface, type TestRoute } from "../../../support/surface";
 
@@ -11,6 +12,7 @@ const { App } = await import("@test/obsidian");
 const { ShellView, SHELL_VIEW_TYPE } =
   await import("../../../../src/infrastructure/obsidian/shell/shell-view");
 const { openRoute } = await import("../../../../src/infrastructure/obsidian/shell/open-route");
+await preloadSurface();
 
 const { make, disposeAll } = runtimes();
 
@@ -169,6 +171,18 @@ describe("ShellView state", () => {
     const changed = { history: false };
     await view.setState({ route: { name: "second" } }, changed);
     expect([same.history, changed.history]).toEqual([false, false]);
+  });
+
+  it("takes a state that is no object (a null, a text) as the start route, without throwing", async () => {
+    const { open } = workspace();
+    const { view } = await open({ route: { name: "second" } });
+    await expect(view.setState(null, { history: false })).resolves.toBeUndefined();
+    await settle();
+    expect(view.getState()).toEqual({ route: { name: "first" } });
+    await view.setState({ route: { name: "second" } }, { history: false });
+    await expect(view.setState("second", { history: false })).resolves.toBeUndefined();
+    await settle();
+    expect(view.getState()).toEqual({ route: { name: "first" } });
   });
 
   it("starts the history at the state a new view is opened with", async () => {

@@ -57,4 +57,34 @@ describe("bindHostTheme (Review Focus 3)", () => {
     expect(root.classList.contains("dark")).toBe(true);
     release();
   });
+
+  it("gives the dark class back to a root that had one", () => {
+    const root = document.createElement("div");
+    root.className = "dark";
+    document.body.append(root);
+    const release = bindHostTheme(root);
+    expect(root.classList.contains("dark")).toBe(false);
+    release();
+    expect(root.classList.contains("dark")).toBe(true);
+  });
+
+  it("shows dark, not light, when the host sets both theme classes", () => {
+    document.body.classList.add("theme-dark", "theme-light");
+    const root = document.createElement("div");
+    document.body.append(root);
+    const release = bindHostTheme(root);
+    expect(root.classList.contains("dark")).toBe(true);
+    expect(root.classList.contains("light")).toBe(false);
+    release();
+  });
+
+  it("releases only once: a second release does not touch classes set since", () => {
+    const root = document.createElement("div");
+    document.body.append(root);
+    const release = bindHostTheme(root);
+    release();
+    root.classList.add("dark");
+    release();
+    expect(root.classList.contains("dark")).toBe(true);
+  });
 });

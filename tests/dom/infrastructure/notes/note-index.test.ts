@@ -1,5 +1,6 @@
 import { Effect, Layer, Option, Result, Stream } from "effect";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { eventually } from "../../../support/wait";
 import type { AppRuntime, AppServices } from "../../../../src/application/app-services";
 import { appNoteTypes } from "../../../../src/application/note-types";
 import {
@@ -84,7 +85,7 @@ describe("the note index on the Obsidian double", () => {
       ["Privat/B.md", "editable"],
       ["WEG Manager/A.md", "editable"],
     ]);
-    await vi.waitFor(() => {
+    await eventually(() => {
       expect(exposed.notes.value).toBe(ready);
     });
     expect(exposed.unindexed.value.notes).toEqual([

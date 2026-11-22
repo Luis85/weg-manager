@@ -1,5 +1,6 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { eventually } from "../support/wait";
 
 /** Which presentation modules have been evaluated so far, in order. */
 const evaluated = vi.hoisted((): string[] => []);
@@ -34,7 +35,7 @@ describe("lazy presentation", () => {
     await flushPromises();
     expect(evaluated).toContain("mount");
     expect(evaluated).toContain("vue");
-    await vi.waitFor(() => expect(document.body.textContent).toContain("Beirat/Gemeinschaften"));
+    await eventually(() => expect(document.body.textContent).toContain("Beirat/Gemeinschaften"));
     plugin.unload();
   });
 });

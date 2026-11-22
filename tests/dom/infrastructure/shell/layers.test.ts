@@ -95,6 +95,16 @@ describe("shellAdapters", () => {
     }).pipe(Effect.provide(layer));
   });
 
+  it.effect("shows a notice without a detail as its title alone", () => {
+    const { layer } = setup();
+    return Effect.gen(function* () {
+      yield* (yield* Notifier).notify({ severity: "info", title: "Titel", detail: "" });
+      const el = recordedNotices()[0]?.notice.messageEl;
+      assert.strictEqual(el?.textContent, "Titel");
+      assert.strictEqual(el?.querySelectorAll("div").length, 0);
+    }).pipe(Effect.provide(layer));
+  });
+
   it.effect("keeps a notice up the longer, the more severe it is", () => {
     const { layer } = setup();
     return Effect.gen(function* () {

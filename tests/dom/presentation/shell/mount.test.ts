@@ -1,11 +1,12 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, h, onMounted, onUnmounted, ref } from "vue";
+import { defineComponent, h, onMounted, onUnmounted, ref, useId } from "vue";
 import { SCOPE_CLASS as SCRIPT_SCOPE_CLASS } from "../../../../scripts/scope-css.mjs";
 import { SettingsService } from "../../../../src/application/shell";
 import { mountApp } from "../../../support/surface";
 import { PORTAL_CLASS, SCOPE_CLASS } from "../../../../src/presentation/shell/scope";
 import { testRuntime } from "../../../support/runtime";
+import { eventually } from "../../../support/wait";
 
 const roots: HTMLElement[] = [];
 const newRoot = (doc: Document = document): HTMLElement => {
@@ -23,7 +24,7 @@ const settle = async () => {
 
 /** Waits until the start route's screen, a lazily loaded component, shows `text`. */
 const showing = (root: ParentNode, text: string) =>
-  vi.waitFor(() => {
+  eventually(() => {
     expect(root.querySelector("[data-testid=communities-screen]")?.textContent).toContain(text);
   });
 
@@ -35,6 +36,7 @@ const buttonNamed = (root: ParentNode, label: string): HTMLButtonElement => {
 
 afterEach(() => {
   for (const root of roots.splice(0)) root.remove();
+  document.body.className = "";
   document.body.replaceChildren();
   vi.restoreAllMocks();
 });
@@ -136,6 +138,38 @@ describe("mountSurface", () => {
     expect(root.querySelector(`:scope > .${PORTAL_CLASS}`)).not.toBeNull();
     closeNew();
     expect(root.classList.contains(SCOPE_CLASS)).toBe(false);
+    await runtime.dispose();
+  });
+
+  it("follows the host theme while open and gives the root back its classes on close", async () => {
+    document.body.classList.add("theme-dark");
+    const { runtime } = testRuntime();
+    const root = newRoot();
+    const close = mountApp(root, runtime);
+    await settle();
+    expect(root.classList.contains("dark")).toBe(true);
+    close();
+    expect(root.classList.contains("dark")).toBe(false);
+    await runtime.dispose();
+  });
+
+  it("gives every surface in a document its own element ids", async () => {
+    const { runtime } = testRuntime();
+    const ids: string[] = [];
+    const Probe = defineComponent({
+      setup() {
+        ids.push(useId());
+        return () => h("p", "probe");
+      },
+    });
+    const closes = [newRoot(), newRoot()].map((root) =>
+      mountApp(root, runtime, { content: Probe }),
+    );
+    await settle();
+    expect(ids).toHaveLength(2);
+    expect(new Set(ids).size).toBe(2);
+    for (const id of ids) expect(id).toMatch(/^wm[0-9a-f]{8}-/);
+    for (const close of closes) close();
     await runtime.dispose();
   });
 

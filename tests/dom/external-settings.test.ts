@@ -1,10 +1,13 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { eventually } from "../support/wait";
+import { preloadSurface } from "../support/preload";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
 const { createTestPlugin, recordedNotices, settingsIn } = await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../src/main");
+await preloadSurface();
 
 type External = { onExternalSettingsChange(): Promise<void> };
 type Select = { selectEl: HTMLSelectElement; disabled?: boolean };
@@ -24,7 +27,7 @@ const withOpenView = async (data: unknown = { rootFolder: "Beirat" }) => {
   await created.registry.runCommand("open-view");
   await settle();
   // The screen loads lazily, the first time a view shows it.
-  await vi.waitFor(() => expect(document.querySelector(INTRO)).not.toBeNull());
+  await eventually(() => expect(document.querySelector(INTRO)).not.toBeNull());
   const external = created.plugin as unknown as External;
   const arrive = async (next: unknown) => {
     created.registry.writeExternally(next);

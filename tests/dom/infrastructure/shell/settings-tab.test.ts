@@ -15,7 +15,7 @@ const openTab = async (data?: unknown) => {
   const [tab] = registry.settingTabs;
   if (tab === undefined) throw new Error("no settings tab registered");
   tab.display();
-  await vi.waitFor(() => expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(1));
+  expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(1);
   return { registry, plugin, tab, rows: () => settingsIn(tab.containerEl) };
 };
 
@@ -51,9 +51,10 @@ describe("settings tab", () => {
   });
 
   it("saves the log level", async () => {
-    const { rows, registry, plugin } = await openTab();
+    const { rows, tab, registry, plugin } = await openTab();
     control<{ simulateSelect(value: string): unknown }>(rows(), 0).simulateSelect("debug");
-    await vi.waitFor(() => expect(registry.saved.at(-1)).toMatchObject({ logLevel: "debug" }));
+    await tab.pending;
+    expect(registry.saved.at(-1)).toMatchObject({ logLevel: "debug" });
     plugin.unload();
   });
 
@@ -63,6 +64,15 @@ describe("settings tab", () => {
       expect(row.components.every((component: Control) => component.disabled)).toBe(true);
     }
     expect(tab.containerEl.textContent).toContain("neueren Version");
+    plugin.unload();
+  });
+
+  it("keeps the read-only explanation out of the settings search, the log level in", async () => {
+    const { tab, plugin } = await openTab({ schemaVersion: 2 });
+    expect(tab.settingItems.map((item) => [item.name, item.searchable])).toEqual([
+      ["Protokollstufe", undefined],
+      ["Einstellungen schreibgeschützt", false],
+    ]);
     plugin.unload();
   });
 

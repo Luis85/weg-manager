@@ -1,8 +1,7 @@
 import { Effect, Result } from "effect";
-import { NoteWriteError } from "./errors";
 import { copyFrontmatter } from "./frontmatter";
+import { NoteWriteError, type NewNote, type Note } from "./index";
 import { planNewNote, type Normalize, type PlannedNote, type SiblingsOf } from "./paths";
-import type { NewNote, Note } from "./ports";
 
 /** What plugin code threw inside a vault write, carried past the vault call to `writeCommand`. */
 class WriteDefect extends Error {

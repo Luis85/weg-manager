@@ -1,7 +1,9 @@
 import { Effect } from "effect";
 import type { Plugin } from "obsidian";
 import type { AppRuntime } from "./application/app-services";
+import { appCommands } from "./application/commands";
 import { catalogFor } from "./application/messages";
+import type { Route } from "./application/routes";
 import {
   Logger,
   Messages,
@@ -98,23 +100,21 @@ export const bootstrap = async (
     const mirror = await mirrorSettings(runtime);
     undo.push(() => mirror.stop());
     if (aborted()) return await inert();
-    const messages = await runtime.runPromise(Messages.useSync((catalog) => catalog.shell));
-    const open = () =>
+    const messages = await runtime.runPromise(Messages.useSync((catalog) => catalog));
+    const open = (route?: Route) =>
       runSafely(
         runtime,
-        Effect.promise(() => openRoute(plugin.app.workspace)),
+        Effect.promise(() => openRoute(plugin.app.workspace, route)),
       );
-    const removeCommands = registerCommands(plugin, runtime, messages, () =>
-      open().then(() => undefined),
-    );
+    const removeCommands = registerCommands(plugin, runtime, appCommands, messages, open);
     undo.push(() => {
       if (!started) removeCommands();
     });
-    const tab = new ShellSettingTab(plugin.app, plugin, runtime, mirror, messages);
+    const tab = new ShellSettingTab(plugin.app, plugin, runtime, mirror, messages.shell);
     // Added after everything that can fail, right before the final registrations: Obsidian
     // removes it on a normal unload, but not after a failed onload. The user can hide it from the
     // ribbon's context menu.
-    addRibbonIcon(plugin, open);
+    addRibbonIcon(plugin, () => open());
     plugin.addSettingTab(tab);
     const surfaces = new Set<() => void>();
     plugin.registerView(

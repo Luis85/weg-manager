@@ -137,6 +137,32 @@ describe("plugin lifecycle", () => {
     ]);
     expect(noticeTexts()[0]).not.toContain("addCommand");
   });
+
+  it("removes the commands it added when a later registration throws", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { registry, plugin } = createTestPlugin(WegManagerPlugin);
+    const remove = vi.spyOn(plugin, "removeCommand");
+    vi.spyOn(plugin, "addRibbonIcon").mockImplementation(() => {
+      throw new Error("ribbon failed");
+    });
+    await expect(registry.load()).rejects.toThrow("ribbon failed");
+    expect(remove.mock.calls.map(([id]) => id).toSorted()).toEqual([
+      "copy-diagnostics",
+      "open-view",
+    ]);
+    expect(counts(registry)).toEqual(EMPTY);
+    expect(noticeTexts()).toEqual([
+      expect.stringMatching(/Unerwarteter Fehler in WEG Manager.*[0-9A-Z]{6}/s),
+    ]);
+  });
+
+  it("removes the command it added when the second one fails", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { registry } = createTestPlugin(WegManagerPlugin);
+    registry.failNextAddCommand({ after: 1 });
+    await expect(registry.load()).rejects.toThrow("addCommand failed");
+    expect(counts(registry)).toEqual(EMPTY);
+  });
 });
 
 describe("bootstrap handle", () => {

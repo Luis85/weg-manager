@@ -1,20 +1,17 @@
-import { Cause, Effect, Exit, Stream } from "effect";
+import { Effect, Exit, Stream } from "effect";
 import { onScopeDispose, shallowRef, type ShallowRef } from "vue";
 import type { AppServices } from "../../../application/app-services";
 import type { AppEvent } from "../../../application/events";
 import { EventBus, SettingsService, type SettingsStatus } from "../../../application/shell";
 import type { Settings } from "../../../domain/shell";
-import { reportVueError, useRuntime } from "./use-runtime";
+import { reportCause, reportVueError, useRuntime } from "./use-runtime";
 
 /** Runs `effect` until the component's scope ends; a defect is reported once, an interrupt not. */
 const runInScope = (effect: Effect.Effect<void, never, AppServices>): void => {
   const runtime = useRuntime();
   const controller = new AbortController();
   void runtime.runPromiseExit(effect, { signal: controller.signal }).then(
-    (exit) =>
-      Exit.isFailure(exit) && !Cause.hasInterruptsOnly(exit.cause)
-        ? reportVueError(runtime, Cause.squash(exit.cause))
-        : undefined,
+    (exit) => (Exit.isFailure(exit) ? reportCause(runtime, exit.cause) : undefined),
     // The runtime is disposed (plugin unload): there is nothing left to follow or report to.
     () => undefined,
   );

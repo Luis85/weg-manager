@@ -41,8 +41,8 @@ export type PluginRegistry = {
   readonly notices: typeof recordedNotices;
   readonly saved: unknown[];
   runCommand(id: string): unknown;
-  /** Makes the next `addCommand` throw once. */
-  failNextAddCommand(): void;
+  /** Makes the next `addCommand` throw once; with `after`, the one after that many succeed. */
+  failNextAddCommand(options?: { readonly after?: number }): void;
   /** Replaces `data.json` as Sync or another program would; Obsidian then calls `onExternalSettingsChange`. */
   writeExternally(data: unknown): void;
   /** Makes every later `loadData` fail (`true`) or succeed again (`false`). */
@@ -68,7 +68,8 @@ type Internals = {
   registry: PluginRegistry;
   data: unknown;
   failLoadData: boolean;
-  failAddCommand: boolean;
+  /** How many more `addCommand` calls succeed before one throws; `undefined` for none. */
+  failAddCommandAfter: number | undefined;
   gate: { promise: Promise<void>; release: () => void } | undefined;
 };
 
@@ -106,10 +107,11 @@ export abstract class Plugin extends Component {
 
   addCommand(command: Command): Command {
     const value = state(this);
-    if (value.failAddCommand) {
-      value.failAddCommand = false;
+    if (value.failAddCommandAfter === 0) {
+      value.failAddCommandAfter = undefined;
       throw new Error("addCommand failed");
     }
+    if (value.failAddCommandAfter !== undefined) value.failAddCommandAfter -= 1;
     const id = `${this.manifest.id}:${command.id}`;
     value.registry.commands.set(command.id, command);
     this.register(() => value.registry.commands.delete(command.id));
@@ -189,8 +191,8 @@ export const createTestPlugin = <P extends object>(
       if (command === undefined) throw new Error(`unknown command ${id}`);
       return command.callback?.() ?? command.checkCallback?.(false);
     },
-    failNextAddCommand: () => {
-      state(double).failAddCommand = true;
+    failNextAddCommand: (failure) => {
+      state(double).failAddCommandAfter = failure?.after ?? 0;
     },
     writeExternally: (data) => {
       state(double).data = structuredClone(data);
@@ -219,7 +221,7 @@ export const createTestPlugin = <P extends object>(
     registry,
     data: options.data,
     failLoadData: options.failLoadData ?? false,
-    failAddCommand: false,
+    failAddCommandAfter: undefined,
     gate: undefined,
   });
   return { plugin, registry, app };

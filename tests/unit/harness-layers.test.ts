@@ -9,12 +9,12 @@ import {
   type Community,
 } from "../../src/application/communities";
 import {
-  INDEX_BATCH_QUIET,
   NoteStore,
   rebuildNoteIndex,
   unindexedChanges,
   unindexedSnapshot,
 } from "../../src/application/notes";
+import { INDEX_BATCH_QUIET } from "../../src/application/notes/index-batches";
 import { Clipboard } from "../../src/application/shell";
 import { harnessLayer, parseScenario } from "../../harness/layers";
 

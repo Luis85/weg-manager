@@ -6,10 +6,10 @@ import {
   planNewNote,
   planRename,
   freeNotePath,
-  isInFolder,
   pathsInFolder,
   renamedNotePath,
 } from "../../../../src/application/notes/paths";
+import { isInFolder } from "../../../../src/application/notes/folders";
 
 /** Obsidian's `normalizePath`, as far as these tests need it. */
 const normalize = (path: string) => path.replace(/\/+/g, "/").replace(/^\/|\/$/g, "") || "/";

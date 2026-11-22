@@ -1,6 +1,7 @@
 // The public face of the shell's application layer (ADR 0006): other modules, other layers and the
 // composition files import only this.
-export { reportDefect } from "./defects";
+export { shellCommands, type CommandAction, type PluginCommand } from "./commands";
+export { reportDefect, reportUnexpected } from "./defects";
 export {
   ClipboardError,
   ReadOnlySettingsError,

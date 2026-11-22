@@ -1,22 +1,16 @@
-import { Layer } from "effect";
+import type { Layer } from "effect";
 import type { Plugin } from "obsidian";
 import type { AppServices } from "../../application/app-services";
-import { appNoteTypes } from "../../application/note-types";
-import { communitiesLayer } from "./communities";
-import { notesLayer } from "./notes";
-import { shellLayer, type ShellLayerOptions } from "./shell";
+import { appServicesLayer, type AppServicesOptions } from "../../application/app-services-layer";
+import { notesAdapters } from "./notes";
+import { shellAdapters } from "./shell";
 
-export type AppLayerOptions = ShellLayerOptions;
+export type AppLayerOptions = Omit<AppServicesOptions, "noteTypes">;
 
 /**
- * All application services for one plugin load: the modules' Layers, merged (ADR 0006). A module
- * that needs the shell's services is built on them, before the host event adapter; the note index
- * gets the note types of every feature (`appNoteTypes`), and the feature modules are built on the
- * notes module.
+ * All application services for one plugin load: the application's service graph
+ * (`appServicesLayer`) over the Obsidian adapters of every module's ports (ADR 0006). The plugin
+ * indexes the note types of every feature (`appNoteTypes`).
  */
 export const appLayer = (plugin: Plugin, options: AppLayerOptions): Layer.Layer<AppServices> =>
-  shellLayer(
-    plugin,
-    options,
-    communitiesLayer.pipe(Layer.provideMerge(notesLayer(plugin, appNoteTypes))),
-  );
+  appServicesLayer({ ...shellAdapters(plugin), ...notesAdapters(plugin) }, options);

@@ -12,7 +12,13 @@ import {
 import type { AppRuntime, AppServices } from "../../../application/app-services";
 import type { AppError } from "../../../application/errors";
 import type { Catalog } from "../../../application/messages";
-import { Messages, Notifier, reportDefect, type UserMessage } from "../../../application/shell";
+import {
+  Messages,
+  Notifier,
+  reportDefect,
+  reportUnexpected,
+  type UserMessage,
+} from "../../../application/shell";
 import { describeError } from "../../../application/user-messages";
 
 /**
@@ -40,16 +46,45 @@ export const useRuntime = (): AppRuntime => {
 export const useMessages = (): Catalog =>
   useRuntime().runSync(Messages.useSync((catalog) => catalog));
 
-/** Routes a defect to `reportDefect`; never rejects (the runtime may already be disposed). */
-export const reportVueError = (runtime: AppRuntime, cause: unknown): Promise<void> =>
-  runtime.runPromise(reportDefect(cause)).then(
+const settled = (run: Promise<unknown>): Promise<void> =>
+  run.then(
     () => undefined,
     () => undefined,
   );
 
-/** A use case as a component runs it. `run` never rejects. */
+/** Routes a defect to `reportDefect`; never rejects (the runtime may already be disposed). */
+export const reportVueError = (runtime: AppRuntime, cause: unknown): Promise<void> =>
+  settled(runtime.runPromise(reportDefect(cause)));
+
+/**
+ * Applies the policy for an unexpected cause (`reportUnexpected`: an interruption is silent,
+ * anything else is reported once); never rejects (the runtime may already be disposed).
+ */
+export const reportCause = (runtime: AppRuntime, cause: Cause.Cause<unknown>): Promise<void> =>
+  settled(runtime.runPromise(reportUnexpected(cause)));
+
+/**
+ * How one run of a use case ended, as `run` resolves it. The refs hold the same for templates;
+ * code that goes on after `await run(...)` reads this, not the refs.
+ *
+ * - `success` with the use case's value;
+ * - `failure` with the typed error and its text in the UI language;
+ * - `defect`: a bug, reported once through `reportDefect`, or a runtime that is gone;
+ * - `interrupted`: the run was cancelled (a newer query, the scope ending, the plugin unloading)
+ *   and its result dropped.
+ */
+export type RunOutcome<A, E> =
+  | { readonly _tag: "success"; readonly value: A }
+  | { readonly _tag: "failure"; readonly error: E; readonly message: UserMessage }
+  | { readonly _tag: "defect" }
+  | { readonly _tag: "interrupted" };
+
+const DEFECT = { _tag: "defect" } as const;
+const INTERRUPTED = { _tag: "interrupted" } as const;
+
+/** A use case as a component runs it. `run` never rejects; it resolves to the run's outcome. */
 export type UseCase<Args extends unknown[], A, E> = {
-  run(...args: Args): Promise<void>;
+  run(...args: Args): Promise<RunOutcome<A, E>>;
   readonly pending: Readonly<Ref<boolean>>;
   readonly value: Readonly<ShallowRef<A | undefined>>;
   readonly error: Readonly<ShallowRef<E | undefined>>;
@@ -72,24 +107,26 @@ const exitOf = <Args extends unknown[], A, E>(
     )
     .catch((cause: unknown) => Exit.die(cause));
 
-/**
- * Hands a finished run to `success` or `failure`; reports a defect once; ignores an interruption.
- * Never rejects.
- */
-const outcome = async <A, E extends AppError>(
+/** The outcome of a finished run; reports a defect once, an interruption not. Never rejects. */
+const outcomeOf = async <A, E extends AppError>(
   runtime: AppRuntime,
+  messages: Catalog,
   exit: Exit.Exit<A, E>,
-  success: (value: A) => void,
-  failure: (error: E) => Promise<void> | void,
-): Promise<void> => {
-  if (Exit.isSuccess(exit)) return success(exit.value);
-  if (Cause.hasInterruptsOnly(exit.cause)) return undefined;
+): Promise<RunOutcome<A, E>> => {
+  if (Exit.isSuccess(exit)) return { _tag: "success", value: exit.value };
   const error = Cause.findErrorOption(exit.cause);
-  if (Option.isSome(error)) return failure(error.value);
-  return reportVueError(runtime, Cause.squash(exit.cause));
+  if (Option.isSome(error)) {
+    return { _tag: "failure", error: error.value, message: describeError(error.value, messages) };
+  }
+  await reportCause(runtime, exit.cause);
+  // The policy above decided what to report; this only names what it decided.
+  return Cause.hasInterruptsOnly(exit.cause) ? INTERRUPTED : DEFECT;
 };
 
-/** The refs of one use case in a component, and how a run's outcome lands in them. */
+/**
+ * The refs of one use case in a component. A run clears `value`, `error` and `message` when it
+ * starts, so they only ever hold the outcome of the latest run.
+ */
 const useOutcomeRefs = <Args extends unknown[], A, E extends AppError>() => {
   const runtime = useRuntime();
   const messages = useMessages();
@@ -102,24 +139,20 @@ const useOutcomeRefs = <Args extends unknown[], A, E extends AppError>() => {
     messages,
     start: () => {
       pending.value = true;
+      value.value = undefined;
       error.value = undefined;
       message.value = undefined;
     },
-    settle: (exit: Exit.Exit<A, E>): Promise<void> => {
+    settle: (outcome: RunOutcome<A, E>): RunOutcome<A, E> => {
       pending.value = false;
-      return outcome(
-        runtime,
-        exit,
-        (next) => {
-          value.value = next;
-        },
-        (failure) => {
-          error.value = failure;
-          message.value = describeError(failure, messages);
-        },
-      );
+      if (outcome._tag === "success") value.value = outcome.value;
+      if (outcome._tag === "failure") {
+        error.value = outcome.error;
+        message.value = outcome.message;
+      }
+      return outcome;
     },
-    view: (run: (...args: Args) => Promise<void>): UseCase<Args, A, E> => ({
+    view: (run: (...args: Args) => Promise<RunOutcome<A, E>>): UseCase<Args, A, E> => ({
       run,
       pending: readonly(pending),
       value: readonly(value) as Readonly<ShallowRef<A | undefined>>,
@@ -131,8 +164,9 @@ const useOutcomeRefs = <Args extends unknown[], A, E extends AppError>() => {
 
 /**
  * Runs a use case that only reads. The latest call wins: a second `run` interrupts the first, and
- * the scope ending interrupts a pending run and drops its result. A typed failure lands in `error`
- * and `message`; a defect is reported once and leaves `error` empty.
+ * the scope ending interrupts a pending run and drops its result; that run resolves
+ * `interrupted`. A typed failure lands in `error` and `message`; a defect is reported once and
+ * leaves `error` empty.
  */
 export const useQuery = <Args extends unknown[], A, E extends AppError>(
   fn: UseCaseFn<Args, A, E>,
@@ -146,15 +180,15 @@ export const useQuery = <Args extends unknown[], A, E extends AppError>(
     current?.abort();
   });
 
-  const run = async (...args: Args): Promise<void> => {
+  const run = async (...args: Args): Promise<RunOutcome<A, E>> => {
     current?.abort();
     const controller = new AbortController();
     current = controller;
     refs.start();
     const exit = await exitOf(refs.runtime, fn, args, { signal: controller.signal });
-    if (!alive || current !== controller) return;
+    if (!alive || current !== controller) return INTERRUPTED;
     current = undefined;
-    await refs.settle(exit);
+    return refs.settle(await outcomeOf(refs.runtime, refs.messages, exit));
   };
 
   return refs.view(run);
@@ -169,7 +203,7 @@ export const useQuery = <Args extends unknown[], A, E extends AppError>(
  * - While the scope lives, the outcome lands as in `useQuery`.
  * - After the scope ended, the run still completes and the component's refs stay untouched. A
  *   success is silent, a typed failure becomes a notice through `Notifier`, a defect is reported
- *   once.
+ *   once. `run` resolves to the outcome either way.
  */
 export const useCommand = <Args extends unknown[], A, E extends AppError>(
   fn: UseCaseFn<Args, A, E>,
@@ -177,26 +211,26 @@ export const useCommand = <Args extends unknown[], A, E extends AppError>(
   const refs = useOutcomeRefs<Args, A, E>();
   const { runtime, messages } = refs;
   let alive = true;
-  let inFlight: Promise<void> | undefined;
+  let inFlight: Promise<RunOutcome<A, E>> | undefined;
 
   onScopeDispose(() => {
     alive = false;
   });
 
-  const notify = (error: E): Promise<void> =>
-    runtime
-      .runPromise(Notifier.use((notifier) => notifier.notify(describeError(error, messages))))
-      .then(
-        () => undefined,
-        () => undefined,
-      );
+  const notify = (message: UserMessage): Promise<void> =>
+    runtime.runPromise(Notifier.use((notifier) => notifier.notify(message))).then(
+      () => undefined,
+      () => undefined,
+    );
 
-  const execute = async (args: Args): Promise<void> => {
-    const exit = await exitOf(runtime, fn, args);
-    await (alive ? refs.settle(exit) : outcome(runtime, exit, () => undefined, notify));
+  const execute = async (args: Args): Promise<RunOutcome<A, E>> => {
+    const outcome = await outcomeOf(runtime, messages, await exitOf(runtime, fn, args));
+    if (alive) return refs.settle(outcome);
+    if (outcome._tag === "failure") await notify(outcome.message);
+    return outcome;
   };
 
-  const run = (...args: Args): Promise<void> => {
+  const run = (...args: Args): Promise<RunOutcome<A, E>> => {
     if (inFlight === undefined) {
       refs.start();
       inFlight = execute(args).finally(() => {

@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  applyPatch,
-  copyFrontmatter,
-  recordNotes,
-} from "../../../../src/application/notes/frontmatter";
+import { copyFrontmatter, recordNotes } from "../../../../src/application/notes/frontmatter";
+import { applyPatch } from "../../../../src/application/notes/patch";
 
 describe("applyPatch", () => {
   it("sets known keys in place, appends new ones and keeps every other key and the order", () => {

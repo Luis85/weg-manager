@@ -1,32 +1,34 @@
-// The public face of the notes module's application layer (ADR 0006): feature modules, other
-// layers and the composition files import only this.
+// The public face of the notes module's application layer for features, other layers and the
+// composition files (ADR 0006). The kit of the `NoteStore` adapters is the second entry,
+// `adapter.ts`, which only `src/infrastructure/**` imports.
 export {
+  InvalidNoteNameError,
   NoteEditConflictError,
   NoteIndexReadError,
   NoteNotFoundError,
+  NotePathTakenError,
   NoteUnreadableError,
+  NoteWriteError,
   NoteWriteRefusedError,
   type NotesError,
 } from "./errors";
-export { applyPatch, copyFrontmatter, recordNotes } from "./frontmatter";
+export { isInFolder } from "./folders";
 export type { NotesCatalog } from "./i18n/catalog";
 export { describeNoteIssue, describeUnindexedIssue } from "./i18n/describe";
 export { notesDe } from "./i18n/de";
 export { notesEn } from "./i18n/en";
-export { asDefect, createNote, writeCommand } from "./command";
-export { newNoteText, updateNoteText } from "./note-text";
-export { pathsInFolder, planRename } from "./paths";
+export { applyPatch } from "./patch";
 export { editChange, newRecordFrontmatter } from "./records";
 export {
   IdGenerator,
   NoteStore,
   type Frontmatter,
   type FrontmatterChange,
+  type FrontmatterPatch,
   type NewNote,
   type Note,
 } from "./ports";
 export type { NotesServices } from "./services";
-export { INDEX_BATCH_MAX, INDEX_BATCH_QUIET } from "./index-batches";
 export { noteIndexLayer } from "./index-live";
 export {
   noteChanges,

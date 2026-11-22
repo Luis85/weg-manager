@@ -6,9 +6,15 @@ import {
   splitNoteText,
   type NoteText,
 } from "../../domain/notes";
-import { NoteUnreadableError, NoteWriteRefusedError } from "./errors";
-import { applyPatch, copyFrontmatter } from "./frontmatter";
-import type { Frontmatter, FrontmatterChange, FrontmatterPatch } from "./ports";
+import { copyFrontmatter } from "./frontmatter";
+import {
+  NoteUnreadableError,
+  NoteWriteRefusedError,
+  applyPatch,
+  type Frontmatter,
+  type FrontmatterChange,
+  type FrontmatterPatch,
+} from "./index";
 
 /** A new note's text, written by the same serialiser as `updateNoteText` writes. */
 export { newNoteText };

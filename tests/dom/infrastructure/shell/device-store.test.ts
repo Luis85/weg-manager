@@ -6,13 +6,13 @@ import { DeviceStore } from "../../../../src/application/shell/ports";
 vi.mock("obsidian", () => import("@test/obsidian"));
 
 const { createTestPlugin, Plugin } = await import("@test/obsidian");
-const { obsidianLayer } = await import("../../../../src/infrastructure/obsidian/shell/layers");
+const { shellAdapters } = await import("../../../../src/infrastructure/obsidian/shell/layers");
 
 class Bare extends Plugin {}
 
 const setup = () => {
   const { plugin, app } = createTestPlugin(Bare);
-  return { app, layer: obsidianLayer(plugin as never, "de") };
+  return { app, layer: shellAdapters(plugin as never).deviceStore };
 };
 
 /** The Obsidian adapter of `DeviceStore`: the vault's local storage, not `data.json`. */

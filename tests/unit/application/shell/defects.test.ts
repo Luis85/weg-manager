@@ -1,6 +1,6 @@
 import { assert, describe, it } from "@effect/vitest";
-import { Effect, Layer } from "effect";
-import { reportDefect } from "../../../../src/application/shell/defects";
+import { Cause, Effect, Layer } from "effect";
+import { reportDefect, reportUnexpected } from "../../../../src/application/shell/defects";
 import {
   recordingLogger,
   recordingNotifier,
@@ -80,5 +80,53 @@ describe("reportDefect", () => {
         ],
       );
     }).pipe(Effect.provide(layer));
+  });
+});
+
+/** The services `reportDefect` needs, recording; `reported` lists the logged causes' messages. */
+const setup = () => {
+  const logger = recordingLogger();
+  const notifier = recordingNotifier();
+  const layer = Layer.mergeAll(logger.layer, notifier.layer, sequentialIncidents(), testMessages);
+  const reported = () => logger.entries().map((entry) => entry.error?.message);
+  return { layer, notifier, reported };
+};
+
+describe("reportUnexpected", () => {
+  it.effect("stays silent for an interruption", () => {
+    const test = setup();
+    return Effect.gen(function* () {
+      yield* reportUnexpected(Cause.interrupt());
+      yield* reportUnexpected(Cause.combine(Cause.interrupt(1), Cause.interrupt(2)));
+      assert.deepStrictEqual(test.reported(), []);
+      assert.deepStrictEqual(test.notifier.messages(), []);
+    }).pipe(Effect.provide(test.layer));
+  });
+
+  it.effect("reports a defect once, squashed to the value that died", () => {
+    const test = setup();
+    return Effect.gen(function* () {
+      yield* reportUnexpected(Cause.die(new Error("boom")));
+      assert.deepStrictEqual(test.reported(), ["boom"]);
+      assert.strictEqual(test.notifier.messages().length, 1);
+    }).pipe(Effect.provide(test.layer));
+  });
+
+  it.effect("reports a failure nobody expected, and a defect beside an interruption", () => {
+    const test = setup();
+    return Effect.gen(function* () {
+      yield* reportUnexpected(Cause.fail(new Error("typed")));
+      yield* reportUnexpected(Cause.combine(Cause.interrupt(), Cause.die(new Error("late"))));
+      assert.deepStrictEqual(test.reported(), ["typed", "late"]);
+    }).pipe(Effect.provide(test.layer));
+  });
+
+  it.effect("ends an effect it guards with nothing, also after a defect", () => {
+    const test = setup();
+    return Effect.gen(function* () {
+      const ended = yield* Effect.die(new Error("boom")).pipe(Effect.catchCause(reportUnexpected));
+      assert.isUndefined(ended);
+      assert.deepStrictEqual(test.reported(), ["boom"]);
+    }).pipe(Effect.provide(test.layer));
   });
 });

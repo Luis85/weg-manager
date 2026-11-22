@@ -40,7 +40,7 @@ export type SettingsSectionPart = {
 };
 
 /**
- * What module `Name` adds to every view (ADR 0006, amendment 22.11.2026): the screen of each route
+ * What module `Name` adds to every view (ADR 0006, amendment 2026-11-22): the screen of each route
  * its manifest adds (the shell's: the settings screen), the part of each settings section it adds,
  * its entries in the frame's navigation and what it puts into the frame's context area. A module
  * writes it in its `screens.ts`, which code at plugin load imports: it loads its components only

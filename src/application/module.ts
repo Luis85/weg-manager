@@ -2,7 +2,7 @@ import { Layer, type Schema } from "effect";
 import type { NoteTypeRegistry } from "./notes";
 import type { Language, PluginCommand, RouteLike, UserMessage } from "./shell";
 
-// The module manifest (ADR 0006, amendment 22.11.2026): what a module's application side adds to
+// The module manifest (ADR 0006, amendment 2026-11-22): what a module's application side adds to
 // the app, as plain data. Each module writes one with `defineModule` in its `module.ts`; the
 // application root lists them once (`APP_MODULES`, `modules.ts`) and derives every composed type
 // and value from that list with the helpers below. This file imports no module at runtime.

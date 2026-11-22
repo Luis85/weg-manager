@@ -16,7 +16,7 @@ import type {
 import { shellScreens } from "./shell/screens";
 
 /**
- * The screens of every module, by its name (ADR 0006, amendment 22.11.2026): each module's
+ * The screens of every module, by its name (ADR 0006, amendment 2026-11-22): each module's
  * `screens.ts`, which loads its components lazily, so bootstrap can import this file at plugin
  * load without loading Vue. Typecheck fails until every module of `APP_MODULES` has its entry,
  * and each entry until it has a screen for each of its module's routes and a part for each of its

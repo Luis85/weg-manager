@@ -11,7 +11,7 @@ Offener Punkt hat einen Termin oder sichtbaren Klärungsstand mit zuständiger P
 
 **Abnahmeanker:** Nach 15 Tagen ohne Fremdtermin bleibt die Zusage trotz zweier versandter Nachfragen terminlos sichtbar. Import setzt ihr Alter nicht zurück.
 
-**PBIs:** [[PBI-03 - Registerimport prüfen]], [[PBI-09 - Termin und Wiedervorlage trennen]], [[PBI-10 - Eigene Folgeaufgabe nachhalten]], [[PBI-21 - Begründeten Nachfassschritt prüfen]]
+**PBIs:** [[PBI-03 - Registerimport prüfen]], [[PBI-09 - Termin und Wiedervorlage trennen]], [[PBI-10 - Eigenes To-do nachhalten]], [[PBI-21 - Begründeten Eskalationsschritt prüfen]]
 
 ## Herkunft und Pflege
 

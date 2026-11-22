@@ -11,7 +11,7 @@ Zugesagter oder vertraglicher Termin, angegebene formelle Frist, gewünschter An
 
 **Abnahmeanker:** Antworttermin 30.11. bleibt bestehen, wenn Wiedervorlage von 23.11. auf 24.11. verschoben wird.
 
-**PBIs:** [[PBI-09 - Termin und Wiedervorlage trennen]], [[PBI-21 - Begründeten Nachfassschritt prüfen]]
+**PBIs:** [[PBI-09 - Termin und Wiedervorlage trennen]], [[PBI-21 - Begründeten Eskalationsschritt prüfen]]
 
 ## Herkunft und Pflege
 

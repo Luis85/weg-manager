@@ -19,10 +19,10 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
 business-rules:
   - "[[docs/business-rules/DF-08 - Quellenabdeckung]]"
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
@@ -36,7 +36,7 @@ hypotheses:
   - "[[docs/hypothesis/H-05 - Manuelle Eingangsübernahme bleibt alltagstauglich]]"
 pages:
   - "[[docs/design/sitemap/VIEW-02 - Wochenarbeit]]"
-  - "[[docs/design/sitemap/VIEW-03 - Punkte und Punktakte]]"
+  - "[[docs/design/sitemap/VIEW-03 - Vorgänge und Vorgangsakte]]"
   - "[[docs/design/sitemap/VIEW-05 - Erfassen]]"
 user-flows:
   - "[[docs/design/user-flows/FLOW-01 - Gesamtfluss des Beirats-MVP]]"
@@ -69,7 +69,7 @@ P FR-E1/E2; US-05; Alt FR-17. Quellkürzel: 01-Quellabdeckung (historische Quell
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-05 - Einen Punkt erfassen und wiederfinden]]
+[[PBI-05 - Einen Vorgang erfassen und wiederfinden]]
 
 ## Refinementgrenze
 

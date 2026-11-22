@@ -22,7 +22,7 @@ date: 2026-11-15
 | --- | --- | --- | --- |
 | `lage` | [[VIEW-01 - Lage]] | Filter | — |
 | `woche/<schritt>` | [[VIEW-02 - Wochenarbeit]] | Schritt 1–5, Position | „← Zurück zur Lage“ pausiert → `lage` |
-| `punkte` | [[VIEW-03 - Punkte und Punktakte]] Liste | Segment, Filter, Suche | — |
+| `punkte` | [[VIEW-03 - Vorgänge und Vorgangsakte]] Liste | Segment, Filter, Suche | — |
 | `punkt/<id>` | Punktakte | Punkt-ID | Herkunft (Liste, Lage, Woche) inkl. Scrollposition |
 | `post` | [[VIEW-04 - Postausgang]] | gewählte Nachricht, Sprache | — |
 | `ausgabe/<gemeinschaft>` | [[VIEW-06 - Sachstand ausgeben]] | Empfängerart | Punkte |

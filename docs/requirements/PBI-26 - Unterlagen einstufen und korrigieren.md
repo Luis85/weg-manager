@@ -16,10 +16,10 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
-  - "[[docs/design/entities/ENT-16 - Beiratsbewertung]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-16 - Beiratsbewertung]]"
 business-rules:
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
   - "[[docs/business-rules/DF-11 - Sachstand und Bewertung]]"
@@ -31,7 +31,7 @@ hypotheses:
   - "[[docs/hypothesis/H-05 - Manuelle Eingangsübernahme bleibt alltagstauglich]]"
 pages:
   - "[[docs/design/sitemap/VIEW-02 - Wochenarbeit]]"
-  - "[[docs/design/sitemap/VIEW-03 - Punkte und Punktakte]]"
+  - "[[docs/design/sitemap/VIEW-03 - Vorgänge und Vorgangsakte]]"
   - "[[docs/design/sitemap/VIEW-06 - Sachstand ausgeben]]"
 user-flows:
   - "[[docs/design/user-flows/FLOW-01 - Gesamtfluss des Beirats-MVP]]"

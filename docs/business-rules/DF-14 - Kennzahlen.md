@@ -13,7 +13,7 @@ Anfrage bis definierte Antwort, Zusage bis Erfüllung und Angebot bis Beschluss 
 
 **Späterer Abnahmeanker für PBI-36:** Dieselben Ereignisse ergeben einen Tag bis Bestätigung und vier Tage bis Antwort. 145 Tage Angebot bis Beschluss wird als Durchlaufzeit ausgewiesen.
 
-**PBIs:** [[PBI-12 - Ereignisse nachvollziehen]], [[PBI-36 - Abgegrenzte Zeiträume auswerten]]
+**PBIs:** [[PBI-12 - Verlauf nachvollziehen]], [[PBI-36 - Abgegrenzte Zeiträume auswerten]]
 
 ## Herkunft und Pflege
 

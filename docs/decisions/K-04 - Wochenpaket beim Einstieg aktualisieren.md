@@ -36,6 +36,6 @@ O-04: Tatsächlichen Vorbereitungsaufwand und Qualität der Texte im Konzeptrevi
 
 ## Verknüpfungen
 
-[[F-06 - Wochenpaket vorbereiten]], [[F-07 - Arbeitsentscheidungen treffen]].
+[[F-06 - Wochenpaket vorbereiten]], [[F-07 - Entscheidungskarten entscheiden]].
 
 [Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`) · [[Product Backlog.base#Business Rules]].

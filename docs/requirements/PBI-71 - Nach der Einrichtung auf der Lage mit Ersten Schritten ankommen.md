@@ -16,15 +16,15 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
 business-rules:
   - "[[docs/business-rules/DF-22 - Notizen als maßgeblicher Datenbestand]]"
 decisions:
   - "[[docs/decisions/K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]"
 hypotheses:
-  - "[[docs/hypothesis/H-13 - Einrichtung führt in wenigen Minuten zum ersten Punkt]]"
+  - "[[docs/hypothesis/H-13 - Einrichtung führt in wenigen Minuten zum ersten Vorgang]]"
 pages:
   - "[[docs/design/sitemap/VIEW-01 - Lage]]"
 user-flows:

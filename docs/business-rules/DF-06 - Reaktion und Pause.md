@@ -11,7 +11,7 @@ Empfangsbestätigung, sachliche Antwort, neuer akzeptierter Termin, Teillieferun
 
 **Abnahmeanker:** Wir kümmern uns ohne Datum ist kein verbindlicher Termin. Späterer Termin erhält Historie; seine Überschreitung erzeugt erneut Prüfbedarf.
 
-**PBIs:** [[PBI-08 - Bearbeitungsstand bewusst ändern]], [[PBI-12 - Ereignisse nachvollziehen]], [[PBI-22 - Nachfasspaket begrenzen oder pausieren]], [[PBI-23 - Reaktion richtig einordnen]]
+**PBIs:** [[PBI-08 - Bearbeitungsstand bewusst ändern]], [[PBI-12 - Verlauf nachvollziehen]], [[PBI-22 - Eskalationen begrenzen oder aussetzen]], [[PBI-23 - Reaktion richtig einordnen]]
 
 ## Herkunft und Pflege
 

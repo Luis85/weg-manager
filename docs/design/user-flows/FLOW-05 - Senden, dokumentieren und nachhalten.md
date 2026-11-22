@@ -12,8 +12,8 @@ requirements:
   - "[[PBI-18 - Nachrichten je Gemeinschaft bündeln]]"
   - "[[PBI-19 - Eigentümertexte zweisprachig prüfen]]"
   - "[[PBI-20 - Tatsächlichen Versand dokumentieren]]"
-  - "[[PBI-21 - Begründeten Nachfassschritt prüfen]]"
-  - "[[PBI-22 - Nachfasspaket begrenzen oder pausieren]]"
+  - "[[PBI-21 - Begründeten Eskalationsschritt prüfen]]"
+  - "[[PBI-22 - Eskalationen begrenzen oder aussetzen]]"
   - "[[PBI-23 - Reaktion richtig einordnen]]"
 ---
 

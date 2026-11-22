@@ -12,7 +12,7 @@ actors:
   - "[[ACT-04-Vertretung]]"
 hypotheses:
   - "[[H-01 - Beiratsfokus deckt den ersten Pilotbedarf]]"
-  - "[[H-02 - Einzelne Punkte machen den Arbeitsstand verständlich]]"
+  - "[[H-02 - Einzelne Vorgänge machen den Arbeitsstand verständlich]]"
   - "[[H-03 - Wochenarbeit bleibt innerhalb einer Stunde]]"
   - "[[H-04 - Sieben Entscheidungen sind ein brauchbares Arbeitsbudget]]"
   - "[[H-09 - Eine ausgewählte Übergabe ist ohne Hintergrundwissen verständlich]]"
@@ -20,9 +20,9 @@ hypotheses:
 decisions:
   - "[[K-01 - Beirat als erster Produkteinstieg]]"
   - "[[K-02 - Zwei Gemeinschaften für einen Bearbeiter]]"
-  - "[[K-03 - Einzeln erledigbarer Punkt als Kerneinheit]]"
+  - "[[K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]]"
   - "[[K-05 - Sieben reguläre Entscheidungen mit sichtbarem Überlauf]]"
-  - "[[K-06 - Nachfassen an Versand und Fristen ausrichten]]"
+  - "[[K-06 - Eskalation an Versand und Fristen ausrichten]]"
   - "[[K-07 - Sachstand gezielt teilen und Bewertungen intern halten]]"
   - "[[K-08 - Vertretung zunächst durch lesbare Übergabe unterstützen]]"
 business-rules:
@@ -30,7 +30,7 @@ business-rules:
   - "[[DF-10 - Vertraulichkeitsprüfung]]"
   - "[[DF-11 - Sachstand und Bewertung]]"
   - "[[DF-12 - Gemeinschaftstrennung]]"
-  - "[[DF-15 - Arbeitsentscheidung und Beschluss]]"
+  - "[[DF-15 - Entscheidungskarte und Beschluss]]"
 research:
   - "[[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]]"
   - "[[Interviewleitfaden - Beirats-Interviews]]"
@@ -61,7 +61,7 @@ Jeder Job hat dieselben Bestandteile:
   - *Kandidat*: in der Research als mögliche Lücke erkannt, nicht aus dem Pilot.
   - Nach den Interviews kommen *bestätigt*, *priorisiert* und *verworfen* hinzu. Das vollständige Statusmodell mit Mindestbelegen steht in [[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]], Abschnitt 3.4.
 
-**Begriffe:** Ein *offener Punkt* ist eine einzelne Sache, die erledigt werden muss, im Sinne von [[K-03 - Einzeln erledigbarer Punkt als Kerneinheit]]. Ein *Beschluss* ist eine Entscheidung der Gemeinschaft, eine *Entscheidung des Beirats* seine eigene Abwägung ([[DF-15 - Arbeitsentscheidung und Beschluss]]). *Stand* meint den Bearbeitungsstand; die geprüfte Ausgabe an Dritte heißt im Produkt Sachstand.
+**Begriffe:** Ein *offener Punkt* ist eine einzelne Sache, die erledigt werden muss, im Sinne von [[K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]]. Ein *Beschluss* ist eine Entscheidung der Gemeinschaft, eine *Entscheidung des Beirats* seine eigene Abwägung ([[DF-15 - Entscheidungskarte und Beschluss]]). *Stand* meint den Bearbeitungsstand; die geprüfte Ausgabe an Dritte heißt im Produkt Sachstand.
 
 ## Job-Ausführender
 
@@ -406,20 +406,20 @@ Die Tabelle zeigt, wo das Konzept einen Job bereits aufgreift. Ein Bezug heißt 
 
 | Job | Bezüge | Worum es geht |
 | --- | --- | --- |
-| J-0, J-M2, J-M3 | [[H-01 - Beiratsfokus deckt den ersten Pilotbedarf]], [[H-02 - Einzelne Punkte machen den Arbeitsstand verständlich]], [[K-03 - Einzeln erledigbarer Punkt als Kerneinheit]], [[F-03 - Einzelne Punkte bearbeiten]] | Punkt als Einheit, Beiratsfokus |
-| J-A1 | [[H-04 - Sieben Entscheidungen sind ein brauchbares Arbeitsbudget]], [[K-05 - Sieben reguläre Entscheidungen mit sichtbarem Überlauf]], [[F-06 - Wochenpaket vorbereiten]], [[F-07 - Arbeitsentscheidungen treffen]] | begrenzte Auswahl dessen, was eine Entscheidung braucht |
+| J-0, J-M2, J-M3 | [[H-01 - Beiratsfokus deckt den ersten Pilotbedarf]], [[H-02 - Einzelne Vorgänge machen den Arbeitsstand verständlich]], [[K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]], [[F-03 - Einzelne Vorgänge bearbeiten]] | Punkt als Einheit, Beiratsfokus |
+| J-A1 | [[H-04 - Sieben Entscheidungen sind ein brauchbares Arbeitsbudget]], [[K-05 - Sieben reguläre Entscheidungen mit sichtbarem Überlauf]], [[F-06 - Wochenpaket vorbereiten]], [[F-07 - Entscheidungskarten entscheiden]] | begrenzte Auswahl dessen, was eine Entscheidung braucht |
 | J-A2, J-A3 | [[F-10 - Lagecheck und Wiedereinstieg]], [[F-05 - Quellen und Verlauf zuordnen]] | Dringlichkeit, Verlauf, Wiedereinstieg |
 | J-A4 | [[F-08 - Kommunikation vorbereiten und Versand erfassen]] | eigene Abwägung in ausgehender Kommunikation |
-| J-A5 | [[F-03 - Einzelne Punkte bearbeiten]] | Abschluss eines Punkts |
-| J-B1, J-B3 | [[K-06 - Nachfassen an Versand und Fristen ausrichten]], [[F-04 - Termine und eigene Schritte führen]], [[F-09 - Verwaltungszusagen nachfassen]] | Zusage, Termin, gestuftes Nachfassen |
+| J-A5 | [[F-03 - Einzelne Vorgänge bearbeiten]] | Abschluss eines Punkts |
+| J-B1, J-B3 | [[K-06 - Eskalation an Versand und Fristen ausrichten]], [[F-04 - Termine und eigene Schritte führen]], [[F-09 - Verwaltungszusagen nachfassen]] | Zusage, Termin, gestuftes Nachfassen |
 | J-B4 | [[F-15 - Auswertungen und Feedback vertiefen]] | Leistungsbilanz, späterer Ausbau |
 | J-C2, J-C3, J-G2 | [[F-17 - Rechnungen und Zahlungen führen]] | nur teilweise, späterer Ausbau |
 | J-E1, J-F2 | [[F-14 - Berichte und Versammlungsvorbereitung]] | Versammlung und Bericht, späterer Ausbau |
-| J-F1 | [[F-03 - Einzelne Punkte bearbeiten]], [[F-05 - Quellen und Verlauf zuordnen]] | Anliegen als Punkt |
+| J-F1 | [[F-03 - Einzelne Vorgänge bearbeiten]], [[F-05 - Quellen und Verlauf zuordnen]] | Anliegen als Punkt |
 | J-F3, J-RB6 | [[K-07 - Sachstand gezielt teilen und Bewertungen intern halten]], [[F-11 - Vertraulichkeit und gezielte Übergabe]], [[DF-10 - Vertraulichkeitsprüfung]] | Vertraulichkeit je Empfänger |
 | J-G1 | [[F-16 - Operative Handwerkersteuerung]] | späterer Ausbau; J-RB2 beachten |
 | J-H1 | [[K-08 - Vertretung zunächst durch lesbare Übergabe unterstützen]], [[H-09 - Eine ausgewählte Übergabe ist ohne Hintergrundwissen verständlich]], [[H-10 - Lesbare Übergabe genügt dem ersten Vertretungsbedarf]], [[F-11 - Vertraulichkeit und gezielte Übergabe]] | lesbare Übergabe |
-| J-H2 | [[K-02 - Zwei Gemeinschaften für einen Bearbeiter]], [[F-01 - Gemeinschaften und Ansprechpartner]], [[DF-12 - Gemeinschaftstrennung]] | Trennung der Gemeinschaften |
+| J-H2 | [[K-02 - Zwei Gemeinschaften für einen Bearbeiter]], [[F-01 - Gemeinschaften, Personen und Rollen]], [[DF-12 - Gemeinschaftstrennung]] | Trennung der Gemeinschaften |
 | J-RB1 | [[H-03 - Wochenarbeit bleibt innerhalb einer Stunde]] | Zeitbudget |
 | J-RB3 | [[F-08 - Kommunikation vorbereiten und Versand erfassen]] | Freigabe vor Versand |
 

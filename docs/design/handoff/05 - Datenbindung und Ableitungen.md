@@ -9,7 +9,7 @@ date: 2026-11-15
 
 # Handoff · Datenbindung und Ableitungen
 
-Welche fachlichen Angaben (Entitätsnotes `docs/design/entities`) wo erscheinen und wie abgeleitete Werte berechnet werden. Stichtag aller Berechnungen: Öffnen der Ansicht bzw. Start der Wochenarbeit (K-04), Zeitzone Europe/Berlin, Datum ohne Uhrzeit gilt bis Tagesende (DF-05).
+Welche fachlichen Angaben (Entitätsnotes `docs/entities`) wo erscheinen und wie abgeleitete Werte berechnet werden. Stichtag aller Berechnungen: Öffnen der Ansicht bzw. Start der Wochenarbeit (K-04), Zeitzone Europe/Berlin, Datum ohne Uhrzeit gilt bis Tagesende (DF-05).
 
 ## Anzeige je Ansicht
 

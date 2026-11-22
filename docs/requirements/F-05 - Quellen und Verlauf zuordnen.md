@@ -26,7 +26,7 @@ Der aktuelle Sachstand lässt sich aus datierten Ereignissen und erhaltenen Orig
 ## User Stories
 
 - [[PBI-11 - Nachricht und Original zuordnen]]
-- [[PBI-12 - Ereignisse nachvollziehen]]
+- [[PBI-12 - Verlauf nachvollziehen]]
 
 ## Abnahme und Abgrenzung
 

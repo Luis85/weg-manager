@@ -4,7 +4,7 @@ id: DV-01
 contract: weg-manager.community/v1
 status: gültig
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
 requirements:
   - "[[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]"
 ---

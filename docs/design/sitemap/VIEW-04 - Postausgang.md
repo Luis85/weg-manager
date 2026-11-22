@@ -10,12 +10,12 @@ requirements:
   - "[[PBI-18 - Nachrichten je Gemeinschaft bündeln]]"
   - "[[PBI-19 - Eigentümertexte zweisprachig prüfen]]"
   - "[[PBI-20 - Tatsächlichen Versand dokumentieren]]"
-  - "[[PBI-21 - Begründeten Nachfassschritt prüfen]]"
+  - "[[PBI-21 - Begründeten Eskalationsschritt prüfen]]"
 entities:
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
-  - "[[docs/design/entities/ENT-11 - Versanddokumentation]]"
-  - "[[docs/design/entities/ENT-13 - Nachfassstand]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-11 - Versanddokumentation]]"
+  - "[[docs/entities/ENT-13 - Eskalation]]"
 business-rules:
   - "[[docs/business-rules/DF-07 - Wahl, Entwurf und Versand]]"
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"

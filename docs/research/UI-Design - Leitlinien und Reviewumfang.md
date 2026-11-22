@@ -55,17 +55,17 @@ DashboardSidebar (Desktop-Navigation) · DashboardPanel (Arbeitsfläche + Kontex
 | User Story | Ort in v2 |
 | --- | --- |
 | [[PBI-01 - Gemeinschaftskontext wählen]] | [[VIEW-01 - Lage]] Filter, [[VIEW-05 - Erfassen]], [[VIEW-07 - Einstellungen und Einrichtung]] |
-| [[PBI-02 - Ansprechpartner zuordnen]] | [[VIEW-08 - Kontakte]], [[VIEW-07 - Einstellungen und Einrichtung]] |
+| [[PBI-02 - Personen und Rollen zuordnen]] | [[VIEW-08 - Kontakte]], [[VIEW-07 - Einstellungen und Einrichtung]] |
 | [[PBI-03 - Registerimport prüfen]] | [[VIEW-07 - Einstellungen und Einrichtung]] Import |
 | [[PBI-04 - Geprüften Bestand übernehmen]] | [[VIEW-07 - Einstellungen und Einrichtung]] Import |
-| [[PBI-05 - Einen Punkt erfassen und wiederfinden]] | [[VIEW-05 - Erfassen]], [[VIEW-03 - Punkte und Punktakte]] |
-| [[PBI-06 - Sammelpunkte aufteilen]] | [[VIEW-03 - Punkte und Punktakte]] Dialog |
-| [[PBI-07 - Dubletten zusammenführen]] | [[VIEW-03 - Punkte und Punktakte]], [[VIEW-02 - Wochenarbeit]] Eingang |
-| [[PBI-08 - Bearbeitungsstand bewusst ändern]] | [[VIEW-03 - Punkte und Punktakte]] |
-| [[PBI-09 - Termin und Wiedervorlage trennen]] | [[VIEW-03 - Punkte und Punktakte]] Fakten, [[VIEW-02 - Wochenarbeit]] Nachhalten |
-| [[PBI-10 - Eigene Folgeaufgabe nachhalten]] | [[VIEW-03 - Punkte und Punktakte]] Segment Aufgaben |
+| [[PBI-05 - Einen Vorgang erfassen und wiederfinden]] | [[VIEW-05 - Erfassen]], [[VIEW-03 - Vorgänge und Vorgangsakte]] |
+| [[PBI-06 - Sammelvorgänge aufteilen]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Dialog |
+| [[PBI-07 - Dubletten zusammenführen]] | [[VIEW-03 - Vorgänge und Vorgangsakte]], [[VIEW-02 - Wochenarbeit]] Eingang |
+| [[PBI-08 - Bearbeitungsstand bewusst ändern]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] |
+| [[PBI-09 - Termin und Wiedervorlage trennen]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Fakten, [[VIEW-02 - Wochenarbeit]] Nachhalten |
+| [[PBI-10 - Eigenes To-do nachhalten]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Segment Aufgaben |
 | [[PBI-11 - Nachricht und Original zuordnen]] | [[VIEW-02 - Wochenarbeit]] Eingang, [[VIEW-05 - Erfassen]] |
-| [[PBI-12 - Ereignisse nachvollziehen]] | [[VIEW-03 - Punkte und Punktakte]] Verlauf |
+| [[PBI-12 - Verlauf nachvollziehen]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Verlauf |
 | [[PBI-13 - Aktuelle Wochenlage öffnen]] | [[VIEW-01 - Lage]], [[VIEW-02 - Wochenarbeit]] |
 | [[PBI-14 - Entscheidungsauswahl und Überlauf prüfen]] | [[VIEW-02 - Wochenarbeit]] Entscheiden |
 | [[PBI-15 - Eine Entscheidungsvorlage prüfen]] | [[VIEW-02 - Wochenarbeit]] Entscheiden |
@@ -74,21 +74,21 @@ DashboardSidebar (Desktop-Navigation) · DashboardPanel (Arbeitsfläche + Kontex
 | [[PBI-18 - Nachrichten je Gemeinschaft bündeln]] | [[VIEW-04 - Postausgang]] |
 | [[PBI-19 - Eigentümertexte zweisprachig prüfen]] | [[VIEW-04 - Postausgang]] |
 | [[PBI-20 - Tatsächlichen Versand dokumentieren]] | [[VIEW-04 - Postausgang]] Sheet |
-| [[PBI-21 - Begründeten Nachfassschritt prüfen]] | [[VIEW-02 - Wochenarbeit]] Nachhalten |
-| [[PBI-22 - Nachfasspaket begrenzen oder pausieren]] | [[VIEW-02 - Wochenarbeit]] Nachhalten |
-| [[PBI-23 - Reaktion richtig einordnen]] | [[VIEW-03 - Punkte und Punktakte]] Reaktion, [[VIEW-02 - Wochenarbeit]] |
+| [[PBI-21 - Begründeten Eskalationsschritt prüfen]] | [[VIEW-02 - Wochenarbeit]] Nachhalten |
+| [[PBI-22 - Eskalationen begrenzen oder aussetzen]] | [[VIEW-02 - Wochenarbeit]] Nachhalten |
+| [[PBI-23 - Reaktion richtig einordnen]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Reaktion, [[VIEW-02 - Wochenarbeit]] |
 | [[PBI-24 - Zwischendurch Dringlichkeit prüfen]] | [[VIEW-01 - Lage]] |
 | [[PBI-25 - Nächste Wochenarbeit vorbereiten]] | [[VIEW-02 - Wochenarbeit]] Übergabe |
-| [[PBI-26 - Unterlagen einstufen und korrigieren]] | [[VIEW-03 - Punkte und Punktakte]] Quellen |
-| [[PBI-27 - Unnötige private Inhalte entfernen]] | [[VIEW-03 - Punkte und Punktakte]] Dialog |
+| [[PBI-26 - Unterlagen einstufen und korrigieren]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Quellen |
+| [[PBI-27 - Unnötige private Inhalte entfernen]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Dialog |
 | [[PBI-28 - Empfängerbezogene Ausgabe prüfen]] | [[VIEW-06 - Sachstand ausgeben]] |
 | [[PBI-29 - Sachstand lesbar übergeben]] | [[VIEW-06 - Sachstand ausgeben]] |
 | [[PBI-30 - Bestand sichern und wiederherstellen]] | [[VIEW-07 - Einstellungen und Einrichtung]] |
 | [[PBI-31 - Konflikte ohne Datenverlust klären]] | [[VIEW-07 - Einstellungen und Einrichtung]], Hinweis in [[VIEW-01 - Lage]] |
 | [[PBI-32 - Ohne KI selbstständig beginnen]] | [[VIEW-07 - Einstellungen und Einrichtung]] Erststart, Einführungstour; Hinweise in [[VIEW-02 - Wochenarbeit]]; Hilfe-Inhalte und Diagnosebericht offen |
 | [[PBI-33 - Wochenarbeit auf dem Handy abschließen]] | alle Ansichten; mobile Prototyp-Bildschirme `v2-P-M-*` |
-| [[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]] | textuell in [[VIEW-03 - Punkte und Punktakte]], [[VIEW-07 - Einstellungen und Einrichtung]], [[FLOW-08 - Zwischen Plugin und direkter Dateibearbeitung wechseln]] |
-| [[PBI-42 - AI-Agent direkt mit den Notizen arbeiten lassen]] | textuell in [[VIEW-02 - Wochenarbeit]], [[VIEW-03 - Punkte und Punktakte]], [[VIEW-07 - Einstellungen und Einrichtung]], [[FLOW-08 - Zwischen Plugin und direkter Dateibearbeitung wechseln]] |
+| [[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]] | textuell in [[VIEW-03 - Vorgänge und Vorgangsakte]], [[VIEW-07 - Einstellungen und Einrichtung]], [[FLOW-08 - Zwischen Plugin und direkter Dateibearbeitung wechseln]] |
+| [[PBI-42 - AI-Agent direkt mit den Notizen arbeiten lassen]] | textuell in [[VIEW-02 - Wochenarbeit]], [[VIEW-03 - Vorgänge und Vorgangsakte]], [[VIEW-07 - Einstellungen und Einrichtung]], [[FLOW-08 - Zwischen Plugin und direkter Dateibearbeitung wechseln]] |
 | [[PBI-47 - AI-Chat über die eigene Claude-Subscription nutzen]] | **offen**, siehe [[09 - Offene Punkte vor Implementierung]] |
 
 ## Mockup-Bestand

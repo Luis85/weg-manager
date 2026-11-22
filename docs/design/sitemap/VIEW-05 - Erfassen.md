@@ -8,16 +8,16 @@ date: 2026-11-15
 navigation: global · Sheet
 requirements:
   - "[[PBI-01 - Gemeinschaftskontext wählen]]"
-  - "[[PBI-05 - Einen Punkt erfassen und wiederfinden]]"
-  - "[[PBI-10 - Eigene Folgeaufgabe nachhalten]]"
+  - "[[PBI-05 - Einen Vorgang erfassen und wiederfinden]]"
+  - "[[PBI-10 - Eigenes To-do nachhalten]]"
   - "[[PBI-11 - Nachricht und Original zuordnen]]"
   - "[[PBI-33 - Wochenarbeit auf dem Handy abschließen]]"
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-12 - Eigene Aufgabe]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-12 - To-do]]"
 business-rules:
   - "[[docs/business-rules/DF-04 - Fehlender Termin]]"
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"

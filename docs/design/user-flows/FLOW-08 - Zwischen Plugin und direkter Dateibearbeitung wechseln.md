@@ -5,7 +5,7 @@ status: entwurf
 scope: mvp
 pages:
   - "[[VIEW-07 - Einstellungen und Einrichtung]]"
-  - "[[VIEW-03 - Punkte und Punktakte]]"
+  - "[[VIEW-03 - Vorgänge und Vorgangsakte]]"
 requirements:
   - "[[PBI-31 - Konflikte ohne Datenverlust klären]]"
   - "[[PBI-41 - Vorgänge ohne Plugin und Obsidian nutzen]]"
@@ -47,7 +47,7 @@ flowchart TD
 | --- | --- | --- |
 | Datenvertrag verstehen | [[VIEW-07 - Einstellungen und Einrichtung]] oder lokal verfügbare Dokumentation außerhalb der App | Dateien, Beziehungen und Grenzen ohne laufendes Plugin verständlich. |
 | Kontext lesen oder ändern | Gewöhnlicher Dateieditor oder [[ACT-09 - AI-Agent mit direktem Dateizugriff]] | Dieselben fachlichen Notizen statt eines separaten Agentenexports. |
-| Gültige Änderungen einlesen | [[VIEW-03 - Punkte und Punktakte]] (Akte und Quellen) | Aktueller Fachstand, Herkunft und erforderliche erneute Prüfung sichtbar. |
+| Gültige Änderungen einlesen | [[VIEW-03 - Vorgänge und Vorgangsakte]] (Akte und Quellen) | Aktueller Fachstand, Herkunft und erforderliche erneute Prüfung sichtbar. |
 | Konflikt klären | [[VIEW-07 - Einstellungen und Einrichtung]] | Eigene Eingaben und externer Dateistand bleiben bis zur geklärten Übernahme erhalten. |
 | Bestand erhalten | [[VIEW-07 - Einstellungen und Einrichtung]] | Vollständige normale Dateien und Originale bleiben übertragbar; kein Datenverlust durch fehlenden Cache. |
 

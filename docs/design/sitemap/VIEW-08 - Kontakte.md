@@ -8,15 +8,15 @@ date: 2026-11-15
 navigation: Nebenbereich
 requirements:
   - "[[PBI-01 - Gemeinschaftskontext wählen]]"
-  - "[[PBI-02 - Ansprechpartner zuordnen]]"
+  - "[[PBI-02 - Personen und Rollen zuordnen]]"
   - "[[PBI-18 - Nachrichten je Gemeinschaft bündeln]]"
   - "[[PBI-28 - Empfängerbezogene Ausgabe prüfen]]"
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
-  - "[[docs/design/entities/ENT-11 - Versanddokumentation]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-11 - Versanddokumentation]]"
 business-rules:
   - "[[docs/business-rules/DF-01 - Beiratsarbeit und Befugnis]]"
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"

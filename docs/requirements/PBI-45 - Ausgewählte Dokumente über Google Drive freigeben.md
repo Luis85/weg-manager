@@ -9,12 +9,12 @@ actors:
   - "[[docs/design/actors/ACT-03-Eigentuemer]]"
   - "[[docs/design/actors/ACT-04-Vertretung]]"
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
-  - "[[docs/design/entities/ENT-15 - Ausgabestand]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-15 - Ausgabestand]]"
 business-rules:
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
   - "[[docs/business-rules/DF-11 - Sachstand und Bewertung]]"

@@ -6,7 +6,7 @@ scope: mvp
 version: "2.0"
 date: 2026-11-15
 pages:
-  - "[[VIEW-03 - Punkte und Punktakte]]"
+  - "[[VIEW-03 - Vorgänge und Vorgangsakte]]"
   - "[[VIEW-06 - Sachstand ausgeben]]"
 requirements:
   - "[[PBI-26 - Unterlagen einstufen und korrigieren]]"

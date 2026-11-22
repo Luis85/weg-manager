@@ -1,6 +1,6 @@
 ---
 type: PBI
-parent: "[[F-07 - Arbeitsentscheidungen treffen]]"
+parent: "[[F-07 - Entscheidungskarten entscheiden]]"
 order: 26000
 actors:
   - "[[ACT-01-Beirat]]"
@@ -16,10 +16,10 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-09 - Arbeitsentscheidung]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
-  - "[[docs/design/entities/ENT-11 - Versanddokumentation]]"
-  - "[[docs/design/entities/ENT-12 - Eigene Aufgabe]]"
+  - "[[docs/entities/ENT-09 - Entscheidungskarte]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-11 - Versanddokumentation]]"
+  - "[[docs/entities/ENT-12 - To-do]]"
 business-rules:
   - "[[docs/business-rules/DF-07 - Wahl, Entwurf und Versand]]"
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
@@ -31,7 +31,7 @@ hypotheses:
   - "[[docs/hypothesis/H-06 - Vorbereitete Wochenarbeit ist ohne verpflichtende KI nützlich]]"
 pages:
   - "[[docs/design/sitemap/VIEW-02 - Wochenarbeit]]"
-  - "[[docs/design/sitemap/VIEW-03 - Punkte und Punktakte]]"
+  - "[[docs/design/sitemap/VIEW-03 - Vorgänge und Vorgangsakte]]"
 user-flows:
   - "[[docs/design/user-flows/FLOW-01 - Gesamtfluss des Beirats-MVP]]"
   - "[[docs/design/user-flows/FLOW-02 - Wochenarbeit geführt]]"
@@ -58,7 +58,7 @@ P FR-W5; US-08; DF-07. Quellkürzel: 01-Quellabdeckung (historische Quelle: Git-
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-16 - Wahl mit Kontextnotiz bestätigen]], [[PBI-10 - Eigene Folgeaufgabe nachhalten]]
+[[PBI-16 - Wahl mit Kontextnotiz bestätigen]], [[PBI-10 - Eigenes To-do nachhalten]]
 
 ## Refinementgrenze
 

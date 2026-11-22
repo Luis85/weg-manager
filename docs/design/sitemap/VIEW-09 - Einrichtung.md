@@ -13,7 +13,7 @@ requirements:
   - "[[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]"
   - "[[PBI-73 - Kürzel einer Gemeinschaft nachträglich ändern]]"
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
 business-rules:
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
   - "[[docs/business-rules/DF-22 - Notizen als maßgeblicher Datenbestand]]"

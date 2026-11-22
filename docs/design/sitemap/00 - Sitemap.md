@@ -8,7 +8,7 @@ date: 2026-11-15
 views:
   - "[[VIEW-01 - Lage]]"
   - "[[VIEW-02 - Wochenarbeit]]"
-  - "[[VIEW-03 - Punkte und Punktakte]]"
+  - "[[VIEW-03 - Vorgänge und Vorgangsakte]]"
   - "[[VIEW-04 - Postausgang]]"
   - "[[VIEW-05 - Erfassen]]"
   - "[[VIEW-06 - Sachstand ausgeben]]"

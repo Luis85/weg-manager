@@ -8,12 +8,12 @@ date: 2026-11-15
 pages:
   - "[[VIEW-05 - Erfassen]]"
   - "[[VIEW-02 - Wochenarbeit]]"
-  - "[[VIEW-03 - Punkte und Punktakte]]"
+  - "[[VIEW-03 - Vorgänge und Vorgangsakte]]"
 requirements:
   - "[[PBI-01 - Gemeinschaftskontext wählen]]"
-  - "[[PBI-05 - Einen Punkt erfassen und wiederfinden]]"
+  - "[[PBI-05 - Einen Vorgang erfassen und wiederfinden]]"
   - "[[PBI-07 - Dubletten zusammenführen]]"
-  - "[[PBI-10 - Eigene Folgeaufgabe nachhalten]]"
+  - "[[PBI-10 - Eigenes To-do nachhalten]]"
   - "[[PBI-11 - Nachricht und Original zuordnen]]"
   - "[[PBI-26 - Unterlagen einstufen und korrigieren]]"
 ---

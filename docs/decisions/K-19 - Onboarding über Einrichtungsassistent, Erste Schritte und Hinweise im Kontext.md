@@ -79,7 +79,7 @@ Der Produktverantwortliche hat am 22.11.2026 entschieden:
   - **Ruft ihn nicht auf:** Start und Neustart von Obsidian, Neuladen des Fensters, das Ausschalten des eingeschränkten Modus und ein Plugin, das über Sync auf einem zweiten Gerät aktiviert ankommt. Eine über Sync geänderte Liste der aktivierten Plugins wirkt erst beim nächsten Start, und dann ohne Benutzer-Flag.
   - **Zeitpunkt:** `onUserEnable` läuft direkt nach `onload`, wenn der Arbeitsbereich schon bereit ist; der Notizindex kann dann noch laden.
   - **Folge:** Die Regel „Einrichtung nur ohne gültige Gemeinschaft“ ist nötig, nicht nur Vorsicht. Ohne sie öffnete jedes Update die Ansicht. Ein zweites Gerät öffnet die Einrichtung nie von selbst. Ein Update in einem Vault ohne Gemeinschaft öffnet die Einrichtung erneut; das ist gewollt. PBI-69 enthält die Fälle als e2e-Kriterien.
-- Überprüfung im Pilot und in einem kleinen Usability-Test mit etwa fünf Personen, die laut denken: Zeit vom Aktivieren bis zur ersten angelegten Gemeinschaft und bis zum ersten Punkt, beobachtet, nicht gemessen im Plugin ([[H-13 - Einrichtung führt in wenigen Minuten zum ersten Punkt]]).
+- Überprüfung im Pilot und in einem kleinen Usability-Test mit etwa fünf Personen, die laut denken: Zeit vom Aktivieren bis zur ersten angelegten Gemeinschaft und bis zum ersten Punkt, beobachtet, nicht gemessen im Plugin ([[H-13 - Einrichtung führt in wenigen Minuten zum ersten Vorgang]]).
 
 ## Verknüpfungen
 

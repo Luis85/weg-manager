@@ -20,7 +20,7 @@ business-rules: []
 decisions:
   - "[[docs/decisions/K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]"
 hypotheses:
-  - "[[docs/hypothesis/H-13 - Einrichtung führt in wenigen Minuten zum ersten Punkt]]"
+  - "[[docs/hypothesis/H-13 - Einrichtung führt in wenigen Minuten zum ersten Vorgang]]"
 pages:
   - "[[docs/design/sitemap/VIEW-01 - Lage]]"
   - "[[docs/design/sitemap/VIEW-07 - Einstellungen und Einrichtung]]"

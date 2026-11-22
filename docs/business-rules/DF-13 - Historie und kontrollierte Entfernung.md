@@ -11,7 +11,7 @@ Aufteilen und Zusammenführen bewahren Herkunft und alte Kennungen. Gezielte Ber
 
 **Abnahmeanker:** Dublette erhält Zielverweis; unnötige private Anlage wird bewusst entfernt, ohne Inhalt im Verlauf zu duplizieren.
 
-**PBIs:** [[PBI-04 - Geprüften Bestand übernehmen]], [[PBI-06 - Sammelpunkte aufteilen]], [[PBI-07 - Dubletten zusammenführen]], [[PBI-27 - Unnötige private Inhalte entfernen]]
+**PBIs:** [[PBI-04 - Geprüften Bestand übernehmen]], [[PBI-06 - Sammelvorgänge aufteilen]], [[PBI-07 - Dubletten zusammenführen]], [[PBI-27 - Unnötige private Inhalte entfernen]]
 
 ## Herkunft und Pflege
 

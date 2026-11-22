@@ -11,7 +11,7 @@ Offen, ungeklärt, erledigt und hinfällig sind Bearbeitungsstände. Überfälli
 
 **Abnahmeanker:** Alter Termin 10.11., neuer akzeptierter Termin 20.11.: alte Bewertung bleibt, aktueller Punkt bleibt offen.
 
-**PBIs:** [[PBI-06 - Sammelpunkte aufteilen]], [[PBI-07 - Dubletten zusammenführen]], [[PBI-08 - Bearbeitungsstand bewusst ändern]], [[PBI-09 - Termin und Wiedervorlage trennen]]
+**PBIs:** [[PBI-06 - Sammelvorgänge aufteilen]], [[PBI-07 - Dubletten zusammenführen]], [[PBI-08 - Bearbeitungsstand bewusst ändern]], [[PBI-09 - Termin und Wiedervorlage trennen]]
 
 ## Herkunft und Pflege
 

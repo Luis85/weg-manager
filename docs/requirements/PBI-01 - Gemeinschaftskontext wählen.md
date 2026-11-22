@@ -1,6 +1,6 @@
 ---
 type: PBI
-parent: "[[F-01 - Gemeinschaften und Ansprechpartner]]"
+parent: "[[F-01 - Gemeinschaften, Personen und Rollen]]"
 order: 3000
 actors:
   - "[[ACT-01-Beirat]]"
@@ -16,10 +16,10 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-09 - Arbeitsentscheidung]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-09 - Entscheidungskarte]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
 business-rules:
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
 decisions:

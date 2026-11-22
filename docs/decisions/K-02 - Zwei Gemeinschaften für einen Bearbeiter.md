@@ -36,6 +36,6 @@ O-05: Organisationsform und Zuständigkeiten der Tiefgarage vor Übernahme echte
 
 ## Verknüpfungen
 
-[[F-01 - Gemeinschaften und Ansprechpartner]].
+[[F-01 - Gemeinschaften, Personen und Rollen]].
 
 [Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`) · [[Product Backlog.base#Business Rules]].

@@ -11,7 +11,7 @@ pages:
   - "[[VIEW-01 - Lage]]"
 requirements:
   - "[[PBI-01 - Gemeinschaftskontext wählen]]"
-  - "[[PBI-02 - Ansprechpartner zuordnen]]"
+  - "[[PBI-02 - Personen und Rollen zuordnen]]"
   - "[[PBI-03 - Registerimport prüfen]]"
   - "[[PBI-04 - Geprüften Bestand übernehmen]]"
   - "[[PBI-30 - Bestand sichern und wiederherstellen]]"

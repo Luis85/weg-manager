@@ -16,11 +16,11 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
-  - "[[docs/design/entities/ENT-15 - Ausgabestand]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-15 - Ausgabestand]]"
 business-rules:
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
   - "[[docs/business-rules/DF-13 - Historie und kontrollierte Entfernung]]"
@@ -31,7 +31,7 @@ hypotheses:
   - "[[docs/hypothesis/H-05 - Manuelle Eingangsübernahme bleibt alltagstauglich]]"
 pages:
   - "[[docs/design/sitemap/VIEW-02 - Wochenarbeit]]"
-  - "[[docs/design/sitemap/VIEW-03 - Punkte und Punktakte]]"
+  - "[[docs/design/sitemap/VIEW-03 - Vorgänge und Vorgangsakte]]"
 user-flows:
   - "[[docs/design/user-flows/FLOW-01 - Gesamtfluss des Beirats-MVP]]"
   - "[[docs/design/user-flows/FLOW-07 - Sachstand gezielt ausgeben]]"
@@ -58,7 +58,7 @@ P FR-V3; P NFR-2/6; US-12; DF-13. Quellkürzel: 01-Quellabdeckung (historische Q
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-26 - Unterlagen einstufen und korrigieren]], [[PBI-12 - Ereignisse nachvollziehen]]
+[[PBI-26 - Unterlagen einstufen und korrigieren]], [[PBI-12 - Verlauf nachvollziehen]]
 
 ## Refinementgrenze
 

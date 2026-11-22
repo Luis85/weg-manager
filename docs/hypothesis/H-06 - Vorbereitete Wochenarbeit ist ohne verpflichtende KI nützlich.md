@@ -37,7 +37,7 @@ Datenübernahme, Vorlagen und Scope überprüfen; das Ergebnis nicht still als e
 
 ## Bezüge
 
-[[K-04 - Wochenpaket beim Einstieg aktualisieren]], [[K-11 - Lokalen Obsidian-Kern ohne Konto und KI-Pflicht anbieten]], [[F-06 - Wochenpaket vorbereiten]], [[F-07 - Arbeitsentscheidungen treffen]], [[F-12 - Daten erhalten und selbstständig starten]].
+[[K-04 - Wochenpaket beim Einstieg aktualisieren]], [[K-11 - Lokalen Obsidian-Kern ohne Konto und KI-Pflicht anbieten]], [[F-06 - Wochenpaket vorbereiten]], [[F-07 - Entscheidungskarten entscheiden]], [[F-12 - Daten erhalten und selbstständig starten]].
 
 [Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`).
 

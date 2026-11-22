@@ -16,12 +16,12 @@ requirements:
   - "[[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]"
   - "[[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]"
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-13 - Nachfassstand]]"
-  - "[[docs/design/entities/ENT-14 - Wochenübergabe]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-13 - Eskalation]]"
+  - "[[docs/entities/ENT-14 - Übergabe]]"
 business-rules:
   - "[[docs/business-rules/DF-04 - Fehlender Termin]]"
   - "[[docs/business-rules/DF-08 - Quellenabdeckung]]"

@@ -17,7 +17,7 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
 business-rules:
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
   - "[[docs/business-rules/DF-22 - Notizen als maßgeblicher Datenbestand]]"

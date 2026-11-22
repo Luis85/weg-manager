@@ -25,8 +25,8 @@ Nachfassvorschläge respektieren bekannte Reaktionen, tatsächlich kommunizierte
 
 ## User Stories
 
-- [[PBI-21 - Begründeten Nachfassschritt prüfen]]
-- [[PBI-22 - Nachfasspaket begrenzen oder pausieren]]
+- [[PBI-21 - Begründeten Eskalationsschritt prüfen]]
+- [[PBI-22 - Eskalationen begrenzen oder aussetzen]]
 - [[PBI-23 - Reaktion richtig einordnen]]
 
 ## Abnahme und Abgrenzung

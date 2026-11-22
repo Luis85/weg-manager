@@ -11,14 +11,14 @@ requirements:
   - "[[PBI-15 - Eine Entscheidungsvorlage prüfen]]"
   - "[[PBI-16 - Wahl mit Kontextnotiz bestätigen]]"
   - "[[PBI-17 - Folgearbeit aus Entscheidungen vorbereiten]]"
-  - "[[PBI-21 - Begründeten Nachfassschritt prüfen]]"
+  - "[[PBI-21 - Begründeten Eskalationsschritt prüfen]]"
 business-rules:
   - "[[docs/business-rules/DF-04 - Fehlender Termin]]"
-  - "[[docs/business-rules/DF-05 - Nachfassfristen und Stufen]]"
+  - "[[docs/business-rules/DF-05 - Eskalationsleiter und Fristen]]"
   - "[[docs/business-rules/DF-07 - Wahl, Entwurf und Versand]]"
   - "[[docs/business-rules/DF-08 - Quellenabdeckung]]"
   - "[[docs/business-rules/DF-09 - Begrenzte Auswahl und Dringlichkeit]]"
-  - "[[docs/business-rules/DF-15 - Arbeitsentscheidung und Beschluss]]"
+  - "[[docs/business-rules/DF-15 - Entscheidungskarte und Beschluss]]"
 decisions:
   - "[[docs/decisions/K-04 - Wochenpaket beim Einstieg aktualisieren]]"
   - "[[docs/decisions/K-05 - Sieben reguläre Entscheidungen mit sichtbarem Überlauf]]"

@@ -16,10 +16,10 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-14 - Wochenübergabe]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-14 - Übergabe]]"
 business-rules:
   - "[[docs/business-rules/DF-03 - Terminbedeutung]]"
   - "[[docs/business-rules/DF-09 - Begrenzte Auswahl und Dringlichkeit]]"
@@ -59,7 +59,7 @@ P FR-W8; US-14; DF-09/12. Quellkürzel: 01-Quellabdeckung (historische Quelle: G
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-05 - Einen Punkt erfassen und wiederfinden]], [[PBI-16 - Wahl mit Kontextnotiz bestätigen]]
+[[PBI-05 - Einen Vorgang erfassen und wiederfinden]], [[PBI-16 - Wahl mit Kontextnotiz bestätigen]]
 
 ## Refinementgrenze
 

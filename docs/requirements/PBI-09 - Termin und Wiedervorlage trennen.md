@@ -17,27 +17,27 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-12 - Eigene Aufgabe]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-12 - To-do]]"
 business-rules:
   - "[[docs/business-rules/DF-02 - Bearbeitung, Terminprüfung und Bewertung]]"
   - "[[docs/business-rules/DF-03 - Terminbedeutung]]"
   - "[[docs/business-rules/DF-04 - Fehlender Termin]]"
-  - "[[docs/business-rules/DF-05 - Nachfassfristen und Stufen]]"
+  - "[[docs/business-rules/DF-05 - Eskalationsleiter und Fristen]]"
   - "[[docs/business-rules/DF-06 - Reaktion und Pause]]"
 decisions:
-  - "[[docs/decisions/K-03 - Einzeln erledigbarer Punkt als Kerneinheit]]"
-  - "[[docs/decisions/K-06 - Nachfassen an Versand und Fristen ausrichten]]"
+  - "[[docs/decisions/K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]]"
+  - "[[docs/decisions/K-06 - Eskalation an Versand und Fristen ausrichten]]"
 hypotheses:
   - "[[docs/hypothesis/H-01 - Beiratsfokus deckt den ersten Pilotbedarf]]"
-  - "[[docs/hypothesis/H-02 - Einzelne Punkte machen den Arbeitsstand verständlich]]"
+  - "[[docs/hypothesis/H-02 - Einzelne Vorgänge machen den Arbeitsstand verständlich]]"
   - "[[docs/hypothesis/H-08 - Der Pilot kann den Kernablauf selbstständig fortführen]]"
 pages:
-  - "[[docs/design/sitemap/VIEW-03 - Punkte und Punktakte]]"
+  - "[[docs/design/sitemap/VIEW-03 - Vorgänge und Vorgangsakte]]"
 user-flows:
   - "[[docs/design/user-flows/FLOW-01 - Gesamtfluss des Beirats-MVP]]"
   - "[[docs/design/user-flows/FLOW-02 - Wochenarbeit geführt]]"
@@ -64,7 +64,7 @@ P FR-V2/V5; US-04; DF-03/04/05. Quellkürzel: 01-Quellabdeckung (historische Que
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-05 - Einen Punkt erfassen und wiederfinden]]
+[[PBI-05 - Einen Vorgang erfassen und wiederfinden]]
 
 ## Refinementgrenze
 

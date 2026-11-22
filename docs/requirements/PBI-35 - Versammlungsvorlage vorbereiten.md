@@ -16,16 +16,16 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
-  - "[[docs/design/entities/ENT-15 - Ausgabestand]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-15 - Ausgabestand]]"
 business-rules:
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
   - "[[docs/business-rules/DF-11 - Sachstand und Bewertung]]"
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
-  - "[[docs/business-rules/DF-15 - Arbeitsentscheidung und Beschluss]]"
+  - "[[docs/business-rules/DF-15 - Entscheidungskarte und Beschluss]]"
 decisions:
   - "[[docs/decisions/K-01 - Beirat als erster Produkteinstieg]]"
   - "[[docs/decisions/K-07 - Sachstand gezielt teilen und Bewertungen intern halten]]"
@@ -64,4 +64,4 @@ Noch grob; vor Aufnahme in ein Release fachliche Detailfälle und offene Scopefr
 
 ## Business Rules
 
-[[DF-15 - Arbeitsentscheidung und Beschluss]].
+[[DF-15 - Entscheidungskarte und Beschluss]].

@@ -25,9 +25,9 @@ Als Beirat kann ich beide Gemeinschaften mit ihren offenen Punkten und Quellen n
 
 ## Enthaltene Fähigkeiten
 
-- [[F-01 - Gemeinschaften und Ansprechpartner]]
+- [[F-01 - Gemeinschaften, Personen und Rollen]]
 - [[F-02 - Registerbestand übernehmen]]
-- [[F-03 - Einzelne Punkte bearbeiten]]
+- [[F-03 - Einzelne Vorgänge bearbeiten]]
 - [[F-04 - Termine und eigene Schritte führen]]
 - [[F-05 - Quellen und Verlauf zuordnen]]
 

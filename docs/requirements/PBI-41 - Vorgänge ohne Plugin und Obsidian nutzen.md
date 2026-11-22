@@ -6,22 +6,22 @@ release: "[[MVP - Beirat Support]]"
 actors:
   - "[[docs/design/actors/ACT-01-Beirat]]"
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-03 - Thema]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
-  - "[[docs/design/entities/ENT-09 - Arbeitsentscheidung]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
-  - "[[docs/design/entities/ENT-11 - Versanddokumentation]]"
-  - "[[docs/design/entities/ENT-12 - Eigene Aufgabe]]"
-  - "[[docs/design/entities/ENT-13 - Nachfassstand]]"
-  - "[[docs/design/entities/ENT-14 - Wochenübergabe]]"
-  - "[[docs/design/entities/ENT-15 - Ausgabestand]]"
-  - "[[docs/design/entities/ENT-16 - Beiratsbewertung]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-03 - Thema]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-09 - Entscheidungskarte]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-11 - Versanddokumentation]]"
+  - "[[docs/entities/ENT-12 - To-do]]"
+  - "[[docs/entities/ENT-13 - Eskalation]]"
+  - "[[docs/entities/ENT-14 - Übergabe]]"
+  - "[[docs/entities/ENT-15 - Ausgabestand]]"
+  - "[[docs/entities/ENT-16 - Beiratsbewertung]]"
 business-rules:
   - "[[docs/business-rules/DF-22 - Notizen als maßgeblicher Datenbestand]]"
   - "[[docs/business-rules/DF-23 - Externe Bearbeitung ohne stilles Überschreiben]]"
@@ -29,7 +29,7 @@ decisions:
   - "[[docs/decisions/K-14 - Markdown und Frontmatter als offene Datengrundlage]]"
 hypotheses: []
 pages:
-  - "[[docs/design/sitemap/VIEW-03 - Punkte und Punktakte]]"
+  - "[[docs/design/sitemap/VIEW-03 - Vorgänge und Vorgangsakte]]"
   - "[[docs/design/sitemap/VIEW-07 - Einstellungen und Einrichtung]]"
 user-flows:
   - "[[docs/design/user-flows/FLOW-01 - Gesamtfluss des Beirats-MVP]]"
@@ -60,7 +60,7 @@ Direkte Produktvorgabe vom 15.11.2026, dokumentiert in [[K-14 - Markdown und Fro
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-05 - Einen Punkt erfassen und wiederfinden]], [[PBI-11 - Nachricht und Original zuordnen]], [[PBI-31 - Konflikte ohne Datenverlust klären]], [[Datenkonzept - Offene Notizen und Agentenzugriff]].
+[[PBI-05 - Einen Vorgang erfassen und wiederfinden]], [[PBI-11 - Nachricht und Original zuordnen]], [[PBI-31 - Konflikte ohne Datenverlust klären]], [[Datenkonzept - Offene Notizen und Agentenzugriff]].
 
 ## Refinementgrenze
 

@@ -1,6 +1,6 @@
 ---
 type: PBI
-parent: "[[F-07 - Arbeitsentscheidungen treffen]]"
+parent: "[[F-07 - Entscheidungskarten entscheiden]]"
 order: 25000
 actors:
   - "[[ACT-01-Beirat]]"
@@ -16,16 +16,16 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-09 - Arbeitsentscheidung]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-09 - Entscheidungskarte]]"
 business-rules:
   - "[[docs/business-rules/DF-01 - Beiratsarbeit und Befugnis]]"
   - "[[docs/business-rules/DF-07 - Wahl, Entwurf und Versand]]"
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
-  - "[[docs/business-rules/DF-15 - Arbeitsentscheidung und Beschluss]]"
+  - "[[docs/business-rules/DF-15 - Entscheidungskarte und Beschluss]]"
 decisions:
   - "[[docs/decisions/K-01 - Beirat als erster Produkteinstieg]]"
   - "[[docs/decisions/K-04 - Wochenpaket beim Einstieg aktualisieren]]"
@@ -68,4 +68,4 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 
 ## Business Rules
 
-[[DF-01 - Beiratsarbeit und Befugnis]], [[DF-07 - Wahl, Entwurf und Versand]], [[DF-15 - Arbeitsentscheidung und Beschluss]].
+[[DF-01 - Beiratsarbeit und Befugnis]], [[DF-07 - Wahl, Entwurf und Versand]], [[DF-15 - Entscheidungskarte und Beschluss]].

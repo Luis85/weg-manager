@@ -23,7 +23,7 @@ decisions:
   - "[[docs/decisions/K-12 - Veröffentlichen vor dem Produktpilot]]"
   - "[[docs/decisions/K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]"
 hypotheses:
-  - "[[docs/hypothesis/H-13 - Einrichtung führt in wenigen Minuten zum ersten Punkt]]"
+  - "[[docs/hypothesis/H-13 - Einrichtung führt in wenigen Minuten zum ersten Vorgang]]"
 pages: []
 user-flows:
   - "[[docs/design/user-flows/FLOW-09 - Erststart, Einrichtung und Einführung]]"

@@ -54,6 +54,7 @@ views:
     filters:
       or:
         - file.inFolder("docs/design")
+        - file.inFolder("docs/entities")
         - file.inFolder("docs/research")
         - file.inFolder("docs/jobs-to-be-done")
     groupBy:

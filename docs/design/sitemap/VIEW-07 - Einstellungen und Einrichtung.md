@@ -8,10 +8,10 @@ date: 2026-11-15
 navigation: Nebenbereich
 requirements:
   - "[[PBI-01 - Gemeinschaftskontext wählen]]"
-  - "[[PBI-02 - Ansprechpartner zuordnen]]"
+  - "[[PBI-02 - Personen und Rollen zuordnen]]"
   - "[[PBI-03 - Registerimport prüfen]]"
   - "[[PBI-04 - Geprüften Bestand übernehmen]]"
-  - "[[PBI-05 - Einen Punkt erfassen und wiederfinden]]"
+  - "[[PBI-05 - Einen Vorgang erfassen und wiederfinden]]"
   - "[[PBI-30 - Bestand sichern und wiederherstellen]]"
   - "[[PBI-31 - Konflikte ohne Datenverlust klären]]"
   - "[[PBI-32 - Ohne KI selbstständig beginnen]]"
@@ -20,9 +20,9 @@ requirements:
   - "[[PBI-42 - AI-Agent direkt mit den Notizen arbeiten lassen]]"
   - "[[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]"
 entities:
-  - "[[docs/design/entities/ENT-01 - Gemeinschaft]]"
-  - "[[docs/design/entities/ENT-02 - Ansprechpartner]]"
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
+  - "[[docs/entities/ENT-01 - Gemeinschaft]]"
+  - "[[docs/entities/ENT-02 - Person und Rolle]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
 business-rules:
   - "[[docs/business-rules/DF-12 - Gemeinschaftstrennung]]"
   - "[[docs/business-rules/DF-13 - Historie und kontrollierte Entfernung]]"

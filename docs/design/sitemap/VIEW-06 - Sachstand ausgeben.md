@@ -12,8 +12,8 @@ requirements:
   - "[[PBI-29 - Sachstand lesbar übergeben]]"
   - "[[PBI-33 - Wochenarbeit auf dem Handy abschließen]]"
 entities:
-  - "[[docs/design/entities/ENT-15 - Ausgabestand]]"
-  - "[[docs/design/entities/ENT-16 - Beiratsbewertung]]"
+  - "[[docs/entities/ENT-15 - Ausgabestand]]"
+  - "[[docs/entities/ENT-16 - Beiratsbewertung]]"
 business-rules:
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
   - "[[docs/business-rules/DF-11 - Sachstand und Bewertung]]"

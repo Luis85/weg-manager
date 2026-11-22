@@ -16,15 +16,15 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-05 - Termin]]"
-  - "[[docs/design/entities/ENT-06 - Ereignis]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-05 - Termin]]"
+  - "[[docs/entities/ENT-06 - Verlaufseintrag]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
 business-rules:
   - "[[docs/business-rules/DF-08 - Quellenabdeckung]]"
   - "[[docs/business-rules/DF-14 - Kennzahlen]]"
 decisions:
-  - "[[docs/decisions/K-06 - Nachfassen an Versand und Fristen ausrichten]]"
+  - "[[docs/decisions/K-06 - Eskalation an Versand und Fristen ausrichten]]"
   - "[[docs/decisions/K-07 - Sachstand gezielt teilen und Bewertungen intern halten]]"
 hypotheses:
   - "[[docs/hypothesis/H-01 - Beiratsfokus deckt den ersten Pilotbedarf]]"
@@ -53,7 +53,7 @@ P FR-V6; P G3; US-18; DF-14. Quellkürzel: 01-Quellabdeckung (historische Quelle
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-12 - Ereignisse nachvollziehen]]
+[[PBI-12 - Verlauf nachvollziehen]]
 
 ## Refinementgrenze
 

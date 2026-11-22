@@ -1,6 +1,6 @@
 ---
 type: PBI
-parent: "[[F-07 - Arbeitsentscheidungen treffen]]"
+parent: "[[F-07 - Entscheidungskarten entscheiden]]"
 order: 24000
 actors:
   - "[[ACT-01-Beirat]]"
@@ -16,16 +16,16 @@ priority: ""
 assignee: ""
 iteration: ""
 entities:
-  - "[[docs/design/entities/ENT-04 - Punkt]]"
-  - "[[docs/design/entities/ENT-07 - Quelle]]"
-  - "[[docs/design/entities/ENT-08 - Dokument]]"
-  - "[[docs/design/entities/ENT-09 - Arbeitsentscheidung]]"
-  - "[[docs/design/entities/ENT-10 - Nachrichtenentwurf]]"
+  - "[[docs/entities/ENT-04 - Vorgang]]"
+  - "[[docs/entities/ENT-07 - Quelle]]"
+  - "[[docs/entities/ENT-08 - Dokument]]"
+  - "[[docs/entities/ENT-09 - Entscheidungskarte]]"
+  - "[[docs/entities/ENT-10 - Nachrichtenentwurf]]"
 business-rules:
   - "[[docs/business-rules/DF-01 - Beiratsarbeit und Befugnis]]"
   - "[[docs/business-rules/DF-08 - Quellenabdeckung]]"
   - "[[docs/business-rules/DF-10 - Vertraulichkeitsprüfung]]"
-  - "[[docs/business-rules/DF-15 - Arbeitsentscheidung und Beschluss]]"
+  - "[[docs/business-rules/DF-15 - Entscheidungskarte und Beschluss]]"
 decisions:
   - "[[docs/decisions/K-01 - Beirat als erster Produkteinstieg]]"
   - "[[docs/decisions/K-04 - Wochenpaket beim Einstieg aktualisieren]]"
@@ -62,7 +62,7 @@ P FR-W3; US-07; DF-01/08/15. Quellkürzel: 01-Quellabdeckung (historische Quelle
 
 ## Fachliche Abhängigkeiten
 
-[[PBI-12 - Ereignisse nachvollziehen]], [[PBI-14 - Entscheidungsauswahl und Überlauf prüfen]]
+[[PBI-12 - Verlauf nachvollziehen]], [[PBI-14 - Entscheidungsauswahl und Überlauf prüfen]]
 
 ## Refinementgrenze
 
@@ -70,4 +70,4 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 
 ## Business Rules
 
-[[DF-01 - Beiratsarbeit und Befugnis]], [[DF-08 - Quellenabdeckung]], [[DF-15 - Arbeitsentscheidung und Beschluss]].
+[[DF-01 - Beiratsarbeit und Befugnis]], [[DF-08 - Quellenabdeckung]], [[DF-15 - Entscheidungskarte und Beschluss]].

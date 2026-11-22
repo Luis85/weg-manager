@@ -39,7 +39,7 @@ Bei Gegenbelegen den ersten Scope neu zuschneiden; nicht alle späteren Module a
 
 ## Bezüge
 
-[[K-01 - Beirat als erster Produkteinstieg]], [[F-03 - Einzelne Punkte bearbeiten]], [[F-16 - Operative Handwerkersteuerung]], [[F-17 - Rechnungen und Zahlungen führen]], [[JTBD - Verwaltungsbeirat]].
+[[K-01 - Beirat als erster Produkteinstieg]], [[F-03 - Einzelne Vorgänge bearbeiten]], [[F-16 - Operative Handwerkersteuerung]], [[F-17 - Rechnungen und Zahlungen führen]], [[JTBD - Verwaltungsbeirat]].
 
 [Produktvision](../01-Produktvision.md) · [MVP-PRD](../02-MVP-PRD.md) · Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`).
 

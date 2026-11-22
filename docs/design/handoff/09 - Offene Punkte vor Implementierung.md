@@ -34,7 +34,7 @@ date: 2026-11-15
 | O-D7 | Eigentümer einzeln führen? | Nein im MVP: Verteiler je Gemeinschaft mit Anzahl und Sprachaufteilung; Einzelführung erst mit Datenschutzkonzept |
 | O-D8 | Kontakte importieren (vCard/CSV)? | Nicht im MVP; manuelle Anlage und Erststart reichen für den Pilot |
 | O-D9 | Hinweise je Schritt beim ersten Durchlauf der Wochenarbeit | Entschieden: ja, siehe [[VIEW-02 - Wochenarbeit]] |
-| O-D10 | Kann derselbe Kontakt je Gemeinschaft eine andere Rolle haben (z. B. Verwaltung in AW, Eigentümer in TG)? | Prototyp: eine Rolle je Kontakt, Zuständigkeit je Gemeinschaft. PBI-02 und AT-B01 sprechen von Rollen je Gemeinschaft; vor Umsetzung entscheiden |
+| O-D10 | Kann derselbe Kontakt je Gemeinschaft eine andere Rolle haben (z. B. Verwaltung in AW, Eigentümer in TG)? | **Entschieden am 22.11.2026:** nein. Ein Kontakt hat eine Rolle und eine Zuständigkeit für eine oder mehrere Gemeinschaften, wie im Prototyp. Eine abweichende Rolle steht in der Notiz des Kontakts; eine Rolle je Gemeinschaft kann mit einer neuen Schemaversion folgen ([[PBI-61 - Beziehungen zwischen Datensätzen und abgeleitete Werte vorbereiten]]). PBI-02 und AT-B01 sind beim Ausarbeiten der Funktion daran anzupassen |
 | O-D11 | Benennung des nativen Chats (PBI-47) vs. Schreibregel „kein KI in Labels“ ([[06 - Texte und Begriffe]]) | Vorschlag: Regel gilt für die regelbasierte Kernreise; der Chat heißt nach seiner Funktion („Chat mit Claude“) und zeigt den Abrechnungsmodus |
 | O-D6 | Punkte-Liste als Bases-View oder eigene Liste | Spike: Bases-View für Lesen, eigene Liste für Bearbeitung |
 

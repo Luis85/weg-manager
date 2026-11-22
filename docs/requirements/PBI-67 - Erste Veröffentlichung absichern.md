@@ -51,15 +51,17 @@ Und der offene Punkt aus [[PBI-58 - CI und Abhängigkeiten gepflegt halten]] (Kr
 
 ## Akzeptanzkriterien
 
-1. Die Vorabversion 0.2.0 ist über den Release-Ablauf entstanden; der Lauf wurde beobachtet. Die Veröffentlichung trägt genau `main.js`, `manifest.json` und `styles.css`, ist als Vorabversion markiert und hat eine gültige Bescheinigung. Ein Fehlschlag wird nach `docs/engineering/releasing.md` behoben und hier festgehalten.
+1. Die Vorabversion 0.2.0 ist über den Release-Ablauf entstanden; der Lauf wurde beobachtet. Die Veröffentlichung trägt `main.js`, `manifest.json`, `styles.css` und die Datei mit den Lizenzhinweisen Dritter, ist als Vorabversion markiert und hat eine gültige Bescheinigung. Ein Fehlschlag wird nach `docs/engineering/releasing.md` behoben und hier festgehalten.
 2. Der nächtliche Mutationslauf ist mindestens einmal gelaufen (von Hand oder nach Zeitplan); der zweite Lauf nutzt die Zwischenergebnisse des ersten.
 3. Der erste Dependabot-Lauf nach PR #32 hat die Wartezeit und die Gruppe angewendet, oder die Schlüssel sind korrigiert.
 4. Es ist entschieden, ob die Veröffentlichung Lizenzhinweise Dritter mitführt (etwa als vierte Datei oder im Repository), und die Lizenz von `vaul-vue` ist an seiner Quelle geklärt.
 5. `CI / e2e` ist Pflichtprüfung für `main` (Einstellung des Produktverantwortlichen).
 
-## Offene Entscheidung
+## Entscheidungen (22.11.2026)
 
-Lizenzhinweise Dritter: mitliefern, im Repository führen oder nichts tun (Kriterium 4). Der Zeitpunkt des Tags 0.2.0 gehört dem Produktverantwortlichen.
+- **Lizenzhinweise Dritter (Kriterium 4):** Eine erzeugte Datei mit den Hinweisen liegt im Repository, das Gate hält sie aktuell, und jede GitHub-Veröffentlichung trägt sie als vierte Datei. Obsidian und BRAT installieren weiter nur `main.js`, `manifest.json` und `styles.css`. Die Datei ist schon in 0.2.0 dabei.
+- **Tag 0.2.0:** Der Agent setzt den Tag, sobald die am 22.11.2026 beschlossenen Arbeiten auf `main` liegen und die CI dort grün ist: Datensatz-Baukasten in `notes`, Lizenzhinweise, Modulmanifest (PBI-60), Löschen der ungenutzten Ereignisse (PBI-62), die vier Punkte aus PBI-65 und die Farbe `amber` (PBI-66). Er beobachtet den ersten Lauf des Release-Ablaufs.
+- **`CI / e2e` als Pflichtprüfung (Kriterium 5):** vorerst nicht. Der Agent wartet weiter nach eigener Regel auf den Job, bevor er zusammenführt.
 
 ## Herkunft und Bezüge
 
@@ -68,3 +70,4 @@ Test-Review vom 22.11.2026 (A1, A2, B8, D6), Bericht zu PR #32. `docs/engineerin
 ## Kommentare
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
+- 22.11.2026 (Interview nach der Review-Runde): Entscheidungen eingetragen. Kriterium 5 ist zurückgestellt; die Note bleibt `ready-for-human`, weil der Tag eine öffentliche Vorabversion erzeugt und die Einstellung der Pflichtprüfung dem Produktverantwortlichen gehört.

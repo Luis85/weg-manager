@@ -61,7 +61,7 @@ Jeder Job hat dieselben Bestandteile:
   - *Kandidat*: in der Research als mögliche Lücke erkannt, nicht aus dem Pilot.
   - Nach den Interviews kommen *bestätigt*, *priorisiert* und *verworfen* hinzu. Das vollständige Statusmodell mit Mindestbelegen steht in [[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]], Abschnitt 3.4.
 
-**Begriffe:** Ein *offener Punkt* ist eine einzelne Sache, die erledigt werden muss, im Sinne von [[K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]]. Ein *Beschluss* ist eine Entscheidung der Gemeinschaft, eine *Entscheidung des Beirats* seine eigene Abwägung ([[DF-15 - Entscheidungskarte und Beschluss]]). *Stand* meint den Bearbeitungsstand; die geprüfte Ausgabe an Dritte heißt im Produkt Sachstand.
+**Begriffe:** Ein *offener Vorgang* ist eine einzelne Sache, die erledigt werden muss, im Sinne von [[K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]]. Ein *Beschluss* ist eine Entscheidung der Gemeinschaft, eine *Entscheidung des Beirats* seine eigene Abwägung ([[DF-15 - Entscheidungskarte und Beschluss]]). *Stand* meint den Bearbeitungsstand; die geprüfte Ausgabe an Dritte heißt im Produkt Sachstand.
 
 ## Job-Ausführender
 
@@ -80,8 +80,8 @@ Woran der Beirat den Hauptjob misst:
 | Kennung | Erfolgsmaß |
 | --- | --- |
 | J-M1 | Gutes Verhältnis zur Verwaltung. |
-| J-M2 | Kein Rückstand an offenen Punkten. |
-| J-M3 | Klare Verantwortlichkeit für jeden Punkt. |
+| J-M2 | Kein Rückstand an offenen Vorgängen. |
+| J-M3 | Klare Verantwortlichkeit für jeden Vorgang. |
 | J-M4 | Wirksame Kontrolle: Probleme werden zügig und mit wenig Aufwand gelöst. |
 | J-M5 | Finanzielle Transparenz. |
 
@@ -97,23 +97,23 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 
 ### J-A1 · Wissen, was mich braucht
 
-> Als Verwaltungsbeirat muss ich in meiner regelmäßigen Arbeitszeit für das Amt verlässlich erkennen, welche offenen Punkte meine Entscheidung brauchen, um nichts liegen zu lassen.
+> Als Verwaltungsbeirat muss ich in meiner regelmäßigen Arbeitszeit für das Amt verlässlich erkennen, welche offenen Vorgänge meine Entscheidung brauchen, um nichts liegen zu lassen.
 
-- **Ergebnis:** Minimiere die Wahrscheinlichkeit, dass ein entscheidungsbedürftiger Punkt unbemerkt in einem langen Schriftwechsel liegen bleibt. Ziel: eine feste, kurze Wochenzeit und kein Gefühl, etwas übersehen zu haben.
+- **Ergebnis:** Minimiere die Wahrscheinlichkeit, dass ein entscheidungsbedürftiger Vorgang unbemerkt in einem langen Schriftwechsel liegen bleibt. Ziel: eine feste, kurze Wochenzeit und kein Gefühl, etwas übersehen zu haben.
 - **Verbindlichkeit:** Sorgfalt · **Status:** beobachtet
 
 ### J-A2 · Dringendes von Wartbarem trennen
 
 > Als Verwaltungsbeirat muss ich zwischen meinen festen Arbeitszeiten erkennen, was wirklich nicht warten kann, um schnell zu reagieren, ohne täglich hinzusehen.
 
-- **Ergebnis:** Minimiere die Zahl der Unterbrechungen, die nicht von einer rechtlichen Frist, einer Unterschrift, einem akuten Gebäudeproblem oder drohenden Kosten ausgehen. Minimiere zugleich die Zahl dringender Punkte, die erst in der nächsten festen Arbeitszeit auffallen.
+- **Ergebnis:** Minimiere die Zahl der Unterbrechungen, die nicht von einer rechtlichen Frist, einer Unterschrift, einem akuten Gebäudeproblem oder drohenden Kosten ausgehen. Minimiere zugleich die Zahl dringender Vorgänge, die erst in der nächsten festen Arbeitszeit auffallen.
 - **Verbindlichkeit:** Sorgfalt · **Status:** beobachtet
 
 ### J-A3 · Wieder einsteigen
 
-> Als Verwaltungsbeirat muss ich nach einigen Tagen Pause wissen, wo ich bei einem offenen Punkt stand und was sich seitdem geändert hat, um weiterzumachen, ohne den Verlauf neu zusammenzusetzen.
+> Als Verwaltungsbeirat muss ich nach einigen Tagen Pause wissen, wo ich bei einem offenen Vorgang stand und was sich seitdem geändert hat, um weiterzumachen, ohne den Verlauf neu zusammenzusetzen.
 
-- **Ergebnis:** Minimiere die Zeit, um nach einer Pause den Stand eines Punkts und die Änderungen seither zu erfassen. Ziel: wenige Minuten. Heute kostet der Wiedereinstieg mehr Zeit als die Entscheidung selbst.
+- **Ergebnis:** Minimiere die Zeit, um nach einer Pause den Stand eines Vorgangs und die Änderungen seither zu erfassen. Ziel: wenige Minuten. Heute kostet der Wiedereinstieg mehr Zeit als die Entscheidung selbst.
 - **Verbindlichkeit:** Anliegen · **Status:** beobachtet
 
 ### J-A4 · Eigene Einschätzung einbringen
@@ -123,11 +123,11 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 - **Ergebnis:** Minimiere den Anteil der Äußerungen in seinem Namen, die nicht nach dem Beirat klingen oder seine Abwägung verfehlen.
 - **Verbindlichkeit:** Anliegen · **Status:** beobachtet
 
-### J-A5 · Punkte nachweisbar abschließen
+### J-A5 · Vorgänge nachweisbar abschließen
 
-> Als Verwaltungsbeirat muss ich beim Erledigen eines offenen Punkts festhalten, womit und wann er erledigt ist, um später belegen zu können, dass nichts offen geblieben ist.
+> Als Verwaltungsbeirat muss ich beim Erledigen eines offenen Vorgangs festhalten, womit und wann er erledigt ist, um später belegen zu können, dass nichts offen geblieben ist.
 
-- **Ergebnis:** Minimiere die Zahl der Punkte, deren Erledigung sich später nicht belegen lässt.
+- **Ergebnis:** Minimiere die Zahl der Vorgänge, deren Erledigung sich später nicht belegen lässt.
 - **Verbindlichkeit:** Sorgfalt · **Status:** Kandidat. Die Job-Map-Prüfung zeigt beim Schritt „abschließen“ eine Lücke ([[JTBD-Research - Grundlagen und Methodik Verwaltungsbeirat]], Abschnitt 1.5). In den Interviews als Forschungsfrage FF-9 aus dem [[Interviewleitfaden - Beirats-Interviews]] zu prüfen.
 
 ## B · Verwaltung überwachen und führen
@@ -148,9 +148,9 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 
 ### J-B3 · Nachdruck ohne Beziehungsschaden
 
-> Als Verwaltungsbeirat muss ich bei hängenden Punkten Bewegung erzeugen, ohne die Zusammenarbeit mit der Verwaltung zu beschädigen, um die zugesagten Ergebnisse zu erhalten.
+> Als Verwaltungsbeirat muss ich bei hängenden Vorgängen Bewegung erzeugen, ohne die Zusammenarbeit mit der Verwaltung zu beschädigen, um die zugesagten Ergebnisse zu erhalten.
 
-- **Ergebnis:** Minimiere die Zeit, bis ein hängender Punkt wieder vorankommt, ohne dass sich das Verhältnis zur Verwaltung verschlechtert.
+- **Ergebnis:** Minimiere die Zeit, bis ein hängender Vorgang wieder vorankommt, ohne dass sich das Verhältnis zur Verwaltung verschlechtert.
 - **Verbindlichkeit:** Anliegen · **Status:** beobachtet
 
 ### J-B4 · Leistung mit Tatsachen bewerten
@@ -330,12 +330,12 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 
 > Als Verwaltungsbeirat muss ich meinen Stand jederzeit so halten, dass jemand ohne Vorwissen übernehmen kann, um die Gemeinschaft nicht vom Wissen in meinem Kopf abhängig zu machen, wenn ich ausfalle oder abgebe.
 
-- **Ergebnis:** Minimiere die Zeit, die eine Vertretung ohne Vorwissen braucht, um offene Punkte, Fristen und Zuständigkeiten zu kennen. Zielwert aus dem Pilot: eine Stunde. Er ist eine Pilotangabe und nicht mit dem Wochenbudget aus J-RB1 zu verwechseln.
+- **Ergebnis:** Minimiere die Zeit, die eine Vertretung ohne Vorwissen braucht, um offene Vorgänge, Fristen und Zuständigkeiten zu kennen. Zielwert aus dem Pilot: eine Stunde. Er ist eine Pilotangabe und nicht mit dem Wochenbudget aus J-RB1 zu verwechseln.
 - **Verbindlichkeit:** Anliegen · **Status:** beobachtet · **Prüfmaßstab für** [[H-10 - Lesbare Übergabe genügt dem ersten Vertretungsbedarf]]
 
 ### J-H2 · Gemeinschaften getrennt halten
 
-> Als Verwaltungsbeirat mehrerer Gemeinschaften muss ich Punkte, Schriftwechsel und Geld jeder Gemeinschaft formal sauber getrennt halten, um sicher zu sein, dass nichts in der falschen Gemeinschaft landet.
+> Als Verwaltungsbeirat mehrerer Gemeinschaften muss ich Vorgänge, Schriftwechsel und Geld jeder Gemeinschaft formal sauber getrennt halten, um sicher zu sein, dass nichts in der falschen Gemeinschaft landet.
 
 - **Ergebnis:** Minimiere die Zahl der Vorgänge, die der falschen Gemeinschaft zugeordnet sind. Erschwernis: gleiche Verwaltung, vermischte Schriftwechsel.
 - **Verbindlichkeit:** Sorgfalt · **Status:** beobachtet
@@ -344,7 +344,7 @@ Der erste und der dritte Bereich liegen außerhalb der Beiratsrolle im engen Sin
 
 > Als neu bestellter Verwaltungsbeirat muss ich auch ohne Übergabe durch meinen Vorgänger zügig ein vollständiges Bild der Lage bekommen, um das Amt von Beginn an pflichtgemäß auszuüben.
 
-- **Ergebnis:** Minimiere die Zeit nach Amtsantritt, bis offene Punkte, Verträge, Fristen und Altlasten bekannt sind. Ziel: wenige Wochen.
+- **Ergebnis:** Minimiere die Zeit nach Amtsantritt, bis offene Vorgänge, Verträge, Fristen und Altlasten bekannt sind. Ziel: wenige Wochen.
 - **Verbindlichkeit:** Anliegen · **Status:** Vorschlag
 
 ## Emotionale und soziale Jobs
@@ -406,16 +406,16 @@ Die Tabelle zeigt, wo das Konzept einen Job bereits aufgreift. Ein Bezug heißt 
 
 | Job | Bezüge | Worum es geht |
 | --- | --- | --- |
-| J-0, J-M2, J-M3 | [[H-01 - Beiratsfokus deckt den ersten Pilotbedarf]], [[H-02 - Einzelne Vorgänge machen den Arbeitsstand verständlich]], [[K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]], [[F-03 - Einzelne Vorgänge bearbeiten]] | Punkt als Einheit, Beiratsfokus |
+| J-0, J-M2, J-M3 | [[H-01 - Beiratsfokus deckt den ersten Pilotbedarf]], [[H-02 - Einzelne Vorgänge machen den Arbeitsstand verständlich]], [[K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]], [[F-03 - Einzelne Vorgänge bearbeiten]] | Vorgang als Einheit, Beiratsfokus |
 | J-A1 | [[H-04 - Sieben Entscheidungen sind ein brauchbares Arbeitsbudget]], [[K-05 - Sieben reguläre Entscheidungen mit sichtbarem Überlauf]], [[F-06 - Wochenpaket vorbereiten]], [[F-07 - Entscheidungskarten entscheiden]] | begrenzte Auswahl dessen, was eine Entscheidung braucht |
 | J-A2, J-A3 | [[F-10 - Lagecheck und Wiedereinstieg]], [[F-05 - Quellen und Verlauf zuordnen]] | Dringlichkeit, Verlauf, Wiedereinstieg |
 | J-A4 | [[F-08 - Kommunikation vorbereiten und Versand erfassen]] | eigene Abwägung in ausgehender Kommunikation |
-| J-A5 | [[F-03 - Einzelne Vorgänge bearbeiten]] | Abschluss eines Punkts |
-| J-B1, J-B3 | [[K-06 - Eskalation an Versand und Fristen ausrichten]], [[F-04 - Termine und eigene Schritte führen]], [[F-09 - Verwaltungszusagen nachfassen]] | Zusage, Termin, gestuftes Nachfassen |
+| J-A5 | [[F-03 - Einzelne Vorgänge bearbeiten]] | Abschluss eines Vorgangs |
+| J-B1, J-B3 | [[K-06 - Eskalation an Versand und Fristen ausrichten]], [[F-04 - Termine und eigene Schritte führen]], [[F-09 - Verwaltungszusagen nachfassen]] | Zusage, Termin, Eskalation |
 | J-B4 | [[F-15 - Auswertungen und Feedback vertiefen]] | Leistungsbilanz, späterer Ausbau |
 | J-C2, J-C3, J-G2 | [[F-17 - Rechnungen und Zahlungen führen]] | nur teilweise, späterer Ausbau |
 | J-E1, J-F2 | [[F-14 - Berichte und Versammlungsvorbereitung]] | Versammlung und Bericht, späterer Ausbau |
-| J-F1 | [[F-03 - Einzelne Vorgänge bearbeiten]], [[F-05 - Quellen und Verlauf zuordnen]] | Anliegen als Punkt |
+| J-F1 | [[F-03 - Einzelne Vorgänge bearbeiten]], [[F-05 - Quellen und Verlauf zuordnen]] | Anliegen als Vorgang |
 | J-F3, J-RB6 | [[K-07 - Sachstand gezielt teilen und Bewertungen intern halten]], [[F-11 - Vertraulichkeit und gezielte Übergabe]], [[DF-10 - Vertraulichkeitsprüfung]] | Vertraulichkeit je Empfänger |
 | J-G1 | [[F-16 - Operative Handwerkersteuerung]] | späterer Ausbau; J-RB2 beachten |
 | J-H1 | [[K-08 - Vertretung zunächst durch lesbare Übergabe unterstützen]], [[H-09 - Eine ausgewählte Übergabe ist ohne Hintergrundwissen verständlich]], [[H-10 - Lesbare Übergabe genügt dem ersten Vertretungsbedarf]], [[F-11 - Vertraulichkeit und gezielte Übergabe]] | lesbare Übergabe |
@@ -428,6 +428,10 @@ Die Tabelle zeigt, wo das Konzept einen Job bereits aufgreift. Ein Bezug heißt 
 **Konzeptteile ohne Job:** [[H-05 - Manuelle Eingangsübernahme bleibt alltagstauglich]], [[H-06 - Vorbereitete Wochenarbeit ist ohne verpflichtende KI nützlich]], [[H-07 - Obsidian trägt die tatsächliche mobile Arbeit]], [[H-08 - Der Pilot kann den Kernablauf selbstständig fortführen]], [[H-11 - Der Nutzen führt zu erneuter Verwendung]], [[H-12 - Ein optionaler Onlinedienst kann wirtschaftlich tragfähig sein]] sowie die Entscheidungen K-10 bis K-17 betreffen die Lösung, ihren Betrieb oder das Geschäftsmodell. Das ist erwartbar, weil der Katalog lösungsneutral ist. Das Erfassen und Zuordnen von Eingängen ([[F-05 - Quellen und Verlauf zuordnen]]) ist am ehesten ein Teilschritt von J-A1 und J-B2.
 
 ## Änderungen
+
+**Fachsprache (22.11.2026):**
+
+- WCS-Begriffe übernommen ([[K-20 - WCS-Datenmodell als fachliche Grundlage]]): „offener Vorgang“ statt „offener Punkt“, „Eskalation“ statt „gestuftes Nachfassen“. Die Job-Sätze bleiben inhaltlich gleich.
 
 **v0.3 (21.11.2026):**
 

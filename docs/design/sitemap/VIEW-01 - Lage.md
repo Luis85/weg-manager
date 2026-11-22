@@ -42,15 +42,17 @@ mockups:
 
 # VIEW-01 · Lage
 
+Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
+
 **Rolle:** Start und Lagecheck. Beantwortet in unter einer Minute: Was ist seit meiner Übergabe passiert, was drängt, wann ist die nächste Wochenarbeit?
 
 ## Aufbau (von oben nach unten)
 
-1. **Kopf:** „Lage“, Datum, „N Ereignisse seit deiner Übergabe am …“, Stand des Portals („zuletzt geprüft …“). Kein grünes Gesamturteil bei Datenlücken. Neben dem Titel steht der aktive Gemeinschaftsfilter als Chip mit × (FilterTag); ohne Filter „Alle Gemeinschaften“. Gleiches gilt für die Köpfe von Punkte und Postausgang.
+1. **Kopf:** „Lage“, Datum, „N Verlaufseinträge seit deiner Übergabe am …“, Stand des Portals („zuletzt geprüft …“). Kein grünes Gesamturteil bei Datenlücken. Neben dem Titel steht der aktive Gemeinschaftsfilter als Chip mit × (FilterTag); ohne Filter „Alle Gemeinschaften“. Gleiches gilt für die Köpfe von Vorgänge und Postausgang.
 2. **Vier Kennzahl-Kacheln** (anklickbar): Dringend (rot, mit Grund), Ungeprüft (amber, Eingänge ohne Zuordnung), Wartet auf Antwort (Wartezeit-Balken je Zusage), Entscheidungen (Budgetleiste 7 + roter Überlauf).
 3. **Wochenarbeit-Karte:** Datum, geschätzte Dauer, Schrittchips mit Mengen, Button „Woche starten“ bzw. „Fortsetzen bei Schritt N“.
-4. **Neu seit Übergabe:** Ereignisse nach Tag gruppiert. Zeile = Symbol (Fakt/Warnung/Handlung) · Gemeinschaftskürzel · Satz mit hervorgehobenem Kern · Status-Chip · Punkt-ID.
-5. **Seitenspalte:** Deine 3 Schwerpunkte aus der letzten Übergabe (mit Punkt-ID und aktuellem Status) und Kontextnotiz; Nächste 14 Tage als Liste (Fremdfrist vs. eigene Wiedervorlage beschriftet), ohne zusätzliche Tagesleiste. Schwerpunkte mit Punkt und jeder Termin öffnen direkt die Punktakte; der Termin „Wochenarbeit“ startet die Woche.
+4. **Neu seit Übergabe:** Verlaufseinträge nach Tag gruppiert. Zeile = Symbol (Fakt/Warnung/Handlung) · Gemeinschaftskürzel · Satz mit hervorgehobenem Kern · Status-Chip · Vorgangsnummer.
+5. **Seitenspalte:** Deine 3 Schwerpunkte aus der letzten Übergabe (mit Vorgangsnummer und aktuellem Status) und Kontextnotiz; Nächste 14 Tage als Liste (Fremdfrist vs. eigene Wiedervorlage beschriftet), ohne zusätzliche Tagesleiste. Schwerpunkte mit Vorgang und jeder Termin öffnen direkt die Vorgangsakte; der Termin „Wochenarbeit“ startet die Woche.
 
 ![[v2-P-D-01-Lage.png]]
 
@@ -59,12 +61,12 @@ mockups:
 - Wird beim Öffnen aktualisiert (K-04); ein ausgeschaltetes Plugin hat nichts im Hintergrund geprüft – der Kopf sagt das.
 - Filter „Alle“ zeigt beide Gemeinschaften; jede Zeile trägt ihr Kürzel. Kein Bearbeiten im Filterkontext „Alle“ ohne eindeutige Gemeinschaft.
 - Dringendes ist immer vollständig sichtbar, unabhängig vom Entscheidungsbudget (DF-09).
-- „Überfällig“ ist Prüfmerkmal, keine Bewertung (DF-02). Die Bewertung „nicht eingehalten“ erscheint nur, wenn der Beirat sie gesetzt hat.
-- Zeile antippen → Punktakte (Desktop: Seitenpanel; mobil: Vollbild) mit Rückweg an dieselbe Stelle.
+- „Überfällig“ ist ein Prüfvermerk, keine Bewertung (DF-02). Die Bewertung „nicht eingehalten“ erscheint nur, wenn der Beirat sie gesetzt hat.
+- Zeile antippen → Vorgangsakte (Desktop: Seitenpanel; mobil: Vollbild) mit Rückweg an dieselbe Stelle.
 
 ## Mobil
 
-Segment-Navigation oben (Lage · Woche · Punkte · Post), Gemeinschaftsfilter als Pill (mit Rahmen hervorgehoben, wenn aktiv), Kennzahlen als 4er-Reihe, Wochenkarte, Feed. „Erfassen“ schwebt über der Obsidian-Navigation.
+Segment-Navigation oben (Lage · Woche · Vorgänge · Post), Gemeinschaftsfilter als Pill (mit Rahmen hervorgehoben, wenn aktiv), Kennzahlen als 4er-Reihe, Wochenkarte, Feed. „Erfassen“ schwebt über der Obsidian-Navigation.
 
 ![[v2-P-M-01-Lage.png|180]]
 
@@ -73,7 +75,7 @@ Segment-Navigation oben (Lage · Woche · Punkte · Post), Gemeinschaftsfilter a
 | Zustand | Darstellung |
 | --- | --- |
 | Erststart ohne Daten | Ohne Gemeinschaft zeigt die Plugin-Ansicht statt der Lage die Einrichtung ([[VIEW-09 - Einrichtung]]). |
-| Direkt nach der Einrichtung | Karte „Erste Schritte“ oben, „Ersten Punkt erfassen“ hervorgehoben; leere Bereiche sagen, dass sie leer sind, wie sie sich füllen, und bieten die Aktion an. Kein Modal, keine Tour ([[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]). Beim ersten Benutzen eines Bereichs ein einzelner Hinweis ([[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]). |
+| Direkt nach der Einrichtung | Karte „Erste Schritte“ oben, „Ersten Vorgang erfassen“ hervorgehoben; leere Bereiche sagen, dass sie leer sind, wie sie sich füllen, und bieten die Aktion an. Kein Modal, keine Tour ([[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]). Beim ersten Benutzen eines Bereichs ein einzelner Hinweis ([[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]). |
 | Nichts neu | „Seit 9.11. nichts Neues bekannt“ + Hinweis auf ungeprüfte Kanäle, falls vorhanden |
 | Datenproblem | roter Hinweis oben mit „Klären“ (DF-23) |
 | Dunkel | Token-Paar, siehe [[UI-Design - Leitlinien und Reviewumfang]] |

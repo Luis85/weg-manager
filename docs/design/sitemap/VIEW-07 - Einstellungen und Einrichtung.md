@@ -45,17 +45,19 @@ mockups:
 
 # VIEW-07 · Einstellungen und Einrichtung
 
+Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
+
 Nebenbereich mit eigener Unternavigation; Desktop über „Einstellungen“ unten in der Sidebar, mobil über das Zahnrad im Kopf. Änderungen gelten sofort (Obsidian-Konvention), mehrteilige Stammdaten wie eine Gemeinschaft werden im Sheet mit „Speichern“ bearbeitet. Überschriften in Satzanfang-Großschreibung ohne das Wort „Einstellungen“ (Obsidian-Richtlinie). Jeder Bereich beginnt mit einem kurzen Einleitungsabsatz; jede Option zeigt Name, Beschreibung und Steuerelement nebeneinander (mobil untereinander).
 
 ## Bereiche
 
 | Bereich | Inhalt |
 | --- | --- |
-| Gemeinschaften (Stammdaten) | Karte je Gemeinschaft: Name, Art, Einheiten bzw. Stellplätze, Anzahl Punkte, Anschrift, Verwaltung und Eigentümer-Verteiler (Links öffnen das Kontakt-Modal, [[VIEW-08 - Kontakte]]), Sprache der Eigentümer-Infos. „Bearbeiten“ öffnet ein Sheet: Name, Kürzel (nur bei Neuanlage, danach fest), Kurzname, Art (Auswahl aus den Arten, Link „Arten bearbeiten“), Anschrift, Anzahl in der Einheitenbezeichnung der Art, Farbe aus der Palette (vergebene Farben gesperrt), Verwaltung, Sprachen. „+ Gemeinschaft“ legt eine weitere an. Kontakte dürfen in mehreren Gemeinschaften vorkommen, Punkte nie. |
+| Gemeinschaften (Stammdaten) | Karte je Gemeinschaft: Name, Art, Einheiten bzw. Stellplätze, Anzahl Vorgänge, Anschrift, Verwaltung und Eigentümer-Verteiler (Links öffnen das Kontakt-Modal, [[VIEW-08 - Kontakte]]), Sprache der Eigentümer-Infos. „Bearbeiten“ öffnet ein Sheet: Name, Kürzel (nur bei Neuanlage, danach fest), Kurzname, Art (Auswahl aus den Arten, Link „Arten bearbeiten“), Anschrift, Anzahl in der Einheitenbezeichnung der Art, Farbe aus der Palette (vergebene Farben gesperrt), Verwaltung, Sprachen. „+ Gemeinschaft“ legt eine weitere an. Kontakte dürfen in mehreren Gemeinschaften vorkommen, Vorgänge nie. |
 | Arten von Gemeinschaften | Editierbare Stammdaten: Bezeichnung und Bezeichnung der Einheiten (z. B. Wohnungseigentümergemeinschaft · Einheiten, Stellplatzgemeinschaft · Stellplätze, Sonstige Gemeinschaft · Einheiten). „+ Art“ ergänzt; entfernen nur, solange keine Gemeinschaft die Art nutzt. Keine Ableitung von Rechtsform oder Befugnissen aus der Art (ENT-01, O-05). |
 | Eigene Angaben | Einleitung: Angaben erscheinen in vorbereiteten Nachrichten, werden nicht veröffentlicht. Name (im Verlauf „Du“, in der Grußformel), Rolle (unter dem Namen, keine Befugnis), Grußformel DE und EN (Schluss jeder Fassung, gilt für neue Entwürfe). |
-| Wochenrhythmus | Einleitung: was die Wochenarbeit bündelt, dass nichts im Hintergrund läuft und die Fälligkeit beim Öffnen geprüft wird. Je Einstellung Titel, Beschreibung und Steuerelement (Obsidian-Muster): Wochentag (Lage zeigt „Woche starten“, Nachfass-Prüfungen und Wiedervorlagen fallen auf diesen Tag), Zeitziel in Minuten (Richtwert, aktive Zeit wird gezählt, keine Unterbrechung), Entscheidungen pro Woche (Standard 7, Dringendes zusätzlich), Frist bei akuten Problemen in Tagen (Standard 3, O-D4, im Entwurf änderbar). |
-| Ablage | Einleitung: alle Daten als Markdown-Notizen und Dateien im Vault, auch ohne Plugin lesbar; Ordnerwechsel verschiebt vorhandene Notizen und passt Links an. Je Ordner Beschreibung: Punkte (eine Notiz je Punkt), Quellen (Originale, beim Erfassen verschoben oder kopiert, Unterordner je Gemeinschaft), Kontakte (eine Notiz je Kontakt/Verteiler), Textbausteine (Vorlagen, als Notizen bearbeitbar). |
+| Wochenrhythmus | Einleitung: was die Wochenarbeit bündelt, dass nichts im Hintergrund läuft und die Fälligkeit beim Öffnen geprüft wird. Je Einstellung Titel, Beschreibung und Steuerelement (Obsidian-Muster): Wochentag (Lage zeigt „Woche starten“, Prüfungen zum Nachfassen und Wiedervorlagen fallen auf diesen Tag), Zeitziel in Minuten (Richtwert, aktive Zeit wird gezählt, keine Unterbrechung), Entscheidungen pro Woche (Standard 7, Dringendes zusätzlich), Frist bei akuten Problemen in Tagen (Standard 3, O-D4, im Entwurf änderbar). |
+| Ablage | Einleitung: alle Daten als Markdown-Notizen und Dateien im Vault, auch ohne Plugin lesbar; Ordnerwechsel verschiebt vorhandene Notizen und passt Links an. Je Ordner Beschreibung: Vorgänge (eine Notiz je Vorgang), Quellen (Originale, beim Erfassen verschoben oder kopiert, Unterordner je Gemeinschaft), Kontakte (eine Notiz je Kontakt/Verteiler), Textbausteine (Vorlagen, als Notizen bearbeitbar). |
 | Register-Import | Assistent: Datei → 15 Felder zuordnen → Prüfen → Übernehmen. |
 | Sicherung | Einleitung: Kopie aller Plugin-Notizen und -Dateien; vor Import und Wiederherstellung automatisch; Wiederherstellen zeigt vorher die Änderungen. Letzte Sicherung, Umfang, Sichern/Wiederherstellen mit Vorschau. Akten bleiben lesbare Markdown-Notizen. |
 | Datenprobleme | Konflikte (externe Änderung, doppelte ID, fehlende Datei) mit Badge; Hinweis zusätzlich oben in Lage und an der betroffenen Akte (DF-23). |
@@ -65,7 +67,7 @@ Nebenbereich mit eigener Unternavigation; Desktop über „Einstellungen“ unte
 
 ## Register-Import (Prüfen)
 
-Kacheln Bereit · Klären · Dublette? · Gemeinschaften (anklickbar als Filter). Tabelle mit Zeile, Gemeinschaft, Altnummer, Anliegen, Status laut Quelle → wird zu, Termin, Prüfung (in einem scrollbaren Rahmen). Klärfall-Panel: unbekannter Wert → „ungeklärt“ (Originalwert bleibt am Punkt) · „offen“ · auslassen; „Für alle N Zeilen mit diesem Wert“. Fehlende Daten werden nicht erfunden. Übernehmen sichert vorher automatisch; Unterbrechen jederzeit; Wiederholung aktualisiert statt zu verdoppeln. Gleiche Altnummer in AW und TG bleibt getrennt.
+Kacheln Bereit · Klären · Dublette? · Gemeinschaften (anklickbar als Filter). Tabelle mit Zeile, Gemeinschaft, Altnummer, Anliegen, Status laut Quelle → wird zu, Termin, Prüfung (in einem scrollbaren Rahmen). Klärfall-Panel: unbekannter Wert → „ungeklärt“ (Originalwert bleibt am Vorgang) · „offen“ · auslassen; „Für alle N Zeilen mit diesem Wert“. Fehlende Daten werden nicht erfunden. Übernehmen sichert vorher automatisch; Unterbrechen jederzeit; Wiederholung aktualisiert statt zu verdoppeln. Gleiche Altnummer in AW und TG bleibt getrennt.
 
 ![[v2-D8-Import.png]]
 

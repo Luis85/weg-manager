@@ -55,21 +55,23 @@ mockups:
   - "[[docs/design/sitemap/assets/v2-M3-Punktakte-dark.png]]"
 ---
 
-# VIEW-03 · Punkte und Punktakte
+# VIEW-03 · Vorgänge und Vorgangsakte
 
-## Punkte (Liste)
+Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
 
-Segment **Punkte | Aufgaben**. Suche, Filter (Gemeinschaft, Bearbeitungsstand, Prüfmerkmale „überfällig“, „Termin fehlt“, „ohne nächsten Schritt“, Thema). Zeile: Kürzel · ID · Titel · Status-Chips · nächster Schritt · nächstes Datum. Gruppierung optional nach Thema. Eigene Aufgaben (ENT-12) haben eigene Zustände (offen / in Arbeit / wartet / erledigt / entfallen); ihr Abschluss erfüllt keine fremde Zusage. Die Liste ist ein Kandidat für eine Bases-View (DF-22), technisch offen.
+## Vorgänge (Liste)
 
-Desktop: Suchfeld, Statusfilter (Offen · Ungeklärt · Erledigt) und Prüfmerkmal-Filter als Chips mit Zahl, Tabelle Punkt · Verantwortlich · Status · Nächster Schritt · Datum, sortiert nach Dringlichkeit. Aufgaben: Schnelleingabe (Text, Gemeinschaft, Datum), gruppiert nach Überfällig · Diese Woche · Später, Herkunft je Aufgabe (Entscheidung, Übergabe, manuell) mit Punkt-Link, Erledigtes eingeklappt.
+Segment **Vorgänge | To-dos**. Suche, Filter (Gemeinschaft, Bearbeitungsstand, Prüfvermerke „überfällig“, „Termin fehlt“, „ohne nächsten Schritt“, Thema). Zeile: Kürzel · Vorgangsnummer · Titel · Status-Chips · nächster Schritt · nächstes Datum. Gruppierung optional nach Thema. To-dos (ENT-12) haben eigene Zustände (offen / in Arbeit / wartet / erledigt / entfallen); ihr Abschluss erfüllt keine fremde Zusage. Die Liste ist ein Kandidat für eine Bases-View (DF-22), technisch offen.
+
+Desktop: Suchfeld, Statusfilter (Offen · Ungeklärt · Erledigt) und Prüfvermerk-Filter als Chips mit Zahl, Tabelle Vorgang · Verantwortlich · Status · Nächster Schritt · Datum, sortiert nach Dringlichkeit. To-dos: Schnelleingabe (Text, Gemeinschaft, Datum), gruppiert nach Überfällig · Diese Woche · Später, Herkunft je To-do (Entscheidung, Übergabe, manuell) mit Link auf den Vorgang, Erledigtes eingeklappt.
 
 ![[v2-P-D-08-Punkte.png]]
 
 ![[v2-D11-Aufgaben.png]]
 
-## Punktakte
+## Vorgangsakte
 
-**Kopf:** Brotkrumen (Punkte / Gemeinschaft / Thema / ID), Titel als prüfbares Ergebnis, Chips (Bearbeitungsstand, Prüfmerkmale, Nachfassstufe, Bewertung), Aktionen „Reaktion“, „Bewerten“, ⋯ (Aufteilen, Zusammenführen, Bearbeitungsstand ändern).
+**Kopf:** Brotkrumen (Vorgänge / Gemeinschaft / Thema / Vorgangsnummer), Titel als prüfbares Ergebnis, Chips (Bearbeitungsstand, Prüfvermerke, Eskalationsstufe, Bewertung), Aktionen „Reaktion“, „Bewerten“, ⋯ (Aufteilen, Zusammenführen, Bearbeitungsstand ändern).
 
 **Fakten-Kacheln:** Prüfbares Ergebnis · Verantwortlich · Fremdtermin (mit Herkunft) · Deine Wiedervorlage („eigene“; ändert keine Fremdfrist) · Nächster Schritt (dunkel, mit Link zum Ort der Handlung).
 
@@ -107,11 +109,11 @@ Kopf mit Zurück, Chips, Tabs **Fakten · Verlauf · Quellen**; Fakten als 3er-K
 
 ## Verlaufseintrag öffnen
 
-Jeder Eintrag im Verlauf (Punktakte und Mini-Verlauf in der Wochenarbeit) ist anklickbar und öffnet ein Modal: Symbol und Text des Eintrags, Gemeinschaft und Punkt, Art (Fakt, Handlung, Bewertung, geplant, Prüfmerkmal), Datum, Quelle und Inhalt der Quelle (Mailtext, Telefonnotiz, Angebotsdaten, gesendete Fassung). Abgeleitete Prüfmerkmale nennen ihre Herkunft. Außerhalb der Punktakte führt „Punktakte öffnen“ dorthin.
+Jeder Eintrag im Verlauf (Vorgangsakte und Mini-Verlauf in der Wochenarbeit) ist anklickbar und öffnet ein Modal: Symbol und Text des Eintrags, Gemeinschaft und Vorgang, Art (Fakt, Handlung, Bewertung, geplant, Prüfvermerk), Datum, Quelle und Inhalt der Quelle (Mailtext, Telefonnotiz, Angebotsdaten, gesendete Fassung). Abgeleitete Prüfvermerke nennen ihre Herkunft. Außerhalb der Vorgangsakte führt „Vorgangsakte öffnen“ dorthin.
 
 ## Quelle öffnen
 
-Quellen liegen als Dateien im Vault unter `WEG Manager/Quellen/<Gemeinschaft>/<JJJJ-MM-TT> <Titel>` (Ordner in Einstellungen › Ablage). Jede Quelle in der Punktakte ist anklickbar und öffnet ein Modal: Art (E-Mail, Dokument, Fotos, Telefonnotiz, Verknüpfung), Einstufung (Original, privat, Link), Pfad im Vault mit Kopieren, Vorschau (Mailtext, erste Dokumentseite, Fotos, Ziel der Verknüpfung). Private Quellen tragen „privat · nie in Nachrichten oder Ausgaben“. Aktionen: „In Obsidian öffnen“ (neuer Tab) und „Im Dateiexplorer zeigen“.
+Quellen liegen als Dateien im Vault unter `WEG Manager/Quellen/<Gemeinschaft>/<JJJJ-MM-TT> <Titel>` (Ordner in Einstellungen › Ablage). Jede Quelle in der Vorgangsakte ist anklickbar und öffnet ein Modal: Art (E-Mail, Dokument, Fotos, Telefonnotiz, Verknüpfung), Einstufung (Original, privat, Link), Pfad im Vault mit Kopieren, Vorschau (Mailtext, erste Dokumentseite, Fotos, Ziel der Verknüpfung). Private Quellen tragen „privat · nie in Nachrichten oder Ausgaben“. Aktionen: „In Obsidian öffnen“ (neuer Tab) und „Im Dateiexplorer zeigen“.
 
 ## Weitere Bildschirme (Prototyp)
 

@@ -86,7 +86,7 @@ flowchart LR
   X([+ Erfassen · FLOW-04]) -.-> W1
   W4 -.-> S[FLOW-05 Versand dokumentieren]
   S -.-> W2
-  L -.-> P[Punktakte] -.-> O[FLOW-07 Sachstand ausgeben]
+  L -.-> P[Vorgangsakte] -.-> O[FLOW-07 Sachstand ausgeben]
   L -.-> K[Kontakte pflegen · FLOW-06]
   P -.-> F[FLOW-08 Dateien direkt bearbeiten]
 ```
@@ -94,6 +94,6 @@ flowchart LR
 ## Prinzipien
 
 - Jede Handlung hat eine Gemeinschaft (DF-12); „Alle“ ist nur Übersicht.
-- Entscheidung, Entwurf, Versand, Antwort und Erfüllung sind getrennte Ereignisse (DF-07).
+- Entscheidung, Entwurf, Versand, Antwort und Erfüllung sind getrennte Verlaufseinträge (DF-07).
 - Unterbrechen ist überall erlaubt; Rückkehr an dieselbe Stelle.
 - Keine automatische Aktion nach außen.

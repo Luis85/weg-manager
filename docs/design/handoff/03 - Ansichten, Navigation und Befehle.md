@@ -13,8 +13,8 @@ date: 2026-11-15
 
 - **Eine** registrierte View (`registerView`, Typ `weg-manager`) mit interner Navigation; keine 7 Obsidian-Views. Der Tab-Titel folgt dem Ziel („WEG Manager · Woche“).
 - Öffnen über Ribbon-Symbol (Desktop), Befehl und mobil über das Obsidian-Menü (kein Ribbon auf Mobil).
-- Geöffnete Leaves werden beim Plugin-Update nicht geschlossen; die View stellt ihren Zustand aus `getState()/setState()` wieder her (Ziel, Punkt-ID, Wochenschritt).
-- Akten bleiben normale Markdown-Notizen (K-14); „In Notiz öffnen“ führt aus der Punktakte zur Datei.
+- Geöffnete Leaves werden beim Plugin-Update nicht geschlossen; die View stellt ihren Zustand aus `getState()/setState()` wieder her (Ziel, Vorgangsnummer, Wochenschritt).
+- Akten bleiben normale Markdown-Notizen (K-14); „In Notiz öffnen“ führt aus der Vorgangsakte zur Datei.
 
 ## Routen und Zustand
 
@@ -23,16 +23,16 @@ date: 2026-11-15
 | `lage` | [[VIEW-01 - Lage]] | Filter | — |
 | `woche/<schritt>` | [[VIEW-02 - Wochenarbeit]] | Schritt 1–5, Position | „← Zurück zur Lage“ pausiert → `lage` |
 | `punkte` | [[VIEW-03 - Vorgänge und Vorgangsakte]] Liste | Segment, Filter, Suche | — |
-| `punkt/<id>` | Punktakte | Punkt-ID | Herkunft (Liste, Lage, Woche) inkl. Scrollposition |
+| `punkt/<id>` | Vorgangsakte | Vorgangsnummer | Herkunft (Liste, Lage, Woche) inkl. Scrollposition |
 | `post` | [[VIEW-04 - Postausgang]] | gewählte Nachricht, Sprache | — |
-| `ausgabe/<gemeinschaft>` | [[VIEW-06 - Sachstand ausgeben]] | Empfängerart | Punkte |
+| `ausgabe/<gemeinschaft>` | [[VIEW-06 - Sachstand ausgeben]] | Empfängerart | Vorgänge |
 | `kontakte` | [[VIEW-08 - Kontakte]] | Segment, Suche | — |
 | Modal `kontakt/<id>` | Kontakt (über jeder Ansicht) | Kontakt-ID | schließt zurück zur Ansicht |
 | `einstellungen/<bereich>` | [[VIEW-07 - Einstellungen und Einrichtung]] | Bereich | vorheriges Ziel |
 | `einrichtung/<schritt>` | [[VIEW-09 - Einrichtung]] | Schritt 1–2 (`gemeinschaften`, `pruefen`) | keiner; nur ohne Gemeinschaft erreichbar, danach `lage` |
-| Sheet `erfassen` | [[VIEW-05 - Erfassen]] | optional Punkt-ID | schließt zurück zur Ansicht |
+| Sheet `erfassen` | [[VIEW-05 - Erfassen]] | optional Vorgangsnummer | schließt zurück zur Ansicht |
 
-Desktop: Punktakte aus Lage/Woche öffnet im rechten Panel; aus der Liste als Hauptinhalt. Mobil immer Vollbild.
+Desktop: Vorgangsakte aus Lage/Woche öffnet im rechten Panel; aus der Liste als Hauptinhalt. Mobil immer Vollbild.
 
 ## Befehle (Command Palette)
 
@@ -47,7 +47,7 @@ Ohne Standard-Hotkeys (Obsidian-Richtlinie); Namen in Satzanfang-Großschreibung
 | `open-post` | Postausgang öffnen |
 | `open-contacts` | Kontakte öffnen |
 | `new-contact` | Neuer Kontakt |
-| `open-point` | Punkt öffnen … (Suche) |
+| `open-point` | Vorgang öffnen … (Suche) |
 | `backup-now` | Jetzt sichern |
 | `open-settings` | Einstellungen öffnen |
 | `reset-hints` | Hinweise erneut zeigen (ohne Tastenkürzel, [[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]) |

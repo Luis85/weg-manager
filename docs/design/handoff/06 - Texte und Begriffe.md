@@ -19,7 +19,7 @@ date: 2026-11-15
 6. Fehler nennen Ursache und Handlung („Speichern fehlgeschlagen. Eingaben sind erhalten. Erneut speichern“).
 7. Kein „KI“, „automatisch“ oder „intelligent“ in Labels.
 
-- Links tragen den Titel des Ziels (Punkttitel, Nachrichtentitel), nicht nur eine ID.
+- Links tragen den Titel des Ziels (Vorgangstitel, Nachrichtentitel), nicht nur eine ID.
 
 - Einstellungen erklären sich: je Bereich ein kurzer Einleitungsabsatz, je Option eine Beschreibung von ein bis zwei Sätzen, was sie bewirkt (Obsidian-Muster „Name + Beschreibung“). Das ist keine Ausnahme von der Regel gegen Beruhigungstexte, sondern Funktionsbeschreibung.
 
@@ -28,14 +28,15 @@ date: 2026-11-15
 | Begriff DE | EN (Eigentümertexte, Doku) | Bedeutung | Nicht verwenden |
 | --- | --- | --- | --- |
 | Gemeinschaft | community | WEG, Tiefgarage … | Mandant, Objekt |
-| Punkt | item | einzeln erledigbares Anliegen mit prüfbarem Ergebnis | Ticket, Vorgang, Aufgabe |
-| Thema | topic | Zusammenhang mehrerer Punkte | Projekt |
+| Vorgang | item | einzeln erledigbares Anliegen mit prüfbarem Ergebnis | Ticket, Punkt, Aufgabe |
+| Thema | topic | Zusammenhang mehrerer Vorgänge | Projekt |
 | Zusage | commitment | Ankündigung eines Dritten mit oder ohne Termin | Versprechen |
 | Fremdtermin | stated date | von Dritten genannter Termin | Deadline |
 | Wiedervorlage | follow-up date | eigenes Prüfdatum | Erinnerung |
-| Nachfassen | follow up | dokumentierter nächster Kommunikationsschritt | Mahnen, Eskalieren |
-| Eigene Aufgabe | own task | Handlung des Beirats | To-do |
-| Entscheidung | decision | persönliche Arbeitsentscheidung des Beirats | Beschluss |
+| Nachfassen | follow up | eine Eskalation vorbereiten: dokumentierter nächster Kommunikationsschritt | Mahnen |
+| Eskalation | escalation | Stufe der Eskalationsleiter nach abgelaufener Frist | Mahnung |
+| To-do | to-do | Handlung des Beirats | eigene Aufgabe |
+| Entscheidung | decision | persönliche Wahl des Beirats auf einer Entscheidungskarte | Beschluss, Arbeitsentscheidung |
 | Bewertung | assessment | interne Beurteilung (◆), z. B. „nicht eingehalten“ | Verstoß, Mahnung |
 | Entwurf | draft | vorbereiteter Text, nicht gesendet | Mail |
 | Als gesendet markieren | mark as sent | Dokumentation eines externen Versands | Senden |
@@ -47,7 +48,7 @@ date: 2026-11-15
 
 ## Statuswörter
 
-offen · ungeklärt · erledigt · hinfällig (Punkt) — offen · in Arbeit · wartet · erledigt · entfallen (Aufgabe) — überfällig · Termin fehlt · Zusage überschritten (Prüfmerkmale) — Entwurf · EN prüfen · geprüft · gesendet (Nachricht) — Vorschlag (Option) — dringend (Auswahl).
+offen · ungeklärt · erledigt · hinfällig (Vorgang) — offen · in Arbeit · wartet · erledigt · entfallen (To-do) — überfällig · Termin fehlt · Zusage überschritten (Prüfvermerke) — Entwurf · EN prüfen · geprüft · gesendet (Nachricht) — Vorschlag (Option) — dringend (Auswahl).
 
 ## Formate
 

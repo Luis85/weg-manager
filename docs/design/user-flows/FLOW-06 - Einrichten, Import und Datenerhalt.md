@@ -49,7 +49,7 @@ Wiederholter Import erkennt Zeilen über Gemeinschaft + Altnummer + Herkunft und
 
 ## Kontakte pflegen
 
-Im laufenden Betrieb über [[VIEW-08 - Kontakte]]: Kontakt suchen oder aus Punktakte bzw. Postausgang öffnen (Modal) → Bearbeiten → Speichern, zurück im Kontakt-Modal; neue Entwürfe nutzen die geänderten Daten, gesendete Nachrichten bleiben unverändert. Ein ausgeschiedener Kontakt wird auf „nicht mehr verwendet“ gesetzt statt gelöscht.
+Im laufenden Betrieb über [[VIEW-08 - Kontakte]]: Kontakt suchen oder aus Vorgangsakte bzw. Postausgang öffnen (Modal) → Bearbeiten → Speichern, zurück im Kontakt-Modal; neue Entwürfe nutzen die geänderten Daten, gesendete Nachrichten bleiben unverändert. Ein ausgeschiedener Kontakt wird auf „nicht mehr verwendet“ gesetzt statt gelöscht.
 
 ## Einführungstour
 

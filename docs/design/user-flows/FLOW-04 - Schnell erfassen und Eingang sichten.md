@@ -24,13 +24,13 @@ requirements:
 flowchart TD
   A([+ Erfassen]) --> B[Art wählen]
   B --> C[Gemeinschaft wählen · Pflicht]
-  C --> D{Punkt bekannt?}
-  D -- ja --> E[zuordnen + Quelle] --> G[gespeichert an Punkt]
+  C --> D{Vorgang bekannt?}
+  D -- ja --> E[zuordnen + Quelle] --> G[gespeichert am Vorgang]
   D -- nein / später --> F[gespeichert im Eingang]
   F --> H[Woche · 1 Eingang sichten]
   H --> I{Einordnen}
-  I -- Zu Punkt --> G
-  I -- Neuer Punkt --> J[Punkt mit Ergebnis, Verantwortlich, nächster Schritt]
+  I -- Zu Vorgang --> G
+  I -- Neuer Vorgang --> J[Vorgang mit Ergebnis, Verantwortlich, nächster Schritt]
   I -- Dublette --> K[mit Eingang verbinden, Herkunft bleibt]
   I -- Später --> L[bleibt als Datenlücke sichtbar]
   I -- Nicht relevant --> M[mit Grund archiviert, wiederherstellbar]

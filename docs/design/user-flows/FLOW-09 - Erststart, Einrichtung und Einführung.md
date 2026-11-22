@@ -43,7 +43,7 @@ flowchart TD
     K --> L[Gemeinschaften anlegen: Notizen werden geschrieben]
   end
   L --> M[Lage mit Karte Erste Schritte und erklärenden Leerzuständen]
-  M --> Q[Ersten Punkt erfassen über Erste Schritte]
+  M --> Q[Ersten Vorgang erfassen über Erste Schritte]
   Q --> R[Erstes Benutzen eines Bereichs: einzelner Hinweis am Element]
   R -- Verstanden oder Element benutzt --> S[Weiterarbeiten]
 ```
@@ -82,7 +82,7 @@ flowchart LR
 | Einrichtung nötig | nicht gespeichert, abgeleitet: keine gültige Gemeinschaft im Vault | Ansicht zeigt die Einrichtung |
 | Eingaben im Assistenten | nur im Arbeitsspeicher | bleiben bis zum Neustart von Obsidian; nichts im Vault, nichts in den Plugin-Daten |
 | Gemeinschaften | Notizen unter `WEG Manager/Gemeinschaften/` | maßgeblich ([[DF-22 - Notizen als maßgeblicher Datenbestand]]) |
-| Erste Schritte erledigt | abgeleitet aus dem Vault (etwa: Es gibt einen Punkt) | Haken in der Karte |
+| Erste Schritte erledigt | abgeleitet aus dem Vault (etwa: Es gibt einen Vorgang) | Haken in der Karte |
 | Erste Schritte ausgeblendet | je Gerät (`DeviceStore`, K-19 O-19b) | Karte erscheint auf diesem Gerät nicht |
 | Hinweis gesehen | je Gerät (`DeviceStore`, K-19 O-19b) | dieser Hinweis erscheint auf diesem Gerät nicht wieder |
 

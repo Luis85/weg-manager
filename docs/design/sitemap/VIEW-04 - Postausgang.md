@@ -32,19 +32,21 @@ mockups:
 
 # VIEW-04 · Postausgang
 
+Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
+
 **Rolle:** Alle vorbereiteten Nachrichten an einem Ort, gebündelt je Gemeinschaft und Empfänger. Hier wird geprüft, extern gesendet und der tatsächliche Versand dokumentiert. Kein automatischer Versand.
 
 ## Aufbau
 
-- **Liste** gruppiert nach Gemeinschaft → Empfänger („AW · an Verwaltung“). Karte: Empfänger, Anzahl Punkte, enthaltene Themen, Status (Entwurf · ✓ geprüft · ▲ EN erneut prüfen). Darunter „Gesendet · wartet“ mit Versanddatum; der Nachrichtentitel ist Link auf den Punkt, bei mehreren Punkten stehen deren Titel als Links darunter.
-- **Editor:** Herkunft (aus Entscheidung …, Fassung N), An (Empfänger, öffnet das Kontakt-Modal), Betrifft (Titel jedes enthaltenen Punkts als Link direkt in die Punktakte), Betreff, Sprach-Tabs DE/EN mit Prüfstatus je Sprache, Text, Anlagen (nur geprüfte und freigegebene; interne Notizen und Bewertungen als „intern · ausgeschlossen“ markiert).
+- **Liste** gruppiert nach Gemeinschaft → Empfänger („AW · an Verwaltung“). Karte: Empfänger, Anzahl Vorgänge, enthaltene Themen, Status (Entwurf · ✓ geprüft · ▲ EN erneut prüfen). Darunter „Gesendet · wartet“ mit Versanddatum; der Nachrichtentitel ist Link auf den Vorgang, bei mehreren Vorgängen stehen deren Titel als Links darunter.
+- **Editor:** Herkunft (aus Entscheidung …, Fassung N), An (Empfänger, öffnet das Kontakt-Modal), Betrifft (Titel jedes enthaltenen Vorgangs als Link direkt in die Vorgangsakte), Betreff, Sprach-Tabs DE/EN mit Prüfstatus je Sprache, Text, Anlagen (nur geprüfte und freigegebene; interne Notizen und Bewertungen als „intern · ausgeschlossen“ markiert).
 - **Versandleiste:** Senden · Kopieren · In Mail-App öffnen · **Als gesendet markieren** (Versand erfolgt außerhalb des Plugins).
 
 ![[v2-P-D-07-Postausgang.png]]
 
 ## Als gesendet markieren (Sheet)
 
-Datum (Standard heute), Kanal (Mail, Portal, Brief, Telefon), Fassung (automatisch die geprüfte aktuelle, DE + EN), optional Bemerkung. Speichern legt ein Versand-Ereignis an und plant die Prüfung in Nachhalten (K-06). Keine Zustellungsbehauptung. Auf dem Desktop als Dialog, mobil als Sheet.
+Datum (Standard heute), Kanal (Mail, Portal, Brief, Telefon), Fassung (automatisch die geprüfte aktuelle, DE + EN), optional Bemerkung. Speichern legt einen Verlaufseintrag zum Versand an und plant die Prüfung in Nachhalten (K-06). Keine Zustellungsbehauptung. Auf dem Desktop als Dialog, mobil als Sheet.
 
 ![[v2-Dlg-Gesendet.png]]
 

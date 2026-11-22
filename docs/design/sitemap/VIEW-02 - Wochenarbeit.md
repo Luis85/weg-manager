@@ -67,25 +67,27 @@ mockups:
 
 # VIEW-02 · Wochenarbeit (geführt)
 
+Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
+
 **Rolle:** Die reguläre Wochenarbeit als Assistent in fünf Schritten. Auswahl, Optionen, Vorschläge und Entwurfstexte entstehen nach [[Konzept - Vorbereitung ohne KI]]. Die Hauptnavigation tritt zurück; oben stehen „← Zurück zur Lage“ (pausiert die Woche), aktive Zeit (Ziel ≤ 60 min) und ein Stepper. Jeder Schritt hat genau eine Aufgabe als Überschrift und eine Primäraktion „Weiter“.
 
 | Schritt | Überschrift (Aufgabe) | Entscheidung pro Element | Ergebnis |
 | --- | --- | --- | --- |
-| 1 Eingang sichten | Neue Eingänge zuordnen | Zu Punkt · Neuer Punkt · Dublette · Später · Nicht relevant (mit Grund) | Quelle + Ereignis an Punkt; erkannte Termine als neue Zusage |
-| 2 Nachhalten | Offene Zusagen prüfen | Eingegangen · Weiter warten (opt. Pause mit Grund) · Nachfassen · Neu planen | Nachfass-Entwurf, neue Prüfdaten, optional Bewertung |
-| 3 Entscheiden | Entscheidungen treffen | Option wählen + Notiz · Zurückstellen | Entwürfe im Postausgang, eigene Aufgaben |
+| 1 Eingang sichten | Neue Eingänge zuordnen | Zu Vorgang · Neuer Vorgang · Dublette · Später · Nicht relevant (mit Grund) | Quelle + Verlaufseintrag am Vorgang; erkannte Termine als neue Zusage |
+| 2 Nachhalten | Offene Zusagen prüfen | Eingegangen · Weiter warten (opt. Pause mit Grund) · Nachfassen · Neu planen | Entwurf der nächsten Eskalation, neue Prüfdaten, optional Bewertung |
+| 3 Entscheiden | Entscheidungen treffen | Option wählen + Notiz · Zurückstellen | Entwürfe im Postausgang, To-dos |
 | 4 Senden | Nachrichten prüfen und senden | Postausgang (gefiltert auf diese Woche) | dokumentierter Versand |
-| 5 Übergabe | Schwerpunkte für nächste Woche festlegen | bis 3 Schwerpunkte + Kontextnotiz + Zeit | Wochenübergabe, Rückkehr zur Lage |
+| 5 Übergabe | Schwerpunkte für nächste Woche festlegen | bis 3 Schwerpunkte + Kontextnotiz + Zeit | Übergabe, Rückkehr zur Lage |
 
 ## Schritt 1 · Eingang sichten
 
-Links die ungeprüften Eingänge (Kanal, Datum, Gemeinschaft oder „?“), Mitte das Original mit Metadaten (Kanal, Absender, Ereignis- und Erfassungsdatum), rechts „Einordnen“ mit regelbasierten Vorschlägen (gleicher Absender, Stichwort, offener Punkt) und Einzeltasten (1, 2, N, D, S, X). Erkennt die Regel ein Datum, erscheint die Karte „Termin im Text“ mit „Als Fremdtermin übernehmen“ / „Nicht übernehmen“; Checkbox „Original speichern“. Die Gemeinschaft bleibt änderbar, der Vorschlag passt sich an. Regel: Zuordnen trägt eine neue Zusage ein; der alte Termin bleibt im Verlauf, der Punkt bleibt offen.
+Links die ungeprüften Eingänge (Kanal, Datum, Gemeinschaft oder „?“), Mitte das Original mit Metadaten (Kanal, Absender, Ereignis- und Erfassungsdatum), rechts „Einordnen“ mit regelbasierten Vorschlägen (gleicher Absender, Stichwort, offener Vorgang) und Einzeltasten (1, 2, N, D, S, X). Erkennt die Regel ein Datum, erscheint die Karte „Termin im Text“ mit „Als Fremdtermin übernehmen“ / „Nicht übernehmen“; Checkbox „Original speichern“. Die Gemeinschaft bleibt änderbar, der Vorschlag passt sich an. Regel: Zuordnen trägt eine neue Zusage ein; der alte Termin bleibt im Verlauf, der Vorgang bleibt offen.
 
 ![[v2-P-D-02-Woche-Eingang.png]]
 
 ## Schritt 2 · Nachhalten
 
-Je wartender Zusage eine Karte: Kürzel, Punkt-ID, Titel, Status-Chip (Zusage überschritten / Termin fehlt), „wartet auf …“, Wartezeit-Balken, zugesagt bis, Prüfung am. Darunter ein Segment mit vier Antworten. Bereits entschiedene Zusagen klappen zu einer Zeile mit „Ändern“; noch nicht fällige erscheinen gestrichelt. Kontextpanel rechts: Mini-Verlauf (jeder Eintrag öffnet das Verlaufs-Modal mit Art, Datum, Quelle und Inhalt, z. B. dem Mailtext; „Punktakte öffnen“), „Akte öffnen“, vorbereiteter Entwurf (gebündelt je Empfänger), Bewertung der Zusage als Auswahl „Keine“ / „Nicht eingehalten“ (intern), nächstes Prüfdatum.
+Je wartender Zusage eine Karte: Kürzel, Vorgangsnummer, Titel, Status-Chip (Zusage überschritten / Termin fehlt), „wartet auf …“, Wartezeit-Balken, zugesagt bis, Prüfung am. Darunter ein Segment mit vier Antworten. Bereits entschiedene Zusagen klappen zu einer Zeile mit „Ändern“; noch nicht fällige erscheinen gestrichelt. Kontextpanel rechts: Mini-Verlauf (jeder Eintrag öffnet das Verlaufs-Modal mit Art, Datum, Quelle und Inhalt, z. B. dem Mailtext; „Vorgangsakte öffnen“), „Akte öffnen“, vorbereiteter Entwurf (gebündelt je Empfänger), Bewertung der Zusage als Auswahl „Keine“ / „Nicht eingehalten“ (intern), nächstes Prüfdatum.
 
 ![[v2-P-D-03-Woche-Nachhalten.png]]
 
@@ -101,7 +103,7 @@ Links die Warteschlange: Budgetleiste 6/7, reguläre Entscheidungen, darunter �
 
 ## Schritt 5 · Übergabe
 
-Zusammenfassung (entschieden, gesendet, nachgefasst), bis zu drei Schwerpunkte, je mit Text und Auswahl des Punkts (oder „Ohne Punkt“ + Gemeinschaft; Punktwahl schlägt den Titel vor), Kontextnotiz, aktive Zeit mit Feld für Doppelpflege außerhalb (DF-14). „Woche abschließen“.
+Zusammenfassung (entschieden, gesendet, nachgefasst), bis zu drei Schwerpunkte, je mit Text und Auswahl des Vorgangs (oder „Ohne Vorgang“ + Gemeinschaft; die Wahl des Vorgangs schlägt den Titel vor), Kontextnotiz, aktive Zeit mit Feld für Doppelpflege außerhalb (DF-14). „Woche abschließen“.
 
 ![[v2-P-M-06-Woche-Uebergabe.png|180]]
 
@@ -124,21 +126,21 @@ Beim ersten Durchlauf zeigt jeder Schritt oben einmal einen Hinweis (Infofläche
 
 | Schritt | Hinweis |
 | --- | --- |
-| 1 Eingang | Ordne jeden Eingang einem Punkt zu, lege einen neuen Punkt an oder verschiebe ihn auf später. |
+| 1 Eingang | Ordne jeden Eingang einem Vorgang zu, lege einen neuen Vorgang an oder verschiebe ihn auf später. |
 | 2 Nachhalten | Wähle für jede fällige Zusage eine Antwort. „Nachfassen“ legt einen Entwurf im Postausgang an. |
-| 3 Entscheiden | Höchstens 7 Entscheidungen pro Woche, Dringendes zusätzlich. Bestätigen erzeugt Entwürfe oder Aufgaben; gesendet wird nichts. |
+| 3 Entscheiden | Höchstens 7 Entscheidungen pro Woche, Dringendes zusätzlich. Bestätigen erzeugt Entwürfe oder To-dos; gesendet wird nichts. |
 | 4 Senden | Prüfe jede Sprachfassung, versende extern und markiere die Nachricht hier als gesendet. |
 | 5 Übergabe | Lege bis zu 3 Schwerpunkte fest. Sie stehen nächste Woche oben in der Lage. |
 
 ## Erkannter Termin im Eingang
 
-Enthält ein Eingang ein Datum, zeigt Schritt 1 die Karte „Termin im Text“ mit Datum, Absender und Eingangsdatum und der Wahl „Als Fremdtermin übernehmen“ / „Nicht übernehmen“ (Standard: übernehmen). Darunter steht die Folge für den vorgeschlagenen Punkt, z. B. „Fremdtermin 10.11. → 02.12., der alte Termin bleibt im Verlauf“ bzw. „Fremdtermin bleibt; die Nachricht wird nur als Quelle abgelegt“. Keine Checkbox.
+Enthält ein Eingang ein Datum, zeigt Schritt 1 die Karte „Termin im Text“ mit Datum, Absender und Eingangsdatum und der Wahl „Als Fremdtermin übernehmen“ / „Nicht übernehmen“ (Standard: übernehmen). Darunter steht die Folge für den vorgeschlagenen Vorgang, z. B. „Fremdtermin 10.11. → 02.12., der alte Termin bleibt im Verlauf“ bzw. „Fremdtermin bleibt; die Nachricht wird nur als Quelle abgelegt“. Keine Checkbox.
 
 ## Eingangsliste
 
-Die Liste „Eingänge“ rechts (mobil unter dem aktuellen Eingang) ist anklickbar: offene Eingänge werden direkt zur Bearbeitung geöffnet, unabhängig von der Reihenfolge; zugeordnete Eingänge führen mit „Zum Punkt →“ in die Punktakte; „später“, „Dublette“ oder „nicht relevant“ markierte Eingänge lassen sich erneut bearbeiten.
+Die Liste „Eingänge“ rechts (mobil unter dem aktuellen Eingang) ist anklickbar: offene Eingänge werden direkt zur Bearbeitung geöffnet, unabhängig von der Reihenfolge; zugeordnete Eingänge führen mit „Zum Vorgang →“ in die Vorgangsakte; „später“, „Dublette“ oder „nicht relevant“ markierte Eingänge lassen sich erneut bearbeiten.
 
-Eingänge ohne erkannte Gemeinschaft zeigen die Gemeinschaftsauswahl dauerhaft; die Wahl bleibt bis zum Zuordnen änderbar. Ein Wechsel passt den vorgeschlagenen Punkt an die gewählte Gemeinschaft an (DF-12: nie Vorschlag aus der anderen Gemeinschaft).
+Eingänge ohne erkannte Gemeinschaft zeigen die Gemeinschaftsauswahl dauerhaft; die Wahl bleibt bis zum Zuordnen änderbar. Ein Wechsel passt den vorgeschlagenen Vorgang an die gewählte Gemeinschaft an (DF-12: nie Vorschlag aus der anderen Gemeinschaft).
 
 ## Weitere Bildschirme (Prototyp)
 

@@ -13,7 +13,7 @@ Offene Anliegen beider Gemeinschaften nachvollziehbar bearbeiten und die Wochena
 
 ## Interaktion
 
-Richtet Gemeinschaften und Ansprechpartner ein, prüft den Registerimport und führt Punkte, Quellen, Termine und Ereignisse. Prüft Wochenlage und Lagecheck, bestätigt Arbeitsentscheidungen mit Notiz und bereitet Kommunikation vor. Sendet selbst im externen Werkzeug, dokumentiert tatsächlichen Versand und wählt Inhalte für Übergabe und Sicherung aus.
+Richtet Gemeinschaften sowie Personen mit Rollen ein, prüft den Registerimport und führt Vorgänge, Quellen, Termine und den Verlauf. Prüft Wochenlage und Lagecheck, trifft Entscheidungen auf Entscheidungskarten mit Notiz und bereitet Kommunikation vor. Sendet selbst im externen Werkzeug, dokumentiert tatsächlichen Versand und wählt Inhalte für Übergabe und Sicherung aus.
 
 ## Systemgrenze und Einschränkungen
 

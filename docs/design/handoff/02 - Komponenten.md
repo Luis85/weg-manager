@@ -34,22 +34,22 @@ Basis Nuxt UI ([[K-13 - Nuxt UI als Frontend-Komponentenbasis]]), über Theme-Ko
 | **WaitCard** | Card + Segmented | Zusage, Wartezeit, zugesagt, Prüfung | offen, beantwortet (eingeklappt mit „Ändern“), nicht fällig (gestrichelt) | genau eine Antwort; Fremdfrist unverändert |
 | **DecisionQueue** | eigene Liste | regulär / dringend | aktiv, erledigt, zurückgestellt | BudgetBar oben |
 | **OptionCard** | RadioGroup (Karten) | label, Folgen, `suggested` | gewählt | `role="radio"`, Pfeiltasten wechseln |
-| **FollowUpPreview** | eigene | Entwurf / Aufgabe / Wiedervorlage | — | zeigt, was beim Bestätigen entsteht |
+| **FollowUpPreview** | eigene | Entwurf / To-do / Wiedervorlage | — | zeigt, was beim Bestätigen entsteht |
 | **FactTile** | Card | label, value, note, tone | — | `next`-Variante invertiert |
 | **Timeline** | eigene | Eintragsart fact/judge/act/plan/bad, Quelle | hover, Fokus | jeder Eintrag ist ein Button und öffnet das EventModal; Tagestrenner, „Beginn der Akte“ am Ende, Korrektur als Hinweis |
 | **SourceItem** | Button-Card | Original / Link / privat | hover, Fokus | öffnet SourceModal (Pfad im Vault, Vorschau, „In Obsidian öffnen“, „Im Dateiexplorer zeigen“); privat: rot, nie in Ausgaben auswählbar |
-| **MessageListItem** | Card | Empfänger, Punkte, Status | aktiv | Status: Entwurf, EN prüfen, geprüft, gesendet |
+| **MessageListItem** | Card | Empfänger, Vorgänge, Status | aktiv | Status: Entwurf, EN prüfen, geprüft, gesendet |
 | **LetterEditor** | Textarea + Tabs | Sprachen | bearbeitet → Prüfungen zurückgesetzt | Platzhalter `[…]` als Warn-Markierung, blockieren „geprüft“ |
 | **SendBar** | eigene | — | „Als gesendet markieren“ erst bei allen Sprachen geprüft | Kopieren ist kein Versand |
 | **ContactList** | eigene Liste | Gruppen nach Rolle (Verwaltung, Beirat, Hausmeister und Dienstleister, Eigentümer), Suche | aktiv, „Nicht mehr verwendet“ eingeklappt | Zeile = Avatar, Name, „Rolle · Firma“, Badges, E-Mail-/Telefon-Link; Firmen vor Personen |
 | **ContactAvatar** | Avatar | `kind: person \| org \| list` | — | Initialen ohne Anrede; Organisation und Verteiler als Symbol |
-| **ContactModal** | Modal (Desktop 620 px zentriert) / Drawer (mobil) | Rollen, Kontaktdaten, Verantwortlich für, Nachrichten | offen | öffnet aus Liste, Punktakte, Postausgang ohne Navigation; Kopieren je Feld; mobil „Anrufen“/„E-Mail“ (`tel:`/`mailto:`); Punkt- oder Entwurfsklick schließt und navigiert |
+| **ContactModal** | Modal (Desktop 620 px zentriert) / Drawer (mobil) | Rollen, Kontaktdaten, Verantwortlich für, Nachrichten | offen | öffnet aus Liste, Vorgangsakte, Postausgang ohne Navigation; Kopieren je Feld; mobil „Anrufen“/„E-Mail“ (`tel:`/`mailto:`); Klick auf Vorgang oder Entwurf schließt und navigiert |
 | **ContactForm** | Form + Slideover/Drawer | `kind: person \| org` (Verteiler eigenes Formular) | Fehler je Feld nach Speichern-Versuch | Name*, Firma (Combobox, legt neue Firma mit an), Zuständig für* (Ankreuzfeld je Gemeinschaft + Rollenliste), E-Mail, Telefon, „Weitere Angaben“ eingeklappt; Dublettenhinweis ab 3 Zeichen; Speichern immer aktiv |
-| **ContactLink** | Link | Kontakt-ID | — | in Punktakte („Verantwortlich“), Postausgang („An“), Verlauf; öffnet ContactModal |
+| **ContactLink** | Link | Kontakt-ID | — | in Vorgangsakte („Verantwortlich“), Postausgang („An“), Verlauf; öffnet ContactModal |
 | **Sheet** | Slideover (Desktop rechts) / Drawer (mobil unten) | title | offen | Schließen-Button + Esc + Zurück; nie gestapelt |
 | **Tour** | Popover + eigenes Overlay | Schritte `{target, title, body}`, Willkommensdialog | Willkommen, Schritt n/7, beendet | Spotlight über Zielelement (Ring 4 px Akzent, Rest abgedunkelt), Karte rechts, darunter oder darüber; mobil volle Breite; Esc beendet, ←/→ blättern; Ziele über `data-tour` |
 | **FirstRunHint** | Alert (info) | Schritt, Text | sichtbar, gesehen | einmal je Wochenschritt; „Verstanden“, „Keine Hinweise“; zurücksetzbar in Einstellungen › Hilfe |
-| **EventModal** | Modal / Drawer | Eintrag, Punkt | — | Art, Datum, Quelle, Inhalt; „Punktakte öffnen“ außerhalb der Akte |
+| **EventModal** | Modal / Drawer | Eintrag, Vorgang | — | Art, Datum, Quelle, Inhalt; „Vorgangsakte öffnen“ außerhalb der Akte |
 | **SettingsNav** | NavigationMenu (vertikal) | Bereiche | aktiv | mobil als umbrechende Chips |
 | **CommunityForm** | Form + Slideover/Drawer | neu/bearbeiten | gültig/ungültig | Kürzel 2–5 Zeichen, eindeutig und änderbar ([[PBI-73 - Kürzel einer Gemeinschaft nachträglich ändern]]); Farbe aus Palette, vergebene gesperrt |
 | **Toast** | Toast | Text | — | nur Bestätigung kurzlebiger Erfolge; Fehler persistent als Alert |

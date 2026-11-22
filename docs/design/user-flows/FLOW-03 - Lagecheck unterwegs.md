@@ -26,7 +26,7 @@ requirements:
 flowchart LR
   A[Lage öffnen] --> B{Dringend oder neu?}
   B -- nein --> F[Fertig, nichts verpasst]
-  B -- ja --> P[Punktakte]
+  B -- ja --> P[Vorgangsakte]
   P --> C{Was ist zu tun?}
   C --> R[Reaktion erfassen · Antwort ≠ Erfüllung]
   C --> N[Nachfassen vorziehen → Entwurf]

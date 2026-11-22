@@ -34,7 +34,7 @@ flowchart LR
   R[WEG Manager · eigener Obsidian-Tab]
   R --> L[Lage · Start]
   R --> W[Woche · geführt]
-  R --> P[Punkte]
+  R --> P[Vorgänge]
   R --> O[Postausgang]
   R -.-> K[Kontakte · Nebenbereich]
   R -.-> S[Einstellungen · Nebenbereich]
@@ -47,8 +47,8 @@ flowchart LR
   W2 --> W3[3 Entscheiden]
   W3 --> W4[4 Senden]
   W4 --> W5[5 Übergabe]
-  P --> P1[Punkte · Aufgaben · Filter · Themen]
-  P --> P2[Punktakte]
+  P --> P1[Vorgänge · To-dos · Filter · Themen]
+  P --> P2[Vorgangsakte]
   P2 --> P3([Aufteilen / Zusammenführen])
   P2 --> P4([Bewertung setzen])
   P --> P5[Sachstand ausgeben]
@@ -84,11 +84,11 @@ Stand 21.11.2026: Die Spalte „Mobil“ und alle mobilen Layouts und Mockups di
 | --- | --- | --- | --- |
 | Lage | Startpunkt, Lagecheck zwischendurch | Sidebar, Badge = Anzahl dringend | Segment oben |
 | Woche | geführter Ablauf, blendet Navigation aus | Sidebar, Badge = Wochentag | Segment oben |
-| Punkte | Register, Aufgaben, Akte | Sidebar, Badge = Anzahl | Segment oben |
+| Vorgänge | Register, To-dos, Akte | Sidebar, Badge = Anzahl | Segment oben |
 | Postausgang | Entwürfe und Versanddokumentation | Sidebar, Badge = offene Entwürfe | Segment „Post“ |
 | Kontakte | Adressbuch, Nebenbereich | Sidebar unter den Zielen, Badge = Anzahl | Personen-Symbol im Kopf |
 | Einstellungen | Stammdaten, Nebenbereich | Sidebar unten | Zahnrad im Kopf |
 
 **Immer erreichbar:** „+ Erfassen“ (Sidebar-Button, Befehl, mobil schwebender Button), Suche und Befehle ⌘K, Gemeinschaftsfilter (Alle · AW · TG). Der Filter ist nie ein stiller Kontextwechsel: Jede Bearbeitung, Nachricht und Ausgabe hat genau eine Gemeinschaft (DF-12).
 
-**Querwege:** Jede Zeile in Lage und Woche öffnet die Punktakte im Seitenpanel; Zurück landet an derselben Stelle. Entscheiden erzeugt Entwürfe im Postausgang und eigene Aufgaben. „Als gesendet markieren“ plant die Prüfung in Nachhalten. „Verantwortlich“ in der Punktakte und „An“ im Postausgang öffnen den Kontakt als Modal über der Ansicht.
+**Querwege:** Jede Zeile in Lage und Woche öffnet die Vorgangsakte im Seitenpanel; Zurück landet an derselben Stelle. Entscheiden erzeugt Entwürfe im Postausgang und To-dos. „Als gesendet markieren“ plant die Prüfung in Nachhalten. „Verantwortlich“ in der Vorgangsakte und „An“ im Postausgang öffnen den Kontakt als Modal über der Ansicht.

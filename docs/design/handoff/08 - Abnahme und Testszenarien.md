@@ -13,22 +13,22 @@ Abbildung der geplanten internen Abnahmen AT-B01–18 (ohne das entfallene AT-B1
 
 | AT | Szenario (Kurz) | Ansichten | Prüfpunkte im UI | Prototyp |
 | --- | --- | --- | --- | --- |
-| AT-B01 | WEG und Tiefgarage mit gleichem Thema/Kontakt | Einstellungen, Erfassen, alle Listen | Kürzel + Farbe überall; Erfassen ohne Gemeinschaft nicht speicherbar; Kontakt mit Rollen in beiden Gemeinschaften, Punkte getrennt; „Nicht mehr verwenden“ erhält Verweise | ✓ |
+| AT-B01 | WEG und Tiefgarage mit gleichem Thema/Kontakt | Einstellungen, Erfassen, alle Listen | Kürzel + Farbe überall; Erfassen ohne Gemeinschaft nicht speicherbar; Kontakt mit Rollen in beiden Gemeinschaften, Vorgänge getrennt; „Nicht mehr verwenden“ erhält Verweise | ✓ |
 | AT-B02 | Registerimport mit Dubletten, unbekanntem Status, fehlendem Datum | Import-Assistent | Kacheln Bereit/Klären/Dublette; „ungeklärt“ statt Raten; „Termin fehlt“; Wiederholung ohne Dubletten | – |
-| AT-B03 | Sammelpunkt teilen, Dublette verbinden, Bewertung | Punktakte (Dialoge) | Herkunft mit Zielverweisen; Bewertung ◆ ändert Bearbeitungsstand nicht | ~ (Bewertung) |
-| AT-B04 | Fremdtermin 30.11., Wiedervorlage 23.11., terminlose Zusage > 14 T | Punktakte, Nachhalten, Lage | Getrennte Kacheln Fremdtermin/Wiedervorlage; „Termin fehlt“ + Anlass A3 | ✓ |
-| AT-B05 | Bestätigung, Antwort, neue Zusage, Teillieferung, korrigierte Quelle | Eingang, Punktakte | getrennte Verlaufseinträge; alter Termin bleibt; Korrektur als Hinweis | ✓ (neue Zusage) |
+| AT-B03 | Sammelvorgang teilen, Dublette verbinden, Bewertung | Vorgangsakte (Dialoge) | Herkunft mit Zielverweisen; Bewertung ◆ ändert Bearbeitungsstand nicht | ~ (Bewertung) |
+| AT-B04 | Fremdtermin 30.11., Wiedervorlage 23.11., terminlose Zusage > 14 T | Vorgangsakte, Nachhalten, Lage | Getrennte Kacheln Fremdtermin/Wiedervorlage; „Termin fehlt“ + Anlass A3 | ✓ |
+| AT-B05 | Bestätigung, Antwort, neue Zusage, Teillieferung, korrigierte Quelle | Eingang, Vorgangsakte | getrennte Verlaufseinträge; alter Termin bleibt; Korrektur als Hinweis | ✓ (neue Zusage) |
 | AT-B06 | Wochenpaket mit 9 dringenden Fällen + ungeprüfter Portalnachricht | Lage, Entscheiden | BudgetBar max. 7 regulär, alle 9 dringend sichtbar; Kachel „Ungeprüft“ | ~ (2 dringend) |
 | AT-B07 | Wahl + Notiz bestätigen, wiederholen, ändern | Entscheiden, Postausgang | keine Dubletten; „Aktualisieren“ ersetzt Folgefassung; kein Versand | ✓ |
 | AT-B08 | 3 Entwürfe, beide Gemeinschaften, DE/EN ändern, 1 Versand | Postausgang | Bündelung je Empfänger und Gemeinschaft; Textänderung setzt Prüfung zurück; genau ein Versandereignis | ✓ |
-| AT-B09 | Versand 16.11., Frist 30.11., Prüfung 23.11., Pause, neue Antwort | Nachhalten | kein Stufenwechsel am 23.11.; Pause mit Ende; neuer Termin erledigt Punkt nicht | ~ |
+| AT-B09 | Versand 16.11., Frist 30.11., Prüfung 23.11., Pause, neue Antwort | Nachhalten | kein Wechsel der Eskalationsstufe am 23.11.; Pause mit Ende; neuer Termin erledigt den Vorgang nicht | ~ |
 | AT-B10 | Übergabe, später akutes Problem | Übergabe, Lage | Schwerpunkte erscheinen in Lage; neue Dringlichkeit oben; Rückstand bleibt | ✓ |
 | AT-B11 | Interne Bewertung, privates Original, ungeprüfte Anlage | Postausgang, Ausgabe | ausgeschlossene Bausteine sichtbar gesperrt; keine transitive Mitnahme | ~ |
 | AT-B12 | Offline, externe Dateiänderung, doppelte ID, Abbruch, Sichern | alle, Einstellungen | Alerts statt Datenverlust; Eingaben bleiben; Plugin aus → Akten lesbar | – |
 | AT-B13 | Nach dem MVP: Komplette Wochenreise mobil mit Unterbrechung | Woche mobil | alle Eingaben mobil; Pausieren/Fortsetzen; nichts unter Host-Navigation verdeckt | ✓ |
 | AT-B14 | Öffentliche Installation in frischem Vault | Erststart ([[VIEW-09 - Einrichtung]]) | Einrichtung in 2 Schritten ohne Entwicklerwerkzeuge; danach Lage mit „Erste Schritte“, keine Tour ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]) | ~ (Erste Schritte) |
 | AT-B15 | Vorgang ohne Plugin und Obsidian lesen und ändern | alle (Dateivertrag), Datenprobleme | Akten als lesbare Markdown-Notizen; externe gültige Änderung beim nächsten Start übernommen; kein Export nötig | – |
-| AT-B16 | Agent ändert Notizen bei geschlossenem und offenem Plugin | Datenprobleme, Lage, Punktakte | Alert „Geändert außerhalb des Plugins“ mit Vergleichen; ungültiges YAML/neueres Schema sichtbar, nichts still überschrieben | – (Mockup Konflikt) |
+| AT-B16 | Agent ändert Notizen bei geschlossenem und offenem Plugin | Datenprobleme, Lage, Vorgangsakte | Alert „Geändert außerhalb des Plugins“ mit Vergleichen; ungültiges YAML/neueres Schema sichtbar, nichts still überschrieben | – (Mockup Konflikt) |
 | AT-B18 | Nativer AI-Chat über das Nutzerabo (Desktop) | Chatansicht | Abo-Modus sichtbar, Kontextwahl, Toolbestätigung, Abbruch/Limit, Vorschlag getrennt von ausgeführter Änderung | – (nicht gestaltet) |
 
 ## Prototyp-Szenarien für den Pilottest

@@ -30,6 +30,8 @@ mockups:
 
 # VIEW-09 · Einrichtung
 
+Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
+
 Ansicht für den ersten Start in einem Vault ohne Gemeinschaft. Sie erscheint einmal beim Aktivieren des Plugins und immer dann, wenn der Nutzer die Plugin-Ansicht öffnet, solange es keine Gemeinschaft gibt ([[PBI-69 - Beim ersten Aktivieren in die Einrichtung geführt werden]]). Sie hat keinen Navigationseintrag: Die übrige Navigation ist ausgeblendet, bis die erste Gemeinschaft angelegt ist. Ablauf und Sonderfälle: [[FLOW-09 - Erststart, Einrichtung und Einführung]]. Abwägungen und Entscheidungen: [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]].
 
 Desktop zuerst; die mobile Fassung folgt mit der mobilen Wochenarbeit nach dem MVP ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]).
@@ -74,7 +76,7 @@ Desktop zuerst; die mobile Fassung folgt mit der mobilen Wochenarbeit nach dem M
 
 ![[v2-D21-Lage-Erste-Schritte.png]]
 
-Die Lage ([[VIEW-01 - Lage]]) zeigt oben die Karte „Erste Schritte“ ([[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]): Fortschritt „1 von 4“, Einträge mit Haken, wenn der Vault sie erfüllt, und je einen Knopf, der die Aktion nennt. „Ersten Punkt erfassen“ ist hervorgehoben. Jeder leere Bereich sagt, dass er leer ist, wie er sich füllt, und bietet die Aktion an. Es erscheint kein Modal und kein Tour-Angebot.
+Die Lage ([[VIEW-01 - Lage]]) zeigt oben die Karte „Erste Schritte“ ([[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]]): Fortschritt „1 von 4“, Einträge mit Haken, wenn der Vault sie erfüllt, und je einen Knopf, der die Aktion nennt. „Ersten Vorgang erfassen“ ist hervorgehoben. Jeder leere Bereich sagt, dass er leer ist, wie er sich füllt, und bietet die Aktion an. Es erscheint kein Modal und kein Tour-Angebot.
 
 ## Hinweise im Kontext
 

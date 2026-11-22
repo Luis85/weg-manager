@@ -3,7 +3,7 @@ type: Actor
 kind: Human
 ---
 
-# Ansprechpartner der Verwaltung
+# Person mit Rolle Verwaltung
 
 **Einordnung im MVP:** Indirekter externer Beteiligter.
 

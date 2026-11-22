@@ -9,7 +9,7 @@ date: 2026-11-15
 
 # Handoff · Zustände und Abläufe
 
-Zustandsnamen sind fachliche Vorschläge; das technische Schema folgt in der technischen Konzeption. Jeder Übergang erzeugt ein Ereignis (ENT-06) mit Ereignis- und Erfassungszeit.
+Zustandsnamen sind fachliche Vorschläge; das technische Schema folgt in der technischen Konzeption. Jeder Übergang erzeugt einen Verlaufseintrag (ENT-06) mit Ereignis- und Erfassungszeit.
 
 ## Wochensitzung
 
@@ -30,8 +30,8 @@ Gespeichert: Schritt (1–5), Position im Schritt, aktive Minuten (nur bei sicht
 ```mermaid
 stateDiagram-v2
   [*] --> ungeprueft
-  ungeprueft --> zugeordnet: Zu Punkt
-  ungeprueft --> neuer_punkt: Neuer Punkt
+  ungeprueft --> zugeordnet: Zu Vorgang
+  ungeprueft --> neuer_punkt: Neuer Vorgang
   ungeprueft --> dublette: Dublette
   ungeprueft --> spaeter: Später
   ungeprueft --> verworfen: Nicht relevant (Grund)
@@ -55,9 +55,9 @@ stateDiagram-v2
   eingegangen --> wartet: nur Antwort, keine Erfüllung
 ```
 
-Stufe (1 Termin erfragen → 2 Antwortfrist → 3 förmlich → 4 Bericht/ETV) wird nur nach dokumentiertem Versand und Ablauf der kommunizierten Frist vorgeschlagen. Ein Entwurf startet keinen Zeitanker.
+Die Eskalationsstufe (1 Termin erfragen → 2 Antwortfrist → 3 förmlich → 4 Bericht/ETV) wird nur nach dokumentiertem Versand und Ablauf der kommunizierten Frist vorgeschlagen. Ein Entwurf startet keinen Zeitanker.
 
-## Arbeitsentscheidung
+## Entscheidungskarte
 
 ```mermaid
 stateDiagram-v2
@@ -68,7 +68,7 @@ stateDiagram-v2
   zurueckgestellt --> vorgeschlagen: nächste Wochenarbeit (A7)
 ```
 
-Bestätigen erzeugt Folgen idempotent: Schlüssel (Entscheidung, Option, Empfänger, Sprache) für Entwürfe; (Entscheidung, Option) für Aufgaben.
+Bestätigen erzeugt Folgen idempotent: Schlüssel (Entscheidung, Option, Empfänger, Sprache) für Entwürfe; (Entscheidung, Option) für To-dos.
 
 ## Nachricht (gebündelter Entwurf)
 

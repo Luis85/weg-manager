@@ -32,9 +32,11 @@ mockups:
 
 # VIEW-08 · Kontakte
 
+Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
+
 **Rolle:** Adressbuch für alle Beteiligten. Beantwortet: Wer ist wofür zuständig, wie erreiche ich ihn, was läuft gerade mit ihm?
 
-**Navigation:** Nebenbereich. Desktop in der Sidebar unter den vier Zielen, mobil über das Personen-Symbol im Kopf. Einzelne Kontakte öffnen als Modal auch aus Punktakte („Verantwortlich“) und Postausgang („An“). Erfassen schlägt Kontakte bei „Wer sagt zu?“ vor und bietet „„Name“ als Kontakt anlegen“, wenn es ihn noch nicht gibt.
+**Navigation:** Nebenbereich. Desktop in der Sidebar unter den vier Zielen, mobil über das Personen-Symbol im Kopf. Einzelne Kontakte öffnen als Modal auch aus der Vorgangsakte („Verantwortlich“) und Postausgang („An“). Erfassen schlägt Kontakte bei „Wer sagt zu?“ vor und bietet „„Name“ als Kontakt anlegen“, wenn es ihn noch nicht gibt.
 
 ## Review 15.11. (v2.0 → v2.1)
 
@@ -72,7 +74,7 @@ mockups:
 
 ## Kontakt-Modal
 
-Öffnet über der aktuellen Ansicht (Desktop zentriert 620 px, mobil Sheet). Kopf: Avatar, Name, Firma, Schließen. Inhalt: „E-Mail-Adresse“ und „Telefonnummer“ (jeweils kleines Modal), Zuständig für, Kontaktdaten mit Kopieren, bei Firmen „Personen · n“ mit „Person hinzufügen“, Verantwortlich für (Punkte), Nachrichten (Entwürfe, gesendete mit Titel-Link). Fuß: „Bearbeiten“, „Nicht mehr verwenden“ / „Wieder verwenden“. Ein Klick auf Punkt oder Entwurf schließt das Modal und navigiert.
+Öffnet über der aktuellen Ansicht (Desktop zentriert 620 px, mobil Sheet). Kopf: Avatar, Name, Firma, Schließen. Inhalt: „E-Mail-Adresse“ und „Telefonnummer“ (jeweils kleines Modal), Zuständig für, Kontaktdaten mit Kopieren, bei Firmen „Personen · n“ mit „Person hinzufügen“, Verantwortlich für (Vorgänge), Nachrichten (Entwürfe, gesendete mit Titel-Link). Fuß: „Bearbeiten“, „Nicht mehr verwenden“ / „Wieder verwenden“. Ein Klick auf Vorgang oder Entwurf schließt das Modal und navigiert.
 
 ![[v2-P-D-15-Kontakt-Modal.png]]
 
@@ -96,7 +98,7 @@ Sheet rechts (Desktop) bzw. von unten (mobil), nie gestapelt; „Bearbeiten“ e
 - Kontaktänderungen wirken nur auf neue Entwürfe; gesendete Nachrichten behalten Empfänger und Anrede zum Versandzeitpunkt.
 - Sprache des Kontakts bzw. des Verteilers bestimmt die Sprachfassungen im Postausgang.
 - Kontaktdaten sind intern und werden nie automatisch in Ausgaben übernommen.
-- Ablage als Notiz je Kontakt unter `WEG Manager/Kontakte/` mit Frontmatter (K-14); Punkte verweisen per Link.
+- Ablage als Notiz je Kontakt unter `WEG Manager/Kontakte/` mit Frontmatter (K-14); Vorgänge verweisen per Link.
 
 ## Mobil
 
@@ -112,4 +114,4 @@ Liste mit Gruppen und Kontaktsymbolen; Modal als Sheet von unten mit „E-Mail s
 | --- | --- |
 | Erststart | Schritt 2 der Einrichtung legt die ersten Kontakte an ([[VIEW-07 - Einstellungen und Einrichtung]]) |
 | Keine Treffer | „Keine Kontakte für „…““ + „„…“ anlegen“ + „Suche zurücksetzen“ |
-| Punkt ohne Kontakt | „Verantwortlich“ als Freitext, ohne Link |
+| Vorgang ohne Kontakt | „Verantwortlich“ als Freitext, ohne Link |

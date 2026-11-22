@@ -35,6 +35,7 @@ describe("runSteps", () => {
       "analyze",
       "build",
       "check:dist",
+      "check:notices",
     ]);
     expect(FULL_STEPS.at(-1)?.name).toBe("test:mutation");
     expect(STEPS[0]).toEqual({

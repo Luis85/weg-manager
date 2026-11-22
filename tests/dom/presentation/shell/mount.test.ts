@@ -168,7 +168,7 @@ describe("mountSurface", () => {
     await settle();
     expect(ids).toHaveLength(2);
     expect(new Set(ids).size).toBe(2);
-    for (const id of ids) expect(id).toMatch(/^wm[0-9a-f]{8}-/);
+    for (const id of ids) expect(id).toMatch(/^wm[0-9a-f]{8}--\d+$/);
     for (const close of closes) close();
     await runtime.dispose();
   });

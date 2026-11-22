@@ -173,17 +173,17 @@ describe("ShellView state", () => {
     expect([same.history, changed.history]).toEqual([false, false]);
   });
 
-  it("takes a state that is no object (a null, a text) as the start route, without throwing", async () => {
-    const { open } = workspace();
-    const { view } = await open({ route: { name: "second" } });
-    await expect(view.setState(null, { history: false })).resolves.toBeUndefined();
-    await settle();
-    expect(view.getState()).toEqual({ route: { name: "first" } });
-    await view.setState({ route: { name: "second" } }, { history: false });
-    await expect(view.setState("second", { history: false })).resolves.toBeUndefined();
-    await settle();
-    expect(view.getState()).toEqual({ route: { name: "first" } });
-  });
+  it.each([null, undefined, "second", 7])(
+    "takes the state %j, which is no object, as the start route without throwing",
+    async (state) => {
+      const { open } = workspace();
+      const { view } = await open({ route: { name: "second" } });
+      expect(view.getState()).toEqual({ route: { name: "second" } });
+      await expect(view.setState(state, { history: false })).resolves.toBeUndefined();
+      await settle();
+      expect(view.getState()).toEqual({ route: { name: "first" } });
+    },
+  );
 
   it("starts the history at the state a new view is opened with", async () => {
     const { open } = workspace();

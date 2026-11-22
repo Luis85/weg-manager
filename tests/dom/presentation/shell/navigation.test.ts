@@ -1,7 +1,8 @@
-import { flushPromises } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import { memoryNavigation } from "../../../../src/presentation/shell/host";
+import { useRoute } from "../../../../src/presentation/shell";
 import { runtimes } from "../../../support/composable";
 import { preloadSurface } from "../../../support/preload";
 import { mountApp, mountTest, testSurface, type TestRoute } from "../../../support/surface";
@@ -175,6 +176,16 @@ describe("navigation in a surface", () => {
     await visit({ name: "first" });
     expect(shown(root)).toBe("First screen");
     expect(loads.toSorted()).toEqual(["first", "item", "second"]);
+  });
+
+  it("refuses a component that asks for the route outside a mounted surface, naming the cause", () => {
+    const Lost = defineComponent({
+      setup() {
+        useRoute();
+        return () => h("p");
+      },
+    });
+    expect(() => mount(Lost)).toThrow("useRouting() outside a mounted surface");
   });
 
   it("stops following the view when the surface closes", async () => {

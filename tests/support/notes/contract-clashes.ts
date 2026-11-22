@@ -84,6 +84,53 @@ export const clashContract = (make: () => NoteStoreFixture) => {
       }),
     );
 
+    it.effect("creates a note in the vault root, for either spelling of the root folder", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        const slash = yield* run(fixture, (store) =>
+          store.create({ folder: "/", name: "Lose", frontmatter: COMMUNITY }),
+        );
+        const empty = yield* run(fixture, (store) =>
+          store.create({ folder: "", name: "Lose", frontmatter: COMMUNITY }),
+        );
+        assert.deepStrictEqual([slash.path, empty.path], ["Lose.md", "Lose (2).md"]);
+      }),
+    );
+
+    it.effect("counts only the root's own notes as taken there, case aside", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        yield* promise(async () => {
+          await fixture.seed("Lose.md", "none");
+          await fixture.seed("F/Andere.md", "none");
+        });
+        const clash = yield* run(fixture, (store) =>
+          store.create({ folder: "/", name: "lose", frontmatter: {} }),
+        );
+        const free = yield* run(fixture, (store) =>
+          store.create({ folder: "/", name: "Andere", frontmatter: {} }),
+        );
+        assert.deepStrictEqual([clash.path, free.path], ["lose (2).md", "Andere.md"]);
+      }),
+    );
+
+    it.effect("renames a root note, refusing the name of another root note", () =>
+      Effect.gen(function* () {
+        const fixture = make();
+        yield* promise(async () => {
+          await fixture.seed("Alt.md", COMMUNITY);
+          await fixture.seed("Besetzt.md", "none");
+          await fixture.settle();
+        });
+        const error = yield* Effect.flip(
+          run(fixture, (store) => store.rename("Alt.md", "BESETZT")),
+        );
+        assert.strictEqual(error._tag, "NotePathTakenError");
+        const note = yield* run(fixture, (store) => store.rename("Alt.md", "Neu"));
+        assert.strictEqual(note.path, "Neu.md");
+      }),
+    );
+
     it.effect("renames a note to its own name in another case", () =>
       Effect.gen(function* () {
         const fixture = make();

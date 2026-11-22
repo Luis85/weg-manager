@@ -276,9 +276,9 @@ As the notes under `docs/requirements/` say it (2026-11-22).
 | PBI-65 | Finished (PRs #46, #53). |
 | PBI-66 | Open, `ready-for-human`: the manual checks (the owner checks theme and zoom with 0.2.0 on Windows; keyboard only, screen reader and other plugins have no tester), the focus ring on inputs, hyphenation, three small points from the UX step. |
 | PBI-67 | Open, `ready-for-human`. Criterion 1 (0.2.0 through the release workflow) and criterion 4 (third-party notices) are met; criterion 2 is partly met (a scheduled run passed; a second run that uses the first one's results and the failure issue are not shown yet); criterion 3 (the first Dependabot run) is open; criterion 5 (`CI / e2e` required) is postponed. |
-| PBI-68 | Finished (PR #61): the findings on the note store and the test double (a failed system trash, reads of a note deleted outside, a typed error for a note that does not open, `Today` guarded, one frame context area). The queued rename was measured and the double models it; the adapter stays as it is by the owner's decision (ADR 0007). |
+| PBI-68 | Finished (PR #61): the findings on the note store and the test double (a failed system trash, reads of a note deleted outside, a typed error for a note that does not open, `Today` guarded, one frame context area). The queued rename was measured and the double models it; the adapter stays as it is, a decision taken in the review of that step and recorded in the note and in ADR 0007. |
 | PBI-69 | Open, `ready-for-agent`: the fixes to release, CI and scripts are merged (#60); the changed release and nightly workflows have not run yet. |
-| PBI-70 | Open, `ready-for-agent` (PR #62): criteria 1 to 5 are met. The four write-failure cases ran and passed in real Obsidian on the CI runner, which is not root (run 45071294408, 2026-11-22). Criterion 6 (the e2e suite five times in a row) is not shown yet. |
+| PBI-70 | Finished (PR #62): e2e negative checks, the outside edit, the probe's outcome, the pinned contract. The four write-failure cases ran and passed in real Obsidian on the CI runner, which is not root (run 45071294408, 2026-11-22). |
 | PBI-71 | Open, `ready-for-agent`: record forms for every field kind, before the second record type. |
 | PBI-72 | Open, `needs-triage`: typed input in the community sheet is lost on Escape or a click outside; the owner decides. |
 

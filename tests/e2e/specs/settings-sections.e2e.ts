@@ -47,11 +47,16 @@ describe("the settings screen's sections in Obsidian", function () {
     await expectListed(["Ahornweg 12"]);
     const navigation = browser.$(ROOT).$(SECTIONS);
     await expect(navigation).toHaveAttribute("aria-label", "Bereiche der Einstellungen");
-    const entries = await navigation.$$("button").map((entry) => entry.getText());
-    expect(entries.map((text) => text.replace(/\s+/g, " "))).toEqual([
-      "Gemeinschaften",
-      "Datenprobleme 1 1 Notiz",
-    ]);
+    const entries = async () =>
+      (await navigation.$$("button").map((entry) => entry.getText())).map((text) =>
+        text.replace(/\s+/g, " "),
+      );
+    // The badge is a lazily loaded part and follows its own snapshot of the index, so it can come
+    // a moment after the communities are listed.
+    await browser.waitUntil(async () => (await entries())[1] !== "Datenprobleme", {
+      timeoutMsg: "the data issues entry never showed its count",
+    });
+    expect(await entries()).toEqual(["Gemeinschaften", "Datenprobleme 1 1 Notiz"]);
     await expect(navigation.$("button*=Gemeinschaften")).toHaveAttribute("aria-current", "page");
     expect(await route()).toEqual({ name: "settings", section: "communities" });
   });

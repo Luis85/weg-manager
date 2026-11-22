@@ -1,7 +1,7 @@
 import type * as Obsidian from "obsidian";
 import type { App } from "./app";
 import type { Plugin } from "./plugin";
-import type { WorkspaceLeaf } from "./views";
+import { View, type WorkspaceLeaf } from "./views";
 import type { Workspace } from "./workspace";
 
 /**
@@ -22,3 +22,6 @@ export const asObsidianWorkspace = (workspace: Workspace): Obsidian.Workspace =>
 
 export const asObsidianLeaf = (leaf: WorkspaceLeaf): Obsidian.WorkspaceLeaf =>
   leaf as unknown as Obsidian.WorkspaceLeaf;
+
+/** The double's `View` class where a scenario takes Obsidian's, as `getActiveViewOfType(View)`. */
+export const obsidianView = View as unknown as typeof Obsidian.View;

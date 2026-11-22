@@ -1,6 +1,7 @@
 import { Plugin } from "obsidian";
 import { probeApi, type ProbeApi } from "../../support/notes/probe-api";
 import { eventRecorder, type RecorderOptions } from "../../support/notes/recorder";
+import { workspaceProbe, type WorkspaceProbe } from "../../support/shell/workspace-probe";
 import { hostEventsProbe } from "./host-events";
 import { startupRecorder, type StartupRecorder } from "./startup-recorder";
 
@@ -12,6 +13,7 @@ import { startupRecorder, type StartupRecorder } from "./startup-recorder";
  *
  * - `api`: the Obsidian `NoteStore` adapter as promise-returning calls;
  * - `recorder`: the fidelity scenarios' event recorder on this app (`tests/support/notes/recorder.ts`);
+ * - `workspace`: the plugin's real `openRoute` on this workspace (`tests/support/shell/workspace-probe.ts`);
  * - `startup`: how Obsidian's workspace and metadata cache got ready from this plugin's `onload`
  *   on, and when the plugin's own host event adapter, run here on a runtime of its own, published
  *   `LayoutReady` and `VaultReady`, and when the note index on that runtime was first ready
@@ -24,6 +26,7 @@ import { startupRecorder, type StartupRecorder } from "./startup-recorder";
 export default class NoteStoreProbe extends Plugin {
   api: ProbeApi | undefined;
   readonly recorder = (options: RecorderOptions) => eventRecorder(this.app, options);
+  readonly workspace: WorkspaceProbe = workspaceProbe(this.app);
   startup: StartupRecorder | undefined;
   /** The host event adapter and the note index on the probe's runtime. */
   events: ReturnType<typeof hostEventsProbe> | undefined;

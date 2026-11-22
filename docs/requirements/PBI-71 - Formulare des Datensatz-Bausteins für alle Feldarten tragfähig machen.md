@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-22
 horizon: ""
 start: ""
 due: ""
@@ -23,7 +23,7 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-71 · Formulare des Datensatz-Bausteins für alle Feldarten tragfähig machen
@@ -75,3 +75,4 @@ Review-Runde vom 22.11.2026 am Stand `65eb006`, Bericht zum Produktcode: Befund 
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Stand `65eb006` (vier unabhängige Reviews: Produktcode, Tests, CI und Release, Blueprint und Dokumente). Befund 1 und die Verbesserungen 2 und 5 stammen aus dem Bericht zum Produktcode und sind gegen den Code gelesen, aber nicht ausgeführt; nichts davon ist umgesetzt. `triage` ist `ready-for-agent`, weil Kriterien und Lösungsrichtung feststehen; kein heutiger Typ ist betroffen.
 - 22.11.2026 (viertes Interview): Entscheidungen des Eigentümers, soweit sie diese Note betreffen. (2) Die Formulare für alle Feldarten werden jetzt gebaut, vor dem ersten Fachfeature. (5) Ein Datensatz, dessen Verweis auf ein fehlendes Ziel zeigt, wird trotzdem gespeichert; das Formular markiert das Feld, und die Notiz erscheint unter den Datenproblemen. Das Speichern wird aus diesem Grund nie verweigert (Kriterium 8). (6) Ein Verweis zwischen Datensätzen wird nur als `id` des Ziels geschrieben. Es gibt keine Wikilink-Eigenschaft; Obsidians Graph und Rückverweise zeigen die Beziehung nicht. Die Felder `reference` und `references` schreiben und lesen deshalb nur die `id`. Die Version 0.2.1 folgt, wenn diese Note und [[PBI-72 - Eingaben im Gemeinschaftsblatt gehen beim Schließen verloren]] zusammengeführt und grün sind; der Agent startet die Veröffentlichung dann.
+- 22.11.2026 (Umsetzung): Umgesetzt im Zweig `forms-kit`. (1) Jede Feldart hat in `src/domain/notes/form.ts` eine Abbildung (`toInput`, `fromInput`; `formInput` und `draftValues` für alle Felder): Text für Text, Datum und Verweis, Zahl oder leer, Wahrheitswert, Liste von Zeichenketten für Liste und Verweisliste. `FormInput<F>` und `FormDraft<F>` folgen der Feldart. (2) `editedValues` vergleicht je Feldart mit `Equal.equals` den Formularwert mit dem ebenso abgebildeten geladenen Wert; ein unberührtes, gültiges Feld behält den Wert der Notiz. (3) `values as CommunityValues` entfällt: der Codec hat `parse`, das nach den Regeln die typisierten Werte liefert (ein Wert, den die Regeln durchlassen und der Typ ablehnt, ist ein Defekt). In `use-record-form.ts` entfallen `as Input` und beide `as never`: Feldfehler laufen über die eigenen Feldnamen des Formulars, „theirs“ über den Store des Formulars. Ein neuer Cast steht im Codec (`parseValues`, nach einer Prüfung ohne Befund), wo `readFields` schon castet. (4) Tests je Feldart: `tests/unit/application/notes/form-kinds-bytes.test.ts` (die Bytes jedes unberührten Feldes bleiben durch Merge und Zeilenbearbeitung, an einer Notiz mit Flow-Liste, `5.0`, `True` und Kommentaren), `tests/unit/domain/notes/form-kinds.test.ts`, `tests/dom/presentation/notes/record-form-kinds.test.ts` (Formular, Konfliktdialog mit Listen und Verweisen, „theirs“ über dieselbe Abbildung) auf dem Testtyp `testRecord`. Die Gemeinschaften sind unverändert; ihre Specs laufen ohne Änderung. (5) `servicesLayerOf` faltet die Layer in der Reihenfolge von `APP_MODULES` (`Layer.provideMerge` auf das vorige); `tests/unit/application/module.test.ts` zeigt ein späteres Modul, das den Dienst eines früheren nutzt, und dass die umgekehrte Reihenfolge nicht kompiliert. (6) Der Datensatz-Baustein gibt `names` und `nameChanges` (angezeigter Name je Id über `byId`) und `shownReference`, das auf die Id zurückfällt, wie der Text zu `reference.missing`; der Konfliktdialog nutzt ihn über die Option `references` von `useRecordForm`. Karten mit Verweisen gibt es noch nicht; die Anleitung (`adding-a-feature.md`) schreibt den Helfer für sie vor. (8) Ein Verweis und eine Verweisliste auf ein fehlendes Ziel: das Formular markiert das Feld, das Speichern gelingt und behält den Verweis (DOM-Test). Nicht gebaut, wie entschieden: Eingabekomponenten für Zahl, Häkchen, Liste und Verweis; das erste Feature, das eines braucht, baut es. (7) `npm run verify` mit Exit 0; `npm run test:e2e` unter `xvfb-run -a` dreimal hintereinander grün (25 von 25 Specs, je 94 bis 115 s).

@@ -46,6 +46,7 @@ const ALL: readonly AppError[] = [
   new NoteWriteRefusedError({ reason: "newer-version" }),
   new NoteWriteRefusedError({ reason: "identity" }),
   new NoteWriteRefusedError({ reason: "migration-failed" }),
+  new NoteWriteRefusedError({ reason: "layout" }),
   new NoteIndexReadError(),
 ];
 
@@ -74,11 +75,11 @@ describe.each([de, en])("describeError for notes ($shell.language)", (messages) 
 
   it("explains each write refusal differently", () => {
     const details = new Set(
-      (["other-type", "newer-version", "identity", "migration-failed"] as const).map(
+      (["other-type", "newer-version", "identity", "migration-failed", "layout"] as const).map(
         (reason) => describeError(new NoteWriteRefusedError({ reason }), messages).detail,
       ),
     );
-    expect(details.size).toBe(4);
+    expect(details.size).toBe(5);
   });
 
   it("never words the values of a conflict, nor puts them into the error message", () => {
@@ -186,6 +187,12 @@ describe("notes message texts", () => {
       },
       {
         severity: "warning",
+        title: "Speichern nicht möglich",
+        detail:
+          "Die Eigenschaften der Notiz sind so geschrieben, dass WEG Manager sie nicht ändern kann, ohne auch andere Zeilen zu ändern. Schreibe in Obsidian jede Eigenschaft als eigene Zeile „schlüssel: wert“ zwischen zwei Zeilen „---“ und speichere dann erneut.",
+      },
+      {
+        severity: "warning",
         title: "Notizen nicht aktuell",
         detail:
           "Obsidian konnte nicht alle Notizen lesen, deshalb zeigt die Liste vielleicht einen älteren Stand. Lies die Notizen erneut ein.",
@@ -262,6 +269,12 @@ describe("notes message texts", () => {
         title: "Can't save the note",
         detail:
           "The note couldn't be converted to the current schema version. Check its properties in Obsidian.",
+      },
+      {
+        severity: "warning",
+        title: "Can't save the note",
+        detail:
+          "The note's properties are written in a form WEG Manager can't change without changing other lines too. In Obsidian, write each property on a line of its own as key: value between two --- lines, then save again.",
       },
       {
         severity: "warning",

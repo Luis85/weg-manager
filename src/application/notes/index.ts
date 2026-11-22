@@ -13,7 +13,8 @@ export type { NotesCatalog } from "./i18n/catalog";
 export { describeNoteIssue, describeUnindexedIssue } from "./i18n/describe";
 export { notesDe } from "./i18n/de";
 export { notesEn } from "./i18n/en";
-export { createNote, writeCommand } from "./command";
+export { asDefect, createNote, writeCommand } from "./command";
+export { newNoteText, updateNoteText } from "./note-text";
 export { pathsInFolder, planRename } from "./paths";
 export { editChange, newRecordFrontmatter } from "./records";
 export {

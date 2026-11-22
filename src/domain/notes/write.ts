@@ -21,12 +21,16 @@ export type FieldConflict = {
   readonly current: unknown;
 };
 
-/** Why a note may not be written at all: it is no longer the record the form loaded. */
+/**
+ * Why a note may not be written at all: it is no longer the record the form loaded, or (`layout`)
+ * its frontmatter is written in a form the store cannot change without changing other lines.
+ */
 export const WriteRefusal = Schema.Literals([
   "other-type",
   "newer-version",
   "identity",
   "migration-failed",
+  "layout",
 ]);
 export type WriteRefusal = typeof WriteRefusal.Type;
 

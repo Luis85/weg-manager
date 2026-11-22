@@ -105,6 +105,20 @@ export const VAULT_FACTS = {
     { path: "A/plain.md", frontmatter: false, yaml: null },
   ],
   brokenYaml: { result: "YAMLParseError", events: [] },
+  createBom: { events: ["vault:create A/bom.md", "metadataCache:changed A/bom.md"] },
+  bomCache: { a: 1 },
+  bomRead: "---\r",
+  processBom: {
+    result: ["\uFEFF---\r\na: 1\r\n---\r\nbody\r\n", "\uFEFF---\r\na: 2\r\n---\r\nbody\r\n"],
+    events: ["vault:modify A/bom.md", "metadataCache:changed A/bom.md"],
+  },
+  // What the callback throws comes out unchanged.
+  processThrows: { result: "TypeError", events: [] },
+  createGone: { events: ["vault:create A/gone.md", "metadataCache:changed A/gone.md"] },
+  processGone: {
+    result: { rejected: "ENOENT", called: false },
+    events: ["metadataCache:deleted A/gone.md", "vault:delete A/gone.md"],
+  },
   renameOntoFile: { result: "Error: Destination file already exists!", events: [] },
   renameIntoMissingFolder: { result: "Error: ENOENT", events: [] },
   rename: {

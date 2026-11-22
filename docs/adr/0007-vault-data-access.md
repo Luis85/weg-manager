@@ -1,6 +1,6 @@
 # ADR 0007 · Vault notes as records
 
-- Status: accepted; adapter calls, the unreadable lookup and the conflict form amended on 2026-11-21 (see the note at the end)
+- Status: accepted; adapter calls, the unreadable lookup and the conflict form amended on 2026-11-21, the update write path amended again on 2026-11-21 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -73,8 +73,18 @@ unit_label: Einheiten
 
 ## Amendment, 2026-11-21: what was built
 
-- **Adapter calls.** The Obsidian adapter uses `vault.create`, `vault.createFolder` (for missing folders), `fileManager.processFrontMatter`, `fileManager.trashFile` and `fileManager.renameFile`. `vault.process` is listed above but not used yet: no type's contract has a body section. Name clashes compare `clashKey` (NFC, then lower case), also against folders, whatever the disk does.
+- **Adapter calls.** The Obsidian adapter uses `vault.create`, `vault.createFolder` (for missing folders), `vault.process` (for updates, since the second amendment below; it used `fileManager.processFrontMatter` before), `fileManager.trashFile` and `fileManager.renameFile`. Name clashes compare `clashKey` (NFC, then lower case), also against folders, whatever the disk does.
 - **Unreadable notes.** Under *Broken notes*, "one of the plugin's folders" is the `rootFolder` setting. The index asks `NoteStore.unreadable(folder)`, because Obsidian's cache cannot tell a note with broken YAML from a note without frontmatter except through its `yaml` section.
 - **The conflict form** shows, per conflicting field, the value when the form opened, the user's and the note's current one; the user picks one per field, and the form saves again against the current note.
 - **Unregistered records.** A valid `schema` of a type no feature registered, and a malformed `schema`, are shown as issues (`schema.unknown-type`, `schema.malformed`), never dropped.
 - **Not built.** A fallback when a Markdown file is never indexed (it would hold `VaultReady` back), and a body section for any type.
+
+## Amendment, 2026-11-21: updates edit lines through `vault.process`
+
+- **Why `processFrontMatter` was dropped for updates.** It parses the whole YAML block and writes all of it back. A review in Obsidian 1.15.1 saved a community after changing only its kind and found every other key the user had added changed: a comment gone, `plz: 01067` written as `1067`, `version: 1.10` as `1.1`, a 20-digit number rounded, `[a, b]` as a block list, `'yes'` unquoted. That breaks "unknown keys survive" above and DV-01. It also sees no frontmatter after a BOM, which the metadata cache reads, so a BOM note was listed but every save was refused; and it wrote LF lines into a CRLF note.
+- **What an update does now.** The adapter calls `vault.process(file, fn)`: Obsidian hands `fn` the file's text as it is now, BOM and line breaks included, and writes what `fn` returns, or nothing when it returns the same text. Inside `fn`, one pure step (`updateNoteText`, `src/application/notes/note-text.ts`, over `src/domain/notes/note-text.ts` and `yaml-text.ts`) reads the frontmatter with Obsidian's `parseYaml`, runs the caller's `change` on it (the per-field merge above stays inside the atomic write), and changes only the lines of the top-level keys the patch sets or removes. A key that is set keeps its place, a new key goes at the end of the block, a removed key's lines go. Every other byte stays: comments, unknown keys in their form, order, quoting, line breaks (new lines take the opening fence's), a BOM, the body. A key set to the value it has is not rewritten.
+- **One serialiser.** `vault.create` writes a new note with the same writer (`newNoteText`). Text is plain where YAML 1.2, as Obsidian parses it, and YAML 1.1, as older tools read it, give back the same text, else double-quoted with escapes; dates stay plain, as Obsidian writes them.
+- **The block is where the metadata cache finds it** (measured): after one BOM, a first line `---`, up to the next line that starts with `---`. `getFrontMatterInfo` was not used: it finds no block after a BOM or with lone carriage returns, and it does not close at `----`. Where the two readers disagree, the update is refused.
+- **A safety net.** A line scanner and a YAML parser can disagree about odd documents (a flow mapping as the block, anchors, explicit keys, a key YAML reads as a number). So the step writes only when the keys it found by line are exactly the keys `parseYaml` read, and when `parseYaml` reads the edited text as exactly the frontmatter the patch means, every other key deeply equal and in its order. Otherwise nothing is written and the update fails with `NoteWriteRefusedError`, reason `layout`, whose text asks the user to write the properties one per line. Unreadable YAML stays `NoteUnreadableError`, now without the parser's message, which quotes the note.
+- **Failures.** What the plugin's own code throws inside the write (the merge, the serialiser) is a defect, not a `NoteWriteError` the user could retry (`asDefect`, `writeCommand`). A note deleted between the lookup and the write makes `vault.process` reject with ENOENT without calling back; the adapter reports `NoteNotFoundError` when the file is no longer at its path.
+- `fileManager.processFrontMatter` is no longer called by the plugin. The Obsidian double keeps it, because the fidelity scenarios still record what it does.

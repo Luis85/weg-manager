@@ -7,6 +7,7 @@ import type {
   NotePathTakenError,
   NoteUnreadableError,
   NoteWriteError,
+  NoteWriteRefusedError,
 } from "./errors";
 
 /** A note's frontmatter as plain data: what Obsidian's YAML parser makes of it. */
@@ -65,11 +66,18 @@ export class NoteStore extends Context.Service<
     create(
       note: NewNote,
     ): Effect.Effect<Note, InvalidNoteNameError | NotePathTakenError | NoteWriteError>;
-    /** Runs `change` on the current frontmatter inside one atomic write; the body is untouched. */
+    /**
+     * Runs `change` on the current frontmatter inside one atomic write; the body is untouched.
+     * What `change` throws is a defect. The Obsidian adapter changes only the lines of the keys
+     * the patch changes and refuses (`NoteWriteRefusedError`, `layout`) a note it cannot edit so.
+     */
     update<E>(
       path: string,
       change: FrontmatterChange<E>,
-    ): Effect.Effect<Note, E | NoteNotFoundError | NoteUnreadableError | NoteWriteError>;
+    ): Effect.Effect<
+      Note,
+      E | NoteNotFoundError | NoteUnreadableError | NoteWriteRefusedError | NoteWriteError
+    >;
     /** Moves the note to the trash the user chose in Obsidian. */
     trash(path: string): Effect.Effect<void, NoteNotFoundError | NoteWriteError>;
     /** Renames the note in its folder; Obsidian updates the links to it. */

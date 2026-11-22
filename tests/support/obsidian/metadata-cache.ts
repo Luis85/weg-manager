@@ -18,28 +18,39 @@ export type CachedMetadata = {
 /** A note's text split as Obsidian does: the YAML between the `---` lines, and the body after. */
 export type SplitNote = { readonly yaml: string; readonly closing: number; readonly body: string };
 
-const FRONTMATTER = /^---\n((?:[^]*?\n)?)---(?:\n|$)/;
+/** `fileManager.processFrontMatter`'s reading (`getFrontMatterInfo`): no BOM, exact fences. */
+const FRONTMATTER = /^---\r?\n((?:[^]*?\n)?)---(?:\r?\n|$)/;
 
-export const splitFrontmatter = (text: string): SplitNote | undefined => {
-  const match = FRONTMATTER.exec(text);
+/**
+ * The metadata cache's reading, as measured in Obsidian 1.15.1: past one BOM (`vault.read` drops
+ * it), and the block closes at the first line that starts with `---` (`----` too).
+ */
+const CACHED_FRONTMATTER = /^---\r?\n((?:[^]*?\n)?)---[^\n]*(?:\n|$)/;
+
+const cut = (pattern: RegExp, text: string): SplitNote | undefined => {
+  const match = pattern.exec(text);
   if (match === null) return undefined;
   const yaml = match[1] ?? "";
-  return { yaml, closing: 4 + yaml.length, body: text.slice(match[0].length) };
+  const closing = match[0].indexOf("\n") + 1 + yaml.length;
+  return { yaml, closing, body: text.slice(match[0].length) };
 };
 
-const indexOf = (text: string): CachedMetadata => {
-  const split = splitFrontmatter(text);
-  if (split === undefined) return {};
-  const line = text.slice(0, split.closing).split("\n").length - 1;
+export const splitFrontmatter = (text: string): SplitNote | undefined => cut(FRONTMATTER, text);
+
+const indexOf = (raw: string): CachedMetadata => {
+  const text = raw.startsWith("\uFEFF") ? raw.slice(1) : raw;
+  const found = cut(CACHED_FRONTMATTER, text);
+  if (found === undefined) return {};
+  const line = text.slice(0, found.closing).split("\n").length - 1;
   const position = {
     start: { line: 0, col: 0, offset: 0 },
-    end: { line, col: 3, offset: split.closing + 3 },
+    end: { line, col: 3, offset: found.closing + 3 },
   };
   // Obsidian lists the block as a `yaml` section whether or not it can read it.
   const sections = [{ type: "yaml", position }];
   let frontmatter: Record<string, unknown> | null;
   try {
-    frontmatter = parseYaml(split.yaml);
+    frontmatter = parseYaml(found.yaml);
   } catch {
     // Obsidian keeps a note with broken YAML without `frontmatter` and without its position.
     return { sections };

@@ -21,7 +21,7 @@ Gemeint ist die handelnde Person bei der Verwaltung, nicht ein Verwaltungssystem
 
 ## Anforderungen
 
-[[docs/requirements/PBI-11 - Nachricht und Original zuordnen|PBI-11 · Nachricht und Original zuordnen]], [[docs/requirements/PBI-12 - Verlauf nachvollziehen|PBI-12 · Ereignisse nachvollziehen]], [[docs/requirements/PBI-18 - Nachrichten je Gemeinschaft bündeln|PBI-18 · Nachrichten je Gemeinschaft bündeln]], [[docs/requirements/PBI-20 - Tatsächlichen Versand dokumentieren|PBI-20 · Tatsächlichen Versand dokumentieren]], [[docs/requirements/PBI-21 - Begründeten Eskalationsschritt prüfen|PBI-21 · Begründeten Nachfassschritt prüfen]], [[docs/requirements/PBI-23 - Reaktion richtig einordnen|PBI-23 · Reaktion richtig einordnen]], [[docs/requirements/PBI-28 - Empfängerbezogene Ausgabe prüfen|PBI-28 · Empfängerbezogene Ausgabe prüfen]].
+[[docs/requirements/PBI-11 - Nachricht und Original zuordnen|PBI-11 · Nachricht und Original zuordnen]], [[docs/requirements/PBI-12 - Verlauf nachvollziehen|PBI-12 · Verlauf nachvollziehen]], [[docs/requirements/PBI-18 - Nachrichten je Gemeinschaft bündeln|PBI-18 · Nachrichten je Gemeinschaft bündeln]], [[docs/requirements/PBI-20 - Tatsächlichen Versand dokumentieren|PBI-20 · Tatsächlichen Versand dokumentieren]], [[docs/requirements/PBI-21 - Begründeten Eskalationsschritt prüfen|PBI-21 · Begründeten Eskalationsschritt prüfen]], [[docs/requirements/PBI-23 - Reaktion richtig einordnen|PBI-23 · Reaktion richtig einordnen]], [[docs/requirements/PBI-28 - Empfängerbezogene Ausgabe prüfen|PBI-28 · Empfängerbezogene Ausgabe prüfen]].
 
 Grundlage: [MVP-PRD 1.1](../../02-MVP-PRD.md) und Intake-Abgleich (historische Quelle im Git-Commit `b3a1cc2`, Pfad `docs/03-Intake-Abgleich.md`).
 

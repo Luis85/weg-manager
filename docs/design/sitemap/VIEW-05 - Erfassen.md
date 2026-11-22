@@ -29,8 +29,6 @@ mockups:
 
 # VIEW-05 · Erfassen (Sheet)
 
-Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
-
 **Rolle:** In unter 30 Sekunden etwas festhalten, ohne die aktuelle Arbeit zu verlassen. Erreichbar über Sidebar-Button, Befehl und mobil über den schwebenden Button.
 
 ## Felder

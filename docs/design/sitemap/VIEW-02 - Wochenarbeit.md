@@ -67,8 +67,6 @@ mockups:
 
 # VIEW-02 · Wochenarbeit (geführt)
 
-Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
-
 **Rolle:** Die reguläre Wochenarbeit als Assistent in fünf Schritten. Auswahl, Optionen, Vorschläge und Entwurfstexte entstehen nach [[Konzept - Vorbereitung ohne KI]]. Die Hauptnavigation tritt zurück; oben stehen „← Zurück zur Lage“ (pausiert die Woche), aktive Zeit (Ziel ≤ 60 min) und ein Stepper. Jeder Schritt hat genau eine Aufgabe als Überschrift und eine Primäraktion „Weiter“.
 
 | Schritt | Überschrift (Aufgabe) | Entscheidung pro Element | Ergebnis |

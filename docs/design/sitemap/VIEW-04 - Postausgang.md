@@ -32,8 +32,6 @@ mockups:
 
 # VIEW-04 · Postausgang
 
-Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
-
 **Rolle:** Alle vorbereiteten Nachrichten an einem Ort, gebündelt je Gemeinschaft und Empfänger. Hier wird geprüft, extern gesendet und der tatsächliche Versand dokumentiert. Kein automatischer Versand.
 
 ## Aufbau

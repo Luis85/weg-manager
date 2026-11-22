@@ -42,22 +42,20 @@ business-rules:
 decisions:
   - "[[docs/decisions/K-03 - Einzeln erledigbarer Vorgang als Kerneinheit]]"
 mockups:
-  - "[[docs/design/sitemap/assets/v2-P-D-08-Punkte.png]]"
+  - "[[docs/design/sitemap/assets/v2-P-D-08-Vorgaenge.png]]"
   - "[[docs/design/sitemap/assets/v2-D11-To-dos.png]]"
-  - "[[docs/design/sitemap/assets/v2-P-M-08-Punkte.png]]"
+  - "[[docs/design/sitemap/assets/v2-P-M-08-Vorgaenge.png]]"
   - "[[docs/design/sitemap/assets/v2-Dlg-Aufteilen.png]]"
   - "[[docs/design/sitemap/assets/v2-Dlg-Zusammenfuehren.png]]"
   - "[[docs/design/sitemap/assets/v2-Dlg-Bewerten.png]]"
   - "[[docs/design/sitemap/assets/v2-Dlg-Reaktion.png]]"
   - "[[docs/design/sitemap/assets/v2-D4-Vorgangsakte-dark.png]]"
-  - "[[docs/design/sitemap/assets/v2-P-D-09-Punktakte.png]]"
-  - "[[docs/design/sitemap/assets/v2-P-M-09-Punktakte.png]]"
+  - "[[docs/design/sitemap/assets/v2-P-D-09-Vorgangsakte.png]]"
+  - "[[docs/design/sitemap/assets/v2-P-M-09-Vorgangsakte.png]]"
   - "[[docs/design/sitemap/assets/v2-M3-Vorgangsakte-dark.png]]"
 ---
 
 # VIEW-03 · Vorgänge und Vorgangsakte
-
-Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
 
 ## Vorgänge (Liste)
 
@@ -65,7 +63,7 @@ Segment **Vorgänge | To-dos**. Suche, Filter (Gemeinschaft, Bearbeitungsstand, 
 
 Desktop: Suchfeld, Statusfilter (Offen · Ungeklärt · Erledigt) und Prüfvermerk-Filter als Chips mit Zahl, Tabelle Vorgang · Verantwortlich · Status · Nächster Schritt · Datum, sortiert nach Dringlichkeit. To-dos: Schnelleingabe (Text, Gemeinschaft, Datum), gruppiert nach Überfällig · Diese Woche · Später, Herkunft je To-do (Entscheidung, Übergabe, manuell) mit Link auf den Vorgang, Erledigtes eingeklappt.
 
-![[v2-P-D-08-Punkte.png]]
+![[v2-P-D-08-Vorgaenge.png]]
 
 ![[v2-D11-To-dos.png]]
 
@@ -79,7 +77,7 @@ Desktop: Suchfeld, Statusfilter (Offen · Ungeklärt · Erledigt) und Prüfverme
 
 **Seitenspalte:** Quellen mit Einstufung (Original geprüft · privat · nur Link) und „Hinzufügen“; „Im selben Thema“ (ein Thema hat keinen gemeinsamen Erledigt-Status).
 
-![[v2-P-D-09-Punktakte.png]]
+![[v2-P-D-09-Vorgangsakte.png]]
 
 ## Dialoge
 
@@ -103,9 +101,9 @@ Desktop: Suchfeld, Statusfilter (Offen · Ungeklärt · Erledigt) und Prüfverme
 
 Kopf mit Zurück, Chips, Tabs **Fakten · Verlauf · Quellen**; Fakten als 3er-Kacheln, „Nächster Schritt“-Karte, Aktionsleiste „Reaktion erfassen“ + „Bewerten“.
 
-![[v2-P-M-09-Punktakte.png|180]]
+![[v2-P-M-09-Vorgangsakte.png|180]]
 
-![[v2-P-M-08-Punkte.png|180]]
+![[v2-P-M-08-Vorgaenge.png|180]]
 
 ## Verlaufseintrag öffnen
 

@@ -58,7 +58,7 @@ Höchstens sieben reguläre Entscheidungen pro Woche, Dringendes zusätzlich. Be
 
 Ein Punkt mit Fakten, Fremdtermin und Wiedervorlage, Verlauf und Quellen an einem Ort.
 
-![Punktakte](docs/design/sitemap/assets/v2-P-D-09-Punktakte.png)
+![Vorgangsakte](docs/design/sitemap/assets/v2-P-D-09-Vorgangsakte.png)
 
 ### Postausgang
 
@@ -78,7 +78,7 @@ Geplant ist, dass die vollständige Wochenarbeit auch auf dem Handy funktioniert
 
 | Lage | Entscheiden | Punktakte | Zusage erfassen |
 | --- | --- | --- | --- |
-| ![Lage mobil](docs/design/sitemap/assets/v2-P-M-01-Lage.png) | ![Entscheiden mobil](docs/design/sitemap/assets/v2-P-M-04-Woche-Entscheiden.png) | ![Punktakte mobil](docs/design/sitemap/assets/v2-P-M-09-Punktakte.png) | ![Erfassen mobil](docs/design/sitemap/assets/v2-P-M-13-Erfassen-Zusage.png) |
+| ![Lage mobil](docs/design/sitemap/assets/v2-P-M-01-Lage.png) | ![Entscheiden mobil](docs/design/sitemap/assets/v2-P-M-04-Woche-Entscheiden.png) | ![Vorgangsakte mobil](docs/design/sitemap/assets/v2-P-M-09-Vorgangsakte.png) | ![Erfassen mobil](docs/design/sitemap/assets/v2-P-M-13-Erfassen-Zusage.png) |
 
 ## Dokumentation
 

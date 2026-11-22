@@ -42,8 +42,6 @@ mockups:
 
 # VIEW-01 · Lage
 
-Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
-
 **Rolle:** Start und Lagecheck. Beantwortet in unter einer Minute: Was ist seit meiner Übergabe passiert, was drängt, wann ist die nächste Wochenarbeit?
 
 ## Aufbau (von oben nach unten)

@@ -26,8 +26,6 @@ mockups:
 
 # VIEW-06 · Sachstand ausgeben
 
-Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
-
 **Rolle:** Eine geprüfte, empfängerbezogene Fassung erzeugen – für Eigentümer, Vertretung/Nachfolge oder Verwaltung. Exportiert, nicht gesendet.
 
 ## Fünf nummerierte Spalten

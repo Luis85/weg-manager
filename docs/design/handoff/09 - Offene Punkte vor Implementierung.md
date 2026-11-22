@@ -38,7 +38,7 @@ date: 2026-11-15
 | O-D12 | Onboarding: erledigt am 22.11.2026. Release, Speicherort und Ablageordner sind entschieden; das Verhalten von `onUserEnable` ist per Spike geklärt (K-19, O-19d). | [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]; Ansicht [[VIEW-09 - Einrichtung]] |
 | O-D11 | Benennung des nativen Chats (PBI-47) vs. Schreibregel „kein KI in Labels“ ([[06 - Texte und Begriffe]]) | Vorschlag: Regel gilt für die regelbasierte Kernreise; der Chat heißt nach seiner Funktion („Chat mit Claude“) und zeigt den Abrechnungsmodus |
 | O-D6 | Vorgangsliste als Bases-View oder eigene Liste | Spike: Bases-View für Lesen, eigene Liste für Bearbeitung |
-| O-D13 | Routen, Befehls-IDs und Mockups nach den WCS-Begriffen nachziehen (K-20) | Vor Implementierung der Vorgangsansichten: Routen wie `punkte` und `punkt/<id>`, Befehls-IDs wie `open-point`, Mockups und Prototyp auf Vorgang, Vorgangsakte usw. umstellen ([[K-20 - WCS-Datenmodell als fachliche Grundlage]]) |
+| O-D13 | Routen, Befehls-IDs und Mockups nach den WCS-Begriffen nachziehen (K-20) | Erledigt am 22.11.2026: Routen `vorgaenge` und `vorgang/<id>`, Befehl `open-matter` (Handoff 03); Prototyp und seine Screenshots umgestellt (`docs/design/prototype/screenshots.mjs`); alle übrigen Mockups aus Quellen in `docs/design/mockups` neu gebaut; abgelöste Mockups zu Erststart und Tour entfernt ([[K-20 - WCS-Datenmodell als fachliche Grundlage]]). |
 
 ## Noch nicht gestaltet
 

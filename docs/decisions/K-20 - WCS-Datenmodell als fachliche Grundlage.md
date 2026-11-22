@@ -45,7 +45,7 @@ Der Beirat arbeitet heute mit dem WCS. Dessen Begriffe kennen Beirat und Vertret
 
 - Das WCS-Dokument selbst liegt nicht im Repository. Es nennt echte Namen; das Repository nennt keine.
 - WCS-Objekte mit dem Status „später“ bekommen eine Entity-Note, aber keine Releasezusage. `scope` folgt dem Backlog, nicht dem WCS-Status.
-- Die Begriffe in Mockup-Bildern, Routen, Befehls-IDs, im Referenz-Vault (`scripts/reference-vault.mjs`) und im Code werden nachgezogen. Das hält O-D13 in `docs/design/handoff/09 - Offene Punkte vor Implementierung.md` fest.
+- Mockup-Bilder, Prototyp, Routen und Befehls-IDs sind am 22.11.2026 nachgezogen (O-D13 in `docs/design/handoff/09 - Offene Punkte vor Implementierung.md`). Der Code und der Referenz-Vault (`scripts/reference-vault.mjs`) folgen mit ihrer nächsten Änderung.
 
 ## Auswirkungen
 

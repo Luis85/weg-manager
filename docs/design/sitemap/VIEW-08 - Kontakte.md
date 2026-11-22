@@ -32,8 +32,6 @@ mockups:
 
 # VIEW-08 · Kontakte
 
-Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
-
 **Rolle:** Adressbuch für alle Beteiligten. Beantwortet: Wer ist wofür zuständig, wie erreiche ich ihn, was läuft gerade mit ihm?
 
 **Navigation:** Nebenbereich. Desktop in der Sidebar unter den vier Zielen, mobil über das Personen-Symbol im Kopf. Einzelne Kontakte öffnen als Modal auch aus der Vorgangsakte („Verantwortlich“) und Postausgang („An“). Erfassen schlägt Kontakte bei „Wer sagt zu?“ vor und bietet „„Name“ als Kontakt anlegen“, wenn es ihn noch nicht gibt.

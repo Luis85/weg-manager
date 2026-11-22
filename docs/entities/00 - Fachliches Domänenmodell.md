@@ -188,7 +188,7 @@ Die Begriffe sind alphabetisch sortiert. Die Rechtsbegriffe folgen dem Wohnungse
 
 ## Zuordnung alter Begriffe
 
-Bis Code, Routen und Mockups nachgezogen sind, gilt diese Zuordnung (O-D13 in `docs/design/handoff/09 - Offene Punkte vor Implementierung.md`):
+Docs, Routen, Befehls-IDs und Mockups folgen den neuen Begriffen. Bis der Code und der Referenz-Vault nachgezogen sind, gilt diese Zuordnung:
 
 | Bisher | Jetzt | Note |
 | --- | --- | --- |

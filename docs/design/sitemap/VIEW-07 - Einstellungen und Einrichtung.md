@@ -40,8 +40,6 @@ mockups:
 
 # VIEW-07 · Einstellungen und Einrichtung
 
-Die Mockups zeigen noch die Begriffe vor dem 22.11.2026 (Punkt statt Vorgang usw., [[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
-
 Nebenbereich mit eigener Unternavigation; Desktop über „Einstellungen“ unten in der Sidebar, mobil über das Zahnrad im Kopf. Änderungen gelten sofort (Obsidian-Konvention), mehrteilige Stammdaten wie eine Gemeinschaft werden im Sheet mit „Speichern“ bearbeitet. Überschriften in Satzanfang-Großschreibung ohne das Wort „Einstellungen“ (Obsidian-Richtlinie). Jeder Bereich beginnt mit einem kurzen Einleitungsabsatz; jede Option zeigt Name, Beschreibung und Steuerelement nebeneinander (mobil untereinander).
 
 ## Bereiche

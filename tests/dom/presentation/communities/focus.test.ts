@@ -151,3 +151,33 @@ describe("a failed submit", () => {
     );
   });
 });
+
+/** The defects the screen reported, as the log sink received them. */
+const defects = (screen: OpenScreen) =>
+  screen.logger.entries().filter((entry) => entry.event === "defect.reported");
+
+describe("a defect while saving or deleting", () => {
+  it("keeps the sheet open with the input, as anything but a success must", async () => {
+    const screen = await openCommunities();
+    await screen.click(screen.q("community-add"));
+    await fill(screen, VALID);
+    screen.notes.setDefectWrites(true);
+    await save(screen);
+    await screen.until(() => expect(defects(screen)).toHaveLength(1));
+    expect(screen.q("community-form")).toBeDefined();
+    expect(screen.input("field-name").value).toBe("Tiefgarage Ahornweg");
+    expect(screen.notifier.messages().map((message) => message.title)).toEqual([
+      de.shell.defect.title,
+    ]);
+  });
+
+  it("keeps the delete dialog open and reports the defect once", async () => {
+    const screen = await openCommunities({ seed: (notes) => notes.seed(`${FOLDER}/A.md`, AW) });
+    await screen.click(screen.button(t.screen.removeLabel("Ahornweg 12")));
+    screen.notes.setDefectWrites(true);
+    await screen.click(screen.q("delete-confirm"));
+    await screen.until(() => expect(defects(screen)).toHaveLength(1));
+    expect(screen.q("delete-dialog")).toBeDefined();
+    expect(screen.names()).toEqual(["Ahornweg 12"]);
+  });
+});

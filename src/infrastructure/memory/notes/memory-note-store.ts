@@ -84,6 +84,7 @@ export const memoryNoteStore = () => {
   const folders = new Set<string>();
   let failReads = false;
   let failWrites = false;
+  let defectWrites = false;
   let open = true;
   let waiting: (() => void)[] = [];
   let publish: (event: AppEvent) => void = unpublished;
@@ -126,6 +127,11 @@ export const memoryNoteStore = () => {
       else waiting.push(resolve);
     });
     if (failWrites) throw madeUp("write failed");
+    // A bug in the plugin's own code inside the write: `writeCommand` dies with it.
+    if (defectWrites)
+      asDefect(() => {
+        throw madeUp("plugin code threw");
+      });
   };
 
   /** Applies `apply` after the disk; once started it completes, as Obsidian's writes do. */
@@ -260,6 +266,10 @@ export const memoryNoteStore = () => {
     },
     setFailWrites: (fail: boolean): void => {
       failWrites = fail;
+    },
+    /** Every write dies as if the plugin's own code threw inside it: a defect, not a failure. */
+    setDefectWrites: (defect: boolean): void => {
+      defectWrites = defect;
     },
     holdWrites: (): void => {
       open = false;

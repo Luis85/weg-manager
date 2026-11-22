@@ -32,8 +32,10 @@ const name = computed(() => (props.community === undefined ? "" : shownName(prop
 
 const confirm = async () => {
   if (props.community === undefined || remove.pending.value) return;
-  await remove.run(props.community);
-  if (remove.error.value === undefined && remove.message.value === undefined) {
+  const outcome = await remove.run(props.community);
+  // Only a delete that happened closes the dialog: a failure stays as its alert, a defect as the
+  // notice that reports it.
+  if (outcome._tag === "success") {
     emit("deleted");
     emit("close");
   }

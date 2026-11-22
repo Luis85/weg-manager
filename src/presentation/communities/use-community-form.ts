@@ -110,26 +110,27 @@ export const useCommunityForm = (options: {
     onSubmitInvalid: () => void showInvalid(),
     onSubmit: async ({ value }) => {
       conflicts.value = undefined;
-      if (community === undefined) await create.run(value);
-      else await update.run({ ...community, frontmatter: base.value }, value);
-      await settled();
+      const outcome =
+        community === undefined
+          ? await create.run(value)
+          : await update.run({ ...community, frontmatter: base.value }, value);
+      await settled(outcome);
     },
   });
 
-  /** The id of the community the command saved, once it saved one. */
-  const savedId = (): unknown =>
-    command.value.value === undefined
-      ? undefined
-      : (community?.id ?? create.value.value?.frontmatter["id"]);
-
-  /** After a save: done, a conflict to choose in, or the use case's issues at their fields. */
-  const settled = async () => {
-    const error = command.error.value;
-    const id = savedId();
-    if (error === undefined) {
+  /**
+   * After a save, by its outcome: done with the saved community's id, a conflict to choose in, or
+   * the use case's issues at their fields. A defect (reported as a notice) or an interruption keeps
+   * the form open with the user's input, as anything but a success must.
+   */
+  const settled = async (outcome: Awaited<ReturnType<typeof command.run>>) => {
+    if (outcome._tag === "success") {
+      const id = community?.id ?? outcome.value.frontmatter["id"];
       if (typeof id === "string") options.done(id);
       return;
     }
+    if (outcome._tag !== "failure") return;
+    const { error } = outcome;
     if (error._tag === "NoteEditConflictError") conflicts.value = error.conflicts;
     if (error._tag !== "InvalidCommunityError") return;
     for (const issue of error.issues) {

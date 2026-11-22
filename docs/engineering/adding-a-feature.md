@@ -83,7 +83,7 @@ return adapters.hostEvents.pipe(Layer.provideMerge(features));
 ```
 
 - **A new application service** is one line there, built on what it needs; nothing else changes. The plugin, the harness and the tests get it at once.
-- **A new port** is a field of `AppAdapters` in the same file, merged into the graph where its service needs it, plus one adapter in each host: Obsidian's in the module's folder of `src/infrastructure/obsidian/<module>/`, spread into `appLayer` (`src/infrastructure/obsidian/app-layer.ts`, as `shellAdapters` and `notesAdapters` are); the harness's in `harness/layers.ts`; the tests' in `tests/support/adapters.ts` (`testAdapters`, in-memory adapters from `src/infrastructure/memory/`, never imported by `src/`). Typecheck fails at each until it supplies the field.
+- **A new port** is a field of `AppAdapters` in the same file, merged into the graph where its service needs it, plus one adapter in each host: Obsidian's in the module's folder of `src/infrastructure/obsidian/<module>/`, spread into `appLayer` (`src/infrastructure/obsidian/app-layer.ts`, as `shellAdapters` and `notesAdapters` are); the harness's in `harness/layers.ts`; the tests' in `tests/support/adapters.ts` (`testAdapters`, in-memory adapters from `src/infrastructure/memory/`, never imported by `src/`). Typecheck fails at each until it supplies the field. `noteOpener` (`NoteOpener`) is one: `notesAdapters` gives Obsidian's, the harness and `testAdapters` the in-memory store's `opener`.
 
 Test: `tests/unit/application/app-services-layer.test.ts` (the graph's order, the note types, the language, the log level); `tests/dom/infrastructure/runtime.test.ts` runs `createCommunity` against the Obsidian adapters on the double.
 

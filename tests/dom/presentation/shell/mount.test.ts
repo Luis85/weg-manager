@@ -1,6 +1,6 @@
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, h, onMounted, ref } from "vue";
+import { defineComponent, h, onMounted, onUnmounted, ref } from "vue";
 import { SCOPE_CLASS as SCRIPT_SCOPE_CLASS } from "../../../../scripts/scope-css.mjs";
 import { SettingsService } from "../../../../src/application/shell";
 import { mountApp } from "../../../support/surface";
@@ -89,6 +89,53 @@ describe("mountSurface", () => {
     expect(root.children).toHaveLength(0);
     expect([...root.classList]).toEqual(["host-class"]);
     expect(() => close()).not.toThrow();
+    await runtime.dispose();
+  });
+
+  it("unmounts its Vue app when closed, so a component can clean up", async () => {
+    const { runtime } = testRuntime();
+    const unmounted = vi.fn<() => void>();
+    const Probe = defineComponent({
+      setup() {
+        onUnmounted(unmounted);
+        return () => h("p", "probe");
+      },
+    });
+    const root = newRoot();
+    const close = mountApp(root, runtime, { content: Probe });
+    await settle();
+    expect(unmounted).not.toHaveBeenCalled();
+    close();
+    expect(unmounted).toHaveBeenCalledTimes(1);
+    close();
+    expect(unmounted).toHaveBeenCalledTimes(1);
+    await runtime.dispose();
+  });
+
+  it("keeps a scope class the root already had when it closes", async () => {
+    const { runtime } = testRuntime();
+    const root = newRoot();
+    root.classList.add(SCOPE_CLASS);
+    const close = mountApp(root, runtime);
+    await settle();
+    close();
+    expect(root.classList.contains(SCOPE_CLASS)).toBe(true);
+    await runtime.dispose();
+  });
+
+  it("does not undo a newer surface on the same root when an old one is closed again", async () => {
+    const { runtime } = testRuntime();
+    const root = newRoot();
+    const closeOld = mountApp(root, runtime);
+    await settle();
+    closeOld();
+    const closeNew = mountApp(root, runtime);
+    await settle();
+    closeOld();
+    expect(root.classList.contains(SCOPE_CLASS)).toBe(true);
+    expect(root.querySelector(`:scope > .${PORTAL_CLASS}`)).not.toBeNull();
+    closeNew();
+    expect(root.classList.contains(SCOPE_CLASS)).toBe(false);
     await runtime.dispose();
   });
 

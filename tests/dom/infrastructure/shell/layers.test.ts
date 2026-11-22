@@ -1,6 +1,6 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { afterEach, vi } from "vitest";
+import { afterEach, expect, vi } from "vitest";
 import {
   Clipboard,
   HostInfo,
@@ -11,11 +11,16 @@ import { ISSUES_URL } from "../../../../src/application/shell";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
-const { createTestPlugin, Plugin, recordedNotices } = await import("@test/obsidian");
+const { createTestPlugin, Platform, Plugin, recordedNotices } = await import("@test/obsidian");
 const { shellAdapters, NOTICE_DURATION } =
   await import("../../../../src/infrastructure/obsidian/shell/layers");
 
 class Bare extends Plugin {}
+
+/** The double's platform flags as it starts (Linux desktop), restored after each test. */
+const ORIGINAL_PLATFORM = { ...Platform };
+/** Every flag off, so a case sets only the flags it means. */
+const NO_PLATFORM = Object.fromEntries(Object.keys(Platform).map((flag) => [flag, false]));
 
 const setup = (options: { data?: unknown; failLoadData?: boolean } = {}) => {
   const { plugin, registry, app } = createTestPlugin(Bare, options);
@@ -31,6 +36,7 @@ const setup = (options: { data?: unknown; failLoadData?: boolean } = {}) => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  Object.assign(Platform, ORIGINAL_PLATFORM);
 });
 
 describe("shellAdapters", () => {
@@ -89,12 +95,19 @@ describe("shellAdapters", () => {
     }).pipe(Effect.provide(layer));
   });
 
-  it.effect("keeps errors up longer than warnings and warnings longer than info", () =>
-    Effect.sync(() => {
-      assert.isAbove(NOTICE_DURATION.error, NOTICE_DURATION.warning);
-      assert.isAbove(NOTICE_DURATION.warning, NOTICE_DURATION.info);
-    }),
-  );
+  it.effect("keeps a notice up the longer, the more severe it is", () => {
+    const { layer } = setup();
+    return Effect.gen(function* () {
+      const notifier = yield* Notifier;
+      for (const severity of ["info", "warning", "error"] as const) {
+        yield* notifier.notify({ severity, title: severity, detail: "" });
+      }
+      const [info, warning, error] = recordedNotices().map((notice) => notice.duration ?? 0);
+      assert.isAbove(info ?? 0, 0);
+      assert.isAbove(warning ?? 0, info ?? 0);
+      assert.isAbove(error ?? 0, warning ?? 0);
+    }).pipe(Effect.provide(layer));
+  });
 
   it.effect("writes to the clipboard and maps a rejection to ClipboardError", () => {
     const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValueOnce();
@@ -110,14 +123,42 @@ describe("shellAdapters", () => {
     }).pipe(Effect.provide(layer));
   });
 
-  it.effect("describes the host from the manifest, apiVersion and platform", () => {
+  it.effect("describes the host from the manifest and the API version", () => {
     const { layer } = setup();
     return Effect.gen(function* () {
       const host = yield* HostInfo;
       assert.deepStrictEqual(
-        { pluginVersion: host.pluginVersion, apiVersion: host.apiVersion, platform: host.platform },
-        { pluginVersion: "0.1.0", apiVersion: "1.15.1", platform: "desktop-linux" },
+        { pluginVersion: host.pluginVersion, apiVersion: host.apiVersion },
+        { pluginVersion: "0.1.0", apiVersion: "1.15.1" },
       );
     }).pipe(Effect.provide(layer));
+  });
+});
+
+/** What Obsidian's `Platform` flags say, and the name the diagnostics give that platform. */
+const PLATFORMS: readonly (readonly [
+  string,
+  Partial<Record<keyof typeof Platform, boolean>>,
+  string,
+])[] = [
+  ["macOS", { isMacOS: true }, "desktop-macos"],
+  ["Windows", { isWin: true }, "desktop-windows"],
+  ["Linux", { isLinux: true }, "desktop-linux"],
+  ["an iOS app", { isMobile: true, isIosApp: true }, "mobile-ios"],
+  ["an Android app", { isMobile: true, isAndroidApp: true }, "mobile-android"],
+  ["a desktop that no flag names", {}, "desktop"],
+  ["a mobile device that no flag names", { isMobile: true }, "mobile"],
+];
+
+describe("the platform the host adapter reports", () => {
+  it.each(PLATFORMS)("names %s", async (_name, flags, expected) => {
+    Object.assign(Platform, NO_PLATFORM, flags);
+    const { layer } = setup();
+    const platform = await Effect.runPromise(
+      Effect.gen(function* () {
+        return (yield* HostInfo).platform;
+      }).pipe(Effect.provide(layer)),
+    );
+    expect(platform).toBe(expected);
   });
 });

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
-const { createTestPlugin, settingsIn } = await import("@test/obsidian");
+const { createTestPlugin, recordedNotices, settingsIn } = await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../../../src/main");
 
 type Select = { selectEl: HTMLSelectElement };
@@ -84,6 +84,17 @@ describe("settings tab", () => {
     }
     expect(tab.containerEl.textContent).toContain("neueren Version");
     expect(registry.saved).toEqual([]);
+    plugin.unload();
+  });
+
+  it("answers only for its own control: another key has no value and changes nothing", async () => {
+    const { tab, registry, plugin } = await openTab({ logLevel: "info" });
+    expect(tab.getControlValue("logLevel")).toBe("info");
+    expect(tab.getControlValue("rootFolder")).toBeUndefined();
+    await tab.setControlValue("rootFolder", "debug");
+    expect(registry.saved).toEqual([]);
+    expect(recordedNotices()).toEqual([]);
+    expect(tab.getControlValue("logLevel")).toBe("info");
     plugin.unload();
   });
 

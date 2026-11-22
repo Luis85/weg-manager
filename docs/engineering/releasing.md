@@ -10,13 +10,13 @@ Versions are bare `x.y.z`. Tags carry no `v`; `.npmrc` sets `tag-version-prefix=
    npm then commits and tags `0.2.0`. The bump refuses a version that is not greater than the current one.
 2. Push the commit and the tag: `git push --follow-tags`.
 3. `.github/workflows/release.yml` runs two jobs:
-   - `build` (read-only token, credentials not persisted, `fetch-depth: 0`) fails unless the tagged commit is an ancestor of `origin/main`: tag from `main` only. It then runs `npm ci`, `npm run verify` and the real-Obsidian e2e suite (`npm run test:e2e`, set up as in `ci.yml`), then `npm run release:package -- --tag 0.2.0` and uploads `release/weg-manager/` as the artifact `release-files`.
-   - `release` (`contents: write`, `id-token: write`, `attestations: write`; no checkout, no `npm`) downloads that artifact, attests the three assets and creates the GitHub release with `main.js`, `manifest.json` and `styles.css`. The release is marked a pre-release while the major version is 0 (the tag starts with `0.`).
+   - `build` (read-only token, credentials not persisted, `fetch-depth: 0`) fails unless the tagged commit is an ancestor of `origin/main`: tag from `main` only. It then runs `npm ci`, `npm run verify` and the real-Obsidian e2e suite (`npm run test:e2e`, set up as in `ci.yml`), then `npm run release:package -- --tag 0.2.0` and uploads `release/` (the folder `weg-manager/` with the three plugin files, and `THIRD-PARTY-NOTICES.txt` beside it) as the artifact `release-files`.
+   - `release` (`contents: write`, `id-token: write`, `attestations: write`; no checkout, no `npm`) downloads that artifact, attests the four assets and creates the GitHub release with `main.js`, `manifest.json`, `styles.css` and `THIRD-PARTY-NOTICES.txt`. The release is marked a pre-release while the major version is 0 (the tag starts with `0.`).
 
-   `release:package` fails when the tag and `manifest.json` disagree, when `dist/` fails the `check:dist` invariants (a stale or development build), or when `versions.json` has no entry for the manifest version equal to its `minAppVersion`.
-4. To install by hand, copy those three files to `<vault>/.obsidian/plugins/weg-manager/` and enable the plugin.
+   `release:package` fails when the tag and `manifest.json` disagree, when `dist/` fails the `check:dist` invariants (a stale or development build), when `versions.json` has no entry for the manifest version equal to its `minAppVersion`, or when `THIRD-PARTY-NOTICES.txt` is missing or empty.
+4. To install by hand, copy the three plugin files (`main.js`, `manifest.json`, `styles.css`) to `<vault>/.obsidian/plugins/weg-manager/` and enable the plugin.
 
-To stage a release locally: `npm run build && npm run release:package` writes `release/weg-manager/`. It refuses a `dist/` that is not a fresh production build of the current `manifest.json`.
+To stage a release locally: `npm run build && npm run release:package` writes `release/weg-manager/` and `release/THIRD-PARTY-NOTICES.txt`. It refuses a `dist/` that is not a fresh production build of the current `manifest.json`.
 
 The workflow has never run. A failed run leaves the tag without a release: fix the cause on `main`, delete the tag locally and on GitHub, and tag again with a new version (a version number is not reused once the bump commit is on `main`).
 
@@ -24,9 +24,26 @@ Raise `minAppVersion` in `manifest.json` before you bump whenever the plugin sta
 
 The next release is 0.2.0, a pre-release (see *Beta testing with BRAT* below) for the manual checks in a personal vault (see [testing.md](testing.md#manual-checks-in-obsidian)).
 
+## Third-party notices
+
+The release has four assets. Obsidian and BRAT install the first three (`main.js`, `manifest.json`, `styles.css`) and ignore the fourth, `THIRD-PARTY-NOTICES.txt`: the licence texts of the third-party packages that are bundled into `main.js` and `styles.css`. The minified `main.js` does not carry those texts, and the licences ask for them to travel with the code. The file is checked into the repository root and generated; do not edit it by hand.
+
+Which packages: those the production build includes, not the dependency tree. `configs/vite.config.ts` runs the plugin from `scripts/bundled-packages.mjs`, which writes `reports/bundled-packages.json` (not checked in) after each production build: the packages of the bundler's module list, the icon collections Nuxt UI turns into `virtual:nuxt-ui-icons` (`@iconify-json/*`, which no module id points at), and the packages the plugin's style sheets `@import` (Tailwind, Nuxt UI). The file also holds the sha256 of the `main.js` it describes, so a list from an older build is refused. `scripts/third-party-notices.mjs` then reads each package's `package.json` (licence id) and its `LICENSE`, `LICENCE`, `COPYING` and `NOTICE` files from `node_modules/`. Packages with the same text share one section, and a text that differs, such as MIT with another copyright line, stays its own section. The file holds no version number, so a Dependabot version bump leaves it unchanged unless a package enters or leaves the bundle or its licence text changes.
+
+A package without a licence file gets the standard MIT or ISC text with its `package.json` `author` as copyright line. When that is not possible, or when `package.json` has no `license` field, the script fails and names the package; the way out is an entry with its evidence in `scripts/notice-overrides.mjs` (`vaul-vue` and `@iconify-json/lucide` have one).
+
+Commands:
+
+- `npm run notices` runs a production build and rewrites `THIRD-PARTY-NOTICES.txt`. Commit the result.
+- `npm run check:notices` regenerates in memory and exits 1 when the file on disk differs. It is the last step of `npm run verify`, after `build`, because it reads the fresh `dist/`.
+
+When the gate says `THIRD-PARTY-NOTICES.txt is out of date`, for example on a Dependabot pull request that adds a package to the bundle or changes a licence text, run `npm run notices`, read the diff (a new package, a new licence id, a changed text) and commit the file with the change. A licence you do not know, or a copyleft one, is a question for the owner, not something to commit. When the gate says `run "npm run build" first`, `reports/bundled-packages.json` is missing or belongs to another `dist/`: run `npm run build`.
+
+`release:package` copies the file to `release/THIRD-PARTY-NOTICES.txt`, beside `release/weg-manager/` and not inside it: the folder a user copies into `<vault>/.obsidian/plugins/weg-manager/` stays exactly the three files Obsidian loads.
+
 ## Build provenance
 
-Before `gh release create`, the `release` job runs `actions/attest` (v4, pinned by commit SHA like every action) over the downloaded `release/weg-manager/main.js`, `manifest.json` and `styles.css`. This is the step from the Obsidian developer docs' guide *Release your plugin with GitHub Actions*, which recommends it for a community-directory submission. It needs the permissions `contents: write`, `id-token: write` and `attestations: write`. `release.yml` grants them to the `release` job only, which runs no repository code and no install scripts; the workflow's default is `contents: read`.
+Before `gh release create`, the `release` job runs `actions/attest` (v4, pinned by commit SHA like every action) over the downloaded `release/weg-manager/main.js`, `manifest.json`, `styles.css` and `release/THIRD-PARTY-NOTICES.txt`. This is the step from the Obsidian developer docs' guide *Release your plugin with GitHub Actions*, which recommends it for a community-directory submission. It needs the permissions `contents: write`, `id-token: write` and `attestations: write`. `release.yml` grants them to the `release` job only, which runs no repository code and no install scripts; the workflow's default is `contents: read`.
 
 The attestation is a signed statement that the files were built by this workflow from this commit. Anyone can check a downloaded asset with the GitHub CLI:
 

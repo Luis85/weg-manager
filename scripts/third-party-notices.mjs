@@ -12,7 +12,11 @@ export const NOTICES_FILE = "THIRD-PARTY-NOTICES.txt";
 export const PACKAGES_FILE = join("reports", "bundled-packages.json");
 
 /** @typedef {{ kind: "license" | "notice"; text: string }} NoticeText */
-/** @typedef {{ name: string; license: string; texts: NoticeText[] }} Entry */
+/**
+ * `generated` is set when the script wrote the licence text from its standard MIT or ISC text,
+ * because the package ships no licence file and no override gives the text verbatim.
+ * @typedef {{ name: string; license: string; texts: NoticeText[]; generated?: true }} Entry
+ */
 /** @typedef {import("./notice-overrides.mjs").Override} Override */
 
 /** Code points, not locale: the same order on every machine. */
@@ -148,10 +152,23 @@ export const readPackage = ({ root, name, overrides = OVERRIDES }) => {
     kind,
     text: normalizeText(readFileSync(join(dir, file), "utf8")),
   }));
-  if (!texts.some((entry) => entry.kind === "license")) {
-    texts.unshift({ kind: "license", text: standardText({ name, license, json, override }) });
-  }
-  return { name, license, texts };
+  const complete = withLicenseText({ name, license, json, override, texts });
+  return complete.generated
+    ? { name, license, texts: complete.texts, generated: true }
+    : { name, license, texts: complete.texts };
+};
+
+/**
+ * Adds the standard licence text when the package ships no licence file. That text counts as
+ * generated unless an override gives it verbatim.
+ * @param {{ name: string; license: string; json: { author?: unknown }; override: Override | undefined; texts: NoticeText[] }} input
+ * @returns {{ texts: NoticeText[]; generated: boolean }}
+ */
+const withLicenseText = ({ texts, ...rest }) => {
+  if (texts.some((entry) => entry.kind === "license")) return { texts, generated: false };
+  const text = standardText(rest);
+  const verbatim = rest.override !== undefined && "text" in rest.override;
+  return { texts: [{ kind: "license", text }, ...texts], generated: !verbatim };
 };
 
 /**
@@ -184,6 +201,8 @@ const standardText = ({ name, license, json, override }) => {
 };
 
 const RULE = "=".repeat(80);
+const GENERATED_SECTION =
+  "Licence text: generated from the standard text, the package ships no licence file";
 
 /**
  * The notices file: an index of the packages, then each distinct licence text once, with every
@@ -197,7 +216,7 @@ export const renderNotices = (entries) => {
   /** @type {Map<string, Entry[]>} */
   const groups = new Map();
   for (const entry of sorted) {
-    const key = JSON.stringify(entry.texts);
+    const key = JSON.stringify([entry.texts, entry.generated === true]);
     groups.set(key, [...(groups.get(key) ?? []), entry]);
   }
   const sections = [...groups.values()].map((members) => {
@@ -210,6 +229,7 @@ export const renderNotices = (entries) => {
       RULE,
       members.map((member) => member.name).join(", "),
       `Licence: ${ids.join(", ")}`,
+      ...(first.generated === true ? [GENERATED_SECTION] : []),
       RULE,
       "",
       body.join("\n"),
@@ -224,7 +244,10 @@ export const renderNotices = (entries) => {
     "",
     `Packages (${sorted.length})`,
     "",
-    ...sorted.map((entry) => `${entry.name} (${entry.license})`),
+    ...sorted.map(
+      (entry) =>
+        `${entry.name} (${entry.license}${entry.generated === true ? ", licence text generated" : ""})`,
+    ),
     "",
     ...sections.flatMap((section) => [section, ""]),
   ]
@@ -280,9 +303,18 @@ export const runNotices = ({ root, check }) => {
   }
   const text = renderNotices(entries);
   const file = join(root, NOTICES_FILE);
+  const generated = entries
+    .filter((entry) => entry.generated === true)
+    .map((entry) => entry.name)
+    .toSorted(byName);
+  // A licence text the script wrote itself must be seen, so that a new one is read in review.
+  const note =
+    generated.length === 0
+      ? ""
+      : `\n  licence text generated (no licence file): ${generated.join(", ")}`;
   if (!check) {
     writeFileSync(file, text);
-    return { ok: true, message: `${NOTICES_FILE} written: ${entries.length} packages` };
+    return { ok: true, message: `${NOTICES_FILE} written: ${entries.length} packages${note}` };
   }
   if (!existsSync(file) || readFileSync(file, "utf8") !== text) {
     return {
@@ -290,7 +322,7 @@ export const runNotices = ({ root, check }) => {
       message: `${NOTICES_FILE} is out of date; run "npm run notices" and commit it`,
     };
   }
-  return { ok: true, message: `${NOTICES_FILE} is current (${entries.length} packages)` };
+  return { ok: true, message: `${NOTICES_FILE} is current (${entries.length} packages)${note}` };
 };
 
 if (isCli(import.meta.url)) {

@@ -30,7 +30,7 @@ Für die Felder bis `unit_label` gilt der Dateivertrag [[DV-01 - Gemeinschaft v1
 | Anzahl der Einheiten | `unit_count` | Zahl | O | Bisherige Angabe unseres Modells. Später aus [[ENT-24 - Einheit]] ableitbar. |
 | Anschrift | `address` | Text | O | Bisherige Angabe unseres Modells. Nur die Anlage selbst, keine Eigentümeranschriften. |
 | Sprachen der Eigentümer-Infos | `owner_languages` | Liste | O | Bisherige Angabe; Werte `de`, `en`. Eigentümertexte sind DE+EN ([[ENT-02 - Person und Rolle]]). |
-| Grundstücke | `parcel_ids` | Liste | O | WCS-Vorschlag, später. Verweise auf [[ENT-23 - Grundstück]]. |
+| Grundstücke | `plot_ids` | Liste | O | WCS-Vorschlag, später. Verweise auf [[ENT-23 - Grundstück]]. |
 | Verwalter | `manager_id` | Text | O | WCS-Vorschlag, später. Verweis auf die bestellte Verwaltung als [[ENT-02 - Person und Rolle]]. |
 | Wirtschaftsjahr | `fiscal_year_start` | Text | O | WCS-Vorschlag, später. Beginn des Wirtschaftsjahrs, z. B. `01-01`. |
 | Ablageordner | `filing_folder` | Text | O | WCS-Vorschlag, später. Wurzelordner der Unterlagen im Vault, nicht in einem Cloud-Speicher. |
@@ -71,7 +71,7 @@ Die Gemeinschaft selbst enthält keine personenbezogenen Daten anderer Eigentüm
 - **O-ENT01-2:** Ab wann wird die Gemeinschaft im WCS als eigenes Objekt geführt statt als Zeichenkette (WCS PRD Q9)? Bei uns ist sie schon eine Note; offen ist nur die Übernahme der WCS-Altdaten.
 - **O-ENT01-3:** [[DV-01 - Gemeinschaft v1]] und `GLOSSARY.md` nennen das Kürzel noch „nach dem Anlegen fest“. Nach PBI-73 ist es änderbar; Vertrag und Glossar sind nachzuziehen.
 - **O-ENT01-4:** Wie wird „nur teilbare Daten“ bei einer Viertel-Gemeinschaft geprüft: als Regel beim Anlegen oder nur als Hinweis?
-- **O-ENT01-5:** Wann kommen `parcel_ids`, `manager_id`, `fiscal_year_start` und `filing_folder` in eine neue Vertragsversion?
+- **O-ENT01-5:** Wann kommen `plot_ids`, `manager_id`, `fiscal_year_start` und `filing_folder` in eine neue Vertragsversion?
 
 ## Herkunft und Anforderungen
 

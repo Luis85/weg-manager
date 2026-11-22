@@ -21,7 +21,7 @@ Eine datierte Information über eine Handlung, Aussage oder Änderung im fachlic
 | Technische Identität | `id` | Text | P | `history-entry-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]], falls der Eintrag eine eigene Note ist (O-ENT06-1). |
 | Schema | `schema` | Text | P | `weg-manager.history-entry/v1` (vorgeschlagen), nur bei eigener Note. |
 | Vorgang | `matter_id` | Text | P | Bezug zum Vorgang. Im WCS implizit, weil der Eintrag in `Vorgang.verlauf` steht. |
-| Am | `occurred_on` | Datum | P | WCS `am`. Tag, an dem es geschah (Ereignisdatum). Unbekannt bleibt unbekannt. |
+| Am | `occurred_on` | Datum | P | WCS `am`. Tag, an dem es geschah. Unbekannt bleibt unbekannt. |
 | Von | `actor` | Text | P | WCS `von`. Dokumentierter Akteur: Beirat, Agent, Verwaltung oder eine andere Rolle ([[ENT-02 - Person und Rolle]]). |
 | Text | `text` | Text | P | WCS `text`. Was geschah. |
 | Quelle | `source` | Text | O | WCS `quelle`. Mail, Dokument, Gespräch ([[ENT-07 - Quelle]]). Fehlt sie, bleibt die Lücke sichtbar. |
@@ -43,7 +43,7 @@ Gehört zu genau einem Vorgang und erklärt dessen Verlauf. Die Versanddokumenta
 ## Regeln und Lebenszyklus
 
 - Anfrage, Empfangsbestätigung, sachliche Antwort, neuer Termin, Teillieferung und Erfüllung bleiben unterscheidbar ([[DF-06 - Reaktion und Pause]]).
-- Das Importdatum ersetzt kein Ereignisdatum. Unbekannte Zeiten werden nicht erfunden.
+- Das Importdatum ersetzt nie den Tag des Geschehens. Unbekannte Zeiten werden nicht erfunden.
 - Entscheidung, Entwurf, Versand, Antwort und Erfüllung sind verschiedene Verlaufseinträge ([[DF-07 - Wahl, Entwurf und Versand]]).
 - Ein Eintrag wird nicht gelöscht. Eine Berichtigung ist ein neuer Eintrag mit Verweis auf den alten.
 - Unnötige private Inhalte dürfen kontrolliert entfernt werden; ein Vermerk bleibt, ohne den Inhalt zu wiederholen ([[DF-13 - Historie und kontrollierte Entfernung]]).

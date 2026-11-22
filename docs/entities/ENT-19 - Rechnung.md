@@ -35,7 +35,7 @@ Die versionierte fachliche Erfassung eines Rechnungsdokuments und seiner eindeut
 | Freigabevermerk | `approval_note` | Text | O | |
 | Klärungsbedarf | `needs_clarification` | Checkbox | O | |
 | Vorgänger und Abschläge | `previous_invoice_ids` | Liste | O | |
-| Budget, Gemeingut | `budget_id`, `common_property_id` | Text | O | Später, wie WCS `Kostenbuchung.gemeingut / budget`. |
+| Budget, Gemeingut | `budget_id`, `shared_facility_id` | Text | O | Später, wie WCS `Kostenbuchung.gemeingut / budget`. |
 | Dokumentierter Rest | – | Zahl | A | Berechnet nach [[DF-18 - Rechnungsbasis und dokumentierter Rest]]. |
 
 **Abbildung auf das WCS:** Rechnung ↔ Kostenbuchung: Die Rechnung ist der Beleg, die Kostenbuchung die gemeinschaftsweite Buchung daraus. `abgleichstatus` (gebucht, abweichend, fehlt) entspricht unserem Prüf- und Klärungsstand.

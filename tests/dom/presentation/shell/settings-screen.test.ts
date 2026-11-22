@@ -33,12 +33,14 @@ const PARTS: Readonly<Record<SettingsRoute["section"], SettingsSectionPart>> = {
   },
 };
 
+/** A surface of the settings screen alone: no module adds an entry to the frame's navigation. */
 const definition = (
   sections: Readonly<Record<string, SettingsSectionPart>>,
+  menu: SurfaceDefinition<SettingsRoute>["menu"] = [],
 ): SurfaceDefinition<SettingsRoute> => ({
   ...routesOf(SettingsRoute, START),
   screen: () => async () => SettingsScreen,
-  menu: [{ route: START, label: () => "Einstellungen", icon: "i-lucide-settings" }],
+  menu,
   sections,
 });
 
@@ -55,12 +57,14 @@ const mounted = async (
   options: {
     readonly sections?: Readonly<Record<string, SettingsSectionPart>>;
     readonly start?: SettingsRoute;
+    readonly menu?: SurfaceDefinition<SettingsRoute>["menu"];
+    readonly language?: "de" | "en";
   } = {},
 ) => {
-  const { runtime } = make();
+  const { runtime } = make(options.language === undefined ? {} : { language: options.language });
   const root = document.createElement("div");
   document.body.append(root);
-  const surface = definition(options.sections ?? PARTS);
+  const surface = definition(options.sections ?? PARTS, options.menu);
   const navigation = memoryNavigation(surface, options.start ?? START);
   closes.push(mountSurface(root, runtime, { surface, navigation }));
   await eventually(() =>
@@ -70,7 +74,13 @@ const mounted = async (
   const nav = () => root.querySelector<HTMLElement>("[data-testid=settings-sections]");
   const tabs = () => [...(nav()?.querySelectorAll<HTMLButtonElement>("button") ?? [])];
   const shown = () => root.querySelector("[data-testid=section]")?.textContent;
-  return { root, navigation, nav, tabs, shown };
+  /** The entries of the frame's navigation, not the settings screen's own. */
+  const entries = () => [
+    ...root.querySelectorAll<HTMLButtonElement>(
+      "nav:not([data-testid=settings-sections]) li button",
+    ),
+  ];
+  return { root, navigation, nav, tabs, shown, entries };
 };
 
 afterEach(async () => {
@@ -125,5 +135,39 @@ describe("the settings screen (ADR 0008, amendment 22.11.2026)", () => {
     });
     expect(screen.shown()).toBeUndefined();
     expect(screen.root.querySelector("[data-testid=not-found]")).not.toBeNull();
+  });
+});
+
+describe("the frame's settings entry (ADR 0008, amendment 2026-11-22)", () => {
+  it("is the shell's: it opens the first section and is current on every section", async () => {
+    const screen = await mounted({ start: { name: "settings", section: "data" } });
+    expect(screen.entries().map((entry) => entry.textContent.trim())).toEqual(["Einstellungen"]);
+    expect(screen.entries()[0]?.getAttribute("aria-current")).toBe("page");
+    screen.entries()[0]?.click();
+    await settle();
+    expect(screen.navigation.current()).toStrictEqual({ name: "settings", section: "general" });
+    expect(screen.shown()).toBe("General section");
+    expect(screen.entries()[0]?.getAttribute("aria-current")).toBe("page");
+  });
+
+  it("opens the section that comes first in the sections, whichever that is", async () => {
+    const screen = await mounted({
+      sections: { data: PARTS.data, general: PARTS.general },
+      start: { name: "settings", section: "general" },
+    });
+    screen.entries()[0]?.click();
+    await settle();
+    expect(screen.navigation.current()).toStrictEqual({ name: "settings", section: "data" });
+  });
+
+  it("comes after the modules' entries, and is worded in the UI language", async () => {
+    const screen = await mounted({
+      language: "en",
+      menu: [{ route: START, label: () => "Overview", icon: "i-lucide-info" }],
+    });
+    expect(screen.entries().map((entry) => entry.textContent.trim())).toEqual([
+      "Overview",
+      "Settings",
+    ]);
   });
 });

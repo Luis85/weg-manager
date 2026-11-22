@@ -1,6 +1,6 @@
 # ADR 0008 · One view, typed routes
 
-- Status: accepted; history and the place of the selection amended on 2026-11-21, the selectable communities on 2026-11-22, the settings route and its sections on 22.11.2026 (see the notes at the end)
+- Status: accepted; history and the place of the selection amended on 2026-11-21, the selectable communities on 2026-11-22, the settings route and its sections on 22.11.2026, the settings entry's place on 2026-11-22 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -82,3 +82,7 @@ Consequences: a module adds a settings area with its id in `SETTINGS_SECTIONS` a
 ## Amendment, 2026-11-22: the frame's entry is "Einstellungen" and is current on every settings section
 
 The frame's one entry is labelled "Einstellungen" / "Settings" (shell catalog `frame.settings`, icon `lucide:settings`) and opens the communities section; it is the current page on every section, "Datenprobleme" included: the frame compares an entry with the route by name (the screen), not by value. This resolves the open point of the amendment above (no entry current on "Datenprobleme").
+
+## Amendment, 2026-11-22: the settings entry belongs to the shell
+
+The frame's settings entry is the shell's, not the communities module's: `frameMenu` (`src/presentation/shell/routing.ts`) adds it after the modules' entries whenever the surface has a settings section, and it opens the settings screen on the first section of the composed `sections` (ordered by `SETTINGS_SECTIONS`, today "Gemeinschaften"); a surface without sections has no settings entry. `appRoutes.start` and the `open-view` command are unchanged.

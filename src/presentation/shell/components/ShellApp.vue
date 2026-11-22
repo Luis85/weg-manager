@@ -5,6 +5,7 @@ import { computed, type Component } from "vue";
 import type { RouteLike } from "../../../application/shell";
 import { provideModals } from "../modal";
 import { useHistory, useRouting, type FrameEntry } from "../navigation";
+import { frameMenu } from "../routing";
 import { useMessages } from "../runtime/use-runtime";
 import AppFrame from "./AppFrame.vue";
 import RouteOutlet from "./RouteOutlet.vue";
@@ -30,7 +31,7 @@ const behindModal = provideModals();
 const isCurrent = (entry: RouteLike, route: RouteLike) => entry.name === route.name;
 
 const entries = computed<FrameEntry[]>(() =>
-  routing.definition.menu.map((entry) => ({
+  frameMenu(routing.definition).map((entry) => ({
     label: entry.label(catalog),
     icon: entry.icon,
     current: isCurrent(entry.route, routing.route.value),

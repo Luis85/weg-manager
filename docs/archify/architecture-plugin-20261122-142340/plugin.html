@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="archify 3.2.0">
   <meta name="archify-reader-contract" content="declared-wide-v1">
-  <title>WEG Manager Obsidian plugin architecture Diagram</title>
+  <title>WEG Manager plugin: layers, modules and manifests Diagram</title>
   <script>
     // Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
@@ -5194,17 +5194,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
            data-preset-badge-blueprint="BLUEPRINT / REV 01"
            data-preset-badge-editorial="EDITORIAL / FIELD NOTE">
         <div class="pulse-dot"></div>
-        <h1>WEG Manager Obsidian plugin architecture</h1>
+        <h1>WEG Manager plugin: layers, modules and manifests</h1>
       </div>
     </div>
 
-    <script id="archify-source-evidence-data" type="application/json">{"schemaVersion":1,"verified":true,"repository":{"url":"https://github.com/Luis85/weg-manager","revision":"ca6385d2f2c41babe75ee1a950d813822ec9b806","shortRevision":"ca6385d","label":"Luis85/weg-manager","href":"https://github.com/Luis85/weg-manager/tree/ca6385d2f2c41babe75ee1a950d813822ec9b806"},"referenceCount":20,"nodes":{"obsidian":[{"path":"manifest.json","line":1,"endLine":9,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/manifest.json#L1-L9"}],"plugin":[{"path":"src/main.ts","line":6,"endLine":26,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/main.ts#L6-L26"}],"bootstrap":[{"path":"src/bootstrap.ts","line":47,"endLine":115,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/bootstrap.ts#L47-L115"}],"registrations":[{"path":"src/infrastructure/obsidian/commands.ts","line":12,"endLine":28,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/infrastructure/obsidian/commands.ts#L12-L28"},{"path":"src/infrastructure/obsidian/settings-tab.ts","line":35,"endLine":45,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/infrastructure/obsidian/settings-tab.ts#L35-L45"}],"hostevents":[{"path":"src/infrastructure/obsidian/events.ts","line":30,"endLine":139,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/infrastructure/obsidian/events.ts#L30-L139"}],"shellview":[{"path":"src/infrastructure/obsidian/shell-view.ts","line":11,"endLine":48,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/infrastructure/obsidian/shell-view.ts#L11-L48"}],"eventbus":[{"path":"src/application/event-bus.ts","line":11,"endLine":48,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/application/event-bus.ts#L11-L48"},{"path":"src/application/events.ts","line":1,"endLine":40,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/application/events.ts#L1-L40"}],"surface":[{"path":"src/presentation/mount.ts","line":37,"endLine":78,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/presentation/mount.ts#L37-L78"},{"path":"src/presentation/components/ShellPanel.vue","line":1,"endLine":40,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/presentation/components/ShellPanel.vue#L1-L40"}],"bridge":[{"path":"src/presentation/runtime/use-runtime.ts","line":58,"endLine":166,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/presentation/runtime/use-runtime.ts#L58-L166"}],"application":[{"path":"src/application/use-cases.ts","line":10,"endLine":36,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/application/use-cases.ts#L10-L36"},{"path":"src/application/settings-service.ts","line":62,"endLine":97,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/application/settings-service.ts#L62-L97"},{"path":"src/infrastructure/obsidian/app-layer.ts","line":13,"endLine":23,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/infrastructure/obsidian/app-layer.ts#L13-L23"}],"domain":[{"path":"src/domain/settings.ts","line":79,"endLine":111,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/domain/settings.ts#L79-L111"}],"adapters":[{"path":"src/infrastructure/obsidian/layers.ts","line":18,"endLine":67,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/infrastructure/obsidian/layers.ts#L18-L67"}],"vault":[{"path":"src/infrastructure/obsidian/layers.ts","line":20,"endLine":41,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/infrastructure/obsidian/layers.ts#L20-L41"}],"defects":[{"path":"src/application/defects.ts","line":15,"endLine":27,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/application/defects.ts#L15-L27"},{"path":"src/infrastructure/logging/console-sink.ts","line":1,"endLine":28,"href":"https://github.com/Luis85/weg-manager/blob/ca6385d2f2c41babe75ee1a950d813822ec9b806/src/infrastructure/logging/console-sink.ts#L1-L28"}]}}</script>
+    <script id="archify-source-evidence-data" type="application/json">{"schemaVersion":1,"verified":true,"repository":{"url":"https://github.com/Luis85/weg-manager","revision":"2126cbd9a280814de4eba8c4820a2b6d3af9c1dd","shortRevision":"2126cbd","label":"Luis85/weg-manager","linkMode":"local-only"},"referenceCount":24,"nodes":{"obsidian":[{"path":"src/main.ts","line":1,"endLine":36}],"infra-shell":[{"path":"src/infrastructure/obsidian/shell/layers.ts","line":66,"endLine":93}],"infra-notes":[{"path":"src/infrastructure/obsidian/notes/notes-adapters.ts","line":7,"endLine":18},{"path":"src/infrastructure/obsidian/notes/note-store.ts","line":160}],"bootstrap":[{"path":"src/bootstrap.ts","line":58,"endLine":123},{"path":"src/infrastructure/obsidian/app-layer.ts","line":1,"endLine":16}],"app-shell":[{"path":"src/application/shell/module.ts","line":1,"endLine":26}],"app-notes":[{"path":"src/application/notes/module.ts","line":1,"endLine":18}],"app-communities":[{"path":"src/application/communities/module.ts","line":1,"endLine":21}],"app-modules":[{"path":"src/application/modules.ts","line":1,"endLine":20},{"path":"src/application/module.ts","line":1,"endLine":120},{"path":"eslint.config.mjs","line":69}],"runtime":[{"path":"src/application/app-services-layer.ts","line":74,"endLine":99}],"scr-shell":[{"path":"src/presentation/shell/screens.ts","line":1,"endLine":10},{"path":"src/presentation/shell/routing.ts","line":82,"endLine":101}],"scr-notes":[{"path":"src/presentation/notes/screens.ts","line":1,"endLine":16}],"scr-communities":[{"path":"src/presentation/communities/screens.ts","line":1,"endLine":17}],"module-screens":[{"path":"src/presentation/app-surface.ts","line":18,"endLine":29}],"shellview":[{"path":"src/infrastructure/obsidian/shell/shell-view.ts","line":79,"endLine":96},{"path":"src/presentation/shell/surface.ts","line":1,"endLine":10}],"surface":[{"path":"src/presentation/app-surface.ts","line":31,"endLine":57}],"dom-shell":[{"path":"src/domain/shell/index.ts","line":1,"endLine":14}],"dom-notes":[{"path":"src/domain/notes/index.ts","line":1,"endLine":51}],"dom-communities":[{"path":"src/domain/communities/index.ts","line":1,"endLine":23}]}}</script>
     <script id="archify-i18n-data" type="application/json">{"locale":"en","messages":{"viewer.kind.frontend":"Frontend","viewer.kind.backend":"Backend","viewer.kind.database":"Database","viewer.kind.cloud":"Cloud","viewer.kind.security":"Security","viewer.kind.messagebus":"Message bus","viewer.kind.external":"External","viewer.kind.neutral":"Neutral","viewer.kind.node":"Node","viewer.kind.start":"Start","viewer.kind.active":"Active","viewer.kind.waiting":"Waiting","viewer.kind.decision":"Decision","viewer.kind.success":"Success","viewer.kind.failure":"Failure","viewer.toolbar.actions":"Diagram actions","viewer.theme.toggle.title":"Toggle theme (T)","viewer.theme.toggle":"Toggle color theme","viewer.theme.dark":"Dark","viewer.theme.light":"Light","viewer.preset.choose.title":"Choose visual style (S cycles)","viewer.preset.choose":"Choose visual style","viewer.preset.style":"Style","viewer.preset.menu":"Visual style","viewer.preset.identity":"Visual identity","viewer.preset.cycles":"to cycle","viewer.preset.classic":"Classic","viewer.preset.classic.short":"Classic","viewer.preset.classic.hint":"Stable technical default","viewer.preset.flow":"Signal Flow","viewer.preset.flow.short":"Flow","viewer.preset.flow.hint":"Motion-forward presentation","viewer.preset.blueprint":"Blueprint","viewer.preset.blueprint.hint":"Engineering review","viewer.preset.editorial":"Editorial","viewer.preset.editorial.hint":"Publication and launch notes","viewer.preset.badge.signalFlow":"SIGNAL FLOW","viewer.preset.badge.blueprint":"BLUEPRINT / REV 01","viewer.preset.badge.editorial":"EDITORIAL / FIELD NOTE","viewer.preset.badge.editorialPlate":"ARCHIFY / PLATE 04","viewer.preset.current":"Visual style: {style}. Choose visual style","viewer.motion.live":"Live","viewer.motion.still":"Still","viewer.motion.pause":"Pause motion","viewer.motion.resume":"Resume motion","viewer.motion.reduced":"Motion paused by reduced-motion preference","viewer.motion.hidden":"Motion paused while this page is hidden","viewer.motion.yielding":"Pause motion; currently yielding to {owner}","viewer.motion.yielding.title":"Live preview enabled · yielding to {owner}","viewer.owner.route":"Route Probe","viewer.owner.lens":"Semantic Lens","viewer.owner.relationship":"Relationship Preview","viewer.owner.intent":"Intent Trace","viewer.owner.focus":"semantic focus","viewer.owner.legend":"legend preview","viewer.owner.reader":"reader interaction","viewer.present.enter":"Enter presentation stage","viewer.present.enter.title":"Presentation stage (F)","viewer.present.exit":"Exit presentation stage","viewer.present.exit.title":"Exit presentation stage (F or Escape)","viewer.present.present":"Present","viewer.present.exit.label":"Exit","viewer.export.button":"Export","viewer.export.button.title":"Export diagram (E)","viewer.export.diagram":"Export diagram","viewer.export.menu":"Export","viewer.export.subtitle":"Portable, clean outputs","viewer.export.share":"Share","viewer.export.shareCard":"Share Card","viewer.export.routeShareCard":"Route Share Card","viewer.export.reachShareCard":"Reach Share Card","viewer.export.copyDiagram":"Copy diagram","viewer.export.clipboardPng":"PNG to clipboard","viewer.export.raster":"Raster images","viewer.export.image":"Image","viewer.export.lossless":"Lossless image","viewer.export.compact":"Compact image","viewer.export.modern":"Modern image","viewer.export.vectorMotion":"Vector and motion","viewer.export.vectorMotion.heading":"Vector \u0026 motion","viewer.export.editable":"Editable vector","viewer.export.svg.auto":"SVG · Auto","viewer.export.svg.auto.hint":"Matches host theme","viewer.export.svg.light":"SVG · Light","viewer.export.svg.light.hint":"Always light","viewer.export.svg.dark":"SVG · Dark","viewer.export.svg.dark.hint":"Always dark","viewer.export.motion6s":"6s motion","viewer.export.unsupported":"Not supported by this browser","viewer.export.clipboardUnsupported":"Clipboard image write not supported by this browser","viewer.export.clipboardUnsupported.short":"Clipboard image write not supported in this browser.","viewer.export.motionUnavailable":"Motion capture unavailable in this browser","viewer.export.webmUnavailable":"WebM unavailable in this browser","viewer.export.failed":"Export failed: {message}","viewer.export.unknownVariant":"Unknown Share Card variant: {variant}","viewer.export.routeRequired":"Trace a route before exporting a Route Share Card","viewer.export.reachRequired":"Trace authored reach before exporting a Reach Share Card","viewer.export.unknown":"unknown","viewer.export.routeFailed":"Route Share Card export failed: {message}","viewer.export.reachFailed":"Reach Share Card export failed: {message}","viewer.export.copyFailed":"Copy failed: {message}","viewer.export.copiedPng":"Copied PNG to clipboard","viewer.export.downloadedRoute":"Downloaded Route Share Card","viewer.export.downloadedReach":"Downloaded Reach Share Card","viewer.export.downloadedWebm":"Downloaded WebM","viewer.export.recording":"Recording 6 seconds of motion…","viewer.export.card.routeSummary.one":"Path: {source} → {target} · {count} step","viewer.export.card.routeSummary.other":"Path: {source} → {target} · {count} steps","viewer.export.card.reachSummary":"Authored {direction} from {origin} · {nodes} · {links} · max {hops}","viewer.export.card.node.one":"{count} node","viewer.export.card.node.other":"{count} nodes","viewer.export.card.link.one":"{count} link","viewer.export.card.link.other":"{count} links","viewer.export.card.hop.one":"{count} hop","viewer.export.card.hop.other":"{count} hops","viewer.export.card.routeBadge":"ARCHIFY · ROUTE · {hops}","viewer.export.card.reachBadge":"ARCHIFY · {direction} REACH","viewer.export.direction.upstream":"Upstream","viewer.export.direction.downstream":"Downstream","viewer.export.error.canvasUnavailable":"Canvas unavailable for {label}","viewer.export.error.contextUnavailable":"2D canvas context unavailable for {label}","viewer.export.error.toBlobUnavailable":"canvas.toBlob unavailable for {label}","viewer.export.error.toBlobNull":"canvas.toBlob returned no data for {label}","viewer.export.error.variantsCombined":"Share Card variants cannot be combined","viewer.export.error.viewerState":"Share Card export could not remove temporary viewer state","viewer.export.error.routeState":"Route Card export could not preserve the resolved route safely","viewer.export.error.reachState":"Reach Card export could not preserve authored reach safely","viewer.export.error.webmRequirements":"WebM motion export requires a trace animation and browser MediaRecorder support","viewer.export.error.mediaRecorder":"MediaRecorder failed","viewer.export.error.emptyWebm":"MediaRecorder produced an empty WebM","viewer.export.error.webmBackground":"SVG background could not be loaded for WebM export","viewer.guide.title":"Explore this system","viewer.focus.selectedNodes":"{count} selected nodes","viewer.guide.eyebrow":"Diagram guide","viewer.guide.close":"Close diagram guide","viewer.guide.inspecting":"Inspecting compiled semantics","viewer.guide.actions":"Diagram exploration actions","viewer.guide.find":"Find any node","viewer.guide.find.hint":"Search labels, responsibilities, kinds, and stable IDs.","viewer.guide.route":"Trace a route","viewer.guide.route.aria":"Trace a directed route","viewer.guide.route.hint":"Ask how two semantic nodes connect in authored direction.","viewer.guide.map":"See the whole system","viewer.guide.map.hint":"Open Semantic Radar with a live viewport and stable nodes.","viewer.guide.lens":"Compare semantic kinds","viewer.guide.lens.hint":"Count roles, reveal their traffic, and compare direct authored links.","viewer.guide.present":"Enter Presentation Stage","viewer.guide.present.hint":"Give the live diagram the viewport without changing export.","viewer.guide.shortcuts":"Additional keyboard shortcuts","viewer.guide.shortcut.export":"Export","viewer.guide.shortcut.theme":"Theme","viewer.guide.shortcut.style":"Style","viewer.guide.shortcut.reset":"Reset","viewer.guide.shortcut.zoomIn":"Zoom in","viewer.guide.shortcut.zoomOut":"Zoom out","viewer.guide.shortcut.close":"Close","viewer.guide.credit":"Find Archify useful? A star on GitHub helps","viewer.guide.star":"Star","viewer.guide.facts":"{nodes} · {relationships}","viewer.guide.fact.node.one":"{count} semantic node","viewer.guide.fact.node.other":"{count} semantic nodes","viewer.guide.fact.relationship.one":"{count} relationship","viewer.guide.fact.relationship.other":"{count} relationships","viewer.guide.open":"Open diagram guide","viewer.finder.title":"Find a node","viewer.finder.close":"Close node finder","viewer.finder.placeholder":"Search labels or IDs","viewer.finder.search":"Search diagram nodes","viewer.finder.results":"Diagram nodes","viewer.finder.empty":"No matching nodes","viewer.finder.result.focus":"Focus {label}","viewer.finder.result.routeStart":"Choose {label} as route start","viewer.finder.result.routeTarget":"Choose {label} as route destination, {links}","viewer.finder.status.empty":"No matching nodes","viewer.finder.status.count.one":"{count} matching node","viewer.finder.status.count.other":"{count} matching nodes","viewer.finder.noun.nodes":"nodes","viewer.finder.link.one":"{count} link","viewer.finder.link.other":"{count} links","viewer.finder.result.focus.one":"Focus {label}, {count} related connection","viewer.finder.result.focus.other":"Focus {label}, {count} related connections","viewer.finder.status.filtered":"{visible} of {available} {noun}","viewer.finder.status.all":"{available} {noun}","viewer.passport.eyebrow":"Semantic passport","viewer.passport.metadata":"Node metadata","viewer.passport.evidence":"Verified source evidence","viewer.passport.verified":"Verified source","viewer.passport.verificationScope":"Verified against local Git at the pinned revision. Remote access has not been checked.","viewer.passport.reach":"Authored reach","viewer.passport.reach.trace":"Trace authored reachability","viewer.passport.upstream":"Upstream","viewer.passport.downstream":"Downstream","viewer.passport.upstream.trace":"Trace upstream authored reachability","viewer.passport.downstream.trace":"Trace downstream authored reachability","viewer.passport.close":"Close semantic passport","viewer.passport.move":"Move semantic passport. Drag, use arrow keys, or press Home to reset.","viewer.passport.copy":"Copy link","viewer.passport.copy.focus":"Copy link to focused node","viewer.passport.relations":"Relations","viewer.passport.relations.show":"Show connected relationships","viewer.passport.relations.hide":"Hide connected relationships","viewer.passport.relations.list":"Connected relationships","viewer.passport.copyRelation":"Copy relation","viewer.passport.copyNode":"Copy node","viewer.passport.copyPinned":"Copy link to pinned relationship","viewer.passport.copySource":"Copy link to source node","viewer.passport.copy.focused.success":"Focused node link copied","viewer.passport.copy.pinned.success":"Pinned relationship link copied","viewer.passport.copy.focused.failed":"Could not copy focused node link","viewer.passport.copy.pinned.failed":"Could not copy pinned relationship link","viewer.passport.relationship.none":"No connected relationships","viewer.passport.relationship.count.one":"{count} relation","viewer.passport.relationship.count.other":"{count} relations","viewer.passport.relationship.show.one":"Show {count} connected relationship","viewer.passport.relationship.show.other":"Show {count} connected relationships","viewer.passport.relationship.summary":"{out} outgoing · {in} incoming{loops}","viewer.passport.relationship.loops":" · {count} loop","viewer.passport.relationship.explorer":"Direct relationship explorer","viewer.passport.relationship.help":"Use arrow keys to explore relationships. Press Enter or Space to pin details; Escape clears.","viewer.passport.relationship.loopsBack":"loops back","viewer.passport.relationship.connectsTo":"connects to","viewer.passport.relationship.connectsFrom":"connects from","viewer.passport.relationship.pinned":"Pinned relationship · {from} → {to} · {label}","viewer.passport.relationship.inspect":"Inspect relationship {index} of {total}: {from} to {to}, {label}. Press Enter for details.","viewer.passport.relationship.group.out":"Outgoing","viewer.passport.relationship.group.in":"Incoming","viewer.passport.relationship.group.loop":"Self loops","viewer.passport.relationship.row":"{group}: {relationship}, {neighbor}","viewer.passport.relationship.direction.out":"OUT →","viewer.passport.relationship.direction.in":"← IN","viewer.passport.relationship.direction.loop":"LOOP","viewer.passport.sourceCount.one":"{count} verified source reference","viewer.passport.sourceCount.other":"{count} verified source references","viewer.passport.repository.open":"Open verified repository revision {revision}","viewer.passport.source.open":"Open verified source {path} at revision {revision}","viewer.passport.source.openLink":"Open ↗","viewer.passport.reach.upstream.one":"Trace {count} upstream authored node","viewer.passport.reach.upstream.other":"Trace {count} upstream authored nodes","viewer.passport.reach.downstream.one":"Trace {count} downstream authored node","viewer.passport.reach.downstream.other":"Trace {count} downstream authored nodes","viewer.passport.reach.noUpstream":"No upstream authored nodes","viewer.passport.reach.noDownstream":"No downstream authored nodes","viewer.passport.reach.status":"{direction} · {nodes} nodes · {links} links · max {hops} hops","viewer.route.eyebrow":"Path","viewer.route.start":"Click where the path starts","viewer.route.start.find":"Find start","viewer.route.start.find.aria":"Find a route start","viewer.route.copy":"Copy link","viewer.route.copy.aria":"Copy link to traced route","viewer.route.clear":"Clear","viewer.route.clear.aria":"Clear route probe","viewer.route.traced":"Path","viewer.route.pickTwo":"Click two nodes on the diagram","viewer.route.pickOne":"Click a node on the diagram","viewer.route.controls":"Route journey controls","viewer.route.previous":"Previous route position","viewer.route.play":"Play route journey","viewer.route.pause":"Pause route journey","viewer.route.replay":"Replay route journey","viewer.route.next":"Next route position","viewer.route.journey":"Journey","viewer.route.pause.label":"Pause","viewer.route.replay.label":"Replay","viewer.route.overview":"Overview","viewer.route.overview.aria":"Show complete route overview","viewer.route.instructions":"Click a start, then an end. Paths follow the arrows.","viewer.route.destination":"Where does the path from {label} end?","viewer.route.destination.find":"Find target","viewer.route.destination.find.aria":"Find a reachable route destination","viewer.route.differentDestination":"Choose a different destination","viewer.route.distinct":"Pick two different nodes.","viewer.route.unreachable":"Cannot reach {label} from here","viewer.route.unreachable.detail":"{target} cannot be reached from {source} along the arrows. Pick a highlighted node.","viewer.route.start.instructions":"Next, pick the end. Only nodes you can reach will light up.","viewer.route.copy.success":"Traced route link copied","viewer.route.copy.failed":"Could not copy traced route link","viewer.route.position":"Route position {index} of {total}: {label}","viewer.route.step":"Step {index} of {total} · {phase} · {label}","viewer.route.motionRequired":"Automatic journey requires Live motion","viewer.route.trigger.clear":"Clear traced route","viewer.route.overview.status":"{nodes} · {hops} · shortest path","viewer.route.overview.node.one":"{count} node","viewer.route.overview.node.other":"{count} nodes","viewer.route.overview.hop.one":"{count} step","viewer.route.overview.hop.other":"{count} steps","viewer.route.phase.playing":"Playing","viewer.route.phase.complete":"Complete","viewer.route.phase.inspecting":"Inspecting","viewer.route.destination.count.one":"{count} reachable node is highlighted. Click it.","viewer.route.destination.count.other":"{count} reachable nodes are highlighted. Click one.","viewer.route.noOutgoing":"No arrows lead out of this node. Clear it and pick another start.","viewer.route.result.title":"{source} to {target}","viewer.route.finder.source.title":"Choose route start","viewer.route.finder.source.placeholder":"Search route sources","viewer.route.finder.source.empty":"No matching route sources","viewer.route.finder.source.results":"Nodes that can start a route","viewer.route.finder.source.noun":"route sources","viewer.route.finder.source.badge":"start","viewer.route.finder.target.title":"Destination from {label}","viewer.route.finder.target.placeholder":"Search reachable destinations","viewer.route.finder.target.empty":"No matching reachable destinations","viewer.route.finder.target.results":"Reachable route destinations","viewer.route.finder.target.noun":"reachable destinations","viewer.route.hop.one":"{count} hop","viewer.route.hop.other":"{count} hops","viewer.lens.eyebrow":"Semantic lens","viewer.lens.title":"Compare system roles","viewer.lens.close":"Close semantic lens","viewer.lens.instruction":"Choose up to two semantic kinds. One reveals its real traffic; two compare only direct authored relationships.","viewer.lens.kinds":"Semantic kinds","viewer.lens.choose":"Choose a kind to inspect its nodes and touching relationships.","viewer.lens.copy":"Copy link to semantic lens","viewer.lens.clear":"Clear semantic lens","viewer.lens.open":"Open semantic lens","viewer.lens.openActive":"Open active semantic lens","viewer.lens.legend":"Semantic legend","viewer.lens.legend.inspect.one":"Inspect {label}, {count} node","viewer.lens.legend.inspect.other":"Inspect {label}, {count} nodes","viewer.lens.kind.count.one":"{label}, {count} node","viewer.lens.kind.count.other":"{label}, {count} nodes","viewer.lens.compare.one":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationship","viewer.lens.compare.other":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationships","viewer.lens.single":"{nodes} · {relationships} · connected peers remain visible","viewer.lens.node.one":"{count} {label} node","viewer.lens.node.other":"{count} {label} nodes","viewer.lens.relationship.one":"{count} touching relationship","viewer.lens.relationship.other":"{count} touching relationships","viewer.radar.title":"Semantic radar","viewer.radar.building":"Building overview","viewer.radar.openFull":"Open full semantic radar","viewer.radar.open":"Open radar","viewer.radar.close":"Close semantic radar","viewer.radar.surface":"Diagram overview. Click a node to focus it, or use arrow keys to pan.","viewer.radar.click":"Click node","viewer.radar.drag":"Drag to pan","viewer.radar.space":"Semantic radar needs more MAP space.","viewer.radar.nodes":"Semantic diagram radar nodes","viewer.radar.focus":"Focus {label} from Semantic Radar","viewer.radar.status":"{count} nodes · {viewport}","viewer.radar.fullMap":"{count} nodes · full map","viewer.radar.compacted":"Radar compacted to avoid covering the Semantic Passport or MAP controls.","viewer.radar.cancelWaiting":"Cancel semantic radar waiting for more MAP space","viewer.radar.needsSpace":"Semantic radar needs more visible MAP space","viewer.radar.viewport.full":"full map","viewer.radar.viewport.width":"{percent}% width","viewer.radar.viewport.scale":"{percent}% viewport","viewer.nav.controls":"Diagram view controls","viewer.nav.route":"Trace a directed route","viewer.nav.route.title":"Trace route (R)","viewer.nav.route.short":"ROUTE","viewer.nav.radar":"Open semantic radar","viewer.nav.radar.title":"Semantic radar (M)","viewer.nav.radar.short":"MAP","viewer.nav.lens":"Open semantic lens","viewer.nav.lens.title":"Semantic lens (L)","viewer.nav.lens.short":"LENS","viewer.nav.find":"Find a node","viewer.nav.find.title":"Find a node (/)","viewer.outline.title":"Node index","viewer.rail.show":"Notes \u0026 index","viewer.rail.controls":"Side panel","viewer.rail.collapse":"Collapse side panel","viewer.rail.bottom":"Move panel below the diagram","viewer.rail.right":"Move panel beside the diagram","viewer.nav.guide":"Open diagram guide","viewer.nav.guide.title":"Diagram guide (?)","viewer.nav.zoomOut":"Zoom out","viewer.nav.zoomOut.title":"Zoom out (-)","viewer.nav.reset":"Reset diagram view","viewer.nav.reset.title":"Reset view (0)","viewer.nav.read":"READ","viewer.nav.zoomIn":"Zoom in","viewer.nav.zoomIn.title":"Zoom in (+)","viewer.nav.camera":"{hint}. Reset diagram view","viewer.nav.camera.title":"{semantic}{hint} · reset view (0)","viewer.nav.camera.semantic":"Semantic camera active · ","viewer.nav.level.map":"MAP","viewer.nav.level.read":"READ","viewer.nav.level.full":"FULL","viewer.nav.level.auto":"AUTO","viewer.nav.detail.map":"Zoom in to reveal relationship labels and node context","viewer.nav.detail.read":"Zoom in again to reveal tags and annotations","viewer.nav.detail.full":"Full diagram detail","viewer.intent.summary":"{label}. {out} outgoing, {in} incoming{loops}. {total} connections. Press Enter for details.","viewer.intent.loops":", {count} self loop","viewer.common.copied":"Copied","viewer.common.copyFailed":"Copy failed","viewer.common.copyLink":"Copy link","viewer.common.clear":"Clear","viewer.common.close":"Close"}}</script>
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / PLATE 04">
-      <svg viewBox="0 0 1250 730" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="" data-reader-fit="intrinsic-height" data-reader-min-text="7.5" data-reader-primary-text="14">
-        <title id="archify-diagram-title">WEG Manager Obsidian plugin architecture</title>
+      <svg viewBox="0 0 1000 1060" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="" data-reader-fit="intrinsic-height" data-reader-min-text="7.5" data-reader-primary-text="14">
+        <title id="archify-diagram-title">WEG Manager plugin: layers, modules and manifests</title>
         <desc id="archify-diagram-description">An architecture diagram generated by Archify.</desc>
         <!-- Definitions -->
         <defs>
@@ -5250,336 +5250,417 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- Boundaries (behind everything) -->
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" data-composition-frame-label="infrastructure/obsidian" x="10" y="140" width="480" height="112" rx="12" class="c-region" stroke-width="1"/>
 
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="1" data-composition-frame-label="application" x="10" y="290" width="730" height="252" rx="12" class="c-region" stroke-width="1"/>
+
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="2" data-composition-frame-label="presentation" x="10" y="590" width="730" height="252" rx="12" class="c-region" stroke-width="1"/>
+
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="3" data-composition-frame-label="domain" x="10" y="880" width="730" height="112" rx="12" class="c-region" stroke-width="1"/>
 
         <!-- Connection paths (before components for correct z-order) -->
         <g data-graph-role="automatic-crossover" style="--step:0">
-          <path data-graph-role="automatic-crossover-underlay" d="M 194 96 L 194 180" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="obsidian" data-edge-to="plugin" data-edge-label="onload" data-edge-key="0" data-edge-id="host-loads-plugin" data-composition-points="194,96;194,180" data-composition-crossover="halo" data-composition-independent="true" d="M 194 96 L 194 180" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 806 96 L 806 170" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="obsidian" data-edge-to="bootstrap" data-edge-label="onload" data-edge-key="0" data-edge-id="onload" data-composition-points="806,96;806,170" data-composition-crossover="halo" data-composition-independent="true" d="M 806 96 L 806 170" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:1">
-          <path data-graph-role="automatic-crossover-underlay" d="M 210 220.1 L 290 220.1" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="plugin" data-edge-to="bootstrap" data-edge-label="starts" data-edge-key="1" data-edge-id="plugin-starts-bootstrap" data-composition-points="210,220.1;290,220.1" data-composition-crossover="halo" data-composition-independent="true" d="M 210 220.1 L 290 220.1" class="a-emphasis" data-animate="edge" style="--step:1" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 194 96 L 194 170" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="obsidian" data-edge-to="infra-shell" data-edge-label="events · data.json" data-edge-key="1" data-edge-id="host-api" data-composition-points="194,96;194,170" data-composition-crossover="halo" data-composition-independent="true" d="M 194 96 L 194 170" class="a-default" data-animate="edge" style="--step:1" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:2">
-          <path data-graph-role="automatic-crossover-underlay" d="M 460 211 L 540 211" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="bootstrap" data-edge-to="registrations" data-edge-label="adds" data-edge-key="2" data-edge-id="bootstrap-registers" data-composition-points="460,211;540,211" data-composition-crossover="halo" data-composition-independent="true" d="M 460 211 L 540 211" class="a-default" data-animate="edge" style="--step:2" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 375 170 L 375 96" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="infra-notes" data-edge-to="obsidian" data-edge-label="vault API" data-edge-key="2" data-edge-id="vault-api" data-composition-points="375,170;375,96" data-composition-crossover="halo" data-composition-independent="true" d="M 375 170 L 375 96" class="a-default" data-animate="edge" style="--step:2" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:3">
-          <path data-graph-role="automatic-crossover-underlay" d="M 375 242 L 375 460" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="bootstrap" data-edge-to="application" data-edge-label="makeRuntime(appLayer)" data-edge-key="3" data-edge-id="bootstrap-builds-runtime" data-composition-points="375,242;375,460" data-composition-crossover="halo" data-composition-independent="true" d="M 375 242 L 375 460" class="a-emphasis" data-animate="edge" style="--step:3" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 125 232 L 125 320" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="infra-shell" data-edge-to="app-shell" data-edge-label="ports" data-edge-key="3" data-edge-id="shell-ports" data-composition-points="125,232;125,320" data-composition-crossover="halo" data-composition-independent="true" d="M 125 232 L 125 320" class="a-default" data-animate="edge" style="--step:3" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:4">
-          <path data-graph-role="automatic-crossover-underlay" d="M 806 96 L 806 180" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="obsidian" data-edge-to="hostevents" data-edge-label="vault / workspace events" data-edge-key="4" data-edge-id="host-emits-events" data-composition-points="806,96;806,180" data-composition-crossover="halo" data-composition-independent="true" d="M 806 96 L 806 180" class="a-dashed" data-animate="edge" style="--step:4" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 375 232 L 375 320" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="infra-notes" data-edge-to="app-notes" data-edge-label="NoteStore" data-edge-key="4" data-edge-id="notestore-port" data-composition-points="375,232;375,320" data-composition-crossover="halo" data-composition-independent="true" d="M 375 232 L 375 320" class="a-default" data-animate="edge" style="--step:4" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:5">
-          <path data-graph-role="automatic-crossover-underlay" d="M 1056 96 L 1056 180" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="obsidian" data-edge-to="shellview" data-edge-label="onOpen" data-edge-key="5" data-edge-id="host-opens-view" data-composition-points="1056,96;1056,180" data-composition-crossover="halo" data-composition-independent="true" d="M 1056 96 L 1056 180" class="a-default" data-animate="edge" style="--step:5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 875 232 L 875 460" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="bootstrap" data-edge-to="runtime" data-edge-label="adapters" data-edge-key="5" data-edge-id="adapters" data-composition-points="875,232;875,460" data-composition-crossover="halo" data-composition-independent="true" d="M 875 232 L 875 460" class="a-default" data-animate="edge" style="--step:5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:6">
-          <path data-graph-role="automatic-crossover-underlay" d="M 875 242 L 875 320" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="hostevents" data-edge-to="eventbus" data-edge-label="publish" data-edge-key="6" data-edge-id="events-published" data-composition-points="875,242;875,320" data-composition-crossover="halo" data-composition-independent="true" d="M 875 242 L 875 320" class="a-dashed" data-animate="edge" style="--step:6" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 540 344 L 460 344" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="app-communities" data-edge-to="app-notes" data-edge-label="index.ts" data-edge-key="6" data-edge-id="feature-to-notes" data-composition-points="540,344;460,344" data-composition-crossover="halo" data-composition-independent="true" d="M 540 344 L 460 344" class="a-default" data-animate="edge" style="--step:6" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:7">
-          <path data-graph-role="automatic-crossover-underlay" d="M 1125 242 L 1125 320" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="shellview" data-edge-to="surface" data-edge-label="mount" data-edge-key="7" data-edge-id="view-mounts-surface" data-composition-points="1125,242;1125,320" data-composition-crossover="halo" data-composition-independent="true" d="M 1125 242 L 1125 320" class="a-default" data-animate="edge" style="--step:7" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 290 344 L 210 344" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="app-notes" data-edge-to="app-shell" data-edge-label="index.ts" data-edge-key="7" data-edge-id="notes-to-shell" data-composition-points="290,344;210,344" data-composition-crossover="halo" data-composition-independent="true" d="M 290 344 L 210 344" class="a-default" data-animate="edge" style="--step:7" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:8">
-          <path data-graph-role="automatic-crossover-underlay" d="M 960 351 L 1040 351" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="eventbus" data-edge-to="surface" data-edge-label="events" data-edge-key="8" data-edge-id="bus-to-surface" data-composition-points="960,351;1040,351" data-composition-crossover="halo" data-composition-independent="true" d="M 960 351 L 1040 351" class="a-dashed" data-animate="edge" style="--step:8" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 125 382 L 125 460" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="app-shell" data-edge-to="app-modules" data-edge-label="manifest" data-edge-key="8" data-edge-id="shell-manifest" data-composition-points="125,382;125,460" data-composition-crossover="halo" data-composition-independent="true" d="M 125 382 L 125 460" class="a-default" data-animate="edge" style="--step:8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:9">
-          <path data-graph-role="automatic-crossover-underlay" d="M 1125 382 L 1125 460" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="surface" data-edge-to="bridge" data-edge-label="composables" data-edge-key="9" data-edge-id="surface-uses-bridge" data-composition-points="1125,382;1125,460" data-composition-crossover="halo" data-composition-independent="true" d="M 1125 382 L 1125 460" class="a-default" data-animate="edge" style="--step:9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 375 382 L 375 460" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="app-notes" data-edge-to="app-modules" data-edge-label="manifest" data-edge-key="9" data-edge-id="notes-manifest" data-composition-points="375,382;375,460" data-composition-crossover="halo" data-composition-independent="true" d="M 375 382 L 375 460" class="a-default" data-animate="edge" style="--step:9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:10">
-          <path data-graph-role="automatic-crossover-underlay" d="M 1040 491 L 460 491" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="bridge" data-edge-to="application" data-edge-label="run use case" data-edge-key="10" data-edge-id="bridge-runs-use-cases" data-composition-points="1040,491;460,491" data-composition-crossover="halo" data-composition-independent="true" d="M 1040 491 L 460 491" class="a-emphasis" data-animate="edge" style="--step:10" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 625 382 L 625 460" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="app-communities" data-edge-to="app-modules" data-edge-label="manifest" data-edge-key="10" data-edge-id="communities-manifest" data-composition-points="625,382;625,460" data-composition-crossover="halo" data-composition-independent="true" d="M 625 382 L 625 460" class="a-default" data-animate="edge" style="--step:10" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:11">
-          <path data-graph-role="automatic-crossover-underlay" d="M 290 491 L 210 491" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="application" data-edge-to="domain" data-edge-label="validate" data-edge-key="11" data-edge-id="services-validate" data-composition-points="290,491;210,491" data-composition-crossover="halo" data-composition-independent="true" d="M 290 491 L 210 491" class="a-default" data-animate="edge" style="--step:11" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 710 498 L 790 498" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="app-modules" data-edge-to="runtime" data-edge-label="Layers" data-edge-key="11" data-edge-id="feature-layers" data-composition-points="710,498;790,498" data-composition-crossover="halo" data-composition-independent="true" d="M 710 498 L 790 498" class="a-default" data-animate="edge" style="--step:11" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:12">
-          <path data-graph-role="automatic-crossover-underlay" d="M 375 522 L 375 600" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="application" data-edge-to="adapters" data-edge-label="ports" data-edge-key="12" data-edge-id="services-use-ports" data-composition-points="375,522;375,600" data-composition-crossover="halo" data-composition-independent="true" d="M 375 522 L 375 600" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 875 522 L 875 620" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="runtime" data-edge-to="shellview" data-edge-label="runtime" data-edge-key="12" data-edge-id="runtime-to-view" data-composition-points="875,522;875,620" data-composition-crossover="halo" data-composition-independent="true" d="M 875 522 L 875 620" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:13">
-          <path data-graph-role="automatic-crossover-underlay" d="M 290 631 L 210 631" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="adapters" data-edge-to="vault" data-edge-label="file I/O" data-edge-key="13" data-edge-id="adapters-io" data-composition-points="290,631;210,631" data-composition-crossover="halo" data-composition-independent="true" d="M 290 631 L 210 631" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 125 682 L 125 760" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="scr-shell" data-edge-to="module-screens" data-edge-label="screens" data-edge-key="13" data-edge-id="shell-screens" data-composition-points="125,682;125,760" data-composition-crossover="halo" data-composition-independent="true" d="M 125 682 L 125 760" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:14">
-          <path data-graph-role="automatic-crossover-underlay" d="M 1125 522 L 1125 600" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="bridge" data-edge-to="defects" data-edge-label="defects" data-edge-key="14" data-edge-id="bridge-reports-defects" data-composition-points="1125,522;1125,600" data-composition-crossover="halo" data-composition-independent="true" d="M 1125 522 L 1125 600" class="a-security" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 375 682 L 375 760" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="scr-notes" data-edge-to="module-screens" data-edge-label="screens" data-edge-key="14" data-edge-id="notes-screens" data-composition-points="375,682;375,760" data-composition-crossover="halo" data-composition-independent="true" d="M 375 682 L 375 760" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        </g>
+        <g data-graph-role="automatic-crossover" style="--step:15">
+          <path data-graph-role="automatic-crossover-underlay" d="M 625 682 L 625 760" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="scr-communities" data-edge-to="module-screens" data-edge-label="screens" data-edge-key="15" data-edge-id="communities-screens" data-composition-points="625,682;625,760" data-composition-crossover="halo" data-composition-independent="true" d="M 625 682 L 625 760" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        </g>
+        <g data-graph-role="automatic-crossover" style="--step:16">
+          <path data-graph-role="automatic-crossover-underlay" d="M 710 798 L 790 798" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="module-screens" data-edge-to="surface" data-edge-label="parts" data-edge-key="16" data-edge-id="screens-to-surface" data-composition-points="710,798;790,798" data-composition-crossover="halo" data-composition-independent="true" d="M 710 798 L 790 798" class="a-default" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        </g>
+        <g data-graph-role="automatic-crossover" style="--step:17">
+          <path data-graph-role="automatic-crossover-underlay" d="M 875 760 L 875 682" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="surface" data-edge-to="shellview" data-edge-label="surface" data-edge-key="17" data-edge-id="surface-to-view" data-composition-points="875,760;875,682" data-composition-crossover="halo" data-composition-independent="true" d="M 875 760 L 875 682" class="a-dashed" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         </g>
 
         <!-- Components -->
-        <g id="node-obsidian" data-node-id="obsidian" data-node-label="Obsidian app 1.15.1" tabindex="0" role="button" aria-label="Focus Obsidian app 1.15.1, host: lifecycle, views, vault &amp; workspace events, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="host: lifecycle, views, vault &amp; workspace events" data-node-context="Architecture component">
-          <title>Obsidian app 1.15.1 · host: lifecycle, views, vault &amp; workspace events · Architecture component</title>
-          <rect x="40" y="40" width="1170" height="56" rx="8" class="c-mask"/>
-          <rect x="40" y="40" width="1170" height="56" rx="8" class="c-external" data-animate="node" style="--step:0" stroke-width="1.5"/>
+        <g id="node-obsidian" data-node-id="obsidian" data-node-label="Obsidian app" tabindex="0" role="button" aria-label="Focus Obsidian app, plugin lifecycle · vault · workspace · views, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="plugin lifecycle · vault · workspace · views" data-node-context="Architecture component">
+          <title>Obsidian app · plugin lifecycle · vault · workspace · views · Architecture component</title>
+          <rect x="40" y="40" width="920" height="56" rx="8" class="c-mask"/>
+          <rect x="40" y="40" width="920" height="56" rx="8" class="c-external" data-animate="node" style="--step:0" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(46 46) scale(0.6875)">
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="625" y="66" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Obsidian app 1.15.1</text>
-        <text data-detail="context" x="625" y="82" class="t-muted" font-size="9" text-anchor="middle">host: lifecycle, views, vault &amp; workspace events</text>
+          <text data-node-label="" data-detail-anchor="" x="500" y="66" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Obsidian app</text>
+        <text data-detail="context" x="500" y="82" class="t-muted" font-size="9" text-anchor="middle">plugin lifecycle · vault · workspace · views</text>
         </g>
 
-        <g id="node-plugin" data-node-id="plugin" data-node-label="WegManagerPlugin" tabindex="0" role="button" aria-label="Focus WegManagerPlugin, src/main.ts · onload / onunload, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="src/main.ts · onload / onunload" data-node-context="Architecture component">
-          <title>WegManagerPlugin · src/main.ts · onload / onunload · Architecture component</title>
-          <rect x="40" y="180" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="40" y="180" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:1" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(46 186) scale(0.6875)">
+        <g id="node-infra-shell" data-node-id="infra-shell" data-node-label="shell adapters" tabindex="0" role="button" aria-label="Focus shell adapters, data.json · notices · events, infrastructure/obsidian" aria-pressed="false" data-node-kind="backend" data-node-sublabel="data.json · notices · events" data-node-context="infrastructure/obsidian">
+          <title>shell adapters · data.json · notices · events · infrastructure/obsidian</title>
+          <rect x="40" y="170" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="40" y="170" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:2" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(46 176) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="125" y="209" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">WegManagerPlugin</text>
-        <text data-detail="context" x="125" y="225" class="t-muted" font-size="8.7" text-anchor="middle">src/main.ts · onload / onunload</text>
+          <text data-node-label="" data-detail-anchor="" x="125" y="199" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">shell adapters</text>
+        <text data-detail="context" x="125" y="215" class="t-muted" font-size="9" text-anchor="middle">data.json · notices · events</text>
         </g>
 
-        <g id="node-bootstrap" data-node-id="bootstrap" data-node-label="bootstrap" tabindex="0" role="button" aria-label="Focus bootstrap, wires one load, undo on unload, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="wires one load, undo on unload" data-node-context="Architecture component">
-          <title>bootstrap · wires one load, undo on unload · Architecture component</title>
-          <rect x="290" y="180" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="290" y="180" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:2" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(296 186) scale(0.6875)">
+        <g id="node-infra-notes" data-node-id="infra-notes" data-node-label="notes adapters" tabindex="0" role="button" aria-label="Focus notes adapters, NoteStore over the vault, infrastructure/obsidian" aria-pressed="false" data-node-kind="backend" data-node-sublabel="NoteStore over the vault" data-node-context="infrastructure/obsidian">
+          <title>notes adapters · NoteStore over the vault · infrastructure/obsidian</title>
+          <rect x="290" y="170" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="290" y="170" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:2" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(296 176) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="375" y="209" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">bootstrap</text>
-        <text data-detail="context" x="375" y="225" class="t-muted" font-size="9" text-anchor="middle">wires one load, undo on unload</text>
+          <text data-node-label="" data-detail-anchor="" x="375" y="199" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">notes adapters</text>
+        <text data-detail="context" x="375" y="215" class="t-muted" font-size="9" text-anchor="middle">NoteStore over the vault</text>
         </g>
 
-        <g id="node-registrations" data-node-id="registrations" data-node-label="Commands · ribbon" tabindex="0" role="button" aria-label="Focus Commands · ribbon, settings tab (native API), Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="settings tab (native API)" data-node-context="Architecture component">
-          <title>Commands · ribbon · settings tab (native API) · Architecture component</title>
-          <rect x="540" y="180" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="540" y="180" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:3" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(546 186) scale(0.6875)">
+        <g id="node-bootstrap" data-node-id="bootstrap" data-node-label="bootstrap · appLayer" tabindex="0" role="button" aria-label="Focus bootstrap · appLayer, runtime · view · commands, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="runtime · view · commands" data-node-context="Architecture component">
+          <title>bootstrap · appLayer · runtime · view · commands · Architecture component</title>
+          <rect x="790" y="170" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="790" y="170" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:1" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(796 176) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="625" y="209" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Commands · ribbon</text>
-        <text data-detail="context" x="625" y="225" class="t-muted" font-size="9" text-anchor="middle">settings tab (native API)</text>
+          <text data-node-label="" data-detail-anchor="" x="875" y="199" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">bootstrap · appLayer</text>
+        <text data-detail="context" x="875" y="215" class="t-muted" font-size="9" text-anchor="middle">runtime · view · commands</text>
         </g>
 
-        <g id="node-hostevents" data-node-id="hostevents" data-node-label="Host events adapter" tabindex="0" role="button" aria-label="Focus Host events adapter, on() → AppEvent, offref on dispose, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="on() → AppEvent, offref on dispose" data-node-tag="gated by LayoutReady" data-node-context="Architecture component">
-          <title>Host events adapter · on() → AppEvent, offref on dispose · Architecture component · gated by LayoutReady</title>
-          <rect x="790" y="180" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="790" y="180" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:5" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(796 186) scale(0.6875)">
+        <g id="node-app-shell" data-node-id="app-shell" data-node-label="shell module.ts" tabindex="0" role="button" aria-label="Focus shell module.ts, texts · errors · commands, application" aria-pressed="false" data-node-kind="backend" data-node-sublabel="texts · errors · commands" data-node-context="application">
+          <title>shell module.ts · texts · errors · commands · application</title>
+          <rect x="40" y="320" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="40" y="320" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:4" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(46 326) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="875" y="209" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Host events adapter</text>
-        <text data-detail="context" x="875" y="225" class="t-muted" font-size="7.9" text-anchor="middle">on() → AppEvent, offref on dispose</text>
-        <text data-detail="fine" x="875" y="234" class="t-backend" font-size="7" text-anchor="middle">gated by LayoutReady</text>
+          <text data-node-label="" data-detail-anchor="" x="125" y="349" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">shell module.ts</text>
+        <text data-detail="context" x="125" y="365" class="t-muted" font-size="9" text-anchor="middle">texts · errors · commands</text>
         </g>
 
-        <g id="node-shellview" data-node-id="shellview" data-node-label="ShellView" tabindex="0" role="button" aria-label="Focus ShellView, ItemView, one per open leaf, Architecture component" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="ItemView, one per open leaf" data-node-context="Architecture component">
-          <title>ShellView · ItemView, one per open leaf · Architecture component</title>
-          <rect x="1040" y="180" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="1040" y="180" width="170" height="62" rx="8" class="c-frontend" data-animate="node" style="--step:6" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(1046 186) scale(0.6875)">
-            <rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="1125" y="209" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">ShellView</text>
-        <text data-detail="context" x="1125" y="225" class="t-muted" font-size="9" text-anchor="middle">ItemView, one per open leaf</text>
-        </g>
-
-        <g id="node-eventbus" data-node-id="eventbus" data-node-label="EventBus" tabindex="0" role="button" aria-label="Focus EventBus, unbounded PubSub of AppEvent, Architecture component" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="unbounded PubSub of AppEvent" data-node-context="Architecture component">
-          <title>EventBus · unbounded PubSub of AppEvent · Architecture component</title>
-          <rect x="790" y="320" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="790" y="320" width="170" height="62" rx="8" class="c-messagebus" data-animate="node" style="--step:7" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="messagebus" class="semantic-sigil s-messagebus" transform="translate(796 326) scale(0.6875)">
-            <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/>
-            <circle cx="5" cy="4.5" r="1" class="sigil-fill"/>
-            <circle cx="10.5" cy="8" r="1" class="sigil-fill"/>
-            <circle cx="7" cy="11.5" r="1" class="sigil-fill"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="875" y="349" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">EventBus</text>
-        <text data-detail="context" x="875" y="365" class="t-muted" font-size="9" text-anchor="middle">unbounded PubSub of AppEvent</text>
-        </g>
-
-        <g id="node-surface" data-node-id="surface" data-node-label="Vue + Nuxt UI surface" tabindex="0" role="button" aria-label="Focus Vue + Nuxt UI surface, mountSurface · ShellPanel, Architecture component" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="mountSurface · ShellPanel" data-node-context="Architecture component">
-          <title>Vue + Nuxt UI surface · mountSurface · ShellPanel · Architecture component</title>
-          <rect x="1040" y="320" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="1040" y="320" width="170" height="62" rx="8" class="c-frontend" data-animate="node" style="--step:8" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(1046 326) scale(0.6875)">
-            <rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="1125" y="349" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Vue + Nuxt UI surface</text>
-        <text data-detail="context" x="1125" y="365" class="t-muted" font-size="9" text-anchor="middle">mountSurface · ShellPanel</text>
-        </g>
-
-        <g id="node-bridge" data-node-id="bridge" data-node-label="Runtime bridge" tabindex="0" role="button" aria-label="Focus Runtime bridge, useEffectAction · useAppEvents, Architecture component" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="useEffectAction · useAppEvents" data-node-tag="only presentation → effect" data-node-context="Architecture component">
-          <title>Runtime bridge · useEffectAction · useAppEvents · Architecture component · only presentation → effect</title>
-          <rect x="1040" y="460" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="1040" y="460" width="170" height="62" rx="8" class="c-frontend" data-animate="node" style="--step:10" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(1046 466) scale(0.6875)">
-            <rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="1125" y="489" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Runtime bridge</text>
-        <text data-detail="context" x="1125" y="505" class="t-muted" font-size="9" text-anchor="middle">useEffectAction · useAppEvents</text>
-        <text data-detail="fine" x="1125" y="514" class="t-frontend" font-size="7" text-anchor="middle">only presentation → effect</text>
-        </g>
-
-        <g id="node-application" data-node-id="application" data-node-label="Use cases + services" tabindex="0" role="button" aria-label="Focus Use cases + services, SettingsService · Logger, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="SettingsService · Logger" data-node-tag="ManagedRuntime" data-node-context="Architecture component">
-          <title>Use cases + services · SettingsService · Logger · Architecture component · ManagedRuntime</title>
-          <rect x="290" y="460" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="290" y="460" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:4" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(296 466) scale(0.6875)">
+        <g id="node-app-notes" data-node-id="app-notes" data-node-label="notes module.ts" tabindex="0" role="button" aria-label="Focus notes module.ts, texts · errors · data issues, application" aria-pressed="false" data-node-kind="backend" data-node-sublabel="texts · errors · data issues" data-node-context="application">
+          <title>notes module.ts · texts · errors · data issues · application</title>
+          <rect x="290" y="320" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="290" y="320" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:5" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(296 326) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="375" y="489" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Use cases + services</text>
-        <text data-detail="context" x="375" y="505" class="t-muted" font-size="9" text-anchor="middle">SettingsService · Logger</text>
-        <text data-detail="fine" x="375" y="514" class="t-backend" font-size="7" text-anchor="middle">ManagedRuntime</text>
+          <text data-node-label="" data-detail-anchor="" x="375" y="349" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">notes module.ts</text>
+        <text data-detail="context" x="375" y="365" class="t-muted" font-size="9" text-anchor="middle">texts · errors · data issues</text>
         </g>
 
-        <g id="node-domain" data-node-id="domain" data-node-label="Domain rules" tabindex="0" role="button" aria-label="Focus Domain rules, decodeSettings · validatePatch, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="decodeSettings · validatePatch" data-node-tag="pure" data-node-context="Architecture component">
-          <title>Domain rules · decodeSettings · validatePatch · Architecture component · pure</title>
-          <rect x="40" y="460" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="40" y="460" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+        <g id="node-app-communities" data-node-id="app-communities" data-node-label="communities module.ts" tabindex="0" role="button" aria-label="Focus communities module.ts, note type · section · service, application" aria-pressed="false" data-node-kind="backend" data-node-sublabel="note type · section · service" data-node-context="application">
+          <title>communities module.ts · note type · section · service · application</title>
+          <rect x="540" y="320" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="540" y="320" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:6" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(546 326) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="625" y="349" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">communities module.ts</text>
+        <text data-detail="context" x="625" y="365" class="t-muted" font-size="9" text-anchor="middle">note type · section · service</text>
+        </g>
+
+        <g id="node-app-modules" data-node-id="app-modules" data-node-label="APP_MODULES" tabindex="0" role="button" aria-label="Focus APP_MODULES, the one module list: Catalog, AppError, describeError, Route, note types, commands, AppServices, application" aria-pressed="false" data-node-kind="backend" data-node-sublabel="the one module list: Catalog, AppError, describeError, Route, note types, commands, AppServices" data-node-tag="ESLint and fallow.json read it" data-node-context="application">
+          <title>APP_MODULES · the one module list: Catalog, AppError, describeError, Route, note types, commands, AppServices · application · ESLint and fallow.json read it</title>
+          <rect x="40" y="460" width="670" height="62" rx="8" class="c-mask"/>
+          <rect x="40" y="460" width="670" height="62" rx="8" class="c-backend" data-animate="node" style="--step:9" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(46 466) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="125" y="489" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Domain rules</text>
-        <text data-detail="context" x="125" y="505" class="t-muted" font-size="9" text-anchor="middle">decodeSettings · validatePatch</text>
-        <text data-detail="fine" x="125" y="514" class="t-backend" font-size="7" text-anchor="middle">pure</text>
+          <text data-node-label="" data-detail-anchor="" x="375" y="489" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">APP_MODULES</text>
+        <text data-detail="context" x="375" y="505" class="t-muted" font-size="9" text-anchor="middle">the one module list: Catalog, AppError, describeError, Route, note types, commands, AppServices</text>
+        <text data-detail="fine" x="375" y="514" class="t-backend" font-size="7" text-anchor="middle">ESLint and fallow.json read it</text>
         </g>
 
-        <g id="node-adapters" data-node-id="adapters" data-node-label="Obsidian adapters" tabindex="0" role="button" aria-label="Focus Obsidian adapters, store, notices, vault, clipboard, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="store, notices, vault, clipboard" data-node-context="Architecture component">
-          <title>Obsidian adapters · store, notices, vault, clipboard · Architecture component</title>
-          <rect x="290" y="600" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="290" y="600" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:12" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(296 606) scale(0.6875)">
+        <g id="node-runtime" data-node-id="runtime" data-node-label="appServicesLayer" tabindex="0" role="button" aria-label="Focus appServicesLayer, one ManagedRuntime per load, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="one ManagedRuntime per load" data-node-context="Architecture component">
+          <title>appServicesLayer · one ManagedRuntime per load · Architecture component</title>
+          <rect x="790" y="460" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="790" y="460" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:6" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(796 466) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="375" y="629" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Obsidian adapters</text>
-        <text data-detail="context" x="375" y="645" class="t-muted" font-size="8.4" text-anchor="middle">store, notices, vault, clipboard</text>
+          <text data-node-label="" data-detail-anchor="" x="875" y="489" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">appServicesLayer</text>
+        <text data-detail="context" x="875" y="505" class="t-muted" font-size="9" text-anchor="middle">one ManagedRuntime per load</text>
         </g>
 
-        <g id="node-vault" data-node-id="vault" data-node-label="Vault on disk" tabindex="0" role="button" aria-label="Focus Vault on disk, notes · plugin data.json, Architecture component" aria-pressed="false" data-node-kind="database" data-node-sublabel="notes · plugin data.json" data-node-context="Architecture component">
-          <title>Vault on disk · notes · plugin data.json · Architecture component</title>
-          <rect x="40" y="600" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="40" y="600" width="170" height="62" rx="8" class="c-database" data-animate="node" style="--step:12" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(46 606) scale(0.6875)">
-            <ellipse cx="8" cy="4" rx="5" ry="2"/>
-            <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
+        <g id="node-scr-shell" data-node-id="scr-shell" data-node-label="shell screens.ts" tabindex="0" role="button" aria-label="Focus shell screens.ts, settings screen, presentation" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="settings screen" data-node-context="presentation">
+          <title>shell screens.ts · settings screen · presentation</title>
+          <rect x="40" y="620" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="40" y="620" width="170" height="62" rx="8" class="c-frontend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(46 626) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="125" y="629" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Vault on disk</text>
-        <text data-detail="context" x="125" y="645" class="t-muted" font-size="9" text-anchor="middle">notes · plugin data.json</text>
+          <text data-node-label="" data-detail-anchor="" x="125" y="649" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">shell screens.ts</text>
+        <text data-detail="context" x="125" y="665" class="t-muted" font-size="9" text-anchor="middle">settings screen</text>
         </g>
 
-        <g id="node-defects" data-node-id="defects" data-node-label="Defects + logging" tabindex="0" role="button" aria-label="Focus Defects + logging, reportDefect → console sink, Architecture component" aria-pressed="false" data-node-kind="security" data-node-sublabel="reportDefect → console sink" data-node-tag="incident id" data-node-context="Architecture component">
-          <title>Defects + logging · reportDefect → console sink · Architecture component · incident id</title>
-          <rect x="1040" y="600" width="170" height="62" rx="8" class="c-mask"/>
-          <rect x="1040" y="600" width="170" height="62" rx="8" class="c-security" data-animate="node" style="--step:12" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(1046 606) scale(0.6875)">
-            <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
-            <path d="m5.8 8 1.5 1.5 3-3"/>
+        <g id="node-scr-notes" data-node-id="scr-notes" data-node-label="notes screens.ts" tabindex="0" role="button" aria-label="Focus notes screens.ts, data issues section, presentation" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="data issues section" data-node-context="presentation">
+          <title>notes screens.ts · data issues section · presentation</title>
+          <rect x="290" y="620" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="290" y="620" width="170" height="62" rx="8" class="c-frontend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(296 626) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="1125" y="629" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Defects + logging</text>
-        <text data-detail="context" x="1125" y="645" class="t-muted" font-size="9" text-anchor="middle">reportDefect → console sink</text>
-        <text data-detail="fine" x="1125" y="654" class="t-security" font-size="7" text-anchor="middle">incident id</text>
+          <text data-node-label="" data-detail-anchor="" x="375" y="649" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">notes screens.ts</text>
+        <text data-detail="context" x="375" y="665" class="t-muted" font-size="9" text-anchor="middle">data issues section</text>
+        </g>
+
+        <g id="node-scr-communities" data-node-id="scr-communities" data-node-label="communities screens.ts" tabindex="0" role="button" aria-label="Focus communities screens.ts, section · community switch, presentation" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="section · community switch" data-node-context="presentation">
+          <title>communities screens.ts · section · community switch · presentation</title>
+          <rect x="540" y="620" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="540" y="620" width="170" height="62" rx="8" class="c-frontend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(546 626) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="625" y="649" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">communities screens.ts</text>
+        <text data-detail="context" x="625" y="665" class="t-muted" font-size="9" text-anchor="middle">section · community switch</text>
+        </g>
+
+        <g id="node-module-screens" data-node-id="module-screens" data-node-label="MODULE_SCREENS" tabindex="0" role="button" aria-label="Focus MODULE_SCREENS, one screens manifest per name of APP_MODULES; components only through import(), presentation" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="one screens manifest per name of APP_MODULES; components only through import()" data-node-context="presentation">
+          <title>MODULE_SCREENS · one screens manifest per name of APP_MODULES; components only through import() · presentation</title>
+          <rect x="40" y="760" width="670" height="62" rx="8" class="c-mask"/>
+          <rect x="40" y="760" width="670" height="62" rx="8" class="c-frontend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(46 766) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="375" y="789" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">MODULE_SCREENS</text>
+        <text data-detail="context" x="375" y="805" class="t-muted" font-size="9" text-anchor="middle">one screens manifest per name of APP_MODULES; components only through import()</text>
+        </g>
+
+        <g id="node-shellview" data-node-id="shellview" data-node-label="ShellView" tabindex="0" role="button" aria-label="Focus ShellView, Vue loads when a view opens, Architecture component" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="Vue loads when a view opens" data-node-tag="import(&quot;mount&quot;)" data-node-context="Architecture component">
+          <title>ShellView · Vue loads when a view opens · Architecture component · import(&quot;mount&quot;)</title>
+          <rect x="790" y="620" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="790" y="620" width="170" height="62" rx="8" class="c-frontend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(796 626) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="875" y="649" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">ShellView</text>
+        <text data-detail="context" x="875" y="665" class="t-muted" font-size="9" text-anchor="middle">Vue loads when a view opens</text>
+        <text data-detail="fine" x="875" y="674" class="t-frontend" font-size="7" text-anchor="middle">import(&quot;mount&quot;)</text>
+        </g>
+
+        <g id="node-surface" data-node-id="surface" data-node-label="appSurface" tabindex="0" role="button" aria-label="Focus appSurface, Vue-free at plugin load, Architecture component" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="Vue-free at plugin load" data-node-context="Architecture component">
+          <title>appSurface · Vue-free at plugin load · Architecture component</title>
+          <rect x="790" y="760" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="790" y="760" width="170" height="62" rx="8" class="c-frontend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(796 766) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="875" y="789" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">appSurface</text>
+        <text data-detail="context" x="875" y="805" class="t-muted" font-size="9" text-anchor="middle">Vue-free at plugin load</text>
+        </g>
+
+        <g id="node-dom-shell" data-node-id="dom-shell" data-node-label="shell domain" tabindex="0" role="button" aria-label="Focus shell domain, settings rules, domain" aria-pressed="false" data-node-kind="backend" data-node-sublabel="settings rules" data-node-context="domain">
+          <title>shell domain · settings rules · domain</title>
+          <rect x="40" y="910" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="40" y="910" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(46 916) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="125" y="939" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">shell domain</text>
+        <text data-detail="context" x="125" y="955" class="t-muted" font-size="9" text-anchor="middle">settings rules</text>
+        </g>
+
+        <g id="node-dom-notes" data-node-id="dom-notes" data-node-label="notes domain" tabindex="0" role="button" aria-label="Focus notes domain, note codec · record rules, domain" aria-pressed="false" data-node-kind="backend" data-node-sublabel="note codec · record rules" data-node-context="domain">
+          <title>notes domain · note codec · record rules · domain</title>
+          <rect x="290" y="910" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="290" y="910" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(296 916) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="375" y="939" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">notes domain</text>
+        <text data-detail="context" x="375" y="955" class="t-muted" font-size="9" text-anchor="middle">note codec · record rules</text>
+        </g>
+
+        <g id="node-dom-communities" data-node-id="dom-communities" data-node-label="communities domain" tabindex="0" role="button" aria-label="Focus communities domain, community type · rules, domain" aria-pressed="false" data-node-kind="backend" data-node-sublabel="community type · rules" data-node-context="domain">
+          <title>communities domain · community type · rules · domain</title>
+          <rect x="540" y="910" width="170" height="62" rx="8" class="c-mask"/>
+          <rect x="540" y="910" width="170" height="62" rx="8" class="c-backend" data-animate="node" style="--step:12" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(546 916) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="625" y="939" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">communities domain</text>
+        <text data-detail="context" x="625" y="955" class="t-muted" font-size="9" text-anchor="middle">community type · rules</text>
         </g>
 
         <!-- Connection labels -->
-        <g data-detail="context" data-edge-from="obsidian" data-edge-to="plugin" data-edge-label="onload" data-edge-key="0" data-edge-id="host-loads-plugin">
-          <rect x="149.2" y="131" width="38.8" height="14" rx="3" class="c-mask"/>
-          <text x="168.6" y="141" class="t-edge-emphasis" font-size="8" text-anchor="middle">onload</text>
+        <g data-detail="context" data-edge-from="obsidian" data-edge-to="bootstrap" data-edge-label="onload" data-edge-key="0" data-edge-id="onload">
+          <rect x="761.2" y="126" width="38.8" height="14" rx="3" class="c-mask"/>
+          <text x="780.6" y="136" class="t-edge-emphasis" font-size="8" text-anchor="middle">onload</text>
         </g>
-        <g data-detail="context" data-edge-from="plugin" data-edge-to="bootstrap" data-edge-label="starts" data-edge-key="1" data-edge-id="plugin-starts-bootstrap">
-          <rect x="230.6" y="200.1" width="38.8" height="14" rx="3" class="c-mask"/>
-          <text x="250" y="210.1" class="t-edge-emphasis" font-size="8" text-anchor="middle">starts</text>
+        <g data-detail="context" data-edge-from="obsidian" data-edge-to="infra-shell" data-edge-label="events · data.json" data-edge-key="1" data-edge-id="host-api">
+          <rect x="91.60000000000002" y="126" width="96.39999999999999" height="14" rx="3" class="c-mask"/>
+          <text x="139.8" y="136" class="t-edge-default" font-size="8" text-anchor="middle">events · data.json</text>
         </g>
-        <g data-detail="context" data-edge-from="bootstrap" data-edge-to="registrations" data-edge-label="adds" data-edge-key="2" data-edge-id="bootstrap-registers">
-          <rect x="485" y="191" width="30" height="14" rx="3" class="c-mask"/>
-          <text x="500" y="201" class="t-edge-default" font-size="8" text-anchor="middle">adds</text>
+        <g data-detail="context" data-edge-from="infra-notes" data-edge-to="obsidian" data-edge-label="vault API" data-edge-key="2" data-edge-id="vault-api">
+          <rect x="348.4" y="150" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
+          <text x="375" y="160" class="t-edge-default" font-size="8" text-anchor="middle">vault API</text>
         </g>
-        <g data-detail="context" data-edge-from="bootstrap" data-edge-to="application" data-edge-label="makeRuntime(appLayer)" data-edge-key="3" data-edge-id="bootstrap-builds-runtime">
-          <rect x="258.20000000000005" y="344" width="110.8" height="14" rx="3" class="c-mask"/>
-          <text x="313.6" y="354" class="t-edge-emphasis" font-size="8" text-anchor="middle">makeRuntime(appLayer)</text>
+        <g data-detail="context" data-edge-from="infra-shell" data-edge-to="app-shell" data-edge-label="ports" data-edge-key="3" data-edge-id="shell-ports">
+          <rect x="85" y="269" width="34" height="14" rx="3" class="c-mask"/>
+          <text x="102" y="279" class="t-edge-default" font-size="8" text-anchor="middle">ports</text>
         </g>
-        <g data-detail="context" data-edge-from="obsidian" data-edge-to="hostevents" data-edge-label="vault / workspace events" data-edge-key="4" data-edge-id="host-emits-events">
-          <rect x="674.8" y="131" width="125.19999999999999" height="14" rx="3" class="c-mask"/>
-          <text x="737.4" y="141" class="t-edge-dashed" font-size="8" text-anchor="middle">vault / workspace events</text>
+        <g data-detail="context" data-edge-from="infra-notes" data-edge-to="app-notes" data-edge-label="NoteStore" data-edge-key="4" data-edge-id="notestore-port">
+          <rect x="315.79999999999995" y="269" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
+          <text x="342.4" y="279" class="t-edge-default" font-size="8" text-anchor="middle">NoteStore</text>
         </g>
-        <g data-detail="context" data-edge-from="obsidian" data-edge-to="shellview" data-edge-label="onOpen" data-edge-key="5" data-edge-id="host-opens-view">
-          <rect x="1011.1999999999999" y="131" width="38.8" height="14" rx="3" class="c-mask"/>
-          <text x="1030.6" y="141" class="t-edge-default" font-size="8" text-anchor="middle">onOpen</text>
+        <g data-detail="context" data-edge-from="bootstrap" data-edge-to="runtime" data-edge-label="adapters" data-edge-key="5" data-edge-id="adapters">
+          <rect x="820.5999999999999" y="339" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="844.8" y="349" class="t-edge-default" font-size="8" text-anchor="middle">adapters</text>
         </g>
-        <g data-detail="context" data-edge-from="hostevents" data-edge-to="eventbus" data-edge-label="publish" data-edge-key="6" data-edge-id="events-published">
-          <rect x="825.4000000000001" y="274" width="43.6" height="14" rx="3" class="c-mask"/>
-          <text x="847.2" y="284" class="t-edge-dashed" font-size="8" text-anchor="middle">publish</text>
+        <g data-detail="context" data-edge-from="app-communities" data-edge-to="app-notes" data-edge-label="index.ts" data-edge-key="6" data-edge-id="feature-to-notes">
+          <rect x="475.8" y="324" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="500" y="334" class="t-edge-default" font-size="8" text-anchor="middle">index.ts</text>
         </g>
-        <g data-detail="context" data-edge-from="shellview" data-edge-to="surface" data-edge-label="mount" data-edge-key="7" data-edge-id="view-mounts-surface">
-          <rect x="1085" y="274" width="34" height="14" rx="3" class="c-mask"/>
-          <text x="1102" y="284" class="t-edge-default" font-size="8" text-anchor="middle">mount</text>
+        <g data-detail="context" data-edge-from="app-notes" data-edge-to="app-shell" data-edge-label="index.ts" data-edge-key="7" data-edge-id="notes-to-shell">
+          <rect x="225.8" y="324" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="250" y="334" class="t-edge-default" font-size="8" text-anchor="middle">index.ts</text>
         </g>
-        <g data-detail="context" data-edge-from="eventbus" data-edge-to="surface" data-edge-label="events" data-edge-key="8" data-edge-id="bus-to-surface">
-          <rect x="980.6" y="331" width="38.8" height="14" rx="3" class="c-mask"/>
-          <text x="1000" y="341" class="t-edge-dashed" font-size="8" text-anchor="middle">events</text>
+        <g data-detail="context" data-edge-from="app-shell" data-edge-to="app-modules" data-edge-label="manifest" data-edge-key="8" data-edge-id="shell-manifest">
+          <rect x="70.6" y="414" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="94.8" y="424" class="t-edge-default" font-size="8" text-anchor="middle">manifest</text>
         </g>
-        <g data-detail="context" data-edge-from="surface" data-edge-to="bridge" data-edge-label="composables" data-edge-key="9" data-edge-id="surface-uses-bridge">
-          <rect x="1056.1999999999998" y="414" width="62.8" height="14" rx="3" class="c-mask"/>
-          <text x="1087.6" y="424" class="t-edge-default" font-size="8" text-anchor="middle">composables</text>
+        <g data-detail="context" data-edge-from="app-notes" data-edge-to="app-modules" data-edge-label="manifest" data-edge-key="9" data-edge-id="notes-manifest">
+          <rect x="320.6" y="414" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="344.8" y="424" class="t-edge-default" font-size="8" text-anchor="middle">manifest</text>
         </g>
-        <g data-detail="context" data-edge-from="bridge" data-edge-to="application" data-edge-label="run use case" data-edge-key="10" data-edge-id="bridge-runs-use-cases">
-          <rect x="716.2" y="471" width="67.6" height="14" rx="3" class="c-mask"/>
-          <text x="750" y="481" class="t-edge-emphasis" font-size="8" text-anchor="middle">run use case</text>
+        <g data-detail="context" data-edge-from="app-communities" data-edge-to="app-modules" data-edge-label="manifest" data-edge-key="10" data-edge-id="communities-manifest">
+          <rect x="570.5999999999999" y="414" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="594.8" y="424" class="t-edge-default" font-size="8" text-anchor="middle">manifest</text>
         </g>
-        <g data-detail="context" data-edge-from="application" data-edge-to="domain" data-edge-label="validate" data-edge-key="11" data-edge-id="services-validate">
-          <rect x="225.8" y="471" width="48.4" height="14" rx="3" class="c-mask"/>
-          <text x="250" y="481" class="t-edge-default" font-size="8" text-anchor="middle">validate</text>
+        <g data-detail="context" data-edge-from="app-modules" data-edge-to="runtime" data-edge-label="Layers" data-edge-key="11" data-edge-id="feature-layers">
+          <rect x="730.6" y="478" width="38.8" height="14" rx="3" class="c-mask"/>
+          <text x="750" y="488" class="t-edge-default" font-size="8" text-anchor="middle">Layers</text>
         </g>
-        <g data-detail="context" data-edge-from="application" data-edge-to="adapters" data-edge-label="ports" data-edge-key="12" data-edge-id="services-use-ports">
-          <rect x="335" y="554" width="34" height="14" rx="3" class="c-mask"/>
-          <text x="352" y="564" class="t-edge-default" font-size="8" text-anchor="middle">ports</text>
+        <g data-detail="context" data-edge-from="runtime" data-edge-to="shellview" data-edge-label="runtime" data-edge-key="12" data-edge-id="runtime-to-view">
+          <rect x="825.4000000000001" y="564" width="43.6" height="14" rx="3" class="c-mask"/>
+          <text x="847.2" y="574" class="t-edge-default" font-size="8" text-anchor="middle">runtime</text>
         </g>
-        <g data-detail="context" data-edge-from="adapters" data-edge-to="vault" data-edge-label="file I/O" data-edge-key="13" data-edge-id="adapters-io">
-          <rect x="225.8" y="611" width="48.4" height="14" rx="3" class="c-mask"/>
-          <text x="250" y="621" class="t-edge-default" font-size="8" text-anchor="middle">file I/O</text>
+        <g data-detail="context" data-edge-from="scr-shell" data-edge-to="module-screens" data-edge-label="screens" data-edge-key="13" data-edge-id="shell-screens">
+          <rect x="75.4" y="714" width="43.6" height="14" rx="3" class="c-mask"/>
+          <text x="97.2" y="724" class="t-edge-default" font-size="8" text-anchor="middle">screens</text>
         </g>
-        <g data-detail="context" data-edge-from="bridge" data-edge-to="defects" data-edge-label="defects" data-edge-key="14" data-edge-id="bridge-reports-defects">
-          <rect x="1075.4" y="554" width="43.6" height="14" rx="3" class="c-mask"/>
-          <text x="1097.2" y="564" class="t-edge-security" font-size="8" text-anchor="middle">defects</text>
+        <g data-detail="context" data-edge-from="scr-notes" data-edge-to="module-screens" data-edge-label="screens" data-edge-key="14" data-edge-id="notes-screens">
+          <rect x="325.4" y="714" width="43.6" height="14" rx="3" class="c-mask"/>
+          <text x="347.2" y="724" class="t-edge-default" font-size="8" text-anchor="middle">screens</text>
+        </g>
+        <g data-detail="context" data-edge-from="scr-communities" data-edge-to="module-screens" data-edge-label="screens" data-edge-key="15" data-edge-id="communities-screens">
+          <rect x="575.4000000000001" y="714" width="43.6" height="14" rx="3" class="c-mask"/>
+          <text x="597.2" y="724" class="t-edge-default" font-size="8" text-anchor="middle">screens</text>
+        </g>
+        <g data-detail="context" data-edge-from="module-screens" data-edge-to="surface" data-edge-label="parts" data-edge-key="16" data-edge-id="screens-to-surface">
+          <rect x="733" y="778" width="34" height="14" rx="3" class="c-mask"/>
+          <text x="750" y="788" class="t-edge-default" font-size="8" text-anchor="middle">parts</text>
+        </g>
+        <g data-detail="context" data-edge-from="surface" data-edge-to="shellview" data-edge-label="surface" data-edge-key="17" data-edge-id="surface-to-view">
+          <rect x="853.2" y="740" width="43.6" height="14" rx="3" class="c-mask"/>
+          <text x="875" y="750" class="t-edge-dashed" font-size="8" text-anchor="middle">surface</text>
         </g>
 
         <!-- Boundary labels (foreground masks keep routes out of titles) -->
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="0" data-composition-frame-kind="region" data-composition-frame-label="infrastructure/obsidian">
+          <rect data-graph-role="structural-frame-label-mask" x="14" y="150" width="134.2" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="18" y="163" class="t-cloud" font-size="9" font-weight="600">infrastructure/obsidian</text>
+        </g>
 
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="1" data-composition-frame-kind="region" data-composition-frame-label="application">
+          <rect data-graph-role="structural-frame-label-mask" x="14" y="300" width="69.4" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="18" y="313" class="t-cloud" font-size="9" font-weight="600">application</text>
+        </g>
+
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="2" data-composition-frame-kind="region" data-composition-frame-label="presentation">
+          <rect data-graph-role="structural-frame-label-mask" x="14" y="600" width="74.8" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="18" y="613" class="t-cloud" font-size="9" font-weight="600">presentation</text>
+        </g>
+
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="3" data-composition-frame-kind="region" data-composition-frame-label="domain">
+          <rect data-graph-role="structural-frame-label-mask" x="14" y="890" width="42.4" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="18" y="903" class="t-cloud" font-size="9" font-weight="600">domain</text>
+        </g>
 
         <!-- Legend -->
         <g data-legend="" data-legend-bridge="">
-          <text x="40" y="694" class="t-primary" font-size="12" font-weight="650">Legend</text>
-          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="Frontend" data-legend-x="40" data-legend-baseline="714" data-legend-width="93">
-            <rect x="40" y="705" width="16" height="10" rx="2.5" class="c-frontend" stroke-width="1"/>
-            <text x="62" y="714" class="t-muted" font-size="10" font-weight="500">Frontend</text>
+          <text x="40" y="1024" class="t-primary" font-size="12" font-weight="650">Legend</text>
+          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="Frontend" data-legend-x="40" data-legend-baseline="1044" data-legend-width="93">
+            <rect x="40" y="1035" width="16" height="10" rx="2.5" class="c-frontend" stroke-width="1"/>
+            <text x="62" y="1044" class="t-muted" font-size="10" font-weight="500">Frontend</text>
           </g>
-          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Backend" data-legend-x="155" data-legend-baseline="714" data-legend-width="87">
-            <rect x="155" y="705" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
-            <text x="177" y="714" class="t-muted" font-size="10" font-weight="500">Backend</text>
+          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Backend" data-legend-x="155" data-legend-baseline="1044" data-legend-width="87">
+            <rect x="155" y="1035" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
+            <text x="177" y="1044" class="t-muted" font-size="10" font-weight="500">Backend</text>
           </g>
-          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="Database" data-legend-x="264" data-legend-baseline="714" data-legend-width="93">
-            <rect x="264" y="705" width="16" height="10" rx="2.5" class="c-database" stroke-width="1"/>
-            <text x="286" y="714" class="t-muted" font-size="10" font-weight="500">Database</text>
-          </g>
-          <g data-legend-semantic-kind="security" data-legend-kind="security" data-legend-label="Security" data-legend-x="379" data-legend-baseline="714" data-legend-width="93">
-            <rect x="379" y="705" width="16" height="10" rx="2.5" class="c-security" stroke-width="1"/>
-            <text x="401" y="714" class="t-muted" font-size="10" font-weight="500">Security</text>
-          </g>
-          <g data-legend-semantic-kind="messagebus" data-legend-kind="messagebus" data-legend-label="Message bus" data-legend-x="494" data-legend-baseline="714" data-legend-width="112">
-            <rect x="494" y="705" width="16" height="10" rx="2.5" class="c-messagebus" stroke-width="1"/>
-            <text x="516" y="714" class="t-muted" font-size="10" font-weight="500">Message bus</text>
-          </g>
-          <g data-legend-semantic-kind="external" data-legend-kind="external" data-legend-label="External" data-legend-x="628" data-legend-baseline="714" data-legend-width="93">
-            <rect x="628" y="705" width="16" height="10" rx="2.5" class="c-external" stroke-width="1"/>
-            <text x="650" y="714" class="t-muted" font-size="10" font-weight="500">External</text>
+          <g data-legend-semantic-kind="external" data-legend-kind="external" data-legend-label="External" data-legend-x="264" data-legend-baseline="1044" data-legend-width="93">
+            <rect x="264" y="1035" width="16" height="10" rx="2.5" class="c-external" stroke-width="1"/>
+            <text x="286" y="1044" class="t-muted" font-size="10" font-weight="500">External</text>
           </g>
         </g>
       </svg>
@@ -5761,48 +5842,48 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <div class="cards">
       <div class="card">
         <div class="card-header">
-          <div class="card-dot cyan"></div>
-          <h3>Layers</h3>
-        </div>
-        <ul>
-          <li>domain ← application ← infrastructure / presentation</li>
-          <li>Only infrastructure/obsidian imports obsidian</li>
-          <li>Boundaries enforced by oxlint and fallow</li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
           <div class="card-dot emerald"></div>
-          <h3>Lifecycle</h3>
+          <h3>Two manifests per module</h3>
         </div>
         <ul>
-          <li>One ManagedRuntime per plugin load</li>
-          <li>Unload closes every view, then disposes the runtime</li>
-          <li>A failing release step no longer skips the others</li>
+          <li>module.ts (defineModule): texts, error tags and describer, note types, routes, sections, services, commands</li>
+          <li>screens.ts (ModuleScreens): screens, section parts, context area; Vue-free</li>
+          <li>A new module edits two shared places: APP_MODULES and MODULE_SCREENS</li>
         </ul>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <div class="card-dot violet"></div>
-          <h3>Events (ADR 0004)</h3>
+          <div class="card-dot cyan"></div>
+          <h3>Composition</h3>
         </div>
         <ul>
-          <li>Obsidian events become plain AppEvent data</li>
-          <li>Held back until LayoutReady</li>
-          <li>Panel recounts 300 ms after Markdown changes</li>
+          <li>The root files derive every composed type and value from APP_MODULES</li>
+          <li>MODULE_SCREENS is keyed by the module names: a module without screens does not compile</li>
+          <li>The shell adds the frame&#39;s settings entry on the first section</li>
         </ul>
       </div>
 
       <div class="card">
         <div class="card-header">
           <div class="card-dot amber"></div>
-          <h3>Outside the bundle</h3>
+          <h3>Late loading</h3>
         </div>
         <ul>
-          <li>harness/: same layers with browser adapters</li>
-          <li>tests/: Obsidian double, e2e in real Obsidian</li>
+          <li>Plugin load evaluates no Vue: appSurface and every screens.ts only hold import() loaders</li>
+          <li>Vue, Nuxt UI and the components load when a ShellView opens</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot violet"></div>
+          <h3>Direction and enforcement</h3>
+        </div>
+        <ul>
+          <li>feature → notes → shell, through each index.ts; every layer imports the domain</li>
+          <li>ESLint reads APP_MODULES; configs/fallow.json is generated from it</li>
+          <li>communities has no infrastructure folder: notes go through NoteStore</li>
         </ul>
       </div>
     </div>

@@ -20,7 +20,7 @@ Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root; product decision
 
 The Obsidian plugin lives in `src/`; read `docs/engineering/architecture.md` before changing its structure.
 
-- **Gate:** `npm run verify` must exit 0 before you call work done; read the exit code, never mask it. It stops at the first failing step. `npm run verify:full` adds mutation testing.
+- **Gate:** `npm run verify` must exit 0 before you call work done; read the exit code, never mask it. It runs `format:check`, `lint` and `typecheck` at the same time (a failure there lets the other two finish and then stops the gate), and each later step runs alone and stops the gate at its first failure. `npm run verify:full` adds mutation testing.
 - **Tests first:** write the failing test, see it fail, then implement. Projects, the Obsidian double, support Layers and the real-Obsidian e2e suite (`npm run test:e2e`, under `xvfb-run -a` on headless Linux): `docs/engineering/testing.md`. A change to lifecycle, settings tab, theme, pop-out, view state or vault behaviour needs a passing e2e run.
 - **Third-party notices:** a dependency that enters or leaves the bundle, or a changed licence text, turns `npm run verify` red at `check:notices`; run `npm run notices` and commit `THIRD-PARTY-NOTICES.txt` (generated, never hand-edited): `docs/engineering/releasing.md`.
 - **Layers:** `domain` ← `application` ← `infrastructure/obsidian` and `presentation`; lint and fallow enforce them. `obsidian` only in `src/infrastructure/obsidian/**`, `main.ts`, `bootstrap.ts`. In presentation, `effect` only in `src/presentation/shell/runtime/`; components run reads through `useQuery` and state changes through `useCommand`.

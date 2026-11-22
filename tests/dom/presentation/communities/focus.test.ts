@@ -139,7 +139,7 @@ describe("a failed submit", () => {
   it("puts the focus on the first free colour when the colour is the first invalid field", async () => {
     const screen = await openCommunities({
       seed: (notes) => {
-        notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", color: "amber" }));
+        notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", color: "cyan" }));
         notes.seed(`${FOLDER}/B.md`, communityNote(2, { name: "B", short_code: "B2" }));
       },
     });

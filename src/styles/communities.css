@@ -11,7 +11,7 @@
   --wm-community-blue: #1d4ed8;
   --wm-community-rust: #9a3412;
   --wm-community-slate: #475569;
-  --wm-community-cyan: #0e7490;
+  --wm-community-amber: #5c4200;
   --wm-community-pink: #be185d;
   --wm-community-olive: #4d7c0f;
   --wm-community-on: #ffffff;
@@ -23,7 +23,7 @@
   --wm-community-blue: #60a5fa;
   --wm-community-rust: #fb923c;
   --wm-community-slate: #94a3b8;
-  --wm-community-cyan: #22d3ee;
+  --wm-community-amber: #fde68a;
   --wm-community-pink: #f472b6;
   --wm-community-olive: #84cc16;
   --wm-community-on: #18181b;
@@ -48,8 +48,8 @@
 [data-community-color="slate"] {
   background-color: var(--wm-community-slate);
 }
-[data-community-color="cyan"] {
-  background-color: var(--wm-community-cyan);
+[data-community-color="amber"] {
+  background-color: var(--wm-community-amber);
 }
 [data-community-color="pink"] {
   background-color: var(--wm-community-pink);

@@ -173,7 +173,7 @@ describe("the community switch", () => {
   it("offers no community with an issue, and says when none can be chosen", async () => {
     const screen = await openCommunities({
       seed: (notes) => {
-        notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", color: "amber" }));
+        notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", color: "cyan" }));
         notes.seed(
           `${FOLDER}/B.md`,
           communityNote(2, { name: "B", schema: "weg-manager.community/v2" }),

@@ -69,13 +69,13 @@ describe("validateCommunity", () => {
   it("names every missing and broken field, at most one issue each, in file order", () => {
     expect(
       validateCommunity(
-        { name: "", short_code: "A", color: "amber", kind: "", unit_label: "x".repeat(51) },
+        { name: "", short_code: "A", color: "cyan", kind: "", unit_label: "x".repeat(51) },
         { others: [] },
       ),
     ).toEqual([
       { key: "name", code: "field.missing" },
       { key: "short_code", code: "short-code.invalid" },
-      { key: "color", code: "color.unknown", value: "amber" },
+      { key: "color", code: "color.unknown", value: "cyan" },
       { key: "kind", code: "field.missing" },
       { key: "unit_label", code: "unit-label.invalid" },
     ]);
@@ -159,7 +159,7 @@ describe("firstFreeColor", () => {
   });
 
   it("is none when every colour is taken", () => {
-    const all = ["teal", "violet", "blue", "rust", "slate", "cyan", "pink", "olive"];
+    const all = ["teal", "violet", "blue", "rust", "slate", "amber", "pink", "olive"];
     expect(firstFreeColor(all.map((color) => ({ color })))).toBeUndefined();
   });
 });
@@ -167,10 +167,10 @@ describe("firstFreeColor", () => {
 describe("validateCommunity: the data of an issue", () => {
   it("is the value as the rules saw it: trimmed, the short code upper-case", () => {
     expect(
-      validateCommunity({ ...INPUT, short_code: " tg ", color: " amber " }, { others: [TG] }),
+      validateCommunity({ ...INPUT, short_code: " tg ", color: " cyan " }, { others: [TG] }),
     ).toEqual([
       { key: "short_code", code: "short-code.taken", value: "TG", other: "Tiefgarage" },
-      { key: "color", code: "color.unknown", value: "amber" },
+      { key: "color", code: "color.unknown", value: "cyan" },
     ]);
   });
 });

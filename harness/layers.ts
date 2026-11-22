@@ -82,7 +82,7 @@ const seedFor = (scenario: Scenario, notes: Memory) => {
           ...AHORNWEG_VALUES,
           name: "Birkenallee",
           short_code: "BA",
-          color: "amber",
+          color: "cyan",
         }),
       );
       seed("Doppelt", community(104, { ...TIEFGARAGE_VALUES, name: "Doppelt", short_code: "AW" }));

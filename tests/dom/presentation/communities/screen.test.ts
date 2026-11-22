@@ -123,10 +123,10 @@ describe("the community settings", () => {
   it("shows a broken field's issue on an editable community", async () => {
     const screen = await openCommunities({
       seed: (notes) =>
-        notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", color: "amber" })),
+        notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", color: "cyan" })),
     });
     expect(screen.text("community-issues")).toBe(
-      t.issues["color.unknown"]({ key: "color", code: "color.unknown", value: "amber" }, "Farbe"),
+      t.issues["color.unknown"]({ key: "color", code: "color.unknown", value: "cyan" }, "Farbe"),
     );
     expect(screen.all("community-badge")[0]?.dataset["communityColor"]).toBe("none");
     expect(screen.q("community-edit")).toBeDefined();

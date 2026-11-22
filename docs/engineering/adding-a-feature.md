@@ -4,7 +4,7 @@ The tracer slice, module `communities`, is the worked example: the first record 
 
 A feature is a module: one folder per layer, each with an `index.ts` (see [Modules](architecture.md#modules)). It imports `notes` and `shell` only through their indexes; `shell` and `notes` never import it.
 
-The shared files only compose. A new module adds one line to each of these. Typecheck fails until it adds the lines marked *typecheck*, as soon as the module's code uses the part (a use case that needs its services, an error, a text, an event, a route); a unit test fails until it adds the note types; nothing fails for a missing navigation entry or frame part, which only does not show:
+The shared files only compose. A new module adds one line to each of these. Typecheck fails until it adds the lines marked *typecheck*, as soon as the module's code uses the part (a use case that needs its services, an error, a text, an event, a route); a unit test fails until it adds the note types; nothing fails for a missing navigation entry, frame part or command, which only does not show:
 
 | File | Line | Enforced by |
 | --- | --- | --- |
@@ -14,6 +14,7 @@ The shared files only compose. A new module adds one line to each of these. Type
 | `src/application/events.ts` | its event record, when it has events | typecheck |
 | `src/application/routes.ts` | its route schema in `Route` | typecheck |
 | `src/application/note-types.ts` | its note types in `appNoteTypes` | `tests/unit/application/note-types.test.ts`: every note type a domain `index.ts` exports must be registered once; the test lists the domain indexes and fails until the new folder is in `DOMAIN_INDEXES` |
+| `src/application/commands.ts` | its commands in `appCommands` (from the module's application index): id without the plugin id, label from its catalog part, and an action that opens a `Route` or runs a use case | typecheck for the label (a catalog key) and the route (a `Route`); `tests/unit/application/commands.test.ts`: every id once, kebab-case, without the plugin id, a label in both languages; a command left out is not checked |
 | `src/application/app-services-layer.ts` | its services' Layer in `appServicesLayer`, after the modules it needs; a new port's adapter as a field of `AppAdapters` | typecheck (`appServicesLayer` must be a `Layer<AppServices>`; the plugin's `appLayer`, `harness/layers.ts` and `tests/support/adapters.ts` must each supply every field of `AppAdapters`) |
 | `src/presentation/app-surface.ts` | its screens, navigation entry and frame parts | typecheck for the screens (one per `Route` name); the navigation entry and the frame parts are not checked |
 
@@ -68,6 +69,7 @@ Folder `src/application/communities/`. Test fixture: `tests/support/communities/
 5. **Errors** (`errors.ts`, `user-messages.ts`). `InvalidCommunityError { issues }`, a `Schema.TaggedError`, with `COMMUNITIES_ERROR_TAGS` and the guard `isCommunitiesError`; the module's union joins `AppError` and its describer joins `describeError`. See [error-handling.md](error-handling.md).
 6. **Texts** (`i18n/catalog.ts`, `de.ts`, `en.ts`, `describe.ts`). The module's part of `Catalog`, typed, German in du-form and English in sentence case, cause then action. `describeCommunityIssue` words the module's codes with the field's label and hands the shared ones to the notes catalog. First test: `i18n.test.ts`, which pins every text in both languages.
 7. **The route** (`routes.ts`). `CommunitiesRoute` joins the union in `src/application/routes.ts`, which also sets the start route.
+8. **Commands**, when the feature has any (the slice has none). The module exports a list of `PluginCommand`s from its application index, e.g. `{ id: "new-point", name: (messages) => messages.points.commands.newPoint, action: { _tag: "open", route: NEW_POINT } }` or `{ _tag: "run", effect: useCase }` for a use case that handles its expected failures itself; `src/application/commands.ts` spreads it into `appCommands`. Never a hotkey, never the plugin id in `id`, never an edit of the shell's `registerCommands`. First test: `tests/unit/application/commands.test.ts` with the new ids and labels.
 
 Mutation testing covers `src/domain` and `src/application`; the slice's score is 100 %, keep it there. Run Stryker on the module's files only (see [testing.md](testing.md#mutation-testing)).
 

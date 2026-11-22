@@ -13,7 +13,10 @@ const npm = (/** @type {string} */ script) => ({
   args: ["run", script],
 });
 
-/** The single quality gate, in order: cheap and fast checks first. */
+/**
+ * The single quality gate, in order: cheap and fast checks first. `check:dist` and `check:notices`
+ * read the fresh `dist/`, so they come after `build`.
+ */
 export const STEPS = [
   "format:check",
   "lint",
@@ -22,6 +25,7 @@ export const STEPS = [
   "analyze",
   "build",
   "check:dist",
+  "check:notices",
 ].map(npm);
 
 /** `verify:full` adds mutation testing. */

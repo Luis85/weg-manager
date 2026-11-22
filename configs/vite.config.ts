@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { builtinModules } from "node:module";
 import { fileURLToPath } from "node:url";
 import { defineConfig, mergeConfig, type Plugin } from "vite";
+import { bundledPackages } from "../scripts/bundled-packages.mjs";
+import { PACKAGES_FILE } from "../scripts/third-party-notices.mjs";
 import { sharedConfig } from "./vite.shared.ts";
 
 /** Paths below resolve from the repository root, not from this folder. */
@@ -28,7 +30,11 @@ const copyManifest = (): Plugin => ({
 export default defineConfig(({ mode }) =>
   mergeConfig(sharedConfig({ mode }), {
     root: ROOT,
-    plugins: [copyManifest()],
+    // Records which packages the production bundle holds, for THIRD-PARTY-NOTICES.txt.
+    plugins: [
+      copyManifest(),
+      bundledPackages({ outFile: `${ROOT}${PACKAGES_FILE}`, enabled: mode !== "development" }),
+    ],
     build: {
       outDir: "dist",
       emptyOutDir: true,

@@ -133,3 +133,5 @@ Entwicklerdokumentation (englisch): [Architektur](docs/engineering/architecture.
 ## Lizenz
 
 [MIT](LICENSE)
+
+Die Lizenzen der Pakete von Dritten, die in `main.js` und `styles.css` stecken, stehen in [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt). Die Datei wird mit `npm run notices` erzeugt und liegt jedem GitHub-Release bei.

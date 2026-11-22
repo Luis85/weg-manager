@@ -53,9 +53,16 @@ export class NoteStore extends Context.Service<
     /**
      * The paths of the Markdown notes in `folder` or below (`/` is the whole vault) whose
      * frontmatter block cannot be read: broken YAML, or YAML that is no map. `list` leaves them
-     * out and `read` gives `{}`, so this is the only way to find them. Sorted by path.
+     * out and `read` gives `{}`, so this is the only way to find them. Sorted by path. The folder
+     * is found as `create` finds it.
      */
     unreadable(folder: string): Effect.Effect<readonly string[], VaultReadError>;
+    /**
+     * Writes a new note into `note.folder`, found segment by segment regardless of case and
+     * Unicode form (`clashKey`) and written in the vault's spelling: the folder spelled exactly as
+     * asked, else the first by code unit; what is missing is created as asked. A taken name gets
+     * ` (2)`, ` (3)`, …, compared by `clashKey` too.
+     */
     create(
       note: NewNote,
     ): Effect.Effect<Note, InvalidNoteNameError | NotePathTakenError | NoteWriteError>;

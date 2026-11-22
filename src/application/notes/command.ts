@@ -1,7 +1,13 @@
 import { Effect, Result } from "effect";
 import { copyFrontmatter } from "./frontmatter";
 import { NoteTrashError, NoteWriteError, type NewNote, type Note } from "./index";
-import { planNewNote, type Normalize, type PlannedNote, type SiblingsOf } from "./paths";
+import {
+  planNewNote,
+  type FoldersIn,
+  type Normalize,
+  type PlannedNote,
+  type SiblingsOf,
+} from "./paths";
 
 /** What plugin code threw inside a vault write, carried past the vault call to `writeCommand`. */
 class WriteDefect extends Error {
@@ -65,17 +71,18 @@ export const trashCommand = (write: () => Promise<unknown>): Effect.Effect<void,
   }).pipe(Effect.mapError(({ cause }) => new NoteTrashError({ cause })));
 
 /**
- * `NoteStore.create` for any adapter: checks the name, picks a free path (`siblingsOf` says what
- * the folder holds) and runs `write` as one command. `write` creates the folder when missing and
+ * `NoteStore.create` for any adapter: checks the name, finds the folder in the vault's spelling
+ * (`foldersIn` says which folders a folder holds), picks a free path (`siblingsOf` says what the
+ * folder holds) and runs `write` as one command. `write` creates the folder when missing and
  * the note with `body`.
  */
 export const createNote = (
   note: NewNote,
   normalize: Normalize,
-  siblingsOf: SiblingsOf,
+  { siblingsOf, foldersIn }: { readonly siblingsOf: SiblingsOf; readonly foldersIn: FoldersIn },
   write: (plan: PlannedNote, body: string) => Promise<void>,
 ) =>
-  Effect.flatMap(planNewNote(note, normalize, siblingsOf), (plan) =>
+  Effect.flatMap(planNewNote(note, normalize, siblingsOf, foldersIn), (plan) =>
     writeCommand(async () => {
       await write(plan, note.body ?? "");
       return Result.succeed<Note>({

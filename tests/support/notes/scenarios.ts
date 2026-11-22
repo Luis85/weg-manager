@@ -294,6 +294,12 @@ export const storeScenario = async ({ app, plugins }: Context, settleMs: number)
     trash: await step(() => probe.trash("WEG Manager/Gemeinschaften/Ahornweg (2).md")),
     readTrashed: await step(() => probe.read("WEG Manager/Gemeinschaften/Ahornweg (2).md")),
     finalList: await step(() => probe.list()),
+    // A folder spelled in another case is the existing one: Linux would make a second.
+    caseFolder: await step(() =>
+      probe.create({ ...community, folder: "weg manager/GEMEINSCHAFTEN", name: "Linde" }),
+    ),
+    caseFolderChildren: app.vault.getRoot().children.filter((child) => /^weg/i.test(child.path))
+      .length,
   };
   for (const ref of refs) app.vault.offref(ref);
   for (const ref of cacheRefs) app.metadataCache.offref(ref);

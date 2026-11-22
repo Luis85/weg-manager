@@ -1,5 +1,6 @@
 import { describe } from "@effect/vitest";
 import { clashContract } from "./contract-clashes";
+import { folderContract } from "./contract-folders";
 import { readContract } from "./contract-reads";
 import { writeContract } from "./contract-writes";
 import type { NoteStoreFixture } from "./fixture";
@@ -16,5 +17,6 @@ export const noteStoreContract = (name: string, make: () => NoteStoreFixture) =>
     readContract(make);
     writeContract(make);
     clashContract(make);
+    folderContract(make);
   });
 };

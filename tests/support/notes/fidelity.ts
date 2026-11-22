@@ -170,6 +170,7 @@ const COMMUNITY = { schema: "weg-manager.community/v1", name: "Ahornweg 12", tag
 const FIRST = "WEG Manager/Gemeinschaften/Ahornweg.md";
 const SECOND = "WEG Manager/Gemeinschaften/Ahornweg (2).md";
 const BY_CASE = "WEG Manager/Gemeinschaften/ahornweg (3).md";
+const LINDE = "WEG Manager/Gemeinschaften/Linde.md";
 const OUTSIDE = {
   schema: "weg-manager.community/v1",
   zeta: 1,
@@ -263,4 +264,10 @@ export const STORE_REPORT = {
     },
     events: [],
   },
+  // The root folder and its subfolder are found regardless of case, in the vault's spelling.
+  caseFolder: {
+    result: { ok: true, value: { path: LINDE, frontmatter: COMMUNITY } },
+    events: [`vault:create ${LINDE}`, `metadataCache:changed ${LINDE}`],
+  },
+  caseFolderChildren: 1,
 };

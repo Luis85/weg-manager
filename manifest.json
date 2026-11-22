@@ -1,7 +1,7 @@
 {
   "id": "weg-manager",
   "name": "WEG Manager",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "minAppVersion": "1.15.1",
   "description": "Keep the communities of a German condominium (WEG) advisory board as notes in your vault.",
   "author": "Luis Mendez",

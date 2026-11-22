@@ -54,7 +54,9 @@ const obsidianmdForVue = [
  * - `presentation/shell` has a second entry, the Vue-free `host.ts`, for the code that runs at
  *   plugin load (`bootstrap`, the Obsidian adapters, the composition files in `src/presentation/`).
  *   That code may not import a module's presentation `index.ts` (it loads Vue) except as types:
- *   the shell's or a feature's. `app-surface.ts` reaches a feature's screens through `import()`.
+ *   the shell's or a feature's. Each presentation module has a Vue-free entry, `screens.ts`, which
+ *   only `src/presentation/*.ts` imports (`app-surface.ts`); it loads the module's components
+ *   through `import()` and imports no Vue, `.vue` file or presentation `index.ts` as a value.
  * - `application/notes` has a second entry, `adapter.ts`, the kit of the `NoteStore` adapters,
  *   which only `src/infrastructure/**` may import (`kitOutside`, `kitElsewhere`).
  * - A core module imports no module listed after it: `shell` none, `notes` only `shell`. Feature
@@ -67,21 +69,28 @@ const FEATURE_MODULES = ["communities"];
 const MODULES = [...CORE_MODULES, ...FEATURE_MODULES];
 /** The second entries: `presentation/shell/host.ts` and `application/notes/adapter.ts`. */
 const SECOND_ENTRY = { shell: "host", notes: "adapter" };
-const pastIndex = [
-  ...MODULES.map((module) => {
+/** Each module's entries besides its `index.ts`: its second entry and `extra`. */
+const pastIndexWith = (/** @type {string[]} */ extra) =>
+  MODULES.map((module) => {
     const second = SECOND_ENTRY[/** @type {keyof typeof SECOND_ENTRY} */ (module)];
+    const entries = ["index", ...(second === undefined ? [] : [second]), ...extra];
     return {
-      regex: `(^|/)${module}/(?!index$${second === undefined ? "" : `|${second}$`})`,
+      regex: `(^|/)${module}/(?!(${entries.join("|")})$)`,
       message: `Import module ${module} only through its index.ts (ADR 0006).`,
     };
-  }),
+  });
+const pastIndex = [
+  ...pastIndexWith([]),
   {
     regex: "(^|/)(?<!presentation/)shell/host$",
     message: "Only presentation/shell has a host.ts entry (ADR 0006).",
   },
 ];
-/** In `src/presentation/` the shell's folder is `./shell`, so `./shell/host` is its host entry. */
-const pastIndexInPresentation = pastIndex.slice(0, -1);
+/**
+ * In `src/presentation/` the shell's folder is `./shell`, so `./shell/host` is its host entry, and
+ * each module's `screens.ts` is an entry of the composition.
+ */
+const pastIndexInPresentation = pastIndexWith(["screens"]);
 /** A module's presentation `index.ts`, which loads Vue; deeper paths fail `pastIndex` already. */
 const PRESENTATION_INDEX = `(${MODULES.join("|")})(/index)?$`;
 /** Code that runs at plugin load: it loads Vue only through `loadSurface` (Lazy presentation). */
@@ -167,6 +176,10 @@ const moduleBoundaries = [
   },
   vueFreeAtLoad(PLUGIN_LOAD_FILES, `(^|/)presentation/${PRESENTATION_INDEX}`),
   vueFreeAtLoad(["src/presentation/*.ts"], `^\\./${PRESENTATION_INDEX}`),
+  vueFreeAtLoad(
+    ["src/presentation/*/screens.ts"],
+    `^(vue|@vue/.*|@nuxt/.*|@tanstack/.*|.*\\.vue|\\./index|\\.\\./${PRESENTATION_INDEX})$`,
+  ),
   ...CORE_MODULES.flatMap(coreBlocks),
 ];
 

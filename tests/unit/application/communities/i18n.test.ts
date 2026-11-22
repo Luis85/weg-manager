@@ -7,7 +7,6 @@ import {
   communitiesEn,
   describeCommunitiesError,
   describeCommunityIssue,
-  isCommunitiesError,
   type CommunitiesCatalog,
   type CommunityNoteIssue,
 } from "../../../../src/application/communities";
@@ -301,10 +300,11 @@ describe("communities errors", () => {
     expect(String(taken)).not.toContain("Ahornweg");
   });
 
-  it("tells its own errors from the other modules'", () => {
-    expect(isCommunitiesError(invalid)).toBe(true);
-    expect(isCommunitiesError(new NoteNotFoundError())).toBe(false);
-    expect(isCommunitiesError(new VaultReadError({ cause: new Error("x") }))).toBe(false);
+  it("leaves the other modules' errors to their own describers", () => {
+    expect(describeError(new NoteNotFoundError(), de).title).toBe("Notiz nicht gefunden");
+    expect(describeError(new VaultReadError({ cause: new Error("x") }), de).title).toBe(
+      "Notizen nicht lesbar",
+    );
   });
 
   it("words an invalid community as a warning, through describeError too", () => {

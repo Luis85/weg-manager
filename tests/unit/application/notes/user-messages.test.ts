@@ -13,8 +13,7 @@ import {
   NoteWriteError,
   NoteWriteRefusedError,
 } from "../../../../src/application/notes/errors";
-import { isNotesError } from "../../../../src/application/notes/user-messages";
-import { StorageError, VaultReadError } from "../../../../src/application/shell/errors";
+import { describeNotesError } from "../../../../src/application/notes/user-messages";
 import type { UserMessage } from "../../../../src/application/shell/user-messages";
 import { describeError } from "../../../../src/application/user-messages";
 
@@ -53,15 +52,15 @@ const ALL: readonly AppError[] = [
   new NoteIndexReadError(),
 ];
 
-describe("isNotesError", () => {
-  it("is true for every notes error and false for the shell's", () => {
-    for (const error of ALL) expect(isNotesError(error)).toBe(true);
-    expect(isNotesError(new VaultReadError({ cause: null }))).toBe(false);
-    expect(isNotesError(new StorageError({ cause: null }))).toBe(false);
-  });
-});
-
 describe.each([de, en])("describeError for notes ($shell.language)", (messages) => {
+  it("hands every notes error to the notes module's describer, with its part of the catalog", () => {
+    for (const error of ALL) {
+      expect(describeError(error, messages)).toEqual(
+        describeNotesError(error as Parameters<typeof describeNotesError>[0], messages.notes),
+      );
+    }
+  });
+
   it("words every notes error plainly", () => {
     expect.hasAssertions();
     for (const error of ALL) expectPlain(describeError(error, messages));

@@ -1,21 +1,17 @@
 // The public face of the shell's application layer (ADR 0006): other modules, other layers and the
 // composition files import only this.
-export { shellCommands, type CommandAction, type PluginCommand } from "./commands";
+export type { CommandAction, PluginCommand } from "./commands";
 export { reportDefect, reportUnexpected } from "./defects";
 export {
   ClipboardError,
   ReadOnlySettingsError,
   StorageError,
   VaultReadError,
-  type ShellError,
   type UpdateSettingsError,
 } from "./errors";
 export { EventBus, EventBusLive } from "./event-bus";
 export type { ShellEvents } from "./events";
 export { ISSUES_URL, PRODUCT_NAME, type Language, type ShellCatalog } from "./i18n/catalog";
-export { shellDe } from "./i18n/de";
-
-export { shellEn } from "./i18n/en";
 export { toLoggedError } from "./logged-error";
 export { LoggerLive, type LoggerOptions } from "./logger";
 export {
@@ -31,6 +27,7 @@ export {
   type DeviceValue,
   type LogEntry,
 } from "./ports";
+export { shellModule } from "./module";
 export { historyAt, stepBack, stepForward, visit, type RouteHistory } from "./history";
 export {
   SETTINGS,

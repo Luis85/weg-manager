@@ -11,17 +11,14 @@ export {
   NoteUnreadableError,
   NoteWriteError,
   NoteWriteRefusedError,
-  type NotesError,
 } from "./errors";
 export { isInFolder, recordFolder } from "./folders";
 export type { IssueSentences, NotesCatalog, RecordTexts } from "./i18n/catalog";
 export { describeNoteIssue, describeRecordIssue, describeUnindexedIssue } from "./i18n/describe";
-export { notesDe } from "./i18n/de";
-export { notesEn } from "./i18n/en";
+export { notesModule } from "./module";
 export { openNote } from "./open-note";
 export { applyPatch } from "./patch";
 export { editChange, newRecordFrontmatter } from "./records";
-export { DATA_ISSUES_SECTION } from "./routes";
 export { defineRecords } from "./record-kit";
 export { fileNameOf, type RecordList, type RecordRow } from "./record-list";
 export {
@@ -52,4 +49,3 @@ export {
   type NoteTypeRegistry,
   type UnindexedSnapshot,
 } from "./note-index";
-export { describeNotesError, isNotesError } from "./user-messages";

@@ -25,7 +25,12 @@ type Step<A> = { readonly result: A; readonly events: readonly string[] };
 /** What Obsidian's vault, metadata cache and file manager do, called directly. */
 export const vaultFacts = async (
   { app, obsidian }: Context,
-  input: { readonly paths: readonly string[]; readonly yaml: unknown; readonly text: string },
+  input: {
+    readonly paths: readonly string[];
+    readonly yaml: unknown;
+    readonly text: string;
+    readonly closings: readonly string[];
+  },
   settleMs: number,
 ) => {
   const events: string[] = [];
@@ -181,6 +186,24 @@ export const vaultFacts = async (
       }
       return { rejected: null, called };
     }),
+    // Where the metadata cache closes a block: each text has a candidate closing line on line 2
+    // and a plain `---` on line 4.
+    // Their events are left out: whether a file's index or the next create comes first varies.
+    createClosings: await (async () => {
+      for (const [index, closing] of input.closings.entries()) {
+        await app.vault.create(`A/close-${index}.md`, closing);
+      }
+      await settle();
+      return input.closings.length;
+    })(),
+    // The line the block ends on. Not the frontmatter: where the block runs on to line 4, the
+    // double's YAML copy rejects what Obsidian reads (` ---` continues `a: 1` as text).
+    closings: input.closings.map(
+      (_, index) =>
+        app.metadataCache
+          .getFileCache(file(`A/close-${index}.md`))
+          ?.sections?.find((section) => section.type === "yaml")?.position.end.line,
+    ),
     renameOntoFile: await step(() => app.fileManager.renameFile(file("A/plain.md"), "A/n.md")),
     renameIntoMissingFolder: await step(() =>
       app.fileManager.renameFile(file("A/plain.md"), "Fehlt/plain.md"),

@@ -57,6 +57,31 @@ export const PARSE_SAMPLE = {
   },
 };
 
+/**
+ * Candidate closing lines of a frontmatter block, each on line 2 of `---`, `a: 1`, the candidate,
+ * `b: 2`, `---`, a body: `vaultFacts` records where the metadata cache closes the block.
+ */
+export const CLOSING_LINES: readonly string[] = [
+  "---",
+  "--- ",
+  "---\t",
+  "---  \t ",
+  "----",
+  "---- ",
+  "-----",
+  "--- x",
+  "---x",
+  "--- # c",
+  " ---",
+  "...",
+];
+
+/** The texts of `CLOSING_LINES`, and one with CRLF line breaks. */
+export const CLOSING_TEXTS: readonly string[] = [
+  ...CLOSING_LINES.map((closing) => `---\na: 1\n${closing}\nb: 2\n---\nbody\n`),
+  "---\r\na: 1\r\n--- \r\nb: 2\r\n---\r\nbody\r\n",
+];
+
 /** The report of `vaultFacts` (`scenarios.ts`): each step's result and the events it fired. */
 export const VAULT_FACTS = {
   normalized: NORMALIZE_CASES.map(([, output]) => output),
@@ -105,6 +130,10 @@ export const VAULT_FACTS = {
     { path: "A/plain.md", frontmatter: false, yaml: null },
   ],
   brokenYaml: { result: "YAMLParseError", events: [] },
+  createClosings: CLOSING_TEXTS.length,
+  // Measured in Obsidian 1.15.1: every line that starts with `---` closes the block, whatever
+  // follows (`----`, `--- x`, `---x`), with LF or CRLF; ` ---` and `...` do not.
+  closings: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 2],
   createBom: { events: ["vault:create A/bom.md", "metadataCache:changed A/bom.md"] },
   bomCache: { a: 1 },
   bomRead: "---\r",

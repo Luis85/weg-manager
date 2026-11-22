@@ -44,32 +44,31 @@ describe("note write fidelity", function () {
   it("saves a changed kind by changing only its line, whatever else the note holds", async function () {
     await installConsoleSpy();
     const path = `${FOLDER}/Ahornweg 12.md`;
-    const before = communityText(
-      community(1, { name: "Ahornweg 12", short_code: "AW" }),
-      "Body\n",
-    ).replace(
-      "---\nschema",
-      [
-        "---",
-        "# Kommentar des Beirats",
-        "plz: 01067",
-        "version: 1.10",
-        "iban_nr: 12345678901234567890",
-        "flow: [a, b]",
-        "seit: 2024-01-01",
-        "zeit: 12:30",
-        "quoted: 'yes'",
-        '"verwalter": "Müller & Söhne" # mit Kommentar',
-        "liste:",
-        "- eins",
-        "-   zwei",
-        "text: |",
-        "  Zeile 1",
-        "",
-        "  Zeile 3",
-        "schema",
-      ].join("\n"),
-    );
+    const before = communityText(community(1, { name: "Ahornweg 12", short_code: "AW" }), "Body\n")
+      .replace(
+        "---\nschema",
+        [
+          "---",
+          "# Kommentar des Beirats",
+          "plz: 01067",
+          "version: 1.10",
+          "iban_nr: 12345678901234567890",
+          "flow: [a, b]",
+          "seit: 2024-01-01",
+          "zeit: 12:30",
+          "quoted: 'yes'",
+          '"verwalter": "Müller & Söhne" # mit Kommentar',
+          "liste:",
+          "- eins",
+          "-   zwei",
+          "text: |",
+          "  Zeile 1",
+          "",
+          "  Zeile 3",
+          "schema",
+        ].join("\n"),
+      )
+      .replace("kind: WEG", "kind: WEG  # Art des Objekts");
     await writeNote(path, before);
     await openView();
     await expectListed(["Ahornweg 12"]);
@@ -96,6 +95,23 @@ describe("note write fidelity", function () {
     await expectListed(["Ahornweg 12", "Bom", "Crlf"]);
     await saveKind("Crlf", "Haus");
     await expectText(path, before.replace("kind: WEG", "kind: Haus"));
+  });
+
+  it("saves notes whose block closes with `----` or `---` and blanks, keeping that line", async function () {
+    const closed = [
+      ["Vier", community(4, { name: "Vier", short_code: "VI", color: "violet" }), "----"],
+      ["Leer", community(5, { name: "Leer", short_code: "LE", color: "slate" }), "--- \t"],
+    ] as const;
+    const textOf = (fields: Readonly<Record<string, string>>, closing: string) =>
+      communityText(fields, "Body\n").replace("---\nBody", `${closing}\nBody`);
+    for (const [name, fields, closing] of closed) {
+      await writeNote(`${FOLDER}/${name}.md`, textOf(fields, closing));
+    }
+    await expectListed(["Ahornweg 12", "Bom", "Crlf", "Leer", "Vier"]);
+    for (const [name, fields, closing] of closed) {
+      await saveKind(name, "Haus");
+      await expectText(`${FOLDER}/${name}.md`, textOf({ ...fields, kind: "Haus" }, closing));
+    }
   });
 
   it("writes values that Obsidian's parseYaml reads back exactly", async function () {
@@ -153,6 +169,9 @@ describe("note write fidelity", function () {
       "\n---\na: 1\n---\n",
       "--- \na: 1\n---\n",
       "---\na: 1\nbody\n",
+      "---\na: 1\n----\nbody\n",
+      "---\na: 1\n---  \nbody\n",
+      "---\r\na: 1\r\n---\t\r\nbody\r\n",
     ];
     const found = texts.map((text) => {
       const note = splitNoteText(text);

@@ -164,12 +164,34 @@ describe("updateNoteText", () => {
     expect(change).not.toHaveBeenCalled();
   });
 
-  it("refuses a note whose fences Obsidian's readers disagree about, and never asks the change", () => {
+  it("refuses a note closed by a line it does not write into, and never asks the change", () => {
     const change = vi.fn<FrontmatterChange<never>>(() => Result.succeed({ set: { a: 2 } }));
-    expect(updateNoteText("---\na: 1\n----\nbody\n", change, parse)).toEqual(
-      Result.fail(new NoteWriteRefusedError({ reason: "layout" })),
-    );
+    for (const closing of ["-----", "--- x", "---- "]) {
+      expect(updateNoteText(`---\na: 1\n${closing}\nbody\n`, change, parse)).toEqual(
+        Result.fail(new NoteWriteRefusedError({ reason: "layout" })),
+      );
+    }
     expect(change).not.toHaveBeenCalled();
+  });
+
+  it.each(["--- ", "---\t", "----"])(
+    "writes into a note closed by %j and keeps that line",
+    (closing) => {
+      const text = `---\na: 1\n${closing}\r\nbody\n`;
+      expect(updateNoteText(text, setting({ a: 2 }), parse)).toEqual(
+        Result.succeed({ text: `---\na: 2\n${closing}\r\nbody\n`, frontmatter: { a: 2 } }),
+      );
+    },
+  );
+
+  it("keeps a line's comment behind the new value, also before a block list YAML reads back", () => {
+    const text = "---\nkind: WEG # Art\ntags: [a] # Liste\n---\n";
+    expect(updateNoteText(text, setting({ kind: "Haus", tags: ["x", "z"] }), parse)).toEqual(
+      Result.succeed({
+        text: "---\nkind: Haus # Art\ntags: # Liste\n  - x\n  - z\n---\n",
+        frontmatter: { kind: "Haus", tags: ["x", "z"] },
+      }),
+    );
   });
 
   it("refuses an edit the line scanner cannot place", () => {
@@ -222,15 +244,27 @@ describe("updateNoteText", () => {
   });
 });
 
+/** The forms of entry YAML does not let a comment follow on the key line. */
+const UNCOMMENTED = new Set([5, 12]);
+
+/**
+ * The comment at the end of an entry's key line, with the blanks before it: form 5's own, or
+ * `blanks` and a text of the key's own; none without `blanks` or where a comment cannot go.
+ */
+const commentOf = (key: string, form: number, blanks: string): string => {
+  if (form === 5) return ` # a date of ${key}`;
+  return blanks === "" || UNCOMMENTED.has(form) ? "" : `${blanks}# über ${key}`;
+};
+
 /** One top-level entry of a generated note, as people and agents write them. */
-const entryText = (key: string, form: number): string =>
+const entryForm = (key: string, form: number): string =>
   [
     `${key}: 01067`,
     `${key}: 1.10`,
     `${key}: 'yes'`,
     `${key}: "quoted # not a comment"`,
     `${key}: [a, b]`,
-    `${key}: 2024-01-01 # a date`,
+    `${key}: 2024-01-01 # a date of ${key}`,
     `${key}:`,
     `${key}:\n  - a\n\n  - "b"`,
     `${key}:\n- x\n- 12:30`,
@@ -240,6 +274,13 @@ const entryText = (key: string, form: number): string =>
     `${key}: first\n  second`,
     `'${key}'  : ~`,
   ][form] ?? `${key}: x`;
+
+/** The entry of `form`, with the comment of `commentOf` at the end of its key line. */
+const entryText = (key: string, form: number, blanks: string): string => {
+  const [first, ...rest] = entryForm(key, form).split("\n");
+  const comment = form === 5 ? "" : commentOf(key, form, blanks);
+  return [`${first}${comment}`, ...rest].join("\n");
+};
 
 const KEYS = ["a", "b", "c", "d", "e", "f"];
 const NEW_KEYS = ["n1", "n2", "short_code"];
@@ -254,10 +295,14 @@ const scalar: Arbitrary<unknown> = oneof(
 const value: Arbitrary<unknown> = oneof(scalar, array(scalar, { maxLength: 3 }));
 
 const generated = record({
-  entries: uniqueArray(tuple(constantFrom(...KEYS), constantFrom(...Array(15).keys())), {
-    selector: ([key]) => key,
-    maxLength: KEYS.length,
-  }),
+  entries: uniqueArray(
+    tuple(
+      constantFrom(...KEYS),
+      constantFrom(...Array(15).keys()),
+      constantFrom("", " ", "   ", "\t "),
+    ),
+    { selector: ([key]) => key, maxLength: KEYS.length },
+  ),
   comments: array(constantFrom("# note", "", "#"), { maxLength: 3 }),
   eol: constantFrom("\n", "\r\n"),
   bom: constantFrom("", BOM),
@@ -291,7 +336,7 @@ describe("updateNoteText on generated notes", () => {
   it("keeps every byte outside the patched keys and writes exactly the patch", () => {
     assert(
       property(generated, ({ entries, comments, eol, bom, body, set, remove }) => {
-        const blocks = entries.map(([key, form]) => entryText(key, form));
+        const blocks = entries.map(([key, form, blanks]) => entryText(key, form, blanks));
         const lines = [
           ...comments,
           ...blocks.flatMap((block, index) => [block, comments[index] ?? "#"]),
@@ -317,10 +362,27 @@ describe("updateNoteText on generated notes", () => {
           ([key]) => !Object.hasOwn(patch.set, key) && !remove.includes(key),
         );
         let from = 0;
-        for (const [key, form] of untouched) {
-          const at = written.indexOf(entryText(key, form).replaceAll("\n", eol), from);
+        for (const [key, form, blanks] of untouched) {
+          const at = written.indexOf(entryText(key, form, blanks).replaceAll("\n", eol), from);
           expect(at).toBeGreaterThanOrEqual(from);
           from = at;
+        }
+        // A key that is set keeps its line's comment at the end of that line, rewritten behind the
+        // new value (`key: …`) or kept as it was (a value that did not change); a removed one
+        // takes it along.
+        const headLines = head.split(eol);
+        for (const [key, form, blanks] of entries) {
+          const comment = commentOf(key, form, blanks);
+          if (comment === "") continue;
+          const lines = headLines.filter((line) => line.includes(comment));
+          if (Object.hasOwn(patch.set, key)) {
+            const [first] = entryText(key, form, blanks).split("\n");
+            expect(lines).toHaveLength(1);
+            expect(lines[0]?.endsWith(comment)).toBe(true);
+            expect(lines[0]?.startsWith(`${key}:`) === true || lines[0] === first).toBe(true);
+          } else if (remove.includes(key)) {
+            expect(lines).toEqual([]);
+          }
         }
       }),
       { numRuns: GENERATED_NOTES },

@@ -1,3 +1,5 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import type { App } from "./app";
 import type { Plugin } from "./plugin";
 
@@ -202,7 +204,7 @@ export abstract class SettingTab {
   settingItems: DefinitionItem[] = [];
   constructor(readonly app: App) {}
 
-  getSettingDefinitions(): DefinitionItem[] {
+  getSettingDefinitions(): Obsidian.SettingDefinitionItem[] {
     return [];
   }
 
@@ -217,7 +219,8 @@ export abstract class SettingTab {
 
   /** As in Obsidian 1.15.1: re-reads the definitions and re-renders the tab while it is shown. */
   update(): void {
-    this.settingItems = this.getSettingDefinitions();
+    // The double renders the fields of the definitions the plugin writes (`DefinitionItem`).
+    this.settingItems = this.getSettingDefinitions() as unknown as DefinitionItem[];
     if (this.shown) this.render();
   }
 
@@ -273,7 +276,20 @@ export abstract class SettingTab {
   }
 }
 
-export abstract class PluginSettingTab extends SettingTab {
+export abstract class PluginSettingTab
+  extends SettingTab
+  implements
+    Uses<
+      Obsidian.PluginSettingTab,
+      | "app"
+      | "containerEl"
+      | "display"
+      | "hide"
+      | "getSettingDefinitions"
+      | "getControlValue"
+      | "setControlValue"
+    >
+{
   constructor(
     app: App,
     readonly plugin: Plugin,

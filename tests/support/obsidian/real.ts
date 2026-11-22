@@ -25,3 +25,9 @@ export const asObsidianLeaf = (leaf: WorkspaceLeaf): Obsidian.WorkspaceLeaf =>
 
 /** The double's `View` class where a scenario takes Obsidian's, as `getActiveViewOfType(View)`. */
 export const obsidianView = View as unknown as typeof Obsidian.View;
+
+/** A view the plugin builds (typed against `obsidian`), handed back to the double's leaf. */
+export const asDoubleView = (view: Obsidian.View): View => view as unknown as View;
+
+/** The plugin's view of type `T` behind a double's leaf, as the plugin built it. */
+export const viewOf = <T>(leaf: WorkspaceLeaf | undefined): T => leaf?.view as unknown as T;

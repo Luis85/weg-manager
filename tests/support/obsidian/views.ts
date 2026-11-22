@@ -1,3 +1,5 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import type { App } from "./app";
 import { Component } from "./component";
 import type { Workspace } from "./workspace";
@@ -13,7 +15,22 @@ export type ViewState = {
   readonly active?: boolean;
 };
 
-export abstract class View extends Component {
+export abstract class View
+  extends Component
+  implements
+    Uses<
+      Obsidian.View,
+      | "containerEl"
+      | "leaf"
+      | "app"
+      | "navigation"
+      | "getViewType"
+      | "getDisplayText"
+      | "getIcon"
+      | "getState"
+      | "setState"
+    >
+{
   readonly containerEl: HTMLElement;
   /** Whether the view is navigable: Obsidian then opens files into its tab. */
   navigation = false;
@@ -39,7 +56,7 @@ export abstract class View extends Component {
 }
 
 /** Like Obsidian: `containerEl.children[1]` is `contentEl`. */
-export abstract class ItemView extends View {
+export abstract class ItemView extends View implements Uses<Obsidian.ItemView, "contentEl"> {
   readonly contentEl: HTMLElement;
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
@@ -102,7 +119,10 @@ class DeferredView extends View {
 
 const BUILT_IN = new Set(["empty", "markdown"]);
 
-export class WorkspaceLeaf {
+export class WorkspaceLeaf implements Uses<
+  Obsidian.WorkspaceLeaf,
+  "view" | "getViewState" | "setViewState" | "openFile" | "detach" | "isDeferred" | "loadIfDeferred"
+> {
   view: View;
   readonly containerEl: HTMLElement;
   private viewType = "empty";
@@ -183,11 +203,11 @@ export class WorkspaceLeaf {
     if (state?.active === true) this.workspace.setActiveLeaf(this);
   }
 
-  /** As in Obsidian, the leaf is gone at once; its view closes after. */
-  async detach(): Promise<void> {
+  /** As in Obsidian, the leaf is gone at once; its view closes after (`detach` returns nothing). */
+  detach(): void {
     this.workspace.removeLeaf(this);
     this.containerEl.remove();
-    await this.closeView();
+    void this.closeView();
   }
 
   private async openView(type: string): Promise<void> {

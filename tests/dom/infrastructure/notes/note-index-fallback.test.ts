@@ -10,6 +10,7 @@ import {
 } from "../../../../src/application/notes";
 import { appServicesLayer } from "../../../../src/application/app-services-layer";
 import { FULL, testItem } from "../../../support/notes/test-note-type";
+import { asObsidianPlugin } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -43,7 +44,7 @@ afterEach(async () => {
 /** The plugin's own composition on the double, under a clock the test moves. */
 const start = async (plugin: InstanceType<typeof Bare>) => {
   const layer: Layer.Layer<AppServices> = appServicesLayer(
-    { ...shellAdapters(plugin as never), ...notesAdapters(plugin as never) },
+    { ...shellAdapters(asObsidianPlugin(plugin)), ...notesAdapters(asObsidianPlugin(plugin)) },
     { developmentMode: false, language: "de", noteTypes: [...appNoteTypes, testItem] },
   );
   const runtime: AppRuntime = ManagedRuntime.make(

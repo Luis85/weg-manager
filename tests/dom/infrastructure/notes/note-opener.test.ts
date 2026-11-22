@@ -2,13 +2,14 @@ import { vi } from "vitest";
 import { noteOpenerLayer } from "../../../../src/infrastructure/obsidian/notes";
 import { App } from "../../../support/obsidian";
 import { noteOpenerContract } from "../../../support/notes/contract-opener";
+import { asObsidian } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
 noteOpenerContract("Obsidian adapter on the double", () => {
   const app = new App();
   return {
-    layer: noteOpenerLayer(app as never),
+    layer: noteOpenerLayer(asObsidian(app)),
     seed: async (path) => {
       app.vault.seedFile(path, "");
     },

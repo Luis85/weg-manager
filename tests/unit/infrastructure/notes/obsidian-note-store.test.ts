@@ -12,6 +12,7 @@ import { splitFrontmatter } from "../../../support/obsidian/metadata-cache";
 import { noteStoreContract, type NoteStoreFixture } from "../../../support/notes/contract";
 import { NORMALIZE_CASES } from "../../../support/notes/fidelity";
 import { eventually } from "../../../support/wait";
+import { asObsidian } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -23,7 +24,7 @@ const textOf = (frontmatter: Parameters<NoteStoreFixture["seed"]>[1], body = "")
 
 /** The Obsidian adapter on the double, with handles that go through the double's public API. */
 const onDouble = (app = new App()): NoteStoreFixture => ({
-  layer: noteStoreLayer(app as never),
+  layer: noteStoreLayer(asObsidian(app)),
   seed: (path, frontmatter, body) =>
     Promise.resolve(app.vault.seedFile(path, textOf(frontmatter, body))),
   removeOutside: (path) => {
@@ -86,7 +87,7 @@ const rawText = (app: App, path: string): string => {
 };
 
 const run = <A, E>(app: App, use: (store: NoteStore["Service"]) => Effect.Effect<A, E>) =>
-  NoteStore.use(use).pipe(Effect.provide(noteStoreLayer(app as never)));
+  NoteStore.use(use).pipe(Effect.provide(noteStoreLayer(asObsidian(app))));
 
 const textAt = (app: App, path: string) => {
   const file = app.vault.getFileByPath(path);

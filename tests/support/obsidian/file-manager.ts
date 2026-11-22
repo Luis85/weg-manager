@@ -1,3 +1,5 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import type { MetadataCache } from "./metadata-cache";
 import { isMap, splitFrontmatter } from "./metadata-cache";
 import { TFile, TFolder, type TAbstractFile, type Vault } from "./vault";
@@ -23,7 +25,11 @@ import { parseYaml, stringifyYaml } from "./yaml";
  * "The vault's order" is the order entries joined the vault, a renamed entry joining again: that
  * is how Obsidian 1.15.1 lists them (`vaultFacts`' `trashFolder`, `folderScenario`).
  */
-export class FileManager {
+// `trashFile` resolves with `true` (measured), while the d.ts says `Promise<void>`: left out.
+export class FileManager implements Uses<
+  Obsidian.FileManager,
+  "renameFile" | "processFrontMatter"
+> {
   constructor(
     private readonly vault: Vault,
     private readonly metadataCache: MetadataCache,

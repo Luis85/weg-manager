@@ -10,6 +10,7 @@ import {
   sequentialIncidents,
   testMessages,
 } from "../../../support/layers";
+import { asObsidianPlugin } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -31,7 +32,7 @@ const setup = (start: Date, zone = "UTC") => {
   const { plugin } = createTestPlugin(Bare);
   plugin.load();
   const time = manualClock(start, zone);
-  return { plugin, time, layer: todayLayer(plugin as never, time.clock) };
+  return { plugin, time, layer: todayLayer(asObsidianPlugin(plugin), time.clock) };
 };
 
 const reporting = Layer.mergeAll(

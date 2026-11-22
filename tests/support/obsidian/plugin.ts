@@ -1,3 +1,5 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import { App } from "./app";
 import { Component } from "./component";
 import { clearNotices, recordedNotices } from "./notice";
@@ -14,14 +16,8 @@ export type PluginManifest = {
   readonly isDesktopOnly?: boolean;
 };
 
-export type Command = {
-  readonly id: string;
-  readonly name: string;
-  readonly callback?: () => unknown;
-  readonly checkCallback?: (checking: boolean) => boolean | void;
-  readonly hotkeys?: readonly unknown[];
-  readonly icon?: string;
-};
+/** Obsidian's own command type: the double stores what the plugin hands it. */
+export type Command = Obsidian.Command;
 
 export type RibbonIcon = {
   readonly icon: string;
@@ -82,7 +78,23 @@ const state = (plugin: Plugin): Internals => {
   return value;
 };
 
-export abstract class Plugin extends Component {
+export abstract class Plugin
+  extends Component
+  implements
+    Uses<
+      Obsidian.Plugin,
+      | "app"
+      | "manifest"
+      | "onload"
+      | "loadData"
+      | "saveData"
+      | "addCommand"
+      | "removeCommand"
+      | "addRibbonIcon"
+      | "addSettingTab"
+      | "registerView"
+    >
+{
   constructor(
     readonly app: App,
     readonly manifest: PluginManifest,
@@ -189,7 +201,8 @@ export const createTestPlugin = <P extends object>(
     runCommand: (id) => {
       const command = registry.commands.get(id);
       if (command === undefined) throw new Error(`unknown command ${id}`);
-      return command.callback?.() ?? command.checkCallback?.(false);
+      const result: unknown = command.callback?.() ?? command.checkCallback?.(false);
+      return result;
     },
     failNextAddCommand: (failure) => {
       state(double).failAddCommandAfter = failure?.after ?? 0;

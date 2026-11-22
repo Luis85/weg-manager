@@ -1,3 +1,5 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import type { App } from "./app";
 import { Events } from "./events";
 import { WorkspaceRibbon } from "./ribbon";
@@ -28,7 +30,24 @@ const isLayout = (value: unknown): value is Layout =>
  * Not modelled: tab groups, splits, sidebars and pop-out windows (`WorkspaceLeaf.openIn` puts a
  * leaf in another document, nothing more), and Obsidian's own layout format.
  */
-export class Workspace extends Events {
+export class Workspace
+  extends Events
+  implements
+    Uses<
+      Obsidian.Workspace,
+      | "activeLeaf"
+      | "getLeaf"
+      | "getLeavesOfType"
+      | "iterateAllLeaves"
+      | "getActiveViewOfType"
+      | "revealLeaf"
+      | "getLayout"
+      | "changeLayout"
+      | "onLayoutReady"
+      | "layoutReady"
+      | "requestSaveLayout"
+    >
+{
   readonly leaves: WorkspaceLeaf[] = [];
   readonly revealed: WorkspaceLeaf[] = [];
   readonly leftRibbon = new WorkspaceRibbon();
@@ -40,11 +59,12 @@ export class Workspace extends Events {
   /** Test helper: how often `requestSaveLayout` was called. */
   layoutSaves = 0;
   /** Obsidian debounces the save; the double counts the requests. */
-  readonly requestSaveLayout = Object.assign(
+  readonly requestSaveLayout: Obsidian.Debouncer<[], Promise<void>> = Object.assign(
     () => {
       this.layoutSaves += 1;
+      return this.requestSaveLayout;
     },
-    { cancel: () => undefined, run: () => undefined },
+    { cancel: () => this.requestSaveLayout, run: () => undefined },
   );
 
   constructor(readonly app: App) {
@@ -93,7 +113,7 @@ export class Workspace extends Events {
   removeLeaf(leaf: WorkspaceLeaf): void {
     const index = this.leaves.indexOf(leaf);
     if (index !== -1) this.leaves.splice(index, 1);
-    if (this.activeLeaf === leaf) this.activeLeaf = this.leaves.at(-1) ?? null;
+    if (this.active === leaf) this.active = this.leaves.at(-1) ?? null;
   }
 
   /** Test helper: what each `getLeaf` call asked for, in order. */
@@ -101,7 +121,8 @@ export class Workspace extends Events {
 
   getLeaf(newLeaf?: LeafRequest): WorkspaceLeaf {
     this.leafRequests.push(newLeaf);
-    const active = this.activeLeaf;
+    this.start();
+    const active = this.active;
     const type = active?.getViewState().type;
     const reuse =
       newLeaf === undefined || newLeaf === false
@@ -109,7 +130,7 @@ export class Workspace extends Events {
         : (newLeaf === true || newLeaf === "tab") && type === "empty";
     if (reuse && active !== null) return active;
     const leaf = this.addLeaf(new WorkspaceLeaf(this));
-    this.activeLeaf = leaf;
+    this.active = leaf;
     return leaf;
   }
 
@@ -129,12 +150,15 @@ export class Workspace extends Events {
 
   /** The active leaf's view when it is a `type`, as Obsidian's `getActiveViewOfType`. */
   getActiveViewOfType<T extends View>(type: abstract new (...args: never[]) => T): T | null {
-    const view = this.activeLeaf?.view;
+    this.start();
+    const view = this.active?.view;
     return view instanceof type ? view : null;
   }
 
   setActiveLeaf(leaf: WorkspaceLeaf, _params?: { readonly focus?: boolean }): void {
-    if (this.leaves.includes(leaf)) this.activeLeaf = leaf;
+    if (!this.leaves.includes(leaf)) return;
+    this.started = true;
+    this.active = leaf;
   }
 
   async revealLeaf(leaf: WorkspaceLeaf): Promise<void> {
@@ -143,13 +167,14 @@ export class Workspace extends Events {
   }
 
   getLayout(): Record<string, unknown> {
-    const active = this.activeLeaf === null ? -1 : this.leaves.indexOf(this.activeLeaf);
+    this.start();
+    const active = this.active === null ? -1 : this.leaves.indexOf(this.active);
     return { leaves: this.leaves.map((leaf) => leaf.getViewState()), active };
   }
 
   async changeLayout(layout: unknown): Promise<void> {
     if (!isLayout(layout)) throw new Error("test double: not a layout from getLayout");
-    await Promise.all([...this.leaves].map((leaf) => leaf.detach()));
+    for (const leaf of this.leaves.slice()) leaf.detach();
     const restored = layout.leaves.map((saved, index) =>
       index === layout.active
         ? this.addLeaf(new WorkspaceLeaf(this))

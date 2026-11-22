@@ -10,6 +10,7 @@ import {
   sequentialIncidents,
   testMessages,
 } from "../../../support/layers";
+import { asObsidianPlugin } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -52,7 +53,7 @@ const start = (plugin: InstanceType<typeof Bare>, app: TestApp) =>
   Effect.gen(function* () {
     const bus = recordingEventBus();
     const logger = recordingLogger();
-    const layer = hostEventsLayer(plugin as never).pipe(
+    const layer = hostEventsLayer(asObsidianPlugin(plugin)).pipe(
       Layer.provideMerge(
         Layer.mergeAll(
           bus.layer,

@@ -1,8 +1,10 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import { Events } from "./events";
 import { normalizePath } from "./paths";
 
 /** Obsidian's file tree node; `path` is vault-relative and changes when the file is renamed. */
-export abstract class TAbstractFile {
+export abstract class TAbstractFile implements Uses<Obsidian.TAbstractFile, "path" | "name"> {
   constructor(public path: string) {}
 
   get name(): string {
@@ -10,7 +12,10 @@ export abstract class TAbstractFile {
   }
 }
 
-export class TFile extends TAbstractFile {
+export class TFile
+  extends TAbstractFile
+  implements Uses<Obsidian.TFile, "path" | "name" | "basename" | "extension" | "stat">
+{
   stat = { ctime: 0, mtime: 0, size: 0 };
 
   get extension(): string {
@@ -24,7 +29,10 @@ export class TFile extends TAbstractFile {
   }
 }
 
-export class TFolder extends TAbstractFile {
+export class TFolder
+  extends TAbstractFile
+  implements Uses<Obsidian.TFolder, "path" | "name" | "children" | "isRoot">
+{
   /** The files and folders directly inside, kept up to date by the vault. */
   children: TAbstractFile[] = [];
 
@@ -109,7 +117,26 @@ const gate = () => {
  * of its own name works. Lookups stay exact, as the d.ts documents them ("case sensitive"), so an
  * adapter has to find such a clash itself.
  */
-export class Vault extends Events {
+export class Vault
+  extends Events
+  implements
+    Uses<
+      Obsidian.Vault,
+      | "getRoot"
+      | "getAbstractFileByPath"
+      | "getFileByPath"
+      | "getFolderByPath"
+      | "getFiles"
+      | "getMarkdownFiles"
+      | "read"
+      | "cachedRead"
+      | "create"
+      | "createFolder"
+      | "process"
+      | "offref"
+      | "trigger"
+    >
+{
   failReads = false;
   failWrites = false;
   caseInsensitive = false;

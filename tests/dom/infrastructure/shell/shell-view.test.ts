@@ -5,6 +5,7 @@ import { SCOPE_CLASS } from "../../../../src/presentation/shell/scope";
 import { testRuntime } from "../../../support/runtime";
 import { eventually } from "../../../support/wait";
 import { preloadSurface } from "../../../support/preload";
+import { asObsidianLeaf, viewOf } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -28,7 +29,7 @@ const loaded = async () => {
 
 const noop = (): void => undefined;
 /** A leaf of a fresh workspace, typed as the real one `ShellView` expects. */
-const newLeaf = () => new App().workspace.getLeaf(true) as never;
+const newLeaf = () => asObsidianLeaf(new App().workspace.getLeaf(true));
 
 /** A surface module whose loading the test finishes by hand, counting the mounts it performs. */
 const deferredSurface = () => {
@@ -82,7 +83,7 @@ describe("ShellView", () => {
     const children = view?.contentEl.children.length;
     await view?.onOpen();
     expect(view?.contentEl.children.length).toBe(children);
-    await leaf?.detach();
+    leaf?.detach();
     expect(view?.contentEl.children).toHaveLength(0);
     expect(view?.contentEl.classList.contains(SCOPE_CLASS)).toBe(false);
     await view?.onClose();
@@ -118,7 +119,7 @@ describe("ShellView", () => {
     await second.setViewState({ type: SHELL_VIEW_TYPE });
     await settle();
     const contents = [first, second].map(
-      (leaf) => (leaf.view as unknown as InstanceType<typeof ShellView>).contentEl,
+      (leaf) => viewOf<InstanceType<typeof ShellView>>(leaf).contentEl,
     );
     const atDispose: number[] = [];
     const dispose = handle.runtime.dispose.bind(handle.runtime);

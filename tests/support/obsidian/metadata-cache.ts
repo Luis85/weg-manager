@@ -1,3 +1,5 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import { Events } from "./events";
 import type { TFile, Vault } from "./vault";
 import { parseYaml } from "./yaml";
@@ -6,13 +8,13 @@ type Loc = { readonly line: number; readonly col: number; readonly offset: numbe
 type Pos = { readonly start: Loc; readonly end: Loc };
 
 /** One block of a note; the double knows only the frontmatter block (`yaml`). */
-export type SectionCache = { readonly type: string; readonly position: Pos };
+export type SectionCache = { type: string; position: Pos };
 
 /** The part of Obsidian's `CachedMetadata` the double fills. */
 export type CachedMetadata = {
   readonly frontmatter?: Record<string, unknown>;
   readonly frontmatterPosition?: Pos;
-  readonly sections?: readonly SectionCache[];
+  readonly sections?: SectionCache[];
 };
 
 /** A note's text split as Obsidian does: the YAML between the `---` lines, and the body after. */
@@ -83,7 +85,10 @@ export const isMap = (value: unknown): value is Record<string, unknown> =>
  *
  * Obsidian exposes no "resolved" state; a caller sees completeness only through `getFileCache`.
  */
-export class MetadataCache extends Events {
+export class MetadataCache
+  extends Events
+  implements Uses<Obsidian.MetadataCache, "getFileCache" | "getCache" | "offref" | "trigger">
+{
   private readonly caches = new Map<TFile, CachedMetadata>();
   private readonly withheld = new Set<string>();
   private pending = 0;

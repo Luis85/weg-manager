@@ -1,3 +1,5 @@
+import type * as Obsidian from "obsidian";
+
 /** In-memory double for the parts of the `obsidian` API this plugin uses. Opt in per suite with
  * `vi.mock("obsidian", () => import("@test/obsidian"))`. */
 export { App } from "./app";
@@ -44,8 +46,9 @@ export { Workspace } from "./workspace";
 export { WorkspaceRibbon, type RibbonItem } from "./ribbon";
 export { installDomExtensions } from "./dom";
 
-export const apiVersion = "1.15.1";
+export const apiVersion: typeof Obsidian.apiVersion = "1.15.1";
 
+// `resourcePathPrefix` is not modelled: the plugin does not read it.
 export const Platform = {
   isDesktop: true,
   isMobile: false,
@@ -59,10 +62,10 @@ export const Platform = {
   isWin: false,
   isLinux: true,
   isSafari: false,
-};
+} satisfies Omit<typeof Obsidian.Platform, "resourcePathPrefix">;
 
 /** Marks the element so tests can see which icon was requested. */
-export const setIcon = (el: HTMLElement, icon: string): void => {
+export const setIcon: typeof Obsidian.setIcon = (el, icon) => {
   el.dataset["icon"] = icon;
 };
 export { DEFAULT_TEST_LANGUAGE, getLanguage, setLanguage } from "./language";

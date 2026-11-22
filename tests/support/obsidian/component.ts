@@ -1,7 +1,19 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import type { EventRef } from "./events";
 
 /** Mirrors Obsidian's `Component` lifecycle: unload runs `onunload`, then registrations in reverse order. */
-export class Component {
+export class Component implements Uses<
+  Obsidian.Component,
+  | "load"
+  | "unload"
+  | "onunload"
+  | "addChild"
+  | "removeChild"
+  | "register"
+  | "registerEvent"
+  | "registerInterval"
+> {
   private loaded = false;
   private readonly children: Component[] = [];
   private cleanups: (() => unknown)[] = [];

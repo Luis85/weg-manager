@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PluginCommand } from "../../../../src/application/shell";
 import type { AppServices } from "../../../../src/application/app-services";
 import { testRuntime } from "../../../support/runtime";
+import { asObsidianPlugin } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -24,7 +25,8 @@ const setup = (commands: readonly PluginCommand<Labels, TestRoute, AppServices>[
     opened.push(route);
     return Promise.resolve();
   };
-  const register = () => registerCommands(plugin as never, test.runtime, commands, LABELS, open);
+  const register = () =>
+    registerCommands(asObsidianPlugin(plugin), test.runtime, commands, LABELS, open);
   return { plugin, registry, opened, register, ...test };
 };
 

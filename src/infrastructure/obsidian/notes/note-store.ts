@@ -20,6 +20,7 @@ import {
   asDefect,
   copyFrontmatter,
   createNote,
+  isFileGone,
   newNoteText,
   pathsInFolder,
   recordNotes,
@@ -98,7 +99,9 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
    * `change` decides inside `vault.process`, on the frontmatter parsed from the text Obsidian has
    * just read from the file, and only lines of keys the patch changes are rewritten. Returning the
    * text unchanged writes nothing. A note deleted after `find` makes `vault.process` reject
-   * (ENOENT) without calling back: that is `NoteNotFoundError`, not a write to retry.
+   * (ENOENT) without calling back: that is `NoteNotFoundError`, not a write to retry. Obsidian may
+   * still list the file then, until its file watcher reports the delete (measured in 1.15.1), so
+   * the rejection itself says it, as well as the file being gone from the vault.
    */
   const update = <E>(path: string, change: FrontmatterChange<E>) =>
     Effect.flatMap(find(path), (file) =>
@@ -111,9 +114,8 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
             return Result.isSuccess(outcome) ? outcome.success.text : text;
           });
         } catch (cause) {
-          if (decided.outcome === undefined && vault.getFileByPath(file.path) !== file) {
-            return Result.fail(new NoteNotFoundError());
-          }
+          const unlisted = decided.outcome === undefined && vault.getFileByPath(file.path) !== file;
+          if (unlisted || isFileGone(cause)) return Result.fail(new NoteNotFoundError());
           throw cause;
         }
         if (decided.outcome === undefined) throw new Error("vault.process did not call back");

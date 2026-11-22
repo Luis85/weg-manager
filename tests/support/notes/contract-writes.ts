@@ -204,6 +204,27 @@ export const writeContract = (make: () => NoteStoreFixture) => {
       }),
     );
 
+    it.effect(
+      "fails with NoteNotFoundError at the first attempt when the note is deleted outside and the host has not noticed",
+      () =>
+        Effect.gen(function* () {
+          const fixture = make();
+          yield* promise(() => seedForUpdate(fixture));
+          fixture.removeOutsideUnnoticed("F/A.md");
+          let asked = false;
+          const error = yield* Effect.flip(
+            run(fixture, (store) =>
+              store.update("F/A.md", () => {
+                asked = true;
+                return Result.succeed({ set: { a: 1 } });
+              }),
+            ),
+          );
+          assert.instanceOf(error, NoteNotFoundError);
+          assert.isFalse(asked);
+        }),
+    );
+
     it.effect("completes an update that has started, also when interrupted", () =>
       Effect.gen(function* () {
         const fixture = make();

@@ -173,11 +173,18 @@ export class MetadataCache extends Events {
     }, 0);
   }
 
-  /** Indexes a file that is still in the vault, then wakes `whenIndexed` once nothing is pending. */
+  /**
+   * Indexes a file that is still in the vault, then wakes `whenIndexed` once nothing is pending. A
+   * file that is gone from the disk meanwhile (`vault.vanish`) is skipped, as is a withheld one.
+   */
   private index(file: TFile): void {
     this.pending -= 1;
-    if (this.vault.getFileByPath(file.path) === file && !this.withheld.has(file.path)) {
-      const text = this.vault.textOf(file);
+    const text = this.vault.onDisk(file);
+    if (
+      this.vault.getFileByPath(file.path) === file &&
+      text !== undefined &&
+      !this.withheld.has(file.path)
+    ) {
       const cache = indexOf(text);
       this.caches.set(file, cache);
       this.trigger("changed", file, text, cache);

@@ -36,8 +36,17 @@ export class TFolder extends TAbstractFile {
 /** Where the double pretends the vault lies; Obsidian's own messages carry absolute paths too. */
 const VAULT_ROOT = "/vault";
 
+/**
+ * What Node's `fs` rejects with on desktop, measured in Obsidian 1.15.1 for `process` on a file
+ * deleted outside (`tests/support/notes/vanished-scenario.ts`): an `Error` with `code`, `errno`
+ * and `syscall`.
+ */
 const enoent = (path: string, call = "open") =>
-  new Error(`ENOENT: no such file or directory, ${call} '${VAULT_ROOT}/${path}'`);
+  Object.assign(new Error(`ENOENT: no such file or directory, ${call} '${VAULT_ROOT}/${path}'`), {
+    errno: -2,
+    code: "ENOENT",
+    syscall: call,
+  });
 
 const eacces = (path: string) =>
   new Error(`EACCES: permission denied, open '${VAULT_ROOT}/${path}'`);
@@ -85,6 +94,10 @@ const gate = () => {
  * included, and rejects with ENOENT without calling back for a file deleted meanwhile; what the
  * callback throws rejects unchanged. Paths are vault-relative; the double refuses a path that `normalizePath` would
  * change, so an adapter that skips it fails here.
+ *
+ * A file deleted from outside Obsidian is gone from the disk at once and from the vault a moment
+ * later, when its file watcher reports it: `vanish` is that moment, `remove` the report. Between
+ * them the file is still listed, and `process` rejects with ENOENT.
  *
  * Test knobs: `failReads` (listing and the metadata cache throw), `failWrites` (every write
  * rejects without changing anything), `holdWrites`/`releaseWrites`/`heldWrites`,
@@ -136,9 +149,12 @@ export class Vault extends Events {
     return this.getFiles().filter((file) => file.extension === "md");
   }
 
-  /** The text without a BOM, as Obsidian's `read` decodes it; `process` hands over the raw text. */
-  read(file: TFile): Promise<string> {
-    return Promise.resolve(this.textOf(file).replace(/^\uFEFF/, ""));
+  /**
+   * The text without a BOM, as Obsidian's `read` decodes it; `process` hands over the raw text. A
+   * file gone from the disk rejects with ENOENT.
+   */
+  async read(file: TFile): Promise<string> {
+    return this.textOf(file).replace(/^\uFEFF/, "");
   }
 
   cachedRead(file: TFile): Promise<string> {
@@ -242,6 +258,11 @@ export class Vault extends Events {
     return this.writes.held();
   }
 
+  /** Double-internal: the text of a file on the disk, or `undefined` when the disk lost it. */
+  onDisk(file: TFile): string | undefined {
+    return this.texts.get(file);
+  }
+
   /** Double-internal: the text of a file in the vault, or Obsidian's ENOENT. */
   textOf(file: TFile): string {
     const text = this.texts.get(file);
@@ -290,6 +311,17 @@ export class Vault extends Events {
     return [...this.entries.values()]
       .filter((entry) => entry.path.startsWith(`${folder.path}/`))
       .toSorted((a, b) => b.path.split("/").length - a.path.split("/").length);
+  }
+
+  /**
+   * Test helper: the file at `path` is deleted on the disk, outside Obsidian. The vault still
+   * lists it, as Obsidian does until its file watcher reports the delete, and every read or write
+   * of it rejects with ENOENT. No event fires; `remove` is the watcher's report.
+   */
+  vanish(path: string): void {
+    const file = this.getFileByPath(path);
+    if (file === null) throw new Error(`test double: no file at ${path}`);
+    this.texts.delete(file);
   }
 
   /** Double-internal: removes one entry and fires `delete`. */

@@ -27,6 +27,7 @@ const onDouble = (app = new App()): NoteStoreFixture => ({
     app.metadataCache.forget(file);
     app.vault.remove(file);
   },
+  removeOutsideUnnoticed: (path) => app.vault.vanish(path),
   settle: () => app.metadataCache.whenIndexed(),
   body: async (path) => {
     const file = app.vault.getFileByPath(path);

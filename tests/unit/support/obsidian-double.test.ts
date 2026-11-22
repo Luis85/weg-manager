@@ -11,6 +11,7 @@ import {
 } from "../../support/notes/fidelity";
 import { probeApi, type ProbeApi } from "../../support/notes/probe-api";
 import { storeScenario, vaultFacts } from "../../support/notes/scenarios";
+import { VANISHED_FACTS, vanishedScenario } from "../../support/notes/vanished-scenario";
 import { READINESS_FACTS, readinessScenario } from "../../support/readiness-scenario";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
@@ -51,6 +52,26 @@ describe("the Obsidian double", () => {
   it("fires changed, resolve and resolved around an edit as Obsidian does", async () => {
     const app = new App();
     expect(await readinessScenario({ app } as never, SETTLE_MS)).toEqual(READINESS_FACTS);
+  });
+});
+
+describe("the Obsidian double's deleted-outside window", () => {
+  it("rejects process as Obsidian does for a file deleted outside that is still listed", async () => {
+    const app = new App();
+    expect(await vanishedScenario({ app } as never, SETTLE_MS)).toEqual(VANISHED_FACTS);
+  });
+
+  it("lists a vanished file until the watcher reports it, then does not", async () => {
+    const app = new App();
+    app.vault.seedFile("A.md", "x");
+    const file = app.vault.getFileByPath("A.md");
+    if (file === null) throw new Error("no A.md");
+    app.vault.vanish("A.md");
+    expect(app.vault.getFileByPath("A.md")).toBe(file);
+    await expect(app.vault.read(file)).rejects.toMatchObject({ code: "ENOENT" });
+    expect(() => app.vault.vanish("B.md")).toThrow("no file at B.md");
+    app.vault.remove(file);
+    expect(app.vault.getFileByPath("A.md")).toBeNull();
   });
 });
 

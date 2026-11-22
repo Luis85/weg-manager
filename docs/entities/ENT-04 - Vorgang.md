@@ -20,14 +20,14 @@ Ein einzeln nachverfolgbares und erledigbares Anliegen mit genau einem überprü
 | --- | --- | --- | --- | --- |
 | Technische Identität | `id` | Text | P | `matter-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]]. Verweise anderer Notes laufen über `matter_id`. |
 | Schema | `schema` | Text | P | `weg-manager.matter/v1` (vorgeschlagen). |
-| Vorgangsnummer | `number` | Zahl | P | WCS `nr`. Fortlaufend, nie neu vergeben, eindeutig auch bei parallelen Läufen (FR-V12). Lesbare Nummer, nicht die Identität. |
+| Vorgangsnummer | `number` | Zahl | P | WCS `nr`. Eine Nummernfolge über alle Gemeinschaften, fortlaufend, nie neu vergeben, eindeutig auch bei parallelen Läufen (FR-V12). Angezeigt mit Kürzel, etwa „AW 041“. Lesbare Nummer, nicht die Identität. Beim Import übernommene Fremdnummern bleiben als Herkunft erhalten (AT-B02). |
 | Art | `kind` | Text | P | WCS `art`. Wert aus der geschlossenen Liste (siehe Wertelisten). |
 | Thema | `topic` | Text | P | WCS `thema`. Kurz, z. B. „Beleuchtung“ ([[ENT-03 - Thema]]). |
 | Zusage (Ergebnis) | `outcome` | Text | P | WCS `zusage`. Ein Satz, der das erwartete Ergebnis nennt. Ein Vorgang = ein Ergebnis, keine Bündel. |
 | Wer | `responsible` | Text | P | WCS `wer`. Verantwortliche Rolle, auch außerhalb der Verwaltung ([[ENT-02 - Person und Rolle]]). Die Eskalationsleiter gilt nur für die Verwaltung (FR-V10). Später ergänzt durch `person_id`. |
 | Zugesagt am | `promised_on` | Datum | O | WCS `zugesagtAm`. Tag der Zusage. |
 | Bis wann | `due_on` | Datum | P* | WCS `bisWann`. Der geltende Termin. *Fehlt er, setzt das System den Prüfvermerk „Termin erfragen“ (FR-V2). Bedeutung und Herkunft: [[ENT-05 - Termin]]. |
-| Status | `status` | Text | P | WCS `status`. Wert aus der geschlossenen Liste. „nicht eingehalten“ setzt nur der Beirat (FR-V7). |
+| Status | `status` | Text | P | WCS `status` ohne „nicht eingehalten“. Wert aus der geschlossenen Liste. „nicht eingehalten“ ist eine getrennte Bewertung ([[ENT-16 - Beiratsbewertung]]). |
 | Erledigt am | `done_on` | Datum | O | WCS `erledigtAm`. Pflicht bei Status „erledigt“. |
 | Quelle | `source` | Text | P | WCS `quelle`. Herkunft in Kurzform: Mail, Protokoll, Versammlung, Gespräch ([[ENT-07 - Quelle]]). |
 | Nächster Schritt | `next_step` | Text | P | WCS `naechsterSchritt`. Konkrete nächste Handlung. |
@@ -46,7 +46,7 @@ Ein einzeln nachverfolgbares und erledigbares Anliegen mit genau einem überprü
 
 **Art (geschlossen, WCS):** Zusage Verwaltung (`manager_promise`), Frist Beirat (`board_deadline`), Frist gesetzlich (`legal_deadline`), Frage (`question`), Aufgabe Beirat (`board_task`). Neue Werte nur per Schemaänderung. Mangel, Angebotsfrage, Rechnungsfrage und Protokollkorrektur sind bei uns Vorgänge mit Quelle (PRD-Systemgrenze); sie werden als Frage oder Aufgabe Beirat mit passendem Thema geführt (O-ENT04-2).
 
-**Status (geschlossen, WCS):** offen (`open`), erledigt (`done`), nicht eingehalten (`not_kept`), ungeklärt (`unclear`), hinfällig (`obsolete`).
+**Status (geschlossen, WCS):** offen (`open`), erledigt (`done`), ungeklärt (`unclear`), hinfällig (`obsolete`). „nicht eingehalten“ ist kein Status, sondern eine Bewertung in [[ENT-16 - Beiratsbewertung]].
 
 **Prüfvermerk (berechnet):** überfällig (`overdue`), Termin erfragen (`ask_for_date`), leer.
 
@@ -59,7 +59,7 @@ Gehört genau einer Gemeinschaft. Trägt Termine, Verlauf und Quellen. Kann in E
 ## Regeln und Lebenszyklus
 
 - **Status:** offen, ungeklärt, erledigt und hinfällig sind Bearbeitungsstände. Jeder Wechsel braucht einen nachvollziehbaren Anlass und erzeugt einen Verlaufseintrag ([[PBI-08 - Bearbeitungsstand bewusst ändern]]).
-- **„nicht eingehalten“** übernehmen wir als WCS-Status. Nur der Beirat setzt ihn, bewusst und mit Begründung und Bezug zur Terminfassung. Er ist eine Bewertung und gehört zur Bewertungsschicht: nur Beirat und Vertretung sehen ihn ([[ENT-16 - Beiratsbewertung]], [[DF-02 - Bearbeitung, Terminprüfung und Bewertung]]). Er erledigt den Vorgang nicht.
+- **„nicht eingehalten“** ist kein Vorgangsstatus, sondern eine getrennte Bewertung in der Bewertungsschicht. Nur der Beirat setzt sie, bewusst, mit Begründung und Bezug zur Terminfassung. So bleibt die Vorgangsnote teilbar ([[ENT-16 - Beiratsbewertung]], [[DF-02 - Bearbeitung, Terminprüfung und Bewertung]]; Entscheidung vom 22.11.2026).
 - **Prüfvermerke** „überfällig“ und „Termin erfragen“ berechnet das System. Sie sind Hinweise, keine Bewertung.
 - **Aufgeteilt** und **zusammengeführt** kennzeichnen Herkunft, keine erfüllte Leistung. Ein Sammelvorgang wird in Folgevorgänge aufgeteilt; eine Dublette wird mit dem Ziel zusammengeführt.
 - Teilerfüllung und neuer Termin erledigen den Vorgang nicht automatisch ([[DF-04 - Fehlender Termin]], [[DF-06 - Reaktion und Pause]]).
@@ -80,9 +80,9 @@ Zusage, Thema und nächster Schritt erscheinen in Karten und Entwürfen. Sie ent
 
 ## Offene Punkte
 
-- **O-ENT04-1:** Der WCS-Status „nicht eingehalten“ steht am Vorgang, gehört aber zur Bewertungsschicht. Wo wird er gespeichert, wenn die Vorgangsnote mit einer Vertretung oder einem Agenten geteilt wird? Hängt an O-ENT16-1.
+- **O-ENT04-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: „nicht eingehalten“ ist kein Status am Vorgang, sondern eine getrennte Bewertung in [[ENT-16 - Beiratsbewertung]]. Abweichung vom WCS.
 - **O-ENT04-2:** Unsere bisherige Art „Zusage“ umfasst auch Zusagen Dritter; das WCS kennt nur „Zusage Verwaltung“. Wie wird die Zusage eines Hausmeisterdienstes geführt?
-- **O-ENT04-3:** Ist die Vorgangsnummer je Gemeinschaft oder über alle Gemeinschaften fortlaufend? Ein Import kann gleiche Nummern in zwei Gemeinschaften bringen (AT-B02). Nach ADR 0007 sind doppelte Nummern ein Hinweis, kein Fehler.
+- **O-ENT04-3 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: eine Nummernfolge über alle Gemeinschaften, wie im WCS. Gleiche Fremdnummern aus einem Import (AT-B02) bleiben als Herkunftsnummer erhalten und bekommen eine neue Vorgangsnummer.
 - **O-ENT04-4:** Wie wird der Verlauf gespeichert: als Abschnitt im Body oder als eigene Notes mit `matter_id`? Eine Liste von Objekten ist im Eigenschaftenbereich von Obsidian nicht bearbeitbar (ADR 0007).
 - **O-ENT04-5:** `quelle` ist im WCS Pflicht. Unser Modell erlaubt eine sichtbare Quellenlücke. Gilt „unbekannt“ als zulässiger Wert?
 - **O-ENT04-6:** Aufgabe Beirat und To-do: Doppelpflege vermeiden. Dieselbe Aufgabe wird entweder als Vorgang geführt oder als To-do mit Vorgangsbezug; es besteht keine Pflicht zu zwei Datensätzen.

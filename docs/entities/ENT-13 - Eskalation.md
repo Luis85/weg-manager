@@ -69,7 +69,7 @@ Die Eskalation gehört zur Bewertungsschicht. Stufe, Seit-Datum und Vormerkungen
 
 ## Offene Punkte
 
-- **O-ENT13-1:** Das WCS sagt, die Stufe „steigt je Woche ohne Antwort um eins“. Nach DF-05 und K-06 ist der Wochenwechsel allein kein Grund für eine neue Stufe; maßgeblich sind Versand und laufende Frist (AT-B09). Die WCS-Regel ist als Vorschlag, nicht als automatischer Stufenwechsel zu lesen. Bestätigen.
+- **O-ENT13-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Es gilt [[DF-05 - Eskalationsleiter und Fristen]]. Die nächste Stufe wird erst vorgeschlagen, wenn die Frist des zuletzt tatsächlich gesendeten Schritts abgelaufen ist; der Wochenwechsel allein hebt keine Stufe (AT-B09). Abweichung vom WCS.
 - **O-ENT13-2:** Eine Pause gilt im WCS genau eine Woche. Unser Modell erlaubt ein frei gewähltes Ende. Welches gilt?
 - **O-ENT13-3:** Welche Teile aus Verlaufseinträgen berechnet und welche bewusst gespeichert werden, ist offen. Eigene Note, Felder am Vorgang oder Bewertungsschicht (O-ENT16-1)?
 

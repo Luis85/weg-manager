@@ -105,12 +105,12 @@ erDiagram
 | [[ENT-19 - Rechnung]] | Rechnungsdokument und Betragsbasis | spaeter | keine |
 | [[ENT-20 - Zahlungseintrag]] | Manuell dokumentierte Zahlung | spaeter | keine |
 
-Die genaue Abgrenzung zwischen eigenen Objekten und WCS-Objekten steht in den Notes unter „Abweichungen vom WCS“. Das betrifft Dokument und Unterlage, Rechnung und Kostenbuchung sowie Zahlungseintrag und Kontobewegung.
+Die entschiedenen Abweichungen stehen unten. Die genaue Abgrenzung zwischen eigenen Objekten und WCS-Objekten steht in den Notes unter „Abweichungen vom WCS“. Das betrifft Dokument und Unterlage, Rechnung und Kostenbuchung sowie Zahlungseintrag und Kontobewegung.
 
 ## Datenschutzregel für alle Objekte
 
 Personenbezogene Daten anderer Eigentümer werden nur gespeichert, wo es nötig ist. Sie liegen getrennt im privaten Bereich. Sie gelangen nie in Entwürfe, Karten, Berichte oder das Repository. Aus Abrechnungen werden nur gemeinschaftsweite Zahlen übernommen. Die **Bewertungsschicht** sehen nur Beirat und Vertretung, die Verwaltung nicht ([[ENT-16 - Beiratsbewertung]]). Zu ihr gehören:
-- der Status „nicht eingehalten“,
+- die Bewertung „nicht eingehalten“ (bei uns kein Vorgangsstatus),
 - die Antwortzeiten,
 - die Eskalationsstufen,
 - Notizen für die Eigentümerversammlung und die Entlastung.
@@ -123,7 +123,7 @@ Die Werte stehen in der jeweiligen Entity-Note. Geschlossene Listen ändern sich
 | --- | --- | --- |
 | Art der Gemeinschaft | frei, Vorschläge WEG, Tiefgarage, Viertel | [[ENT-01 - Gemeinschaft]] |
 | Vorgangsart | Zusage Verwaltung, Frist Beirat, Frist gesetzlich, Frage, Aufgabe Beirat | [[ENT-04 - Vorgang]] |
-| Vorgangsstatus | offen, erledigt, nicht eingehalten, ungeklärt, hinfällig | [[ENT-04 - Vorgang]] |
+| Vorgangsstatus | offen, erledigt, ungeklärt, hinfällig („nicht eingehalten“ ist eine Bewertung) | [[ENT-04 - Vorgang]], [[ENT-16 - Beiratsbewertung]] |
 | Prüfvermerk | überfällig, Termin erfragen, leer (berechnet) | [[ENT-04 - Vorgang]] |
 | Eskalationsstufe | 1 Termin erfragen · 2 Frist +14 Tage · 3 förmliche Erinnerung, Frist +10 Tage · 4 Vormerkung für Bericht, Versammlung, Entlastung | [[ENT-13 - Eskalation]] |
 | Kartenstatus | offen, entschieden, vertagt, geparkt | [[ENT-09 - Entscheidungskarte]] |
@@ -202,6 +202,16 @@ Bis Code, Routen und Mockups nachgezogen sind, gilt diese Zuordnung (O-D13 in `d
 | Ansprechpartner | Person mit Rolle; der Bereich „Kontakte“ bleibt | [[ENT-02 - Person und Rolle]] |
 
 Technische Ereignisse des Vaults (Host-Events, Index) heißen weiter Ereignis.
+
+## Entschiedene Abweichungen vom WCS
+
+Am 22.11.2026 hat der Produktverantwortliche diese Widersprüche zwischen WCS und unseren Regeln entschieden:
+
+- **Eskalation:** Eine neue Stufe gibt es erst nach Ablauf der Frist eines tatsächlich gesendeten Schritts, nicht automatisch jede Woche ([[DF-05 - Eskalationsleiter und Fristen]], [[ENT-13 - Eskalation]]).
+- **„nicht eingehalten“:** Das ist eine getrennte Bewertung in der Bewertungsschicht, kein Vorgangsstatus ([[ENT-16 - Beiratsbewertung]], [[ENT-04 - Vorgang]]).
+- **Entscheidungskarten:** sieben reguläre Karten plus sichtbarer dringender Überlauf. Eine Karte darf mehrere Vorgänge derselben Gemeinschaft bündeln ([[K-05 - Sieben reguläre Entscheidungen mit sichtbarem Überlauf]], [[ENT-09 - Entscheidungskarte]]).
+- **Vorgangsnummer:** eine Nummernfolge über alle Gemeinschaften, wie im WCS ([[ENT-04 - Vorgang]]).
+
 
 ## Offene Punkte
 

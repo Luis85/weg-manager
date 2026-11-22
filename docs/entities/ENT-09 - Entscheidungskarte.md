@@ -21,7 +21,7 @@ Eine Entscheidung im Wochenlauf, die der Beirat über sein nächstes Vorgehen tr
 | Technische Identität | `id` | Text | P | `decision-card-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]]. Ersetzt die WCS-`id` „eindeutig je Lauf“. |
 | Schema | `schema` | Text | P | `weg-manager.decision-card/v1` (vorgeschlagen). |
 | Gemeinschaft | `community_id` | Text | P | WCS `gemeinschaft`. Eine Gemeinschaft je Karte. |
-| Vorgang | `matter_ids` | Liste | O | WCS `nr` (ein Vorgang). Bei uns ein oder mehrere Vorgänge derselben Gemeinschaft (O-ENT09-1). |
+| Vorgang | `matter_ids` | Liste | O | WCS `nr` (ein Vorgang). Bei uns ein oder mehrere Vorgänge derselben Gemeinschaft (O-ENT09-1, entschieden). |
 | Gruppe | `group` | Text | P | WCS `gruppe`, z. B. Leiter, Frist, ETV. Anlass der Karte. |
 | Titel | `title` | Text | P | WCS `titel`. Die Frage. |
 | Kontext | `context` | Text | P | WCS `kontext`. Zwei bis vier Sätze, ohne Privatdaten, mit Quellenbezug. |
@@ -69,8 +69,8 @@ Kontext, Optionen und Entwurf enthalten keine Daten anderer Eigentümer. Bewertu
 
 ## Offene Punkte
 
-- **O-ENT09-1:** Das WCS verknüpft eine Karte mit höchstens einem Vorgang. Unser Modell kennt Paketentscheidungen zu mehreren Vorgängen. Welches gilt?
-- **O-ENT09-2:** „Höchstens 7 pro Woche“ (WCS) und „sieben reguläre plus sichtbarer dringender Überlauf“ (K-05): Zählt der Überlauf als Karte?
+- **O-ENT09-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Eine Karte darf mehrere Vorgänge derselben Gemeinschaft bündeln, etwa die Eskalationen der Woche. Abweichung vom WCS.
+- **O-ENT09-2 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: sieben reguläre Karten plus sichtbarer dringender Überlauf ([[K-05 - Sieben reguläre Entscheidungen mit sichtbarem Überlauf]]). Dringendes wird nie versteckt. Abweichung vom WCS.
 - **O-ENT09-3:** Die Optionen sind eine Liste von Objekten. Sie ist im Eigenschaftenbereich von Obsidian nicht bearbeitbar (ADR 0007). Body-Abschnitt oder flache Schlüssel je Option?
 - **O-ENT09-4:** Unterschied zwischen „vertagt“ und „geparkt“ festlegen, etwa vertagt = nächste Woche wieder, geparkt = ohne Termin.
 

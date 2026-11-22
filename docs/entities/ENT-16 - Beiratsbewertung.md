@@ -23,7 +23,7 @@ Die Bewertungsschicht umfasst Felder an mehreren Objekten. Diese Tabelle nennt a
 | Technische Identität | `id` | Text | P | `assessment-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]], falls eigene Note. |
 | Schema | `schema` | Text | P | `weg-manager.assessment/v1` (vorgeschlagen). |
 | Vorgang | `matter_id` | Text | P | Bewerteter Vorgang. |
-| Bewertung | `verdict` | Text | P | WCS `Vorgang.status = nicht eingehalten`. Nur durch den Beirat (FR-V7). |
+| Bewertung | `verdict` | Text | P | Entspricht WCS `Vorgang.status = nicht eingehalten`; bei uns kein Vorgangsstatus, sondern diese Bewertung. Nur durch den Beirat (FR-V7). |
 | Begründung | `reason` | Text | P | Unsere Ergänzung: warum die Zusage nicht eingehalten ist. |
 | Zusagefassung | `due_on` | Datum | P | Unsere Ergänzung: die bewertete Terminfassung ([[ENT-05 - Termin]]). |
 | Quellen | `source` | Text | O | Belege ([[ENT-07 - Quelle]]). |
@@ -56,7 +56,7 @@ Bewertungen betreffen das Verhalten der Verwaltung und können personenbezogen s
 
 ## Abweichungen vom WCS
 
-- Das WCS führt „nicht eingehalten“ als Status am Vorgang. Wir übernehmen den Status, halten aber fest: Er ist eine Bewertung, nur der Beirat setzt ihn, und er gehört zur Bewertungsschicht. Begründung und Terminfassung sind unsere Ergänzung.
+- Das WCS führt „nicht eingehalten“ als Status am Vorgang. Wir führen es als getrennte Bewertung in dieser Note, damit die Vorgangsnote ohne Bewertung geteilt werden kann (Entscheidung vom 22.11.2026).
 - Ablage im Vault statt in einem Cloud-Speicher.
 
 ## Offene Punkte

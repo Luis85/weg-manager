@@ -11,15 +11,21 @@ import {
 } from "../../../application/shell";
 import { localDay, untilNextLocalMidnight } from "../../../domain/shell";
 
-/** The clock the adapter reads and the timers it sets; the window's, unless a test hands in one. */
+/**
+ * The clock the adapter reads, the machine's time zone (an IANA name) and the timers it sets; the
+ * window's, unless a test hands in one.
+ */
 export type DayClock = {
   now(): Date;
+  zone(): string;
   setTimeout(run: () => void, ms: number): number;
   clearTimeout(id: number): void;
 };
 
 const windowClock: DayClock = {
   now: () => new Date(),
+  // Read on each look, so a zone the user changes while Obsidian runs counts once the platform has it.
+  zone: () => Intl.DateTimeFormat().resolvedOptions().timeZone,
   setTimeout: (run, ms) => window.setTimeout(run, ms),
   clearTimeout: (id) => window.clearTimeout(id),
 };
@@ -32,7 +38,7 @@ const windowClock: DayClock = {
 export const DAY_CHECK_MAX_MS = 60_000;
 
 /**
- * `Today` over the machine's clock, in its local time zone (`localDay`). One timer at a time, set
+ * `Today` over the machine's clock, in its time zone (`localDay`). One timer at a time, set
  * to the next local midnight but never further than `DAY_CHECK_MAX_MS`; each time it fires the
  * adapter reads the clock, publishes a new day and sets the next. The timer is cleared by
  * `plugin.register`, synchronously in Obsidian's `unload()`, and when the runtime's scope closes, so
@@ -43,7 +49,9 @@ export const todayLayer = (plugin: Plugin, clock: DayClock = windowClock) =>
     Today,
     Effect.gen(function* () {
       const context = yield* Effect.context<Incidents | Logger | Messages | Notifier>();
-      const { today, check } = yield* makeToday(Effect.sync(() => localDay(clock.now())));
+      const { today, check } = yield* makeToday(
+        Effect.sync(() => localDay(clock.now(), clock.zone())),
+      );
       let timer: number | undefined;
       let active = true;
 
@@ -60,7 +68,7 @@ export const todayLayer = (plugin: Plugin, clock: DayClock = windowClock) =>
         schedule();
       };
       const schedule = (): void => {
-        const wait = Math.min(untilNextLocalMidnight(clock.now()), DAY_CHECK_MAX_MS);
+        const wait = Math.min(untilNextLocalMidnight(clock.now(), clock.zone()), DAY_CHECK_MAX_MS);
         timer = clock.setTimeout(tick, wait);
       };
 

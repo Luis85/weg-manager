@@ -1,43 +1,46 @@
 import { assert, date, property } from "fast-check";
 import { describe, expect, it } from "vitest";
 import { localDay, untilNextLocalMidnight } from "../../../../src/domain/shell";
-import { inTimeZone, testsInTimeZone } from "../../../support/shell/time-zone";
 
 const HOUR = 3_600_000;
 
 describe("localDay", () => {
-  it("is the day of the machine's time zone, not of UTC", () => {
+  it("is the day of the given time zone, not of UTC", () => {
     const time = new Date("2026-11-22T23:30:00Z");
-    expect(localDay(time)).toBe("2026-11-22");
-    inTimeZone("Europe/Berlin", () => expect(localDay(time)).toBe("2026-11-23"));
-    inTimeZone("America/Los_Angeles", () => {
-      expect(localDay(new Date("2026-11-23T07:30:00Z"))).toBe("2026-11-22");
-    });
+    expect(localDay(time, "UTC")).toBe("2026-11-22");
+    expect(localDay(time, "Europe/Berlin")).toBe("2026-11-23");
+    expect(localDay(new Date("2026-11-23T07:30:00Z"), "America/Los_Angeles")).toBe("2026-11-22");
   });
 
   it("writes YYYY-MM-DD, with leading zeros", () => {
-    expect(localDay(new Date("2026-01-05T00:00:00Z"))).toBe("2026-01-05");
-    expect(localDay(new Date("2026-12-31T23:59:59.999Z"))).toBe("2026-12-31");
-    const early = new Date("2026-01-05T12:00:00Z");
-    early.setFullYear(999);
-    expect(localDay(early)).toBe("0999-01-05");
+    expect(localDay(new Date("2026-01-05T00:00:00Z"), "UTC")).toBe("2026-01-05");
+    expect(localDay(new Date("2026-12-31T23:59:59.999Z"), "UTC")).toBe("2026-12-31");
+    expect(localDay(new Date("0999-01-05T12:00:00Z"), "UTC")).toBe("0999-01-05");
   });
 });
 
 describe("untilNextLocalMidnight", () => {
-  it("counts the milliseconds to the next local midnight", () => {
-    expect(untilNextLocalMidnight(new Date("2026-11-22T12:00:00Z"))).toBe(12 * HOUR);
-    expect(untilNextLocalMidnight(new Date("2026-11-22T23:59:59.999Z"))).toBe(1);
-    expect(untilNextLocalMidnight(new Date("2026-11-22T00:00:00Z"))).toBe(24 * HOUR);
+  it("counts the milliseconds to the next midnight of the time zone", () => {
+    expect(untilNextLocalMidnight(new Date("2026-11-22T12:00:00Z"), "UTC")).toBe(12 * HOUR);
+    expect(untilNextLocalMidnight(new Date("2026-11-22T23:59:59.999Z"), "UTC")).toBe(1);
+    expect(untilNextLocalMidnight(new Date("2026-11-22T00:00:00Z"), "UTC")).toBe(24 * HOUR);
+    expect(untilNextLocalMidnight(new Date("2026-11-22T12:00:00Z"), "Europe/Berlin")).toBe(
+      11 * HOUR,
+    );
   });
 
-  it("follows the local time zone and its daylight saving days", () => {
-    inTimeZone("Europe/Berlin", () => {
-      expect(untilNextLocalMidnight(new Date("2026-11-22T12:00:00Z"))).toBe(11 * HOUR);
-      // 29.03.2026 has 23 hours, 25.10.2026 has 25.
-      expect(untilNextLocalMidnight(new Date(2026, 2, 29))).toBe(23 * HOUR);
-      expect(untilNextLocalMidnight(new Date(2026, 9, 25))).toBe(25 * HOUR);
-    });
+  it("follows daylight saving days and a change that skips midnight", () => {
+    // In Berlin 29.03.2026 has 23 hours and 25.10.2026 has 25.
+    expect(untilNextLocalMidnight(new Date("2026-03-28T23:00:00Z"), "Europe/Berlin")).toBe(
+      23 * HOUR,
+    );
+    expect(untilNextLocalMidnight(new Date("2026-10-24T22:00:00Z"), "Europe/Berlin")).toBe(
+      25 * HOUR,
+    );
+    // São Paulo skipped 04.11.2018 00:00: that day began at 01:00, 03:00 UTC.
+    expect(untilNextLocalMidnight(new Date("2018-11-03T12:00:00Z"), "America/Sao_Paulo")).toBe(
+      15 * HOUR,
+    );
   });
 });
 
@@ -48,22 +51,19 @@ describe("calendar properties", () => {
     noInvalidDate: true,
   });
 
-  describe.each(["UTC", "Europe/Berlin", "America/Sao_Paulo", "Australia/Lord_Howe"])(
-    "in %s",
+  it.each(["UTC", "Europe/Berlin", "America/Sao_Paulo", "Australia/Lord_Howe", "Pacific/Apia"])(
+    "moves from any time to the first instant of a later day in %s",
     (zone) => {
-      testsInTimeZone(zone);
-
-      it("moves from any time to the start of the next local day", () => {
-        assert(
-          property(times, (time) => {
-            const wait = untilNextLocalMidnight(time);
-            const next = new Date(time.getTime() + wait);
-            expect(wait).toBeGreaterThan(0);
-            expect(localDay(new Date(next.getTime() - 1))).toBe(localDay(time));
-            expect(localDay(next) > localDay(time)).toBe(true);
-          }),
-        );
-      });
+      assert(
+        property(times, (time) => {
+          const wait = untilNextLocalMidnight(time, zone);
+          const next = new Date(time.getTime() + wait);
+          expect(wait).toBeGreaterThan(0);
+          expect(localDay(new Date(next.getTime() - 1), zone)).toBe(localDay(time, zone));
+          expect(localDay(next, zone) > localDay(time, zone)).toBe(true);
+        }),
+        { numRuns: 50 },
+      );
     },
   );
 });

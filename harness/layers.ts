@@ -167,7 +167,8 @@ export const harnessLayer = (
       incidents: incidentsLayer,
       logSink: consoleSinkLayer,
       // The browser's day when the page loads; the harness has no view open overnight.
-      today: memoryToday(localDay(new Date())).layer,
+      today: memoryToday(localDay(new Date(), Intl.DateTimeFormat().resolvedOptions().timeZone))
+        .layer,
       noteStore: failingOnce(scenario).pipe(Layer.provideMerge(memory.layer)),
       idGenerator: sequentialIdGenerator().layer,
       noteOpener: memory.opener,

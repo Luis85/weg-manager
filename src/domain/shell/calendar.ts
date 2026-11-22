@@ -4,18 +4,48 @@
  */
 export type CalendarDay = string;
 
-const pad = (value: number, digits: number): string => String(value).padStart(digits, "0");
+/** Longer than any day in any time zone (25 hours across a daylight saving change, at most). */
+const LONGER_THAN_A_DAY_MS = 27 * 3_600_000;
 
-/** The calendar day of `time` in the machine's own time zone, the user's local day. */
-export const localDay = (time: Date): CalendarDay =>
-  `${pad(time.getFullYear(), 4)}-${pad(time.getMonth() + 1, 2)}-${pad(time.getDate(), 2)}`;
+const dayFormat = (zone: string) =>
+  new Intl.DateTimeFormat("en-US", {
+    timeZone: zone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+const dayIn = (format: Intl.DateTimeFormat, time: number): CalendarDay => {
+  // The format asks for these three parts, so every result has them.
+  const { year, month, day } = Object.fromEntries(
+    format.formatToParts(time).map(({ type, value }) => [type, value]),
+  ) as Record<"year" | "month" | "day", string>;
+  return `${year.padStart(4, "0")}-${month}-${day}`;
+};
 
 /**
- * The milliseconds from `time` to the start of the next local day: 24 hours from a midnight, 23 or
- * 25 across a daylight saving change, and to 01:00 where a change skips midnight itself.
+ * The calendar day of `time` in the IANA time zone `zone`; with the machine's own zone, the user's
+ * local day, not UTC's.
  */
-export const untilNextLocalMidnight = (time: Date): number => {
-  const next = new Date(time.getTime());
-  next.setHours(24, 0, 0, 0);
-  return next.getTime() - time.getTime();
+export const localDay = (time: Date, zone: string): CalendarDay =>
+  dayIn(dayFormat(zone), time.getTime());
+
+/**
+ * The milliseconds from `time` to the first instant of a later day in `zone`: 24 hours from a
+ * midnight, 23 or 25 across a daylight saving change, and to 01:00 where a change skips midnight
+ * itself. Found by halving, so it holds for every zone the platform knows.
+ */
+export const untilNextLocalMidnight = (time: Date, zone: string): number => {
+  const format = dayFormat(zone);
+  const start = time.getTime();
+  const today = dayIn(format, start);
+  // `low` is still today, `high` is a later day.
+  let low = 0;
+  let high = LONGER_THAN_A_DAY_MS;
+  while (high - low > 1) {
+    const middle = Math.floor((low + high) / 2);
+    if (dayIn(format, start + middle) > today) high = middle;
+    else low = middle;
+  }
+  return high;
 };

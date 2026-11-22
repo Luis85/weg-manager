@@ -17,6 +17,15 @@ export class Today extends Context.Service<
   }
 >()("weg-manager/application/Today") {}
 
+/** The day read, and the day to publish: none while it is the day held. */
+const publishIfNew = (
+  held: CalendarDay,
+  day: CalendarDay,
+): readonly [CalendarDay, Option.Option<CalendarDay>] => [
+  day,
+  day === held ? Option.none() : Option.some(day),
+];
+
 /**
  * The `Today` service over `read`, the adapter's source of the local day, and `check`, which an
  * adapter runs when its timer fires: both read the source and publish the day if it is new, as one
@@ -26,7 +35,7 @@ export const makeToday = (read: Effect.Effect<CalendarDay>) =>
   Effect.gen(function* () {
     const ref = yield* SubscriptionRef.make(yield* read);
     const check = SubscriptionRef.modifySomeEffect(ref, (held) =>
-      Effect.map(read, (day) => [day, day === held ? Option.none() : Option.some(day)] as const),
+      Effect.map(read, (day) => publishIfNew(held, day)),
     );
     return { today: Today.of({ current: check, changes: SubscriptionRef.changes(ref) }), check };
   });

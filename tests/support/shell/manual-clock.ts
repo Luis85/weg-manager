@@ -3,14 +3,16 @@ import type { DayClock } from "../../../src/infrastructure/obsidian/shell/today"
 type Timer = { readonly at: number; readonly run: () => void };
 
 /**
- * A clock and timers a test moves by hand, for the Obsidian `Today` adapter. Two times, as on a real
+ * A clock, a time zone (UTC unless given) and timers a test moves by hand, for the Obsidian `Today`
+ * adapter. Two times, as on a real
  * machine: the clock (`now`), which a person or a sync can set, and the awake time that timers
  * count. `advance` moves both and runs every timer that falls due, in order; `setClock` moves only
  * the clock; `sleep` moves only the clock too, because a timer does not count the time the machine
  * sleeps and fires late after it wakes.
  */
-export const manualClock = (start: Date) => {
+export const manualClock = (start: Date, startZone = "UTC") => {
   let clock = start.getTime();
+  let zone = startZone;
   let awake = 0;
   let nextId = 1;
   const timers = new Map<number, Timer>();
@@ -25,6 +27,7 @@ export const manualClock = (start: Date) => {
 
   const dayClock: DayClock = {
     now: () => new Date(clock),
+    zone: () => zone,
     setTimeout: (run, ms) => {
       const id = nextId;
       nextId += 1;
@@ -54,6 +57,10 @@ export const manualClock = (start: Date) => {
     /** The system clock is set to `time`; no timer notices. */
     setClock: (time: Date): void => {
       clock = time.getTime();
+    },
+    /** The machine's time zone is set to `next` (an IANA name); no timer notices. */
+    setZone: (next: string): void => {
+      zone = next;
     },
     /** The machine sleeps for `ms`: the clock moves on, the timers wait. */
     sleep: (ms: number): void => {

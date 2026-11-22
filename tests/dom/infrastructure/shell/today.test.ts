@@ -4,7 +4,6 @@ import { vi } from "vitest";
 import { Today } from "../../../../src/application/shell";
 import { START, todayContract } from "../../../support/shell/contract-today";
 import { manualClock } from "../../../support/shell/manual-clock";
-import { testsInTimeZone } from "../../../support/shell/time-zone";
 import {
   recordingLogger,
   recordingNotifier,
@@ -24,17 +23,14 @@ const SECOND = 1_000;
 const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
 
-/** Local noon of a `YYYY-MM-DD` day. */
-const noonOf = (day: string) => {
-  const [year, month, date] = day.split("-").map(Number) as [number, number, number];
-  return new Date(year, month - 1, date, 12);
-};
+/** Noon UTC of a `YYYY-MM-DD` day. */
+const noonOf = (day: string) => new Date(`${day}T12:00:00Z`);
 
-/** The adapter on a loaded plugin double, over a clock the test moves. */
-const setup = (start: Date) => {
+/** The adapter on a loaded plugin double, over a clock and a zone the test moves. */
+const setup = (start: Date, zone = "UTC") => {
   const { plugin } = createTestPlugin(Bare);
   plugin.load();
-  const time = manualClock(start);
+  const time = manualClock(start, zone);
   return { plugin, time, layer: todayLayer(plugin as never, time.clock) };
 };
 
@@ -54,6 +50,10 @@ todayContract("Obsidian", () => {
   };
 });
 
+const settle = Effect.forEach(Array.from({ length: 10 }), () => Effect.yieldNow, {
+  discard: true,
+});
+
 /** Builds the adapter in a scope of its own; `days` is what its changes emitted so far. */
 const started = (layer: ReturnType<typeof setup>["layer"]) =>
   Effect.gen(function* () {
@@ -71,11 +71,7 @@ const started = (layer: ReturnType<typeof setup>["layer"]) =>
     return { today, days, scope };
   });
 
-const settle = Effect.forEach(Array.from({ length: 10 }), () => Effect.yieldNow, {
-  discard: true,
-});
-
-/** Moves the clock by `ms` and lets the published days arrive. */
+/** Moves the clock by `ms`, awake, and lets the published days arrive. */
 const advance = (time: ReturnType<typeof manualClock>, ms: number) =>
   Effect.andThen(
     Effect.sync(() => time.advance(ms)),
@@ -84,7 +80,7 @@ const advance = (time: ReturnType<typeof manualClock>, ms: number) =>
 
 describe("Today in Obsidian", () => {
   it.effect("looks at the clock at the next local midnight, and at least once a minute", () => {
-    const { time, layer } = setup(new Date(2026, 10, 22, 23, 59, 30));
+    const { time, layer } = setup(new Date("2026-11-22T23:59:30Z"));
     return Effect.gen(function* () {
       yield* started(layer);
       assert.deepStrictEqual(time.pending(), [30 * SECOND]);
@@ -94,7 +90,7 @@ describe("Today in Obsidian", () => {
   });
 
   it.effect("publishes the new day at local midnight, each day once", () => {
-    const { time, layer } = setup(new Date(2026, 10, 22, 23, 59, 30));
+    const { time, layer } = setup(new Date("2026-11-22T23:59:30Z"));
     return Effect.gen(function* () {
       const { today, days } = yield* started(layer);
       yield* advance(time, 29 * SECOND);
@@ -123,7 +119,7 @@ describe("Today in Obsidian", () => {
   );
 
   it.effect("publishes the day after a sleep across midnight, though the timer slept too", () => {
-    const { time, layer } = setup(new Date(2026, 10, 22, 23, 0));
+    const { time, layer } = setup(new Date("2026-11-22T23:00:00Z"));
     return Effect.gen(function* () {
       const { today, days } = yield* started(layer);
       time.sleep(9 * HOUR);
@@ -133,20 +129,28 @@ describe("Today in Obsidian", () => {
     });
   });
 
-  describe("in Europe/Berlin", () => {
-    testsInTimeZone("Europe/Berlin");
+  it.effect("uses the machine's time zone, also one changed while it runs", () => {
+    // 23:30 UTC is 00:30 of the next day in Berlin.
+    const { time, layer } = setup(new Date("2026-11-22T23:30:00Z"), "Europe/Berlin");
+    return Effect.gen(function* () {
+      const { today, days } = yield* started(layer);
+      assert.strictEqual(yield* today.current, "2026-11-23");
+      time.setZone("America/Los_Angeles");
+      yield* advance(time, MINUTE);
+      assert.deepStrictEqual(days, ["2026-11-23", "2026-11-22"]);
+    });
+  });
 
-    it.effect("changes the day at local midnight on daylight saving days", () => {
-      const { time, layer } = setup(new Date(2026, 2, 28, 23, 59, 30));
-      return Effect.gen(function* () {
-        const { days } = yield* started(layer);
-        yield* advance(time, 30 * SECOND);
-        // 29.03. has 23 hours: the next day starts 23 hours later.
-        yield* advance(time, 23 * HOUR - MINUTE);
-        assert.deepStrictEqual(days, ["2026-03-28", "2026-03-29"]);
-        yield* advance(time, MINUTE);
-        assert.deepStrictEqual(days, ["2026-03-28", "2026-03-29", "2026-03-30"]);
-      });
+  it.effect("changes the day at local midnight on a daylight saving day (Berlin)", () => {
+    // 28.03.2026 23:59:30 in Berlin, an hour ahead of UTC; 29.03. has 23 hours.
+    const { time, layer } = setup(new Date("2026-03-28T22:59:30Z"), "Europe/Berlin");
+    return Effect.gen(function* () {
+      const { days } = yield* started(layer);
+      yield* advance(time, 30 * SECOND);
+      yield* advance(time, 23 * HOUR - MINUTE);
+      assert.deepStrictEqual(days, ["2026-03-28", "2026-03-29"]);
+      yield* advance(time, MINUTE);
+      assert.deepStrictEqual(days, ["2026-03-28", "2026-03-29", "2026-03-30"]);
     });
   });
 

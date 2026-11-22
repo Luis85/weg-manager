@@ -152,9 +152,10 @@ describe("harnessLayer", () => {
 describe("harnessLayer today", () => {
   it.effect("is the browser's local day", () =>
     Effect.gen(function* () {
-      const before = localDay(new Date());
+      const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const before = localDay(new Date(), zone);
       const day = yield* today.pipe(Effect.provide(harnessLayer("empty")));
-      assert.include([before, localDay(new Date())], day);
+      assert.include([before, localDay(new Date(), zone)], day);
     }),
   );
 });

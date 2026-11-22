@@ -48,6 +48,15 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 - `tests/support/runtime.ts` provides `testRuntime(options)`: a full `AppRuntime` plus handles to every Layer, including `notes` (the in-memory `NoteStore`), the note index for the plugin's types (`appNoteTypes`) and any extra `noteTypes`, the community selection over an in-memory device store (`device` seeds it, `deviceStoreInMemory` from `src/infrastructure/memory/shell/`) and `source` (see above); `vaultReady()` publishes `LayoutReady` and `VaultReady`, so the first build runs. Use `rejectUpdates` to simulate a service that rejects a value the form accepted, and `language: "en"` for the English catalog (German by default). Hand-built Layers in unit tests add `testMessages` (German) from `tests/support/layers.ts`.
 - **Communities.** `tests/support/communities/fixture.ts` builds the module over the index fixture (community type only), a sequential id generator and an in-memory device store that counts writes; its specs run under `TestClock`, `ready` builds the index, `indexed` lets it read one batch. `tests/support/communities/screen.ts` mounts the app on the community settings over the in-memory store (`openCommunities`) with handles to query, type, click and wait for the index (`until`), and `fill`/`save` for the form.
 
+## Lint
+
+`npm run lint` runs oxlint, then ESLint. oxlint owns the rules that need no type information (`.oxlintrc.json`); ESLint owns the ones that do and the plugin rules (`eslint.config.mjs`, whose oxlint block turns off what oxlint covers). Three rules are on because nothing else catches them:
+
+- `eqeqeq` and `typescript/no-non-null-assertion` in oxlint: `==` and `!=`, and `value!`. Narrow with a check or throw a clear error instead of asserting.
+- `@typescript-eslint/switch-exhaustiveness-check` in ESLint (it needs types): a `switch` over a union lists every member, so a new member breaks the build where it is not handled. A `switch` with a `default` over a union does not pass; write the cases out, or use conditions when only a few members matter (`pathsToRead` in `index-batches.ts`).
+
+Each was proven with a planted violation before it was turned on (no finding) and after (the finding, in the tool named above). A rule that cannot be shown to fail on a plant does not belong in the config.
+
 ## Mutation testing
 
 - `npm run test:mutation` runs incrementally; `npm run test:mutation:full` re-runs every mutant.
@@ -55,7 +64,7 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 - Before pushing a change to one module, run Stryker on its files only: `npx stryker run configs/stryker.config.mjs --mutate "src/domain/communities/**/*.ts,src/application/communities/**/*.ts"`. The communities module scores 100 %; keep it there.
 - Thresholds: break 75, low 80, high 90. Never lower them.
 - A `// Stryker disable` comment needs its reason on the same line.
-- Reports land in `reports/mutation/`. The nightly GitHub workflow runs the full suite.
+- Reports land in `reports/mutation/`. The nightly GitHub workflow runs `npm run test:mutation` against the cached `reports/stryker-incremental.json`, so only mutants whose code or tests changed run again; started by hand with `full` it re-runs every mutant. A failed night opens or updates the issue "Nightly mutation run failed".
 
 ## Browser harness
 
@@ -88,7 +97,7 @@ The note index runs in every scenario over the in-memory `NoteStore`, with the p
 - **Cache.** The download cache is `.obsidian-cache/` in the checkout. In a git worktree, a symlink to the main checkout's cache avoids a second download.
 - **Language.** Without a stored choice Obsidian takes its language from Chromium's locale, which is `en-US` in CI and containers. `wdio.conf.mts` passes `--lang=de`, so Obsidian and the plugin start German and the specs assert German texts. `language.e2e.ts` switches to English the way Obsidian's own setting does: `localStorage` key `language`, then a plugin reload.
 - **Writing specs.** `browser.executeObsidian(({ app, obsidian }, ...args) => …)` runs code inside Obsidian. The function is serialised, so pass values as arguments; closures do not work. Shared helpers live in `tests/e2e/support.ts`: console spy, open view, `data.json`, plugin reload, settings tab content, light/dark switch.
-- **Gate.** `test:e2e` is not part of `verify`, because it needs a display and a download. CI runs it as a separate `e2e` job, which is not a required check yet (see [github-setup.md](github-setup.md)). A change to lifecycle, settings tab, theme, pop-out, view state or vault behaviour needs a passing e2e run.
+- **Gate.** `test:e2e` is not part of `verify`, because it needs a display and a download. CI runs it as a separate `e2e` job, which is not a required check yet (see [github-setup.md](github-setup.md)). The release workflow runs it too, in its read-only `build` job, and a failing e2e run stops the release. A change to lifecycle, settings tab, theme, pop-out, view state or vault behaviour needs a passing e2e run.
 
 | Spec | Covers |
 | --- | --- |
@@ -97,6 +106,7 @@ The note index runs in every scenario over the in-memory `NoteStore`, with the p
 | `events.e2e.ts` | one listener per host event (`resolved` included) on Obsidian's internal `Events._` map, all removed on each disable; creating, changing, opening, renaming and deleting a note with a clean console; the open view's list following a community note created, moved, turned into a non-Markdown file and deleted |
 | `vault-ready.e2e.ts` | on the reference vault, through the probe's host event adapter: a cold start, where the layout is ready with almost nothing cached and `resolved` fires early, gets `VaultReady` once and only when all 2,000 notes with frontmatter are cached; a warm restart and an adapter started in a running app (no `resolved` comes) get it at once, complete; `changed`, `resolve`, `resolved` around an edit as the double fires them; `NoteStore.list` timed after `VaultReady` (timings in `reports/e2e/vault-ready-timings.json`, not yet enforced). About 15 s. |
 | `note-index.e2e.ts` | on the reference vault, through the probe's index: a cold start and a warm restart, each with every record and ready within 1 s of `VaultReady`; three outside edits of one Punkt, each in the snapshot within 1 s; clean console. Timings in `reports/e2e/note-index-timings.json`. About 10 s. |
+| `no-network.e2e.ts` | with the view and the community form open, no resource entry of the page (`performance.getEntriesByType("resource")`) points to a web host (`http`, `https`, `ws`, `wss`). Proven with a planted icon that is not in `SHELL_ICONS`: the check fails without `keepIconsOffline` (a request to `api.iconify.design`) and passes with it |
 | `popout.e2e.ts` | the view moved to a pop-out: surface, portal and the community form's sheet in the pop-out's document (none in the main one), theme switch there, clean close |
 | `external-settings.e2e.ts` | `data.json` changed outside Obsidian (as by Sync): the open view follows a new root folder, a hidden one (`.weg`) falls back to the default and a community created then is listed, the settings tab a new log level, a newer-version file switches the tab to read-only and is never rewritten |
 | `note-store.e2e.ts` | the fidelity scenarios in real Obsidian: `normalizePath`, YAML, `create`/`createFolder`/`process`/`processFrontMatter`/`renameFile`/`trashFile` results, errors and events (`process` with a BOM and CRLF, a throwing callback, a file deleted meanwhile), the metadata cache's lag; then the real `NoteStore` adapter through the probe plugin: folders and a name clash on create, a clash by case only (which the Linux disk alone would allow), a rename to the note's own name in another case and onto another note's name in another case, records recognised by `schema` anywhere, unknown keys, key order and body kept on update (checked in the file text), a no-op update that writes nothing, a refused and a broken update, rename, trash; clean console |

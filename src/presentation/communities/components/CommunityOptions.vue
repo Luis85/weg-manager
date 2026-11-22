@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import UButton from "@nuxt/ui/components/Button.vue";
 import UIcon from "@nuxt/ui/components/Icon.vue";
-import { computed, nextTick, useTemplateRef } from "vue";
+import { computed, useTemplateRef, watch } from "vue";
 import { shownName, type Community } from "../../../application/communities";
 import CommunityBadge from "./CommunityBadge.vue";
 
@@ -10,7 +10,7 @@ import CommunityBadge from "./CommunityBadge.vue";
  * CommunityPicker), named by the switch's caption (`labelledby`). Each option shows short code,
  * colour and name; the checked one carries a check mark, so it does not rely on colour alone. The
  * arrow keys move the choice and the focus, Home and End go to the first and last; only the
- * checked option (or the first) is in the tab order. A long name is cut off and shown in full as
+ * checked option (or the first) is in the tab order, and the focus follows the checked option. A long name is cut off and shown in full as
  * the option's title.
  */
 const props = defineProps<{
@@ -35,19 +35,36 @@ const KEYS: Readonly<Record<string, (index: number, count: number) => number>> =
   End: (_, count) => count - 1,
 };
 
-/** Moves the choice as radio buttons do: focus and check the next option. */
-const move = async (event: KeyboardEvent) => {
+/**
+ * Moves the choice as radio buttons do: asks to check the next option. The focus follows the
+ * checked option (below), never the key, so the two cannot part: a choice the switch ignores (one
+ * is still being saved) leaves the focus where the check is.
+ */
+const move = (event: KeyboardEvent) => {
   const step = KEYS[event.key];
   if (step === undefined) return;
   event.preventDefault();
   const from = (event.target as HTMLElement | null)?.closest<HTMLElement>("[data-option-id]");
   const current = props.options.findIndex((option) => option.id === from?.dataset["optionId"]);
   const next = props.options[step(Math.max(current, 0), props.options.length)];
-  if (next === undefined) return;
-  emit("choose", next.id);
-  await nextTick();
-  group.value?.querySelector<HTMLElement>(`[data-option-id="${next.id}"]`)?.focus();
+  if (next !== undefined) emit("choose", next.id);
 };
+
+/**
+ * When the checked option changes while the focus is in the group, the focus goes with it. A
+ * choice made in another view (the selection is one for all) leaves this view's focus alone.
+ */
+watch(
+  () => props.selected,
+  (selected) => {
+    const element = group.value;
+    if (selected === undefined || element === null) return;
+    if (!element.contains(element.ownerDocument.activeElement)) return;
+    element.querySelector<HTMLElement>(`[data-option-id="${selected}"]`)?.focus();
+  },
+  // After the render that checks the option, in the same flush: no moment with the two apart.
+  { flush: "post" },
+);
 </script>
 
 <template>

@@ -1,10 +1,19 @@
-# Full mutation run of domain and application, nightly on main and on demand.
+# Mutation run of domain and application, nightly on main and on demand. The run is incremental:
+# Stryker re-tests only the mutants whose code or tests changed since the cached
+# reports/stryker-incremental.json. A by-hand run can ask for every mutant (`full`). A failed run
+# opens, or adds a comment to, the one issue "Nightly mutation run failed", so that a red night
+# reaches somebody. Never run so far; see docs/engineering/github-setup.md.
 name: Nightly mutation
 
 on:
   schedule:
     - cron: "17 2 * * *"
   workflow_dispatch:
+    inputs:
+      full:
+        description: Re-run every mutant instead of reusing the cached results
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -15,12 +24,33 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run test:mutation:full
+      # A cache entry never changes, so each run saves under its own key and the next run restores
+      # the newest one with the same Stryker config and lockfile (restore-keys).
+      - name: Restore the incremental results
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: reports/stryker-incremental.json
+          key: stryker-${{ runner.os }}-${{ hashFiles('configs/stryker.config.mjs', 'configs/vitest.stryker.config.ts', 'package-lock.json') }}-${{ github.run_id }}
+          restore-keys: |
+            stryker-${{ runner.os }}-${{ hashFiles('configs/stryker.config.mjs', 'configs/vitest.stryker.config.ts', 'package-lock.json') }}-
+      - name: Mutation testing
+        env:
+          SCRIPT: ${{ inputs.full && 'test:mutation:full' || 'test:mutation' }}
+        run: npm run "$SCRIPT"
+      # Also after a failed threshold: the incremental file is what the next run builds on.
+      - name: Save the incremental results
+        if: ${{ !cancelled() }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: reports/stryker-incremental.json
+          key: stryker-${{ runner.os }}-${{ hashFiles('configs/stryker.config.mjs', 'configs/vitest.stryker.config.ts', 'package-lock.json') }}-${{ github.run_id }}
       - name: Upload mutation report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -28,3 +58,26 @@ jobs:
           name: mutation-report
           path: reports/mutation/
           if-no-files-found: ignore
+
+  report-failure:
+    needs: mutation
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update the failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TITLE: Nightly mutation run failed
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          number=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number,title \
+            --jq "[.[] | select(.title == \"$TITLE\")] | first | .number // empty")
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body "The nightly mutation run failed again: $RUN_URL"
+          else
+            gh issue create --title "$TITLE" --body "The nightly mutation run failed: $RUN_URL"
+          fi

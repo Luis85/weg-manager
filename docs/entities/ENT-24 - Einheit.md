@@ -58,7 +58,7 @@ Die Einheit selbst (Nummer, Art, MEA) ist Bestandsangabe. Der Eigentümerbezug i
 ## Offene Punkte
 
 - O-ENT24-1: Wo und wie liegt der private Eigentümerbezug? Hängt am Speicherort der Bewertungsschicht und der privaten Daten (WCS-Liste „Private Daten“, FR-E3, WCS-PRD Q1).
-- O-ENT24-2: Personen als Objekt oder weiter als Rolle? Die Datenschutzgrenze für Eigentümerdaten ist zu klären (offener Punkt des WCS, siehe [[ENT-02 - Person und Rolle]]).
+- O-ENT24-2 (erledigt): Entschieden am 22.11.2026 vom Produktverantwortlichen: Personen sind eigene Notizen, auch Eigentümer, mit Markierung `private: true` ([[ENT-02 - Person und Rolle]]). Der Eigentümerbezug einer Einheit verweist auf eine solche Notiz und bleibt privat.
 - O-ENT24-3: Ist die Art eine geschlossene Liste, obwohl die Art der Gemeinschaft freier Text ist ([[K-20 - WCS-Datenmodell als fachliche Grundlage]])? Vorschlag: geschlossen, weil Kostenschlüssel davon abhängen können.
 
 ## Herkunft und Anforderungen

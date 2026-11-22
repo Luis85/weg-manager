@@ -67,7 +67,7 @@ Nur gemeinschaftsweite Zahlen werden übernommen. Einzelabrechnungen anderer Eig
 
 ## Offene Punkte
 
-- O-ENT34-1: Prüfvorgang und Feststellung Teil des MVP oder erster Schritt danach? (WCS-PRD Q8.) Unser Backlog hat keine Story dazu; bis zur Entscheidung `scope: spaeter`.
+- O-ENT34-1 (erledigt): Entschieden am 22.11.2026 vom Produktverantwortlichen: Erster Schritt nach dem MVP. Im MVP erfasst der Beirat Feststellungen als Vorgänge (Art Frage, Thema Jahresabrechnung oder Wirtschaftsplan).
 - O-ENT34-2: Woher kommen die Zahlen für die Abgleiche, solange es keine Kostenbuchungen gibt? Vorschlag: von Hand erfasste Summen je Abgleich.
 - O-ENT34-3: Stellungnahme im Frontmatter oder als Abschnitt im Notiztext? ADR 0007 erlaubt einen Abschnitt nur, wenn der Vertrag ihn festlegt.
 - O-ENT34-4: Wie wird die Freigabe der Stellungnahme festgehalten? Vorschlag: Verlaufseintrag mit Datum statt eigenem Feld.

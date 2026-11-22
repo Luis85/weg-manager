@@ -1,7 +1,7 @@
 ---
 type: Entity
 id: ENT-20
-status: entwurf
+status: abgeloest
 scope: spaeter
 category: bewegungsdaten
 wcs: keine
@@ -9,6 +9,9 @@ date: 2026-11-22
 ---
 
 # ENT-20 · Zahlungseintrag
+
+> [!note] Abgelöst
+> Seit dem 22.11.2026 geht dieses Objekt in [[ENT-37 - Kontobewegung]] auf ([[00 - Fachliches Domänenmodell]], O-DM-5). Die Note bleibt als Referenz für Regeln und Felder.
 
 ## Zweck
 
@@ -62,7 +65,7 @@ Das WCS kennt keinen Zahlungseintrag, nur die importierte Kontobewegung. Die Not
 
 ## Offene Punkte
 
-- **O-ENT20-1:** Zusammenführung mit [[ENT-37 - Kontobewegung]]: Ersetzt ein Kontoauszug-Import die manuelle Meldung, oder bestätigt er sie nur?
+- **O-ENT20-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Abgelöst durch [[ENT-37 - Kontobewegung]] im gemeinsamen Finanz-Feature nach dem MVP.
 - **O-ENT20-2:** Erstattungen, Rückbuchungen und Sammelzahlungen bleiben Klärungsfälle des bislang abgegrenzten Modells.
 - **O-ENT20-3:** Keine automatische Zahlungsbestätigung. Technische Speicherung und endgültiger Umfang bleiben offen.
 

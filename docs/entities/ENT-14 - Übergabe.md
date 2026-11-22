@@ -55,7 +55,7 @@ Schwerpunkte und Notiz sind intern. Sie können Bewertungen enthalten und gehen 
 
 ## Offene Punkte
 
-- **O-ENT14-1:** Sind Schwerpunkte freier Text (WCS) oder Verweise auf Vorgänge? Vorschlag: Text mit optionalem Bezug.
+- **O-ENT14-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Schwerpunkte sind freier Text wie im WCS, wahlweise mit Link auf einen Vorgang; dann gilt dessen Gemeinschaft.
 - **O-ENT14-2:** Konkrete Speicherung und spätere Übergabeversionen sind technisch offen.
 - **O-ENT14-3:** Gehört das Feedback an den Entwickler in die Übergabe (WCS) oder in ein eigenes [[ENT-17 - Produktfeedback]]?
 

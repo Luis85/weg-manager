@@ -53,7 +53,7 @@ Nicht personenbezogen. Nur gemeinschaftsweite Beträge.
 
 ## Offene Punkte
 
-- O-ENT26-1: Kostenbuchung, Kontobewegung und Budget zusammen bauen, da alle dieselbe Buchungslogik brauchen? (Roadmap-Frage 2 des WCS; gleicher Punkt an [[ENT-36 - Kostenbuchung]] und [[ENT-37 - Kontobewegung]].)
+- O-ENT26-1 (erledigt): Entschieden am 22.11.2026 vom Produktverantwortlichen: Ein gemeinsames Finanz-Feature nach dem MVP baut Kostenbuchung, Kontobewegung und Budget mit derselben Buchungslogik. Kostenbuchung löst [[ENT-19 - Rechnung]] ab, Kontobewegung löst [[ENT-20 - Zahlungseintrag]] ab.
 - O-ENT26-2: Kann ein Beschluss mehrere Budgets freigeben (je Jahr, je Zweck)? Vorschlag: ja, je Jahr ein Budget.
 - O-ENT26-3: Wie wird die Zustimmung des Beirats je Beauftragung nachgewiesen? Vorschlag: Entscheidungskarte mit Verweis auf das Budget.
 

@@ -63,7 +63,7 @@ Der Text kann personenbezogene Angaben enthalten. Er nennt Rollen statt Eigentü
 
 - **O-ENT06-1:** Speicherform: Abschnitt im Body des Vorgangs oder eigene Notes mit `matter_id` (siehe O-ENT04-4)?
 - **O-ENT06-2:** Kann ein Verlaufseintrag mehrere Vorgänge betreffen, etwa eine Antwort der Verwaltung zu drei Vorgängen? Das WCS sieht einen Vorgang je Eintrag vor.
-- **O-ENT06-3:** Verträgt sich die kontrollierte Entfernung (DF-13) mit der WCS-Regel „nie gelöscht“? Vorschlag: Der Eintrag bleibt, nur der private Inhalt wird durch einen Vermerk ersetzt.
+- **O-ENT06-3 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Ein Verlaufseintrag wird nie gelöscht. Nur private Inhalte darin dürfen kontrolliert und mit Vermerk entfernt werden ([[DF-13 - Historie und kontrollierte Entfernung]]).
 
 ## Herkunft und Anforderungen
 

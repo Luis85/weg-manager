@@ -61,9 +61,9 @@ Bewertungen betreffen das Verhalten der Verwaltung und können personenbezogen s
 
 ## Offene Punkte
 
-- **O-ENT16-1:** Speicherort der Bewertungsschicht: eigener, nicht geteilter Bereich im Vault (WCS FR-ROL1, Q1)? Ein Status am Vorgang wäre für jeden sichtbar, der die Vorgangsnote liest, auch für einen Agenten.
+- **O-ENT16-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Die Bewertungsschicht liegt in eigenen Notizen in einem eigenen Ordner im Vault (Vorschlag `WEG Manager/Bewertung/`), verknüpft über die id des Vorgangs. Vorgangsnotizen bleiben so teilbar; der Ordner lässt sich von Sync, Freigaben und Agentenzugriff ausnehmen.
 - **O-ENT16-2:** Eigene Bewertungsnote oder strukturierter Verlaufseintrag der Art `assessment`?
-- **O-ENT16-3:** Die Antwortzeit ist im WCS v1. Nach [[DF-14 - Kennzahlen]] gehört die berechnete Auswertung erst zum späteren Ausbau. Kommt sie in den MVP?
+- **O-ENT16-3 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Die Antwortzeit gehört ins MVP. Sie wird aus Verlaufseinträgen berechnet, nicht gespeichert, und nur in der Bewertungsschicht angezeigt. [[DF-14 - Kennzahlen]] ist entsprechend nachzuziehen.
 - **O-ENT16-4:** Wie wird „nur Beirat und Vertretung“ ohne Benutzerkonten durchgesetzt? Das Plugin hat einen Bearbeiter; die Grenze entsteht durch Ablage und Ausgabe.
 
 ## Herkunft und Anforderungen

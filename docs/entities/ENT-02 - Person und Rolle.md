@@ -23,9 +23,9 @@ Eine Person oder Organisation mit einer Rolle in einer Gemeinschaft, etwa die Ve
 | Art | `kind` | Text | P | Person oder Organisation (Firma). Bisherige Angabe unseres Modells. |
 | Name | `name` | Text | P | Name beziehungsweise Bezeichnung, z. B. „Verwaltung“, „Hausmeisterdienst“. |
 | Firma | `organization` | Text | O | Bei Personen die Organisation, für die sie handeln. |
-| Rolle | `role` | Text | P | WCS „rolle“. Wert aus der Rollenliste (siehe Wertelisten). |
-| Gemeinschaft | `community_ids` | Liste | P | WCS „gemeinschaft“: Bezug der Rolle. Bei uns eine oder mehrere Gemeinschaften (siehe O-ENT02-1). |
-| Kontakt | `email`, `phone`, `address`, `preferred_channel` | Text | O | WCS „kontakt“. Nur für Gegenüber: Verwaltung, Beiräte, Dritte. Keine Eigentümerdaten in geteilten Bereichen. |
+| Rollen je Gemeinschaft | `roles` | Liste | P | WCS „rolle“ und „gemeinschaft“: je Eintrag eine Gemeinschaft und eine Rolle aus der Rollenliste, etwa Beirat in der WEG und Eigentümer in der Tiefgarage (O-ENT02-1). |
+| Privat | `private` | Checkbox | P | Wahr für Eigentümer und andere Privatpersonen. Aus privaten Notizen übernimmt das Plugin nie Inhalte in Entwürfe, Karten, Berichte oder Freigaben; ein Agent liest sie nicht (O-ENT02-2). |
+| Kontakt | `email`, `phone`, `address`, `preferred_channel` | Text | O | WCS „kontakt“. Bei privaten Personen nur, wo nötig; nie in geteilten Bereichen. |
 | Sprache | `language` | Text | O | WCS „sprache“: `de` oder `de+en`. Eigentümer immer `de+en`. |
 | Notiz | Body | Text | O | Freier Text des Menschen. |
 | Nicht mehr verwendet | `inactive` | Checkbox | O | Kennzeichnet einen Kontakt, der nicht mehr genutzt wird. Historische Bezüge bleiben. |
@@ -66,7 +66,7 @@ Eine Person wird einer oder mehreren Gemeinschaften zugeordnet. Sie kann Verantw
 
 ## Datenschutz
 
-Kontaktdaten sind personenbezogen. Gespeichert werden sie nur für Gegenüber: Verwaltung, Beiräte, Dritte. Daten einzelner Eigentümer werden nicht gespeichert, außer wo nötig, und dann getrennt im privaten Bereich ([[ENT-24 - Einheit]]). Sie gehen nie in Entwürfe, Karten, Berichte oder ein öffentliches Repository (WCS NFR-2, FR-E4; [[DF-10 - Vertraulichkeitsprüfung]]).
+Kontaktdaten sind personenbezogen. Seit dem 22.11.2026 werden alle Personen als Notiz geführt, auch Eigentümer, alle im selben Ordner. Eigentümer und andere Privatpersonen tragen `private: true`. Aus solchen Notizen übernimmt das Plugin nie Inhalte in Ausgaben, und ein Agent liest sie nicht. Daten einzelner Eigentümer werden nur gespeichert, wo nötig ([[ENT-24 - Einheit]]). Sie gehen nie in Entwürfe, Karten, Berichte oder ein öffentliches Repository (WCS NFR-2, FR-E4; [[DF-10 - Vertraulichkeitsprüfung]]).
 
 ## Abweichungen vom WCS
 
@@ -77,8 +77,8 @@ Kontaktdaten sind personenbezogen. Gespeichert werden sie nur für Gegenüber: V
 
 ## Offene Punkte
 
-- **O-ENT02-1:** Kann dieselbe Person je Gemeinschaft eine andere Rolle haben (bisher O-D10 in [[09 - Offene Punkte vor Implementierung]])? Das WCS legt die Rolle je Gemeinschaft fest; unser Prototyp hat eine Rolle je Kontakt und Zuständigkeit je Gemeinschaft.
-- **O-ENT02-2:** Personen als Objekt oder weiter als Rolle in `Vorgang.wer`? Datenschutzgrenze für Eigentümerdaten klären (WCS, offener Punkt).
+- **O-ENT02-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Eine Person hat je Gemeinschaft eine Rolle, wie im WCS; dieselbe Person kann in der WEG Beirat und in der Tiefgarage Eigentümer sein.
+- **O-ENT02-2 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Alle Personen werden als eigene Notiz geführt, auch Eigentümer. Alle Personennotizen liegen in einem gemeinsamen Ordner. Eigentümerdaten schützt eine Markierung je Notiz (`private: true`): Das Plugin übernimmt aus markierten Notizen nie Inhalte in Entwürfe, Karten, Berichte oder Freigaben, und ein Agent liest sie nicht. Abweichung vom WCS (dort Rolle als Text in `wer`).
 - **O-ENT02-3:** Gilt „Kontakt nur für Gegenüber“ auch für Dritte wie den Hausmeisterdienst? Unser Modell führt für sie bisher Telefon und Anschrift.
 - **O-ENT02-4:** Wird der Verteiler als eigene Note geführt oder als Angabe an der Gemeinschaft?
 

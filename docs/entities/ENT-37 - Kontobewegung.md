@@ -64,8 +64,8 @@ Der Verwendungszweck kann Namen von Eigentümern enthalten, etwa bei Hausgeldzah
 
 ## Offene Punkte
 
-- O-ENT37-1: Kostenbuchung, Kontobewegung und Budget zusammen bauen, da alle dieselbe Buchungslogik brauchen? (Roadmap-Frage 2 des WCS; gleicher Punkt wie O-ENT26-1 und O-ENT36-1.)
-- O-ENT37-2: Abgrenzung zu [[ENT-20 - Zahlungseintrag]] und [[ENT-19 - Rechnung]]: Darf eine Kontobewegung einen Zahlungseintrag als „erfolgt“ belegen? Oder bleiben beide Modelle getrennt?
+- O-ENT37-1 (erledigt): Entschieden am 22.11.2026 vom Produktverantwortlichen: Ein gemeinsames Finanz-Feature nach dem MVP baut Kostenbuchung, Kontobewegung und Budget mit derselben Buchungslogik. Kostenbuchung löst [[ENT-19 - Rechnung]] ab, Kontobewegung löst [[ENT-20 - Zahlungseintrag]] ab.
+- O-ENT37-2 (erledigt): Entschieden am 22.11.2026 vom Produktverantwortlichen: Die Kontobewegung löst den Zahlungseintrag ab; manuell erfasste Zahlungen sind Kontobewegungen ohne Import.
 - O-ENT37-3: Werden Hausgeldeingänge einzelner Eigentümer überhaupt importiert? Vorschlag: nur Summen oder gar nicht, weil nur gemeinschaftsweite Zahlen übernommen werden.
 - O-ENT37-4: Eine Note je Bewegung oder eine Note je Import mit Tabelle? Bei vielen Zeilen ist eine Note je Bewegung schwer zu pflegen.
 - O-ENT37-5: Woran erkennt der Import eine Dublette (Valuta, Betrag, Zweck, Bankreferenz)?

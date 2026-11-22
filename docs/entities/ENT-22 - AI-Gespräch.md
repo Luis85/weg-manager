@@ -62,7 +62,7 @@ Tokens, Passwörter und API-Schlüssel gehören nicht in Gesprächsnotizen. Kont
 
 - **O-ENT22-1:** Dateinamen, Speicherung, Wiederaufnahme und Löschregeln sind vor Umsetzung auszuarbeiten. Die Note beschreibt ein Konzept, kein implementiertes Chatschema.
 - **O-ENT22-2:** Zusammenführung der Dateiaktionen mit [[ENT-33 - Vorbereitete Aktion]]: gleiche Nachprüfung für Chat und Wochenlauf?
-- **O-ENT22-3:** Darf ein Agent Notes der Bewertungsschicht lesen (O-ENT16-1)?
+- **O-ENT22-3 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Nein. Der Ordner der Bewertungsschicht und als privat markierte Personennotizen sind vom Agentenzugriff ausgenommen ([[ENT-16 - Beiratsbewertung]], [[ENT-02 - Person und Rolle]]).
 
 ## Herkunft und Anforderungen
 

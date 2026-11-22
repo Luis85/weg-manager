@@ -102,8 +102,8 @@ erDiagram
 | [[ENT-37 - Kontobewegung]] | Bewegung auf Giro- oder Rücklagenkonto | spaeter | spaeter |
 | [[ENT-17 - Produktfeedback]] | Beobachtung zur Produktnutzung | spaeter | keine |
 | [[ENT-18 - Angebot]] | Angebotsfassung eines Anbieters | spaeter | keine |
-| [[ENT-19 - Rechnung]] | Rechnungsdokument und Betragsbasis | spaeter | keine |
-| [[ENT-20 - Zahlungseintrag]] | Manuell dokumentierte Zahlung | spaeter | keine |
+| [[ENT-19 - Rechnung]] | abgelöst durch Kostenbuchung | spaeter | keine |
+| [[ENT-20 - Zahlungseintrag]] | abgelöst durch Kontobewegung | spaeter | keine |
 
 Die entschiedenen Abweichungen stehen unten. Die genaue Abgrenzung zwischen eigenen Objekten und WCS-Objekten steht in den Notes unter „Abweichungen vom WCS“. Das betrifft Dokument und Unterlage, Rechnung und Kostenbuchung sowie Zahlungseintrag und Kontobewegung.
 
@@ -219,14 +219,22 @@ Am 22.11.2026 hat der Produktverantwortliche diese Widersprüche zwischen WCS un
 
 ## Offene Punkte
 
-Aus dem WCS übernommen; Details an den Notes.
+Die fünf offenen Punkte aus dem WCS sind am 22.11.2026 entschieden:
 
-- **O-DM-1:** Prüfvorgang und Feststellung im MVP oder als erster Schritt danach? ([[ENT-34 - Prüfvorgang]], [[ENT-35 - Feststellung]]; WCS Q8)
-- **O-DM-2:** „Vorbereitete Aktion“ als eigenes Objekt ins Schema aufnehmen, damit die Nachprüfung prüfbar wird? ([[ENT-33 - Vorbereitete Aktion]])
-- **O-DM-3:** Speicherort der Bewertungsschicht: eigener, nicht geteilter Bereich im Vault ([[ENT-16 - Beiratsbewertung]]; WCS Q1).
-- **O-DM-4:** Personen als eigenes Objekt oder weiter als Rolle im Feld `wer` des Vorgangs? Wo liegt die Datenschutzgrenze für Eigentümerdaten? ([[ENT-02 - Person und Rolle]])
-- **O-DM-5:** Kostenbuchung, Kontobewegung und Budget zusammen bauen, weil alle dieselbe Buchungslogik brauchen? Wie verhalten sich Rechnung und Zahlungseintrag dazu? ([[ENT-26 - Budget]], [[ENT-36 - Kostenbuchung]], [[ENT-37 - Kontobewegung]])
-- **Erledigt:** Gemeinschaft als eigenes Objekt (WCS Q9) ist mit [[ENT-01 - Gemeinschaft]] und DV-01 umgesetzt, mit freier Art statt festem Typ ([[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
+- **O-DM-1 (erledigt):** Prüfvorgang und Feststellung sind der erste Schritt nach dem MVP. Im MVP werden Feststellungen als Vorgänge erfasst ([[ENT-34 - Prüfvorgang]], [[ENT-35 - Feststellung]]).
+- **O-DM-2 (erledigt):** Die Vorbereitete Aktion wird kein eigenes Objekt, solange das Plugin ohne Agent arbeitet. Ein offenes To-do ist die Nachprüfung ([[ENT-33 - Vorbereitete Aktion]]).
+- **O-DM-3 (erledigt):** Die Bewertungsschicht liegt in eigenen Notizen in einem eigenen Ordner im Vault, verknüpft über die id des Vorgangs. Der Ordner ist von Freigaben und Agentenzugriff ausgenommen ([[ENT-16 - Beiratsbewertung]]).
+- **O-DM-4 (erledigt):** Alle Personen sind eigene Notizen, auch Eigentümer, alle im selben Ordner. Privatpersonen tragen `private: true` und werden nie in Ausgaben übernommen. Eine Person hat je Gemeinschaft eine Rolle ([[ENT-02 - Person und Rolle]]).
+- **O-DM-5 (erledigt):** Ein gemeinsames Finanz-Feature nach dem MVP baut Kostenbuchung, Kontobewegung und Budget. Rechnung und Zahlungseintrag gehen darin auf ([[ENT-36 - Kostenbuchung]], [[ENT-37 - Kontobewegung]], [[ENT-26 - Budget]]).
+- **Erledigt:** Die Gemeinschaft als eigenes Objekt (WCS Q9) ist mit [[ENT-01 - Gemeinschaft]] und DV-01 umgesetzt. Die Art ist frei, kein fester Typ ([[K-20 - WCS-Datenmodell als fachliche Grundlage]]).
+
+Weitere Entscheidungen vom selben Tag:
+- Die Antwortzeit gehört ins MVP. Sie wird berechnet und nur in der Bewertungsschicht angezeigt.
+- Ein Verlaufseintrag wird nie gelöscht; nur private Inhalte darin dürfen mit Vermerk entfernt werden.
+- Ein Vorgang hat genau ein Thema.
+- Die Schwerpunkte der Übergabe sind Text mit optionalem Vorgangsbezug.
+
+Kleinere Modellfragen stehen an den Notes unter „Offene Punkte“.
 
 ## Herkunft
 

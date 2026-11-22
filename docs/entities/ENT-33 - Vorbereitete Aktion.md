@@ -79,7 +79,7 @@ Die Aktion nennt nur das Objekt, nicht seinen Inhalt. Private Dateien anderer Ei
 
 ## Offene Punkte
 
-- O-ENT33-1: „Vorbereitete Aktion“ als eigenes Objekt ins Schema aufnehmen, damit FR-W10 (Nachprüfung) prüfbar wird? (Offener Punkt des WCS.) Bis dahin `scope: spaeter`; im Backlog gibt es keine Story dazu.
+- O-ENT33-1 (erledigt): Entschieden am 22.11.2026 vom Produktverantwortlichen: Kein eigenes Objekt, solange das Plugin ohne Agent arbeitet. Im Kern bereitet es nur Entwürfe und To-dos vor; ein offenes To-do ist die Nachprüfung. Das Objekt kommt erst, wenn ein Agent selbst ablegt oder archiviert.
 - O-ENT33-2: Ist der Grad der Vorbereitung ein Feld jeder Aktion oder eine Einstellung je Art?
 - O-ENT33-3: Woran erkennt die Nachprüfung „ausgeführt“? Ablage: Datei am Zielort. Entwurf: dokumentierter Versand. Archivierung: Datei in „Archiv“.
 - O-ENT33-4: Wo werden Nachprüfung und Ergebnis gespeichert, wenn berechnete Felder nicht in die Notiz geschrieben werden? Vorschlag: im Verlauf des Laufs.

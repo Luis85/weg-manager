@@ -68,8 +68,8 @@ Nicht personenbezogen, solange nur gemeinschaftsweite Beträge gebucht werden. K
 
 ## Offene Punkte
 
-- O-ENT36-1: Kostenbuchung, Kontobewegung und Budget zusammen bauen, da alle dieselbe Buchungslogik brauchen? (Roadmap-Frage 2 des WCS; gleicher Punkt wie O-ENT26-1.)
-- O-ENT36-2: Abgrenzung zu [[ENT-19 - Rechnung]] und [[ENT-20 - Zahlungseintrag]]: Verweist eine Kostenbuchung auf eine Rechnung (`invoice_id`)? Ersetzt die Kostenbuchung im späteren Ausbau Teile von Rechnung und Zahlungseintrag, oder bleiben beide Modelle getrennt?
+- O-ENT36-1 (erledigt): Entschieden am 22.11.2026 vom Produktverantwortlichen: Ein gemeinsames Finanz-Feature nach dem MVP baut Kostenbuchung, Kontobewegung und Budget mit derselben Buchungslogik. Kostenbuchung löst [[ENT-19 - Rechnung]] ab, Kontobewegung löst [[ENT-20 - Zahlungseintrag]] ab.
+- O-ENT36-2 (erledigt): Entschieden am 22.11.2026 vom Produktverantwortlichen: Die Kostenbuchung löst die Rechnung ab; die Betragsbasis und Versionierung aus ENT-19 gehen in die Kostenbuchung über.
 - O-ENT36-3: Braucht die Kostenbuchung eine Beschreibung oder Kostenart? Das WCS nennt keine.
 - O-ENT36-4: Wie ordnet der Abgleich eine Kontobewegung zu (Betrag, Datum, Verwendungszweck)? Gilt die Grenze für Sammelzahlungen aus [[DF-21 - Unklare Zuordnung und Sammelzahlungen]] auch hier?
 

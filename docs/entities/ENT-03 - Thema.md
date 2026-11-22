@@ -52,7 +52,7 @@ Das WCS kennt kein Thema-Objekt. Die Note bleibt als unsere Ergänzung eigenstä
 
 - **O-ENT03-1:** Eigene gespeicherte Identität oder nur ein Textfeld am Vorgang? Bis zur Entscheidung folgt das Modell dem WCS (Textfeld).
 - **O-ENT03-2 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Das Thema ist Pflicht wie im WCS, als kurzer Text am Vorgang.
-- **O-ENT03-3:** Darf ein Vorgang mehreren Themen zugeordnet werden? Das WCS sieht genau eines vor; unser Konzept hatte es offen gelassen.
+- **O-ENT03-3 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Genau ein Thema je Vorgang, wie im WCS. Querbezüge laufen über Links oder Suche.
 - **O-ENT03-4:** Wird die Note mit [[ENT-04 - Vorgang]] zusammengeführt, wenn das Thema ein Textfeld bleibt?
 
 ## Herkunft und Anforderungen

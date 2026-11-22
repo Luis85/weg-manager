@@ -1,7 +1,7 @@
 ---
 type: Entity
 id: ENT-19
-status: entwurf
+status: abgeloest
 scope: spaeter
 category: bewegungsdaten
 wcs: keine
@@ -9,6 +9,9 @@ date: 2026-11-22
 ---
 
 # ENT-19 · Rechnung
+
+> [!note] Abgelöst
+> Seit dem 22.11.2026 geht dieses Objekt in [[ENT-36 - Kostenbuchung]] auf ([[00 - Fachliches Domänenmodell]], O-DM-5). Die Note bleibt als Referenz für Regeln und Felder.
 
 ## Zweck
 
@@ -69,7 +72,7 @@ Das WCS kennt keine Rechnung, nur die Kostenbuchung. Die Note bleibt als unsere 
 
 ## Offene Punkte
 
-- **O-ENT19-1:** Zusammenführung mit [[ENT-36 - Kostenbuchung]]: eine Rechnung mit Buchungsangaben oder zwei Objekte? Hängt an der WCS-Frage, ob Kostenbuchung, Kontobewegung und Budget zusammen gebaut werden (Roadmap-Frage 2).
+- **O-ENT19-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Abgelöst durch [[ENT-36 - Kostenbuchung]] im gemeinsamen Finanz-Feature nach dem MVP.
 - **O-ENT19-2:** Dokumentbasis bezeichnet die versionierten Angaben innerhalb der Rechnung, keine vorgeschriebene eigene Tabelle. Das vollständige operative Modell wird vor Umsetzung erneut geprüft.
 - **O-ENT19-3:** Technische Speicherung und endgültiger Umfang bleiben offen.
 

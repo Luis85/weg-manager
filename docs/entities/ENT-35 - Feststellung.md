@@ -48,7 +48,7 @@ Nur gemeinschaftsweite Angaben. Steht die Auffälligkeit in einer Einzelabrechnu
 
 ## Offene Punkte
 
-- O-ENT35-1: Prüfvorgang und Feststellung Teil des MVP oder erster Schritt danach? (WCS-PRD Q8; gleicher Punkt wie O-ENT34-1.)
+- O-ENT35-1 (erledigt): Entschieden am 22.11.2026 vom Produktverantwortlichen: Erster Schritt nach dem MVP, wie O-ENT34-1.
 - O-ENT35-2: Braucht die Feststellung einen eigenen Text, oder trägt der Vorgang ihn allein? Das WCS nennt kein Textfeld.
 - O-ENT35-3: Entsteht der Vorgang automatisch mit der Feststellung oder als Vorschlag mit Bestätigung?
 

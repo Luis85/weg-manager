@@ -1,8 +1,15 @@
-# Release on a bare semver tag (no "v"). Two jobs, so that the job with write permissions never runs
-# repository code:
+# Release a version (bare semver, no "v"). Two ways to start it:
 #
-#   build    read-only token, no persisted credentials. Checks that the tagged commit is on main,
-#            installs (dependency install scripts run here), runs the gate and the real-Obsidian e2e
+#   by hand  "Run workflow" on main with the version (workflow_dispatch). This is the way for an
+#            agent or anyone who cannot push tags: the workflow creates the tag on the commit it
+#            built, together with the release. The version must be the one in manifest.json on main
+#            and must not have a tag yet.
+#   by tag   push a tag x.y.z that is on main.
+#
+# Two jobs, so that the job with write permissions never runs repository code:
+#
+#   build    read-only token, no persisted credentials. Checks the version and that the commit is on
+#            main, installs (dependency install scripts run here), runs the gate and the real-Obsidian e2e
 #            suite (the gate includes check:notices, so THIRD-PARTY-NOTICES.txt is current), stages
 #            main.js, manifest.json and styles.css in release/weg-manager/ and the notices file
 #            beside that folder (`release:package` re-runs check:dist and checks versions.json) and
@@ -11,7 +18,8 @@
 #            files (the signed build-provenance attestation the Obsidian developer docs recommend,
 #            "Release your plugin with GitHub Actions") and creates the GitHub release with exactly
 #            those files. Obsidian and BRAT install only the first three; the notices file is for
-#            people who read the licences. A 0.x release is a pre-release (BRAT).
+#            people who read the licences. A 0.x release is a pre-release (BRAT). Started by hand,
+#            it creates the tag on the built commit; a tag the release creates starts no second run.
 #
 # Never run so far; see docs/engineering/releasing.md.
 name: Release
@@ -19,26 +27,69 @@ name: Release
 on:
   push:
     tags: ["[0-9]+.[0-9]+.[0-9]+"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release, bare x.y.z; must equal the version in manifest.json on main"
+        required: true
+        type: string
 
 permissions:
   contents: read
+
+# One release at a time; a second start waits instead of racing for the same tag.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     steps:
-      # Full history, so that the tagged commit can be compared with main.
+      # Full history, so that the commit can be compared with main.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: The tagged commit must be on main
+      # The version comes from the tag, or from the input of a start by hand. An input is only ever
+      # read from the environment, never pasted into a script.
+      - name: Resolve the version
+        id: version
         env:
-          TAG: ${{ github.ref_name }}
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            if [ "$REF" != "refs/heads/main" ]; then
+              echo "::error title=Not on main::Start the release on main, not on $REF_NAME."
+              exit 1
+            fi
+            tag="$INPUT_VERSION"
+          else
+            tag="$REF_NAME"
+          fi
+          # Matched as one string, so an input with a line break cannot pass.
+          if ! [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error title=Not a version::The version must be a bare x.y.z, without a v."
+            exit 1
+          fi
+          # The checkout above fetched every tag (fetch-depth: 0). The release job asks GitHub again.
+          if [ "$EVENT" = "workflow_dispatch" ] && git rev-parse -q --verify "refs/tags/$tag" > /dev/null; then
+            echo "::error title=Tag exists::Tag $tag already exists. A version is released once; bump the version for a new release."
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: The commit must be on main
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           if ! git merge-base --is-ancestor HEAD origin/main; then
-            echo "::error title=Tag not on main::Tag $TAG ($(git rev-parse --short HEAD)) is not an ancestor of origin/main. Release from main only."
+            echo "::error title=Not on main::$TAG ($(git rev-parse --short HEAD)) is not an ancestor of origin/main. Release from main only."
             exit 1
           fi
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -70,9 +121,10 @@ jobs:
       - run: npm run test:e2e
         env:
           WDIO_MAX_INSTANCES: 2
+      # Fails unless the version equals the one in manifest.json.
       - name: Stage the release files
         env:
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: npm run release:package -- --tag "$TAG"
       - name: Upload the release files
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -114,11 +166,25 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          TAG: ${{ github.ref_name }}
+          EVENT: ${{ github.event_name }}
+          TAG: ${{ needs.build.outputs.tag }}
+          SHA: ${{ github.sha }}
         run: |
           flags=()
           # Major version 0 is a pre-release, so it reaches BRAT testers without being "Latest".
           if [ "${TAG%%.*}" = "0" ]; then flags+=(--prerelease); fi
-          gh release create "$TAG" "${flags[@]}" --verify-tag --title "$TAG" --generate-notes \
+          # Started by hand, the release creates the tag on the commit the build job built, so the
+          # tag must not exist: with an existing tag `gh` would ignore --target. Started by a tag,
+          # that tag must exist.
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            if gh api "repos/$GH_REPO/git/ref/tags/$TAG" > /dev/null 2>&1; then
+              echo "::error title=Tag exists::Tag $TAG already exists. A version is released once; bump the version for a new release."
+              exit 1
+            fi
+            flags+=(--target "$SHA")
+          else
+            flags+=(--verify-tag)
+          fi
+          gh release create "$TAG" "${flags[@]}" --title "$TAG" --generate-notes \
             release/weg-manager/main.js release/weg-manager/manifest.json release/weg-manager/styles.css \
             release/THIRD-PARTY-NOTICES.txt

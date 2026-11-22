@@ -8,11 +8,13 @@ Versions are bare `x.y.z`. Tags carry no `v`; `.npmrc` sets `tag-version-prefix=
    - it stages both files.
 
    The bump refuses a version that is not greater than the current one. Commit `package.json`, `package-lock.json`, `manifest.json` and `versions.json` (`chore: release 0.3.0`) and bring the commit to `main` through a pull request, like every change.
-2. When the pull request is merged and CI on `main` is green, tag the merge commit on `main` and push the tag: `git tag 0.3.0 origin/main && git push origin 0.3.0`. The tag is what publishes: confirm with the owner before pushing it.
+2. When the pull request is merged and CI on `main` is green, start the release. A release publishes, so start it only when the owner asked for it. Either way works:
+   - **By hand, the way for an agent:** run the workflow `Release` on `main` with the input `version` set to the new version. In the browser: Actions, Release, "Run workflow". With the GitHub CLI: `gh workflow run release.yml --ref main -f version=0.3.0`. An agent with the GitHub tools starts `release.yml` on the ref `main` with the input `version`. No tag has to be pushed: the workflow creates the tag on the commit it built, together with the release. It refuses a ref other than `main`, a version that is not a bare `x.y.z`, a version that differs from `manifest.json`, and a version that already has a tag.
+   - **By tag:** `git tag 0.3.0 origin/main && git push origin 0.3.0`.
 
-   (Where direct pushes to `main` are allowed, plain `npm version 0.3.0` on `main` followed by `git push --follow-tags` does the same in one step.)
+   (Where direct pushes to `main` are allowed, plain `npm version 0.3.0` on `main` followed by `git push --follow-tags` bumps and tags in one step.)
 3. `.github/workflows/release.yml` runs two jobs:
-   - `build` (read-only token, credentials not persisted, `fetch-depth: 0`) fails unless the tagged commit is an ancestor of `origin/main`: tag from `main` only. It then runs `npm ci`, `npm run verify` and the real-Obsidian e2e suite (`npm run test:e2e`, set up as in `ci.yml`), then `npm run release:package -- --tag 0.3.0` and uploads `release/` (the folder `weg-manager/` with the three plugin files, and `THIRD-PARTY-NOTICES.txt` beside it) as the artifact `release-files`.
+   - `build` (read-only token, credentials not persisted, `fetch-depth: 0`) resolves the version (the tag, or the input of a start by hand) and fails unless the commit is an ancestor of `origin/main`: release from `main` only. It then runs `npm ci`, `npm run verify` and the real-Obsidian e2e suite (`npm run test:e2e`, set up as in `ci.yml`), then `npm run release:package -- --tag 0.3.0` and uploads `release/` (the folder `weg-manager/` with the three plugin files, and `THIRD-PARTY-NOTICES.txt` beside it) as the artifact `release-files`.
    - `release` (`contents: write`, `id-token: write`, `attestations: write`; no checkout, no `npm`) downloads that artifact, attests the four assets and creates the GitHub release with `main.js`, `manifest.json`, `styles.css` and `THIRD-PARTY-NOTICES.txt`. The release is marked a pre-release while the major version is 0 (the tag starts with `0.`).
 
    `release:package` fails when the tag and `manifest.json` disagree, when `dist/` fails the `check:dist` invariants (a stale or development build), when `versions.json` has no entry for the manifest version equal to its `minAppVersion`, or when `THIRD-PARTY-NOTICES.txt` is missing or empty.
@@ -20,7 +22,7 @@ Versions are bare `x.y.z`. Tags carry no `v`; `.npmrc` sets `tag-version-prefix=
 
 To stage a release locally: `npm run build && npm run release:package` writes `release/weg-manager/` and `release/THIRD-PARTY-NOTICES.txt`. It refuses a `dist/` that is not a fresh production build of the current `manifest.json`.
 
-The workflow has never run. A failed run leaves the tag without a release: fix the cause on `main`, delete the tag locally and on GitHub, and tag again with a new version (a version number is not reused once the bump commit is on `main`).
+The workflow has never run. A run started by hand that fails leaves nothing behind (the tag is created last, with the release): fix the cause on `main` and start it again with the same version. A run started by a tag that fails leaves the tag without a release: fix the cause on `main`, delete the tag locally and on GitHub, and start again (by hand with the same version, or with a new tag).
 
 Raise `minAppVersion` in `manifest.json` before you bump whenever the plugin starts using a newer Obsidian API.
 

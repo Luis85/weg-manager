@@ -98,7 +98,7 @@ DashboardSidebar (Desktop-Navigation) · DashboardPanel (Arbeitsfläche + Kontex
 | `v2-00-Research-Prinzipien.png` | Research → Designprinzipien |
 | `v2-Sitemap.png`, `v2-Flows.png` | IA und Flows, aus den Mermaid-Diagrammen in [[00 - Sitemap]] und [[FLOW-01 - Gesamtfluss des Beirats-MVP]] erzeugt |
 | `v2-D7-Ausgabe.png`, `v2-D8-Import.png` | Desktop: Sachstand ausgeben, Register-Import (nicht im Prototyp) |
-| `v2-D11-Aufgaben.png` … `v2-D14-Sicherung.png` | Desktop: To-dos, Konflikt klären, Erststart, Sicherung |
+| `v2-D11-To-dos.png` … `v2-D14-Sicherung.png` | Desktop: To-dos, Konflikt klären, Erststart, Sicherung |
 | `v2-Dlg-*.png` | Dialoge: Aufteilen, Zusammenführen, Bewerten, Reaktion erfassen, Als gesendet markieren |
 | `v2-M8-Nachricht.png` | Mobil: Nachricht prüfen |
 | `v2-P-D-01-Lage.png` … `v2-P-D-18-…`, `v2-P-M-01-…` … `v2-P-M-18-…` | Prototyp-Stand Pilot 15.11., Desktop und Mobil, 18 Bildschirme; gilt bei Abweichung vor den älteren Mockups, siehe [[Prototyp - Stand Pilot]] |

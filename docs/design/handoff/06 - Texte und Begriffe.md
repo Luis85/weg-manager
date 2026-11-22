@@ -48,7 +48,7 @@ date: 2026-11-15
 
 ## Statuswörter
 
-offen · ungeklärt · erledigt · hinfällig (Vorgang) — offen · in Arbeit · wartet · erledigt · entfallen (To-do) — überfällig · Termin fehlt · Zusage überschritten (Prüfvermerke) — Entwurf · EN prüfen · geprüft · gesendet (Nachricht) — Vorschlag (Option) — dringend (Auswahl).
+offen · ungeklärt · erledigt · hinfällig (Vorgang) — offen · erledigt · entfallen (To-do) — überfällig · Termin fehlt · Zusage überschritten (Prüfvermerke) — Entwurf · EN prüfen · geprüft · gesendet (Nachricht) — Vorschlag (Option) — dringend (Auswahl).
 
 ## Formate
 

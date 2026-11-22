@@ -9,6 +9,7 @@ import {
   writeNote,
 } from "../communities";
 import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
+import { de } from "../texts";
 
 /** What has the focus: its test id or tag, and its accessible name or text. */
 const focused = () =>
@@ -64,7 +65,7 @@ describe("communities: focus and modality", function () {
     expect(order.every((entry) => !entry.startsWith("community-add"))).toBe(true);
     expect(order.filter((entry) => entry === "field-name: ")).toHaveLength(2);
     await browser.keys("Escape");
-    await expectFocus("community-add: Gemeinschaft anlegen");
+    await expectFocus(`community-add: ${de.communities.screen.add}`);
     expect(await modality()).toEqual({ frameInert: false, ariaModal: null });
   });
 
@@ -75,7 +76,7 @@ describe("communities: focus and modality", function () {
     await fillForm({ short_code: "AW" });
     await root.$("[data-testid=community-save]").click();
     await expect(root.$("[data-testid=form-summary]")).toHaveText(
-      expect.stringContaining("Einige Angaben fehlen oder passen nicht."),
+      expect.stringContaining(de.communities.errors.invalid.detail),
     );
     await expect(root.$("[data-testid=form-summary]")).toHaveAttribute("role", "alert");
     await expectFocus("field-name: ");
@@ -85,31 +86,35 @@ describe("communities: focus and modality", function () {
     await fillForm({ name: "Ahornweg 12", kind: "WEG", unit_label: "Einheiten" });
     await browser.$(ROOT).$("[data-testid=community-save]").click();
     await expectListed(["Ahornweg 12"]);
-    await expectFocus("community-edit: Ahornweg 12 bearbeiten");
+    await expectFocus(`community-edit: ${de.communities.screen.editLabel("Ahornweg 12")}`);
     expect(await modality()).toEqual({ frameInert: false, ariaModal: null });
   });
 
   it("stays on the card after its name and file changed", async function () {
     const root = browser.$(ROOT);
-    await root.$("button[aria-label='Ahornweg 12 bearbeiten']").click();
+    await root.$(`button[aria-label='${de.communities.screen.editLabel("Ahornweg 12")}']`).click();
     await expectFocus("field-name: ");
     await fillForm({ name: "Ahornweg 14" });
     await root.$("[data-testid=community-save]").click();
     await expectListed(["Ahornweg 14"]);
-    await expectFocus("community-edit: Ahornweg 14 bearbeiten");
+    await expectFocus(`community-edit: ${de.communities.screen.editLabel("Ahornweg 14")}`);
   });
 
   it("opens the delete dialog on Abbrechen, and after the delete goes to the create action", async function () {
     const root = browser.$(ROOT);
-    await root.$("button[aria-label='Ahornweg 14 löschen']").click();
-    await expectFocus("button: Abbrechen");
+    await root
+      .$(`button[aria-label='${de.communities.screen.removeLabel("Ahornweg 14")}']`)
+      .click();
+    await expectFocus(`button: ${de.notes.deletion.cancel}`);
     expect(await modality()).toEqual({ frameInert: true, ariaModal: "true" });
     await browser.keys("Escape");
-    await expectFocus("community-remove: Ahornweg 14 löschen");
-    await root.$("button[aria-label='Ahornweg 14 löschen']").click();
+    await expectFocus(`community-remove: ${de.communities.screen.removeLabel("Ahornweg 14")}`);
+    await root
+      .$(`button[aria-label='${de.communities.screen.removeLabel("Ahornweg 14")}']`)
+      .click();
     await root.$("[data-testid=delete-confirm]").click();
     await expect(root.$("[data-testid=communities-empty]")).toBeDisplayed();
-    await expectFocus("community-add: Gemeinschaft anlegen");
+    await expectFocus(`community-add: ${de.communities.screen.add}`);
   });
 
   it("puts the focus on a read-only card's heading when nothing else is there", async function () {

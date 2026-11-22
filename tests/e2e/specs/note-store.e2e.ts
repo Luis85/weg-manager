@@ -9,7 +9,7 @@ import {
   VAULT_FACTS,
 } from "../../support/notes/fidelity";
 import { storeScenario, vaultFacts } from "../../support/notes/scenarios";
-import { installConsoleSpy, pluginProblems } from "../support";
+import { cacheIdle, installConsoleSpy, pluginProblems } from "../support";
 
 /** Long enough for Obsidian's metadata cache to index a write (about 3 ms on a dev machine). */
 const SETTLE_MS = 400;
@@ -20,6 +20,12 @@ const SETTLE_MS = 400;
  * real adapter source inside the test-only probe plugin (`tests/e2e/probe-plugin/`).
  */
 describe("note store in Obsidian", function () {
+  before(async function () {
+    // The first scenario records every event for a stretch; the vault's own notes must not still
+    // be indexing in the background then (seen once on a loaded machine: three late `changed`).
+    await cacheIdle();
+  });
+
   it("finds the vault, metadata cache and file manager as the double models them", async function () {
     const input = {
       paths: NORMALIZE_CASES.map(([path]) => path),

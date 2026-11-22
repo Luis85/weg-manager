@@ -8,6 +8,7 @@ import {
   pluginProblems,
   setColorScheme,
 } from "../support";
+import { de } from "../texts";
 
 /** The window handle of the pop-out, i.e. the one that is not Obsidian's main window. */
 const popoutHandle = async (main: string): Promise<string> => {
@@ -53,7 +54,9 @@ describe("view in a pop-out window", function () {
 
     await browser.switchToWindow(await popoutHandle(main));
     const root = browser.$(ROOT);
-    await expect(root.$("[data-testid=communities-screen] h2")).toHaveText("Gemeinschaften");
+    await expect(root.$("[data-testid=communities-screen] h2")).toHaveText(
+      de.communities.screen.title,
+    );
     await root.$("[data-testid=community-add]").click();
     await expect(root.$("[data-testid=community-form]")).toBeDisplayed();
     const dialog = await browser.executeObsidian(({ app }, type) => {

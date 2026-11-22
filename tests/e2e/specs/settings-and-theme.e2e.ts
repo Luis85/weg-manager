@@ -2,6 +2,7 @@ import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
 import {
   ROOT,
+  expectNotice,
   installConsoleSpy,
   logLevelControl,
   openView,
@@ -12,14 +13,7 @@ import {
   settingsTabContent,
   writeData,
 } from "../support";
-
-/** The text of every notice Obsidian currently shows, in any of its documents. */
-const noticeTexts = () =>
-  browser.executeObsidian(() =>
-    [document, activeDocument].flatMap((doc) =>
-      [...doc.querySelectorAll(".notice")].map((el) => el.textContent ?? ""),
-    ),
-  );
+import { de } from "../texts";
 
 /** Theme classes on the root and the colours Obsidian and the surface resolve to. */
 const sample = () =>
@@ -47,7 +41,10 @@ const sample = () =>
 describe("settings and theme in Obsidian", function () {
   it("keeps only the plugin settings in the native settings tab (PBI-49)", async function () {
     await installConsoleSpy();
-    expect(await settingsTabContent()).toEqual({ names: ["Protokollstufe"], inputs: 0 });
+    expect(await settingsTabContent()).toEqual({
+      names: [de.shell.settingsTab.logLevel.name],
+      inputs: 0,
+    });
   });
 
   it("saves the log level chosen in the settings tab to data.json", async function () {
@@ -62,6 +59,9 @@ describe("settings and theme in Obsidian", function () {
     await openView();
     await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();
     await setColorScheme("light");
+    await browser.waitUntil(async () => (await sample()).light, {
+      timeoutMsg: "root never turned light",
+    });
     const light = await sample();
     expect(light).toMatchObject({ light: true, dark: false, teal: "#0f766e" });
     expect(light.uiBg).toBe(light.hostBg);
@@ -84,13 +84,21 @@ describe("settings and theme in Obsidian", function () {
     await writeData(newer);
     await reloadPlugin();
     expect((await settingsTabContent()).names).toEqual([
-      "Protokollstufe",
-      "Einstellungen schreibgeschützt",
+      de.shell.settingsTab.logLevel.name,
+      de.shell.errors.readOnly.title,
     ]);
     expect(await logLevelControl("info")).toMatchObject({ disabled: true });
-    expect((await noticeTexts()).some((text) => text.includes("schreibgeschützt"))).toBe(true);
-    await browser.pause(300);
-    expect(await readData()).toEqual(newer);
+    await expectNotice(de.shell.errors.readOnly.title);
+    // "Never overwrites" is a negative check, and a late save would make it pass empty. So let
+    // the plugin prove it has followed the file after the refused change: a second file from a
+    // newer version, written from outside, reaches the tab, and only then must `data.json` still
+    // be that file (a save of the refused change would have replaced it).
+    const later = { schemaVersion: 100, logLevel: "warn" };
+    await writeData(later);
+    await browser.waitUntil(async () => (await logLevelControl()).value === "warn", {
+      timeoutMsg: "the settings tab never showed the later file's log level",
+    });
+    expect(await readData()).toEqual(later);
   });
 
   it("logged no error or warning from the plugin and no uncaught error", async function () {

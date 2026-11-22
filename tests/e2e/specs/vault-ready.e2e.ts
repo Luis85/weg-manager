@@ -1,4 +1,5 @@
 import { mkdirSync, writeFileSync } from "node:fs";
+import { stdout } from "node:process";
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
 import { obsidianPage } from "wdio-obsidian-service";
@@ -27,19 +28,45 @@ const record = async (): Promise<StartupRecord> => {
   return recorded;
 };
 
-/** Waits until the probe's host event adapter has published `VaultReady`, then a little longer. */
+/** Waits until the probe's host event adapter has published `VaultReady`, and returns the record. */
 const afterVaultReady = async (): Promise<StartupRecord> => {
   await browser.waitUntil(async () => ((await record()).counts["bus:VaultReady"] ?? 0) > 0, {
     timeout: 60_000,
     timeoutMsg: "VaultReady was not published",
   });
-  // Long enough for a second VaultReady to show, if one came.
-  await browser.pause(500);
   return record();
 };
 
+/**
+ * Makes Obsidian fire `resolved` once more, and waits until it has. `VaultReady` "comes once" is a
+ * negative check: a second one would follow the next `resolved`, so waiting some time for it
+ * could pass empty. Instead the check gets its positive sign: a plain note is edited (it keeps
+ * the vault's counts), Obsidian's `resolved` that follows is seen by the recorder, and only then
+ * the count of `VaultReady` is read.
+ */
+const resolvedAgain = async (): Promise<StartupRecord> => {
+  const resolved = async () => (await record()).counts["metadataCache:resolved"] ?? 0;
+  const before = await resolved();
+  const edited = await browser.executeObsidian(async ({ app }) => {
+    const plain = app.vault
+      .getMarkdownFiles()
+      .find((file) => app.metadataCache.getFileCache(file)?.frontmatter === undefined);
+    if (plain === undefined) return false;
+    await app.vault.process(plain, (text) => `${text}\nEdited after VaultReady.\n`);
+    return true;
+  });
+  expect(edited).toBe(true);
+  await browser.waitUntil(async () => (await resolved()) > before, {
+    timeoutMsg: "Obsidian fired no `resolved` after the edit",
+  });
+  return record();
+};
+
+const find = (recorded: StartupRecord, name: string): CacheSnapshot | undefined =>
+  recorded.snapshots.find((snapshot) => snapshot.at === name);
+
 const at = (recorded: StartupRecord, name: string): CacheSnapshot => {
-  const found = recorded.snapshots.find((snapshot) => snapshot.at === name);
+  const found = find(recorded, name);
   if (found === undefined) throw new Error(`no snapshot at ${name}`);
   return found;
 };
@@ -57,33 +84,67 @@ const timedList = () =>
   });
 
 const timings: Record<string, unknown> = {};
+const observed: Record<string, unknown> = {};
+
+/**
+ * What Obsidian did on this machine around the start, as numbers. How far the cache is when the
+ * plugin loads, at the layout and at the first `resolved`, and how often `changed` and `resolved`
+ * fire, depend on how fast Obsidian is here (a fast runner indexes more before the layout is
+ * ready), so they are recorded and never asserted.
+ */
+const observation = (recorded: StartupRecord) => {
+  const resolvedAt = find(recorded, "metadataCache:resolved");
+  return {
+    cachedAtOnload: at(recorded, "onload").cached,
+    frontmatterAtLayoutReady: at(recorded, "bus:LayoutReady").frontmatter,
+    cachedAtFirstResolved: resolvedAt?.cached ?? null,
+    firstResolvedBeforeCacheComplete:
+      resolvedAt === undefined ? null : resolvedAt.cached < MARKDOWN,
+    changedEvents: recorded.counts["metadataCache:changed"] ?? 0,
+    resolvedEvents: recorded.counts["metadataCache:resolved"] ?? 0,
+  };
+};
 
 /**
  * `VaultReady` on the F-21 reference vault (2,200 notes, 2,000 with frontmatter), published by
  * the plugin's host event adapter, which the probe plugin runs on its own runtime from its
  * `onload` on. A cold start (a fresh copy of the vault, never indexed), a warm restart in the same
- * vault, and the adapter started in a running app. The timings land in
+ * vault, and the adapter started in a running app.
+ *
+ * What the adapter guarantees is asserted: `VaultReady` comes once, never before the cache holds
+ * every Markdown file, with the layout ready. What depends on Obsidian's speed on this machine is
+ * recorded, not asserted (`reports/e2e/vault-ready-observations.json`, printed to the log): how
+ * much was cached at `onload`, at the layout and at the first `resolved`, and whether that
+ * `resolved` came before the cache was complete. The timings land in
  * `reports/e2e/vault-ready-timings.json`; they are reported, not yet enforced.
  */
 describe("VaultReady in Obsidian", function () {
   this.timeout(120_000);
 
+  after(function () {
+    mkdirSync("reports/e2e", { recursive: true });
+    writeFileSync("reports/e2e/vault-ready-timings.json", `${JSON.stringify(timings, null, 2)}\n`);
+    writeFileSync(
+      "reports/e2e/vault-ready-observations.json",
+      `${JSON.stringify(observed, null, 2)}\n`,
+    );
+    stdout.write(`VaultReady observations on this machine: ${JSON.stringify(observed)}\n`);
+  });
+
   it("waits on a cold start until every note's frontmatter is in the cache, and comes once", async function () {
     await browser.reloadObsidian({ vault: REFERENCE_VAULT });
     const cold = await afterVaultReady();
-    // Cold: nothing is cached when the probe loads, and Obsidian indexes every note.
-    expect(at(cold, "onload")).toMatchObject({ cached: 0 });
-    expect(cold.counts["metadataCache:changed"]).toBe(MARKDOWN);
-    // The layout is ready long before the cache is: LayoutReady alone would read a partial vault.
-    expect(at(cold, "bus:LayoutReady").frontmatter).toBeLessThan(WITH_FRONTMATTER);
-    // `resolved` already fired while most notes still waited.
-    expect(at(cold, "metadataCache:resolved").cached).toBeLessThan(MARKDOWN);
+    // Never before the cache holds every note, whatever Obsidian's speed: the snapshot is taken
+    // inside the publish. Obsidian's `changed` events are all done by then.
     expect(at(cold, "bus:VaultReady")).toMatchObject({ layoutReady: true, ...complete });
-    expect(cold.counts["bus:LayoutReady"]).toBe(1);
-    expect(cold.counts["bus:VaultReady"]).toBe(1);
     expect(cold.first["bus:VaultReady"]).toBeGreaterThanOrEqual(
       cold.last["metadataCache:changed"] ?? Infinity,
     );
+    observed["cold"] = observation(cold);
+    // Once: a later `resolved` does not publish it again.
+    const later = await resolvedAgain();
+    expect(later.counts["bus:LayoutReady"]).toBe(1);
+    expect(later.counts["bus:VaultReady"]).toBe(1);
     const listed = await timedList();
     expect(listed.records).toBe(WITH_FRONTMATTER);
     timings["cold"] = {
@@ -96,9 +157,13 @@ describe("VaultReady in Obsidian", function () {
   it("comes with LayoutReady on a warm restart, complete", async function () {
     await browser.reloadObsidian();
     const warm = await afterVaultReady();
-    expect(warm.counts["metadataCache:changed"]).toBeUndefined();
+    // Whether Obsidian found all of its cache on disk (no `changed` at all) depends on how far its
+    // cache writes had come when the cold run ended: on a loaded machine 1,143 notes were indexed
+    // again. That is recorded below, not asserted; either way `VaultReady` comes complete.
     expect(at(warm, "bus:VaultReady")).toMatchObject({ layoutReady: true, ...complete });
-    expect(warm.counts["bus:VaultReady"]).toBe(1);
+    observed["warm"] = observation(warm);
+    const later = await resolvedAgain();
+    expect(later.counts["bus:VaultReady"]).toBe(1);
     const listed = await timedList();
     expect(listed.records).toBe(WITH_FRONTMATTER);
     timings["warm"] = {
@@ -117,11 +182,16 @@ describe("VaultReady in Obsidian", function () {
     await obsidianPage.disablePlugin(PROBE_ID);
     await obsidianPage.enablePlugin(PROBE_ID);
     const running = await afterVaultReady();
-    expect(running.counts["metadataCache:resolved"]).toBeUndefined();
+    // Complete at once, with nothing but the layout and the cache to go by: whether Obsidian
+    // fires a `resolved` after a re-enable is Obsidian's business, and recorded below.
     expect(at(running, "onload")).toMatchObject({ layoutReady: true, ...complete });
     expect(at(running, "bus:VaultReady")).toMatchObject(complete);
     expect(running.counts["bus:LayoutReady"]).toBe(1);
-    expect(running.counts["bus:VaultReady"]).toBe(1);
+    observed["running"] = {
+      resolvedEvents: running.counts["metadataCache:resolved"] ?? 0,
+    };
+    const later = await resolvedAgain();
+    expect(later.counts["bus:VaultReady"]).toBe(1);
     expect(await pluginProblems()).toEqual([]);
   });
 
@@ -129,7 +199,5 @@ describe("VaultReady in Obsidian", function () {
     expect(await browser.executeObsidian(readinessScenario, 400)).toEqual(READINESS_FACTS);
     const after = await record();
     expect(after.counts["bus:VaultReady"]).toBe(1);
-    mkdirSync("reports/e2e", { recursive: true });
-    writeFileSync("reports/e2e/vault-ready-timings.json", `${JSON.stringify(timings, null, 2)}\n`);
   });
 });

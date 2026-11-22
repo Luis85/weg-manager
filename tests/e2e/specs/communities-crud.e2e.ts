@@ -4,6 +4,7 @@ import {
   FOLDER,
   expectFormClosed,
   expectListed,
+  expectSummary,
   fileText,
   filesIn,
   fillForm,
@@ -11,22 +12,11 @@ import {
   useVaultTrash,
   writeNote,
 } from "../communities";
-import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
+import { ROOT, expectNotice, installConsoleSpy, openView, pluginProblems } from "../support";
+import { de } from "../texts";
 
 const PATH = `${FOLDER}/Ahornweg 12.md`;
 const ID = /^id: (community-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/m;
-
-/** Waits until Obsidian shows a notice with `text`. */
-const expectNotice = (text: string) =>
-  browser.waitUntil(
-    async () =>
-      (
-        await browser.executeObsidian(() =>
-          [...document.querySelectorAll(".notice")].map((el) => el.textContent ?? ""),
-        )
-      ).some((shown) => shown.includes(text)),
-    { timeoutMsg: `no notice said ${text}` },
-  );
 
 /** PBI-56: a community is created, edited and deleted as a note, in real Obsidian. */
 describe("communities: create, edit and delete", function () {
@@ -50,7 +40,7 @@ describe("communities: create, edit and delete", function () {
     await saveForm();
     await expectFormClosed();
     await expectListed(["Ahornweg 12"]);
-    await expectNotice("„Ahornweg 12“ angelegt");
+    await expectNotice(de.notes.notices.created("Ahornweg 12"));
     const text = (await fileText(PATH)) ?? "";
     id = ID.exec(text)?.[1] ?? "";
     expect(id).not.toBe("");
@@ -78,10 +68,15 @@ describe("communities: create, edit and delete", function () {
     await saveForm();
     const form = root.$("[data-testid=community-form]");
     await expect(form).toHaveText(
-      expect.stringContaining("Das Kürzel braucht 2 bis 5 Buchstaben (A–Z) oder Ziffern."),
+      expect.stringContaining(
+        de.communities.issues["short-code.invalid"](
+          { key: "short_code", code: "short-code.invalid" },
+          de.communities.fields.short_code,
+        ),
+      ),
     );
     await expect(root.$("[data-testid=form-summary]")).toHaveText(
-      expect.stringContaining("Gemeinschaft nicht gespeichert"),
+      expect.stringContaining(de.communities.errors.invalid.title),
     );
     // Teal is Ahornweg 12's: it is offered no more, and the form started on the next free one.
     await expect(root.$("input[type=radio][value=teal]")).toBeDisabled();
@@ -95,18 +90,20 @@ describe("communities: create, edit and delete", function () {
     const before = (await fileText(PATH)) ?? "";
     await writeNote(
       PATH,
-      before.replace("unit_label: Einheiten\n", "unit_label: Einheiten\nreviewer: Agent\n") +
+      before.replace("unit_label: Einheiten\n", "unit_label: Wohnungen\nreviewer: Agent\n") +
         "# Eigene Notizen\n",
     );
-    await browser.pause(300);
+    // The outside edit is not visible, but its unit label is: once the card shows it, the view has
+    // read the note with the new key and the body, and the form opens on that.
+    await expectSummary("Ahornweg 12", de.communities.screen.summary("WEG", "Wohnungen"));
     const root = browser.$(ROOT);
-    await root.$("button[aria-label='Ahornweg 12 bearbeiten']").click();
+    await root.$(`button[aria-label='${de.communities.screen.editLabel("Ahornweg 12")}']`).click();
     await expect(root.$("[data-testid=field-short_code]")).toHaveAttribute("readonly");
     await fillForm({ name: "Ahornweg 12a", kind: "Haus" });
     await saveForm();
     await expectFormClosed();
     await expectListed(["Ahornweg 12a"]);
-    await expectNotice("„Ahornweg 12a“ gespeichert");
+    await expectNotice(de.notes.notices.saved("Ahornweg 12a"));
     expect(await fileText(PATH)).toBeNull();
     expect(await fileText(`${FOLDER}/Ahornweg 12a.md`)).toBe(
       [
@@ -117,7 +114,7 @@ describe("communities: create, edit and delete", function () {
         "short_code: AW",
         "color: teal",
         "kind: Haus",
-        "unit_label: Einheiten",
+        "unit_label: Wohnungen",
         "reviewer: Agent",
         "---",
         "# Eigene Notizen",
@@ -128,18 +125,16 @@ describe("communities: create, edit and delete", function () {
 
   it("deletes after a confirmation into the trash set in Obsidian", async function () {
     const root = browser.$(ROOT);
-    await root.$("button[aria-label='Ahornweg 12a löschen']").click();
+    await root
+      .$(`button[aria-label='${de.communities.screen.removeLabel("Ahornweg 12a")}']`)
+      .click();
     await expect(root.$("[role=dialog]")).toHaveText(
-      expect.stringContaining(
-        "„Ahornweg 12a“ wird in Obsidians Papierkorb verschoben. Dort kannst du die Notiz wiederherstellen.",
-      ),
+      expect.stringContaining(de.notes.deletion.detail("Ahornweg 12a")),
     );
-    await expect(root.$("[data-testid=delete-confirm]")).toHaveText(
-      "In den Papierkorb verschieben",
-    );
+    await expect(root.$("[data-testid=delete-confirm]")).toHaveText(de.notes.deletion.confirm);
     await root.$("[data-testid=delete-confirm]").click();
     await expect(root.$("[data-testid=communities-empty]")).toBeDisplayed();
-    await expectNotice("„Ahornweg 12a“ in den Papierkorb verschoben");
+    await expectNotice(de.notes.notices.deleted("Ahornweg 12a"));
     expect(await filesIn("WEG Manager")).toEqual([]);
     expect(await fileText(".trash/Ahornweg 12a.md")).toContain(`id: ${id}`);
   });

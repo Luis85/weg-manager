@@ -6,6 +6,7 @@ import {
   communityText,
   expectFormClosed,
   expectListed,
+  expectSummary,
   fileText,
   fillForm,
   openSection,
@@ -13,6 +14,7 @@ import {
   writeNotes,
 } from "../communities";
 import { ROOT, installConsoleSpy, leafCount, openView, pluginProblems } from "../support";
+import { de } from "../texts";
 
 const NOTES: Readonly<Record<string, string>> = {
   "Gut.md": communityText(community(1, { name: "Gut", short_code: "GUT" })),
@@ -42,9 +44,16 @@ const issuesOf = (name: string) =>
   );
 
 const duplicateCode = (other: string) =>
-  `„${other}“ hat dasselbe Kürzel KZ. Gib einer der beiden ein anderes Kürzel.`;
+  de.communities.issues["short-code.duplicate"](
+    { key: "short_code", code: "short-code.duplicate", value: "KZ", other },
+    de.communities.fields.short_code,
+  );
 const duplicateId = (other: string) =>
-  `Die Notiz „${FOLDER}/${other}“ hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.`;
+  de.notes.recordIssues["id.duplicate"]({ code: "id.duplicate", other: `${FOLDER}/${other}` });
+const missingColor = de.communities.issues["color.unknown"](
+  { key: "color", code: "color.unknown", value: "cyan" },
+  de.communities.fields.color,
+);
 
 /** DF-23: broken notes are shown with their issues and never disturb the others. */
 describe("communities: notes that break the file contract", function () {
@@ -54,9 +63,7 @@ describe("communities: notes that break the file contract", function () {
     await openView();
     await expectListed(["Farbe", "Gut", "Kopie A", "Kopie B", "Kürzel A", "Kürzel B"]);
     expect(await issuesOf("Gut")).toEqual([]);
-    expect(await issuesOf("Farbe")).toEqual([
-      "Die gespeicherte Farbe „cyan“ gibt es nicht. Wähle eine Farbe.",
-    ]);
+    expect(await issuesOf("Farbe")).toEqual([missingColor]);
     expect(await issuesOf("Kürzel A")).toEqual([duplicateCode("Kürzel B")]);
     expect(await issuesOf("Kürzel B")).toEqual([duplicateCode("Kürzel A")]);
     expect(await issuesOf("Kopie A")).toEqual([duplicateId("Kopie B.md")]);
@@ -64,30 +71,33 @@ describe("communities: notes that break the file contract", function () {
     await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).not.toExist();
     // The notes of no known type are the section "Datenprobleme", counted beside its entry.
     await expect(browser.$(ROOT).$("[data-testid=data-issues-count]")).toHaveText(
-      expect.stringContaining("1 Notiz"),
+      expect.stringContaining(de.notes.dataIssues.count(1)),
     );
-    await openSection("Datenprobleme");
+    await openSection(de.notes.dataIssues.title);
     await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).toHaveText(
       expect.stringContaining(`${FOLDER}/Kaputt.md`),
     );
     await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).toHaveText(
       expect.stringContaining(
-        "Die Eigenschaften oben in der Notiz sind fehlerhaft geschrieben, deshalb kann WEG Manager sie nicht lesen. Öffne die Notiz und korrigiere die Eigenschaften.",
+        de.notes.unindexedIssues["frontmatter.unreadable"]({ code: "frontmatter.unreadable" }),
       ),
     );
   });
 
   it("still saves the valid one and repairs a broken field, writing nothing else", async function () {
     const root = browser.$(ROOT);
-    await openSection("Gemeinschaften");
-    await root.$("button[aria-label='Gut bearbeiten']").click();
+    await openSection(de.communities.screen.title);
+    await expectListed(["Farbe", "Gut", "Kopie A", "Kopie B", "Kürzel A", "Kürzel B"]);
+    await root.$(`button[aria-label='${de.communities.screen.editLabel("Gut")}']`).click();
     await fillForm({ kind: "Haus" });
     await saveForm();
     await expectFormClosed();
     expect(await fileText(`${FOLDER}/Gut.md`)).toBe(
       communityText(community(1, { name: "Gut", short_code: "GUT", kind: "Haus" })),
     );
-    await root.$("button[aria-label='Farbe bearbeiten']").click();
+    // The list follows the write a moment later; click on the next card once it has.
+    await expectSummary("Gut", de.communities.screen.summary("Haus", "Einheiten"));
+    await root.$(`button[aria-label='${de.communities.screen.editLabel("Farbe")}']`).click();
     await fillForm({ color: "amber" });
     await saveForm();
     await expectFormClosed();
@@ -108,19 +118,21 @@ describe("communities: notes that break the file contract", function () {
   it("opens a note it cannot write in another tab, and the view stays open", async function () {
     const activeFile = () =>
       browser.executeObsidian(({ app }) => app.workspace.getActiveFile()?.path ?? null);
-    await openSection("Datenprobleme");
+    await openSection(de.notes.dataIssues.title);
     const opener = browser
       .$(ROOT)
       .$("[data-testid=unindexed-notes]")
-      .$("button[aria-label='WEG Manager/Gemeinschaften/Kaputt.md in Obsidian öffnen']");
+      .$(`button[aria-label='${de.notes.openNote.labelFor(`${FOLDER}/Kaputt.md`)}']`);
     await opener.click();
     await browser.waitUntil(async () => (await activeFile()) === `${FOLDER}/Kaputt.md`, {
       timeoutMsg: "the note never became the active file",
     });
     expect(await leafCount()).toBe(1);
     await openView();
-    await openSection("Gemeinschaften");
-    const readOnly = browser.$(ROOT).$("button[aria-label='Kopie A in Obsidian öffnen']");
+    await openSection(de.communities.screen.title);
+    const readOnly = browser
+      .$(ROOT)
+      .$(`button[aria-label='${de.notes.openNote.labelFor("Kopie A")}']`);
     await readOnly.click();
     await browser.waitUntil(async () => (await activeFile()) === `${FOLDER}/Kopie A.md`, {
       timeoutMsg: "the read-only community's note never became the active file",

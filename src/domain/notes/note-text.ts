@@ -9,7 +9,7 @@ import { yamlEntry } from "./yaml-text";
  * (`src/application/notes/note-text.ts`). A text this cannot edit safely is `"layout"`.
  */
 
-const BOM = "﻿";
+const BOM = "\uFEFF";
 const FENCE = "---";
 
 /** The frontmatter block: the opening fence line, the lines between, the closing fence line. */

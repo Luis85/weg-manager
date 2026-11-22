@@ -9,7 +9,7 @@ import {
   type NoteTextPatch,
 } from "../../../../src/domain/notes/note-text";
 
-const BOM = "﻿";
+const BOM = "\uFEFF";
 
 /** The reviewer's note: a comment and unknown keys that a full YAML round trip would change. */
 const REVIEWED = [

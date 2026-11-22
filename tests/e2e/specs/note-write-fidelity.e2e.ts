@@ -17,7 +17,7 @@ import {
 } from "../communities";
 import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
 
-const BOM = "﻿";
+const BOM = "\uFEFF";
 
 /** Saves the community `name` through the form with another kind, as a person does. */
 const saveKind = async (name: string, kind: string) => {
@@ -102,7 +102,7 @@ describe("note write fidelity", function () {
     const tricky = array(
       oneof(
         constantFrom("yes", "null", "~", "01067", "1.10", ": ", " #", "'", '"', "-", "\t", "\n"),
-        constantFrom("12:30", "2024-01-01", "\u0085", " ", "﻿", "😀", "\\", "[", "&"),
+        constantFrom("12:30", "2024-01-01", "\u0085", " ", "\uFEFF", "😀", "\\", "[", "&"),
         string({ unit: "binary", maxLength: 3 }),
       ),
       { maxLength: 5 },

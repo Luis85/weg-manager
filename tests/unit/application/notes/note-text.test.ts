@@ -26,7 +26,7 @@ import {
 } from "../../../../src/application/notes";
 import { updateNoteText } from "../../../../src/application/notes/note-text";
 
-const BOM = "﻿";
+const BOM = "\uFEFF";
 
 const REVIEWED = [
   "---",

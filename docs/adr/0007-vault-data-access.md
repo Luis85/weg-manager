@@ -1,6 +1,6 @@
 # ADR 0007 · Vault notes as records
 
-- Status: accepted; adapter calls, the unreadable lookup and the conflict form amended on 2026-11-21, the update write path amended again on 2026-11-21; a contact's role, closing lines and folders, references with lookup by id, the wording of the budget, what the second review round measured (PBI-68) and the two decisions on references (missing target, no wikilink) amended on 2026-11-22 (see the notes at the end)
+- Status: accepted; adapter calls, the unreadable lookup and the conflict form amended on 2026-11-21, the update write path amended again on 2026-11-21; a contact's role, closing lines and folders, references with lookup by id, the wording of the budget, what the second review round measured (PBI-68), the two decisions on references (missing target, no wikilink) and the form values per field kind (PBI-71) amended on 2026-11-22 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -144,3 +144,12 @@ Owner decisions of 2026-11-22, fourth interview (PBI-61, PBI-71). They settle tw
 - **A record that points at a missing target still saves.** The target may be a deleted note, or one that Sync has not brought yet. The form marks the field, and the record is listed under the data issues as `reference.missing`. Saving is never refused for that reason: no validator, in the domain or in a form, turns a missing target into a failed save. The index already behaves so (`markMissingReferences` adds the issue and leaves the record as it was).
 - **A link between records is written as the target's `id` only.** The value of a `<type>_id` or `<type>_ids` key is the `id`; no wikilink is written beside it, and no property holds one. The consequence the owner accepted: Obsidian's graph and backlinks do not show the relation. This closes the sentence "Whether a wikilink is written beside it is decided with the first relation" under *What a record is*.
 - **Not changed.** The reference field kinds, `reference.missing`, lookup by `id` and the flat keys stand as the amendment of 2026-11-22 "references and lookup by id" built them.
+
+## Amendment, 2026-11-22: a form's values follow the field kind (PBI-71)
+
+The merge of "Writing" compares a form's saved values with the loaded ones. Until now the form kit gave every field as text, so a list or reference the user never touched reached the merge as `undefined` and was removed, and a number or checkbox came back as quoted text. The codec's contract is extended, not changed:
+
+- **Each field kind has a form value** (`toInput` and `fromInput`, `src/domain/notes/form.ts`): text for `text`, `date` and `reference`; a number or nothing for `number`; `true` or `false` for `checkbox`; a list of text for `list` and `references`. `FormInput<F>` follows the kind. A stored value of another kind is shown where the kind can hold it (a number in a text field, one text as a list of one), so a save repairs it.
+- **An untouched field keeps the note's value as written.** `editedValues` compares the form value with the loaded value mapped the same way (`Equal.equals`); while they are equal and the value is valid, the save hands the loaded value itself to the merge, which then writes nothing for it, so its bytes stay. This holds for a reference to a missing target too (amendment above).
+- **`parse(values)`** on the codec gives the type's values once its field rules hold, else the issues, so a use case hands typed values to the record kit without a cast.
+- **Not changed:** the merge, its conflicts and guards, the line edit and the serialiser.

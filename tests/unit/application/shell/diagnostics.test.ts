@@ -100,10 +100,10 @@ describe("buildDiagnostics", () => {
 
   it.effect("joins settings issues with spaces", () =>
     Effect.gen(function* () {
-      const text = yield* report({ initial: { greeting: 7, logLevel: "laut" } }, []);
+      const text = yield* report({ initial: { rootFolder: 7, logLevel: "laut" } }, []);
       assert.include(
         text,
-        "Hinweise zu Einstellungen: Die Begrüßung muss 1 bis 200 Zeichen lang sein. Die Protokollstufe muss eine von error, warn, info, debug sein.",
+        'Hinweise zu Einstellungen: Die Protokollstufe muss eine von error, warn, info, debug sein. Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.',
       );
     }),
   );
@@ -120,12 +120,12 @@ describe("buildDiagnostics", () => {
 
   it.effect("stays German for support in an English UI and names the UI language", () =>
     Effect.gen(function* () {
-      const text = yield* report({ initial: { greeting: 7 } }, [], "en");
+      const text = yield* report({ initial: { rootFolder: 7 } }, [], "en");
       assert.include(text, "Sprache: en");
       assert.include(text, "Einstellungen beschreibbar: ja");
       assert.include(
         text,
-        "Hinweise zu Einstellungen: Die Begrüßung muss 1 bis 200 Zeichen lang sein.",
+        'Hinweise zu Einstellungen: Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.',
       );
     }),
   );

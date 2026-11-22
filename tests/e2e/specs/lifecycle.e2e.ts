@@ -12,6 +12,7 @@ import {
 } from "../support";
 
 const RIBBON = '.side-dock-ribbon-action[aria-label="WEG Manager"]';
+const EMPTY = "Hier erscheinen deine Gemeinschaften, etwa eine WEG und ihre Tiefgarage.";
 
 /**
  * The plugin's live entries in Obsidian's ribbon list, which also feeds the ribbon's context menu.
@@ -30,14 +31,17 @@ const ribbonEntries = () =>
 
 /** Gaps G1 and G6: real load/unload cycles and a clean console. */
 describe("plugin lifecycle in Obsidian", function () {
-  it("opens the view with the greeting and the vault's file count", async function () {
+  it("opens the view on the community settings, empty in a new vault", async function () {
     await installConsoleSpy();
     expect(await ribbonEntries()).toBe(1);
     await openView();
     const root = browser.$(ROOT);
     await expect(root).toBeDisplayed();
-    await expect(root.$("[data-testid=greeting]")).toHaveText("Hallo von WEG Manager");
-    await expect(root.$("[data-testid=file-count]")).toHaveText("3 Markdown-Dateien im Vault");
+    await expect(root.$("[data-testid=communities-screen] h2")).toHaveText("Gemeinschaften");
+    await expect(root.$("[data-testid=communities-empty] p")).toHaveText(EMPTY);
+    await expect(root.$("[data-testid=community-switch]")).toHaveText(
+      expect.stringContaining("Noch keine Gemeinschaft"),
+    );
   });
 
   it("reveals the open view instead of opening a second one", async function () {
@@ -54,7 +58,7 @@ describe("plugin lifecycle in Obsidian", function () {
       app.workspace.getLeavesOfType(type).at(-1)?.detach();
     }, VIEW_TYPE);
     await expect(browser.$$(ROOT)).toBeElementsArrayOfSize(1);
-    await expect(browser.$(ROOT).$("[data-testid=greeting]")).toHaveText("Hallo von WEG Manager");
+    await expect(browser.$(ROOT).$("[data-testid=communities-empty] p")).toHaveText(EMPTY);
   });
 
   it("shows one view and one ribbon icon after each of three disable/enable cycles", async function () {
@@ -73,9 +77,7 @@ describe("plugin lifecycle in Obsidian", function () {
       await expect(browser.$$(RIBBON)).toBeElementsArrayOfSize(1);
       await openView();
       await expect(browser.$$(ROOT)).toBeElementsArrayOfSize(1);
-      await expect(browser.$(ROOT).$("[data-testid=file-count]")).toHaveText(
-        "3 Markdown-Dateien im Vault",
-      );
+      await expect(browser.$(ROOT).$("[data-testid=communities-empty] p")).toHaveText(EMPTY);
     }
   });
 

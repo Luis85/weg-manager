@@ -1,6 +1,6 @@
 # Testing
 
-Tests come first. Each behaviour step writes the failing test, sees it fail, then implements. A "discriminating check" counts only once it has been seen to fail on a planted defect.
+Tests come first. Each behaviour step writes the failing test, sees it fail, then implements. A "discriminating check" counts only once it has been seen to fail on a planted defect. `npm run verify` runs the unit and dom projects with coverage; the end-to-end suite and mutation testing run on their own (see the end-to-end section).
 
 ## Projects
 
@@ -8,10 +8,11 @@ Tests come first. Each behaviour step writes the failing test, sees it fail, the
 | --- | --- | --- | --- |
 | `unit` | `tests/unit/**/*.test.ts` | node | domain, application, scripts, harness layers, logging |
 | `dom` | `tests/dom/**/*.test.ts` | happy-dom + Vue/Nuxt UI plugins | lifecycle, settings tab, views, components |
+| e2e | `tests/e2e/specs/*.e2e.ts` | real Obsidian (WebdriverIO) | see [End-to-end tests](#end-to-end-tests-in-obsidian) |
 
 Tests mirror the module folders: `tests/<project>/<layer>/<module>/`, e.g. `tests/unit/application/shell/` for `src/application/shell/`. Tests of the composition (plugin load through `main.ts`, `bootstrap.ts`, the files at a layer root) stay above them, e.g. `tests/dom/lifecycle.test.ts`.
 
-- Run one file: `npx vitest run tests/dom/presentation/shell/shell-panel.test.ts`
+- Run one file: `npx vitest run tests/dom/presentation/communities/screen.test.ts`
 - Run one project: `npx vitest run --project unit`
 - Run tests by name: `npx vitest run -t "read-only"`
 
@@ -34,7 +35,7 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
   - Not modelled: link updates on rename (and the `resolve` events they cause), folder renames, `vault.modify`, `vault.delete`.
 - `tests/support/layers.ts` holds in-memory Layers:
   - the store, with `holdSaves`/`releaseSaves`/`heldSaves` and `setFailSave`. By default an interrupted held save never writes. `uncancellableSaves: true` models the real adapter over `plugin.saveData`: once started, the save writes even if the caller is interrupted. Use it to test interruption;
-  - a controllable vault, with `hold`/`release`/`set`;
+  - `controllableRead`, a use case of the plugin's shape whose value is fixed, failing (`VaultReadError`) or changed, with `hold`/`release`/`set`, for the runtime composables' tests (`testRuntime().source`);
   - recording notifier (with `hold`/`release`/`held`), logger and clipboard;
   - sequential incident ids `T-1`, `T-2`, …
   - `recordingEventBus()`: the real `EventBusLive` that records every published event, with `failNextPublish`.
@@ -44,12 +45,14 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 - **NoteStore contract** (`tests/support/notes/contract.ts`): the same cases run against the in-memory adapter (`tests/unit/infrastructure/notes/memory-note-store.test.ts`) and against the Obsidian adapter on the double, once on a case-sensitive and once on a case-insensitive disk (`obsidian-note-store.test.ts`). `contract-clashes.ts` holds the clash cases (case, NFC/NFD, rename onto another note, rename to its own name in another case). A behaviour the port promises goes into the contract, not into one adapter's test.
 - **Fidelity scenarios** (`tests/support/notes/scenarios.ts`): `vaultFacts` calls the vault, metadata cache and file manager directly; `storeScenario` drives the `NoteStore` through the probe API (`probe-api.ts`); `readinessScenario` (`tests/support/readiness-scenario.ts`) records `changed`, `resolve`, `resolved` and `deleted` around a create, an edit and a trash. Each records results and events. `tests/unit/support/obsidian-double.test.ts` runs them on the double, the e2e specs in Obsidian, and both compare with the same expectation (`fidelity.ts`). A difference is a bug in the double: fix the double, never the expectation alone. Keep each step to what Obsidian does the same way every run: whether a new file's index or an immediate write to it comes first varies, so steps settle in between. `executeObsidian` sorts the keys of what it passes and turns `undefined` into `null`, so the scenarios return plain JSON and show key order through file texts.
 - **The note index.** `tests/support/notes/index-fixture.ts` builds the index over the in-memory store on a recording bus, with in-memory settings, logger and notifier; `reads()` and `scans()` count `NoteStore.read` and `unreadable` calls, `setFailUnreadable` fails `unreadable` alone, and `countingType()` counts decodes. Its effects publish `vaultReady`, wait for a snapshot (`until`, `untilUnindexed`, `built`), record every snapshot (`recordSnapshots`) and let forked fibers run (`settle`). The unit specs run under `TestClock`, so a batch closes when the test moves the clock by `INDEX_BATCH_QUIET`, never after a real sleep: `note-index-build`, `-follow`, `-lifecycle` and `-budget.test.ts` in `tests/unit/application/notes/`. `testOther` is a second test type, so a note can change type; `throwingType` makes a decode throw, for the defect path. `tests/support/notes/reference-types.ts` declares the reference vault's `community` and `item` types, for the budget test and the probe.
-- `tests/support/runtime.ts` provides `testRuntime(options)`: a full `AppRuntime` plus handles to every Layer, including `notes` (the in-memory `NoteStore`) and the note index for `noteTypes` (none by default); `vaultReady()` publishes `LayoutReady` and `VaultReady`, so the first build runs. Use `rejectUpdates` to simulate a service that rejects a value the form accepted, and `language: "en"` for the English catalog (German by default). Hand-built Layers in unit tests add `testMessages` (German) from `tests/support/layers.ts`.
+- `tests/support/runtime.ts` provides `testRuntime(options)`: a full `AppRuntime` plus handles to every Layer, including `notes` (the in-memory `NoteStore`), the note index for the plugin's types (`appNoteTypes`) and any extra `noteTypes`, the community selection over an in-memory device store (`device` seeds it, `deviceStoreInMemory` from `src/infrastructure/memory/shell/`) and `source` (see above); `vaultReady()` publishes `LayoutReady` and `VaultReady`, so the first build runs. Use `rejectUpdates` to simulate a service that rejects a value the form accepted, and `language: "en"` for the English catalog (German by default). Hand-built Layers in unit tests add `testMessages` (German) from `tests/support/layers.ts`.
+- **Communities.** `tests/support/communities/fixture.ts` builds the module over the index fixture (community type only), a sequential id generator and an in-memory device store that counts writes; its specs run under `TestClock`, `ready` builds the index, `indexed` lets it read one batch. `tests/support/communities/screen.ts` mounts the app on the community settings over the in-memory store (`openCommunities`) with handles to query, type, click and wait for the index (`until`), and `fill`/`save` for the form.
 
 ## Mutation testing
 
 - `npm run test:mutation` runs incrementally; `npm run test:mutation:full` re-runs every mutant.
 - Stryker mutates `src/domain` and `src/application` and runs only their unit tests, with the TypeScript checker on.
+- Before pushing a change to one module, run Stryker on its files only: `npx stryker run configs/stryker.config.mjs --mutate "src/domain/communities/**/*.ts,src/application/communities/**/*.ts"`. The communities module scores 100 %; keep it there.
 - Thresholds: break 75, low 80, high 90. Never lower them.
 - A `// Stryker disable` comment needs its reason on the same line.
 - Reports land in `reports/mutation/`. The nightly GitHub workflow runs the full suite.
@@ -60,13 +63,13 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 
 | Scenario | Shows |
 | --- | --- |
-| `default` | 42 files, writable settings |
-| `empty` | 0 files |
-| `error` | `VaultReadError` with retry |
-| `slow` | the skeleton for 1.5 s |
-| `readonly` | settings from a newer version: read-only hint, saving disabled |
+| `loaded` (default) | two communities, Ahornweg 12 and its Tiefgarage; the switch asks for a choice |
+| `empty` | no community: the empty state with its create action |
+| `invalid` | a valid community beside a broken colour, a duplicate short code, an unreadable note in the folder and a malformed `schema` elsewhere |
+| `readonly` | a note of a newer schema version beside a valid one |
+| `failure` | the index's first read fails: the failure with retry, which then reads the communities |
 
-The note index runs in every scenario over the in-memory `NoteStore`, with the plugin's registry (`appNoteTypes`). The browser has no metadata cache to wait for, so the harness publishes `LayoutReady` and `VaultReady` once its services are built, and the index builds at once. No scenario seeds notes yet: no view shows them.
+The note index runs in every scenario over the in-memory `NoteStore`, with the plugin's registry (`appNoteTypes`). The browser has no metadata cache to wait for, so the harness publishes `LayoutReady` and `VaultReady` once its services are built, and the index builds at once from the notes the scenario seeds.
 
 ## End-to-end tests in Obsidian
 
@@ -83,20 +86,25 @@ The note index runs in every scenario over the in-memory `NoteStore`, with the p
 - **Cache.** The download cache is `.obsidian-cache/` in the checkout. In a git worktree, a symlink to the main checkout's cache avoids a second download.
 - **Language.** Without a stored choice Obsidian takes its language from Chromium's locale, which is `en-US` in CI and containers. `wdio.conf.mts` passes `--lang=de`, so Obsidian and the plugin start German and the specs assert German texts. `language.e2e.ts` switches to English the way Obsidian's own setting does: `localStorage` key `language`, then a plugin reload.
 - **Writing specs.** `browser.executeObsidian(({ app, obsidian }, ...args) => …)` runs code inside Obsidian. The function is serialised, so pass values as arguments; closures do not work. Shared helpers live in `tests/e2e/support.ts`: console spy, open view, `data.json`, plugin reload, settings tab content, light/dark switch.
-- **Gate.** `test:e2e` is not part of `verify`, because it needs a display and a download. CI runs it as a separate `e2e` job.
+- **Gate.** `test:e2e` is not part of `verify`, because it needs a display and a download. CI runs it as a separate `e2e` job, which is not a required check yet (see [github-setup.md](github-setup.md)). A change to lifecycle, settings tab, theme, pop-out, view state or vault behaviour needs a passing e2e run.
 
 | Spec | Covers |
 | --- | --- |
-| `lifecycle.e2e.ts` | opening the view, reveal instead of duplicate, two tabs with one closed, the ribbon entry exactly once in `app.workspace.leftRibbon.items` after each load and after a ribbon re-render, three disable/enable cycles leaving no view behind, clean console |
-| `settings-and-theme.e2e.ts` | the native settings tab holding only the log level (no text field), the view's greeting form saving to `data.json`, empty greeting never written, light/dark switch with Obsidian's colours reaching the surface, newer `data.json` shown read-only and never overwritten |
-| `events.e2e.ts` | one listener per host event (`resolved` included) on Obsidian's internal `Events._` map, all removed on each disable; creating, changing, opening, renaming and deleting a note with a clean console |
+| `lifecycle.e2e.ts` | opening the view on the community settings (empty state, switch without a community), reveal instead of duplicate, two tabs with one closed, the ribbon entry exactly once in `app.workspace.leftRibbon.items` after each load and after a ribbon re-render, three disable/enable cycles leaving no view behind, clean console |
+| `settings-and-theme.e2e.ts` | the native settings tab holding only the log level (no text field), the log level chosen there saved to `data.json`, light/dark switch with Obsidian's colours and the community colours' shades reaching the surface, newer `data.json` shown read-only in the tab (dropdown disabled, read-only row, notice) and never overwritten |
+| `events.e2e.ts` | one listener per host event (`resolved` included) on Obsidian's internal `Events._` map, all removed on each disable; creating, changing, opening, renaming and deleting a note with a clean console; the open view's list following a community note created, moved, turned into a non-Markdown file and deleted |
 | `vault-ready.e2e.ts` | on the reference vault, through the probe's host event adapter: a cold start, where the layout is ready with almost nothing cached and `resolved` fires early, gets `VaultReady` once and only when all 2,000 notes with frontmatter are cached; a warm restart and an adapter started in a running app (no `resolved` comes) get it at once, complete; `changed`, `resolve`, `resolved` around an edit as the double fires them; `NoteStore.list` timed after `VaultReady` (timings in `reports/e2e/vault-ready-timings.json`, not yet enforced). About 15 s. |
 | `note-index.e2e.ts` | on the reference vault, through the probe's index: a cold start and a warm restart, each with every record and ready within 1 s of `VaultReady`; three outside edits of one Punkt, each in the snapshot within 1 s; clean console. Timings in `reports/e2e/note-index-timings.json`. About 10 s. |
-| `popout.e2e.ts` | the view moved to a pop-out: surface, portal and About dialog in the pop-out's document, theme switch there, clean close |
-| `external-settings.e2e.ts` | `data.json` changed outside Obsidian (as by Sync): the open view follows, a newer-version file switches to read-only and is never rewritten |
+| `popout.e2e.ts` | the view moved to a pop-out: surface, portal and the community form's sheet in the pop-out's document (none in the main one), theme switch there, clean close |
+| `external-settings.e2e.ts` | `data.json` changed outside Obsidian (as by Sync): the open view follows a new root folder, the settings tab a new log level, a newer-version file switches the tab to read-only and is never rewritten |
 | `note-store.e2e.ts` | the fidelity scenarios in real Obsidian: `normalizePath`, YAML, `create`/`createFolder`/`process`/`processFrontMatter`/`renameFile`/`trashFile` results, errors and events, the metadata cache's lag; then the real `NoteStore` adapter through the probe plugin: folders and a name clash on create, a clash by case only (which the Linux disk alone would allow), a rename to the note's own name in another case and onto another note's name in another case, records recognised by `schema` anywhere, unknown keys, key order and body kept on update (checked in the file text), a no-op update that writes nothing, a refused and a broken update, rename, trash; clean console |
 | `navigation.e2e.ts` | the route in the leaf's view state; broken and unknown states falling back to the start route with a clean console; the route in the saved `workspace.json`; a note opened like a file-explorer click (`getLeaf(false).openFile`) while the plugin tab is active goes to another tab; two navigations undone and redone with the frame's back and forward controls (in a second view built by the plugin's view class with a test-only route); the view restored on its route after Obsidian restarts, with an empty history |
-| `language.e2e.ts` | German from the start; an old `data.json` with the stored English default shows the German default and is not rewritten; after switching Obsidian to English: view, ribbon, command and settings names, notices in English; clean console |
+| `language.e2e.ts` | German from the start; an old `data.json` with a greeting loads without a notice and is not rewritten; after switching Obsidian to English: view (screen, navigation entry, form), ribbon, command and settings names, notices in English; clean console |
+| `communities-crud.e2e.ts` | a community created from the form as a note under `WEG Manager/Gemeinschaften/` with its exact text and a random id; input that breaks a rule never written; an edit saved with unknown keys and body kept and the file renamed with the name; delete after a confirmation into the vault's `.trash`; clean console |
+| `communities-outside-edit.e2e.ts` | an outside edit while the form is open: another field merged; the same field a conflict that writes nothing, shows the three values and saves the note's value or the user's as chosen; clean console |
+| `communities-newer-schema.e2e.ts` | a note of `v2` listed read-only with its issue and no action, never written across a selection and a plugin reload; clean console |
+| `communities-invalid.e2e.ts` | a broken colour, a duplicate short code, a duplicate id and unreadable frontmatter in the folder each shown with its issue beside a valid community; the valid one saved and the broken colour repaired, the others untouched; clean console |
+| `community-selection.e2e.ts` | the only community selected, and kept when a second arrives; two views following one selection; the selection kept across a restart; a choice asked for once the selected community is gone and two are left; clean console |
 
 The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaught error. It ignores only Chromium's `ResizeObserver loop` notification. It is installed after the first load, so the three disable/enable cycles provide the load coverage.
 
@@ -111,8 +119,10 @@ The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaug
 
 ## Manual checks in Obsidian
 
-The e2e suite automates the old checks 2–7. What still needs a person:
+The e2e suite covers lifecycle, settings, theme, pop-out, language, vault access and navigation. What still needs a person, in a personal vault with the pre-release (0.2.0, not built yet; see [releasing.md](releasing.md)):
 
 1. Run `npm run dev` with `OBSIDIAN_PLUGIN_DIR` set in `.env.local` and look at the view in your own vault, with your theme and community plugins.
 2. Use the view with keyboard only and with a screen reader.
-3. Mobile, once `isDesktopOnly` is lifted. `wdio-obsidian-service` can then also emulate mobile.
+3. Check light and dark themes, also third-party ones, and the community colours on each.
+4. Check that other plugins and an existing vault carry on as before.
+5. Mobile, once `isDesktopOnly` is lifted (after the MVP). `wdio-obsidian-service` can then also emulate mobile.

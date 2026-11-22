@@ -44,21 +44,20 @@ const WRITABLE: SettingsStatus = { writable: true, issues: [] };
 
 describe("SettingsService.reload", () => {
   it.effect("publishes a valid external change once, without saving or notifying", () => {
-    const { store, notifier, layer } = setup({ initial: { greeting: "Alt" } });
+    const { store, notifier, layer } = setup({ initial: { rootFolder: "Alt" } });
     return Effect.gen(function* () {
       const { service, settings, statuses } = yield* record;
-      store.writeExternally({ schemaVersion: 1, greeting: "Neu", logLevel: "info" });
+      store.writeExternally({ schemaVersion: 1, rootFolder: "Neu", logLevel: "info" });
       yield* service.reload;
       yield* drain;
       assert.deepStrictEqual(
-        settings.map((value) => value.greeting),
+        settings.map((value) => value.rootFolder),
         ["Alt", "Neu"],
       );
       assert.deepStrictEqual(yield* service.current, {
         schemaVersion: 1,
-        greeting: "Neu",
+        rootFolder: "Neu",
         logLevel: "info",
-        rootFolder: "WEG Manager",
       });
       assert.deepStrictEqual(statuses, [WRITABLE]);
       assert.deepStrictEqual(store.saved(), []);
@@ -67,10 +66,10 @@ describe("SettingsService.reload", () => {
   });
 
   it.effect("publishes nothing when the file holds the same values", () => {
-    const { store, layer } = setup({ initial: { greeting: "Gleich" } });
+    const { store, layer } = setup({ initial: { rootFolder: "Gleich" } });
     return Effect.gen(function* () {
       const { service, settings, statuses } = yield* record;
-      store.writeExternally({ schemaVersion: 1, greeting: "Gleich" });
+      store.writeExternally({ schemaVersion: 1, rootFolder: "Gleich" });
       yield* service.reload;
       yield* service.reload;
       yield* drain;
@@ -83,39 +82,39 @@ describe("SettingsService.reload", () => {
     const { store, notifier, layer } = setup();
     return Effect.gen(function* () {
       const { service, statuses } = yield* record;
-      store.writeExternally({ greeting: "", logLevel: "debug" });
+      store.writeExternally({ rootFolder: "", logLevel: "debug" });
       yield* service.reload;
       yield* drain;
       const current = yield* service.current;
-      assert.strictEqual(current.greeting, DEFAULT_SETTINGS.greeting);
+      assert.strictEqual(current.rootFolder, DEFAULT_SETTINGS.rootFolder);
       assert.strictEqual(current.logLevel, "debug");
       assert.strictEqual(statuses.length, 2);
       assert.deepStrictEqual(statuses[1]?.writable, true);
       assert.strictEqual(statuses[1]?.issues.length, 1);
       assert.strictEqual(notifier.messages()[0]?.title, "Einstellungen teilweise zurückgesetzt");
-      const updated = yield* service.update({ greeting: "Wieder gültig" });
-      assert.strictEqual(updated.greeting, "Wieder gültig");
+      const updated = yield* service.update({ rootFolder: "Wieder gültig" });
+      assert.strictEqual(updated.rootFolder, "Wieder gültig");
     }).pipe(Effect.provide(layer));
   });
 
   it.effect("switches to read-only for a file from a newer version and never writes it", () => {
-    const { store, notifier, layer } = setup({ initial: { greeting: "Alt" } });
+    const { store, notifier, layer } = setup({ initial: { rootFolder: "Alt" } });
     return Effect.gen(function* () {
       const { service, statuses } = yield* record;
-      store.writeExternally({ schemaVersion: 2, greeting: "Zukunft" });
+      store.writeExternally({ schemaVersion: 2, rootFolder: "Zukunft" });
       yield* service.reload;
       yield* drain;
       assert.strictEqual(statuses.at(-1)?.readOnlyReason, "newer-version");
       assert.strictEqual((yield* service.status).writable, false);
       assert.strictEqual(notifier.messages().at(-1)?.title, "Einstellungen schreibgeschützt");
-      const error = yield* Effect.flip(service.update({ greeting: "Yo" }));
+      const error = yield* Effect.flip(service.update({ rootFolder: "Yo" }));
       assert.strictEqual(error._tag, "ReadOnlySettingsError");
       assert.deepStrictEqual(store.saved(), []);
     }).pipe(Effect.provide(layer));
   });
 
   it.effect("switches to read-only when the file cannot be read, and back once it can", () => {
-    const { store, notifier, layer } = setup({ initial: { greeting: "Alt" } });
+    const { store, notifier, layer } = setup({ initial: { rootFolder: "Alt" } });
     return Effect.gen(function* () {
       const { service, statuses } = yield* record;
       store.setFailLoad(true);
@@ -127,15 +126,15 @@ describe("SettingsService.reload", () => {
         readOnlyReason: "unreadable",
       });
       assert.strictEqual(notifier.messages().length, 1);
-      const error = yield* Effect.flip(service.update({ greeting: "Yo" }));
+      const error = yield* Effect.flip(service.update({ rootFolder: "Yo" }));
       assert.strictEqual(error._tag, "ReadOnlySettingsError");
 
       store.setFailLoad(false);
-      store.writeExternally({ greeting: "Wieder da" });
+      store.writeExternally({ rootFolder: "Wieder da" });
       yield* service.reload;
       yield* drain;
       assert.deepStrictEqual(statuses.at(-1), WRITABLE);
-      assert.strictEqual((yield* service.current).greeting, "Wieder da");
+      assert.strictEqual((yield* service.current).rootFolder, "Wieder da");
       assert.deepStrictEqual(store.saved(), []);
     }).pipe(Effect.provide(layer));
   });

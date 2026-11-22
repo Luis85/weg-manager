@@ -26,8 +26,6 @@ type IssueTexts = {
 export type ShellCatalog = {
   /** The UI language of this catalog; the shell owns the UI-language mechanism (ADR 0005). */
   readonly language: Language;
-  /** Shown while the greeting is not customised. */
-  readonly defaultGreeting: string;
   readonly issues: IssueTexts;
   readonly errors: {
     readonly storage: Text;
@@ -45,7 +43,6 @@ export type ShellCatalog = {
   readonly actions: Readonly<Record<UserMessageAction, string>>;
   readonly commands: {
     readonly openView: string;
-    readonly showGreeting: string;
     readonly copyDiagnostics: string;
   };
   readonly settingsTab: {
@@ -56,8 +53,6 @@ export type ShellCatalog = {
       readonly labels: Readonly<Record<LogLevel, string>>;
     };
   };
-  readonly panel: { markdownFiles(count: number): string; readonly counting: string };
-  readonly greetingForm: { readonly label: string; readonly save: string };
   /** The app frame's landmarks, for screen readers. */
   readonly frame: {
     readonly navigation: string;
@@ -66,14 +61,6 @@ export type ShellCatalog = {
     readonly back: string;
     readonly forward: string;
   };
-  /** The frame's navigation entry of each shell route. */
-  readonly routes: { readonly welcome: string };
   /** A route to something that no longer exists. */
   readonly notFound: { readonly title: string; readonly detail: string; readonly back: string };
-  readonly about: {
-    readonly title: string;
-    readonly description: string;
-    readonly button: string;
-    readonly body: string;
-  };
 };

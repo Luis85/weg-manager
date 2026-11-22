@@ -16,9 +16,11 @@ To stage a release locally: `npm run build && npm run release:package` writes `r
 
 Raise `minAppVersion` in `manifest.json` before you bump whenever the plugin starts using a newer Obsidian API.
 
+The next release is 0.2.0, a pre-release (see *Beta testing with BRAT* below) for the manual checks in a personal vault (see [testing.md](testing.md#manual-checks-in-obsidian)).
+
 ## Build provenance
 
-Before `gh release create`, the workflow runs `actions/attest@v4` over `release/weg-manager/main.js`, `manifest.json` and `styles.css`. This is the step from the Obsidian developer docs' guide *Release your plugin with GitHub Actions*, which recommends it for a community-directory submission. It needs the workflow permissions `contents: write`, `id-token: write` and `attestations: write`; `release.yml` requests all three itself.
+Before `gh release create`, the workflow runs `actions/attest` (v4, pinned by commit SHA like every action) over `release/weg-manager/main.js`, `manifest.json` and `styles.css`. This is the step from the Obsidian developer docs' guide *Release your plugin with GitHub Actions*, which recommends it for a community-directory submission. It needs the workflow permissions `contents: write`, `id-token: write` and `attestations: write`; `release.yml` requests all three itself.
 
 The attestation is a signed statement that the files were built by this workflow from this commit. Anyone can check a downloaded asset with the GitHub CLI:
 

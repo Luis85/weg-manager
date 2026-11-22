@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { describe, expect, it } from "vitest";
-import { deviceStoreInMemory } from "../../../../src/application/shell/device-store";
-import { DeviceStore, type DeviceValue } from "../../../../src/application/shell/ports";
+import { deviceStoreInMemory } from "../../../../src/infrastructure/memory/shell";
+import { DeviceStore, type DeviceValue } from "../../../../src/application/shell";
 
 const run = <A>(
   effect: Effect.Effect<A, never, DeviceStore>,

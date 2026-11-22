@@ -3,10 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
-const { createTestPlugin, recordedNotices } = await import("@test/obsidian");
+const { createTestPlugin, recordedNotices, settingsIn } = await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../src/main");
 
 type External = { onExternalSettingsChange(): Promise<void> };
+type Select = { selectEl: HTMLSelectElement; disabled?: boolean };
 
 const settle = async () => {
   await flushPromises();
@@ -14,26 +15,39 @@ const settle = async () => {
   await flushPromises();
 };
 
+const INTRO = "[data-testid=communities-intro]";
+
 /** A loaded plugin with its view open, and the way Obsidian reports a changed `data.json`. */
-const withOpenView = async (data: unknown = { greeting: "Moin" }) => {
+const withOpenView = async (data: unknown = { rootFolder: "Beirat" }) => {
   const created = createTestPlugin(WegManagerPlugin, { data });
   await created.registry.load();
   await created.registry.runCommand("open-view");
   await settle();
   // The screen loads lazily, the first time a view shows it.
-  await vi.waitFor(() => expect(document.querySelector("[data-testid=greeting]")).not.toBeNull());
+  await vi.waitFor(() => expect(document.querySelector(INTRO)).not.toBeNull());
   const external = created.plugin as unknown as External;
   const arrive = async (next: unknown) => {
     created.registry.writeExternally(next);
     await external.onExternalSettingsChange();
     await settle();
   };
-  return { ...created, external, arrive };
+  /** The settings tab's rows (names) and its log level dropdown, as Obsidian renders them now. */
+  const tab = () => {
+    const settingsTab = created.registry.settingTabs[0];
+    if (settingsTab === undefined) throw new Error("no settings tab");
+    settingsTab.display();
+    const rows = settingsIn(settingsTab.containerEl);
+    const select = rows[0]?.components[0] as Select | undefined;
+    return {
+      names: rows.map((row) => row.nameEl.textContent),
+      value: select?.selectEl.value,
+      disabled: select?.selectEl.disabled,
+    };
+  };
+  return { ...created, external, arrive, tab };
 };
 
-const greeting = () => document.querySelector("[data-testid=greeting]")?.textContent.trim();
-const readOnlyHint = () => document.querySelector("[data-testid=read-only-hint]");
-const submit = () => document.querySelector<HTMLButtonElement>("button[type=submit]");
+const intro = () => document.querySelector(INTRO)?.textContent.trim();
 const noticeTexts = () => recordedNotices().map((notice) => notice.text);
 
 afterEach(() => {
@@ -42,52 +56,58 @@ afterEach(() => {
 });
 
 describe("settings changed outside Obsidian", () => {
-  it("shows the new greeting in the open view without writing data.json", async () => {
+  it("shows the new root folder in the open view without writing data.json", async () => {
     const { plugin, registry, arrive } = await withOpenView();
-    expect(greeting()).toBe("Moin");
-    await arrive({ greeting: "Von außen" });
-    expect(greeting()).toBe("Von außen");
+    expect(intro()).toBe("Jede Gemeinschaft ist eine Notiz im Ordner „Beirat/Gemeinschaften“.");
+    await arrive({ rootFolder: "Von außen" });
+    expect(intro()).toBe("Jede Gemeinschaft ist eine Notiz im Ordner „Von außen/Gemeinschaften“.");
     expect(registry.saved).toEqual([]);
     expect(noticeTexts()).toEqual([]);
     plugin.unload();
   });
 
-  it("turns the open view read-only for a file from a newer version and never writes it", async () => {
-    const { plugin, registry, arrive } = await withOpenView();
-    expect(readOnlyHint()).toBeNull();
-    await arrive({ schemaVersion: 2, greeting: "Zukunft" });
-    expect(readOnlyHint()?.textContent).toContain("neueren Version");
-    expect(submit()?.disabled).toBe(true);
+  it("turns the settings read-only for a file from a newer version and never writes it", async () => {
+    const { plugin, registry, arrive, tab } = await withOpenView();
+    expect(tab()).toMatchObject({ names: ["Protokollstufe"], disabled: false });
+    await arrive({ schemaVersion: 2, logLevel: "debug" });
+    expect(tab()).toMatchObject({
+      names: ["Protokollstufe", "Einstellungen schreibgeschützt"],
+      disabled: true,
+    });
     expect(noticeTexts()).toEqual([expect.stringContaining("schreibgeschützt")]);
     expect(registry.saved).toEqual([]);
     plugin.unload();
   });
 
   it("turns read-only when data.json cannot be read, and writable again once it can", async () => {
-    const { plugin, registry, external, arrive } = await withOpenView();
+    const { plugin, registry, external, arrive, tab } = await withOpenView();
     registry.setFailLoadData(true);
     await external.onExternalSettingsChange();
     await settle();
-    expect(readOnlyHint()?.textContent).toContain("nicht lesbar");
+    expect(tab().disabled).toBe(true);
+    expect(noticeTexts()).toEqual([expect.stringContaining("nicht lesbar")]);
     registry.setFailLoadData(false);
-    await arrive({ greeting: "Wieder da" });
-    expect(readOnlyHint()).toBeNull();
-    expect(greeting()).toBe("Wieder da");
+    await arrive({ rootFolder: "Wieder da", logLevel: "info" });
+    expect(tab()).toMatchObject({ names: ["Protokollstufe"], value: "info", disabled: false });
+    expect(intro()).toContain("„Wieder da/Gemeinschaften“");
     expect(registry.saved).toEqual([]);
     plugin.unload();
   });
 
   it("waits for a load that is still reading settings, then reloads", async () => {
-    const { plugin, registry } = createTestPlugin(WegManagerPlugin, { data: { greeting: "Alt" } });
+    const { plugin, registry } = createTestPlugin(WegManagerPlugin, { data: { logLevel: "info" } });
     registry.holdLoadData();
     const loading = registry.load();
-    registry.writeExternally({ greeting: "Neu" });
+    registry.writeExternally({ logLevel: "debug" });
     const reloading = (plugin as unknown as External).onExternalSettingsChange();
     registry.releaseLoadData();
     await loading;
     await reloading;
-    await registry.runCommand("show-greeting");
-    expect(noticeTexts().at(-1)).toContain("Neu");
+    const settingsTab = registry.settingTabs[0];
+    settingsTab?.display();
+    const select = settingsIn(settingsTab?.containerEl ?? document.body)[0]?.components[0] as
+      Select | undefined;
+    expect(select?.selectEl.value).toBe("debug");
     plugin.unload();
   });
 
@@ -95,7 +115,7 @@ describe("settings changed outside Obsidian", () => {
     const { plugin, registry, external } = await withOpenView();
     plugin.unload();
     const loadData = vi.spyOn(plugin as unknown as { loadData(): Promise<unknown> }, "loadData");
-    registry.writeExternally({ greeting: "Zu spät" });
+    registry.writeExternally({ rootFolder: "Zu spät" });
     await expect(external.onExternalSettingsChange()).resolves.toBeUndefined();
     expect(loadData).not.toHaveBeenCalled();
   });

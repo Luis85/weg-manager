@@ -11,7 +11,6 @@ import {
   Logger,
   Notifier,
   SettingsStore,
-  VaultReader,
   type LogEntry,
 } from "../../src/application/shell/ports";
 import type { UserMessage } from "../../src/application/shell/user-messages";
@@ -145,22 +144,23 @@ export const recordingNotifier = () => {
   };
 };
 
-/** A vault whose markdown file count is fixed, failing, or changed by the test. */
-export const controllableVault = (initial: number | "fail") => {
+/**
+ * A read whose value is fixed, failing (`VaultReadError`), or changed by the test, for tests of the
+ * presentation runtime (`useQuery`, `useCommand`): `read` is a use case of the plugin's shape.
+ */
+export const controllableRead = (initial: number | "fail") => {
   let state = initial;
   const reads = gate();
-  const layer = Layer.succeed(VaultReader)({
-    markdownFileCount: Effect.andThen(
-      reads.pass,
-      Effect.suspend(() =>
-        state === "fail"
-          ? Effect.fail(new VaultReadError({ cause: new Error("vault unavailable") }))
-          : Effect.succeed(state),
-      ),
+  const read = Effect.andThen(
+    reads.pass,
+    Effect.suspend(() =>
+      state === "fail"
+        ? Effect.fail(new VaultReadError({ cause: new Error("vault unavailable") }))
+        : Effect.succeed(state),
     ),
-  });
+  );
   return {
-    layer,
+    read,
     /** Holds every read until `release()`; `held()` counts waiting reads. */
     hold: reads.hold,
     release: reads.release,
@@ -170,8 +170,6 @@ export const controllableVault = (initial: number | "fail") => {
     },
   };
 };
-
-export const fixedVault = (count: number | "fail") => controllableVault(count).layer;
 
 /** A logger that records every entry regardless of level (for code that only emits logs). */
 export const recordingLogger = () => {

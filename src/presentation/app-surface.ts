@@ -1,3 +1,4 @@
+import { COMMUNITY_SETTINGS } from "../application/communities";
 import { appRoutes, type Route } from "../application/routes";
 import type { ScreenLoader, SurfaceDefinition } from "./shell/host";
 
@@ -7,21 +8,24 @@ import type { ScreenLoader, SurfaceDefinition } from "./shell/host";
  * at plugin load without loading Vue.
  */
 const screens: { readonly [Name in Route["name"]]: ScreenLoader } = {
-  welcome: () => import("./shell").then(({ shellScreens }) => shellScreens.welcome),
+  settings: () =>
+    import("./communities").then(({ communitiesScreens }) => communitiesScreens.settings),
 };
 
 /**
- * What every view of the plugin shows (ADR 0008): the app's routes, their screens and the frame's
- * navigation, composed from the modules' parts. It holds no rule of its own.
+ * What every view of the plugin shows (ADR 0008): the app's routes, their screens, the frame's
+ * navigation and its context area (the community switch), composed from the modules' parts. It
+ * holds no rule of its own.
  */
 export const appSurface: SurfaceDefinition<Route> = {
   ...appRoutes,
   screen: (route) => screens[route.name],
   menu: [
     {
-      route: { name: "welcome" },
-      label: (catalog) => catalog.shell.routes.welcome,
-      icon: "i-lucide-layout-dashboard",
+      route: COMMUNITY_SETTINGS,
+      label: (catalog) => catalog.communities.route,
+      icon: "i-lucide-building-2",
     },
   ],
+  context: () => import("./communities").then(({ communitiesFrame }) => communitiesFrame.context),
 };

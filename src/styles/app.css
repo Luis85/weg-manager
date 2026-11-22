@@ -16,8 +16,8 @@
  */
 @source not "../../node_modules/.nuxt-ui/ui";
 @source not "../../node_modules/@nuxt/ui/dist/runtime/components";
-@source "../../node_modules/.nuxt-ui/ui/{app,alert,avatar,button,card,form-field,icon,input,link,modal,skeleton}.ts";
-@source "../../node_modules/@nuxt/ui/dist/runtime/components/{App,Alert,Avatar,Button,Card,FormField,Icon,Input,Link,LinkBase,Modal,Skeleton}.vue";
+@source "../../node_modules/.nuxt-ui/ui/{app,alert,avatar,button,card,form-field,icon,input,link,modal,skeleton,slideover}.ts";
+@source "../../node_modules/@nuxt/ui/dist/runtime/components/{App,Alert,Avatar,Button,Card,FormField,Icon,Input,Link,LinkBase,Modal,Skeleton,Slideover}.vue";
 
 /*
  * Unused palettes. Nuxt UI's ui.css declares a static "old-neutral" palette (literal colours) and
@@ -31,3 +31,4 @@
 
 @import "./tokens.css";
 @import "./bridge.css";
+@import "./communities.css";

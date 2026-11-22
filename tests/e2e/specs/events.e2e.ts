@@ -33,6 +33,19 @@ const difference = (more: Counts, less: Counts): Counts => {
   };
 };
 
+const COMMUNITY = [
+  "---",
+  "schema: weg-manager.community/v1",
+  "id: community-00000000-0000-4000-8000-000000000001",
+  "name: Neu",
+  "short_code: NEU",
+  "color: teal",
+  "kind: WEG",
+  "unit_label: Einheiten",
+  "---",
+  "",
+].join("\n");
+
 const ONE_EACH: Counts = {
   vault: { create: 1, modify: 1, delete: 1, rename: 1 },
   metadataCache: { changed: 1, resolved: 1 },
@@ -69,21 +82,34 @@ describe("host events in Obsidian", function () {
     expect(await pluginProblems()).toEqual([]);
   });
 
-  it("updates the open view's file count when notes come and go", async function () {
+  it("updates the open view's communities when community notes come, move and go", async function () {
     await openView();
-    const count = browser.$(ROOT).$("[data-testid=file-count]");
-    await expect(count).toHaveText("3 Markdown-Dateien im Vault");
-    await browser.executeObsidian(async ({ app }) => {
-      await app.vault.create("Neu.md", "# Neu\n");
-    });
-    await expect(count).toHaveText("4 Markdown-Dateien im Vault");
+    const names = () =>
+      browser
+        .$(ROOT)
+        .$$("[data-testid=community-name]")
+        .map((element) => element.getText());
+    const listed = (expected: readonly string[]) =>
+      browser.waitUntil(async () => JSON.stringify(await names()) === JSON.stringify(expected), {
+        timeoutMsg: `the view never listed ${JSON.stringify(expected)}`,
+      });
+    await expect(browser.$(ROOT).$("[data-testid=communities-empty]")).toBeDisplayed();
+    await browser.executeObsidian(async ({ app }, text) => {
+      await app.vault.create("Neu.md", text);
+    }, COMMUNITY);
+    await listed(["Neu"]);
     await browser.executeObsidian(async ({ app }) => {
       const file = app.vault.getFileByPath("Neu.md");
-      if (file) await app.fileManager.renameFile(file, "Neu.txt");
+      if (file) await app.fileManager.renameFile(file, "Notizen/Verschoben.md");
     });
-    await expect(count).toHaveText("3 Markdown-Dateien im Vault");
+    await listed(["Neu"]);
     await browser.executeObsidian(async ({ app }) => {
-      const file = app.vault.getFileByPath("Neu.txt");
+      const file = app.vault.getFileByPath("Notizen/Verschoben.md");
+      if (file) await app.fileManager.renameFile(file, "Notizen/Verschoben.txt");
+    });
+    await expect(browser.$(ROOT).$("[data-testid=communities-empty]")).toBeDisplayed();
+    await browser.executeObsidian(async ({ app }) => {
+      const file = app.vault.getFileByPath("Notizen/Verschoben.txt");
       if (file) await app.vault.delete(file);
     });
     expect(await pluginProblems()).toEqual([]);

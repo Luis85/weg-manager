@@ -14,7 +14,7 @@ import {
 
 /**
  * Loads a screen's component the first time its route is shown, so a screen's module is evaluated
- * when it is needed: `() => import("./shell").then((module) => module.ShellPanel)`.
+ * when it is needed: `() => import("./communities").then((module) => module.communitiesScreens.settings)`.
  */
 export type ScreenLoader = () => Promise<Component>;
 
@@ -38,7 +38,7 @@ export type SurfaceDefinition<R extends RouteLike> = Routes<R> & {
    */
   screen(route: R): ScreenLoader | undefined;
   readonly menu: readonly MenuEntry<R>[];
-  /** Fills the frame's context area. The community switch comes with the first feature slice. */
+  /** Fills the frame's context area: the community switch in the plugin. */
   readonly context?: ScreenLoader;
 };
 

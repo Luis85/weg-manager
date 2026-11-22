@@ -1,6 +1,6 @@
 # ADR 0007 · Vault notes as records
 
-- Status: accepted
+- Status: accepted; adapter calls, the unreadable lookup and the conflict form amended on 2026-11-21 (see the note at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -70,3 +70,11 @@ unit_label: Einheiten
 - The file names differ from the code: German folders and UI, English keys. `GLOSSARY.md` and each type's contract page carry the mapping.
 - Each type needs its contract documented when it is built (K-14): one German page per type and version under `docs/`, German text around the English keys and codes. How the contract reaches a user's vault is a product question under PBI-41.
 - The Obsidian test double grows by the vault, metadata-cache and file-manager calls named above, and one in-memory `NoteStore` serves both the tests and the browser harness.
+
+## Amendment, 2026-11-21: what was built
+
+- **Adapter calls.** The Obsidian adapter uses `vault.create`, `vault.createFolder` (for missing folders), `fileManager.processFrontMatter`, `fileManager.trashFile` and `fileManager.renameFile`. `vault.process` is listed above but not used yet: no type's contract has a body section. Name clashes compare `clashKey` (NFC, then lower case), also against folders, whatever the disk does.
+- **Unreadable notes.** Under *Broken notes*, "one of the plugin's folders" is the `rootFolder` setting. The index asks `NoteStore.unreadable(folder)`, because Obsidian's cache cannot tell a note with broken YAML from a note without frontmatter except through its `yaml` section.
+- **The conflict form** shows, per conflicting field, the value when the form opened, the user's and the note's current one; the user picks one per field, and the form saves again against the current note.
+- **Unregistered records.** A valid `schema` of a type no feature registered, and a malformed `schema`, are shown as issues (`schema.unknown-type`, `schema.malformed`), never dropped.
+- **Not built.** A fallback when a Markdown file is never indexed (it would hold `VaultReady` back), and a body section for any type.

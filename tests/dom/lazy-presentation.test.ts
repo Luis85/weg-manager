@@ -24,7 +24,9 @@ afterEach(() => {
 /** Vue, Nuxt UI and TanStack Form are evaluated when the first view opens, not on plugin load. */
 describe("lazy presentation", () => {
   it("loads the plugin without evaluating Vue, then mounts it when a view opens", async () => {
-    const { plugin, registry } = createTestPlugin(WegManagerPlugin, { data: { greeting: "Moin" } });
+    const { plugin, registry } = createTestPlugin(WegManagerPlugin, {
+      data: { rootFolder: "Beirat" },
+    });
     await registry.load();
     expect(evaluated).toEqual([]);
 
@@ -32,7 +34,7 @@ describe("lazy presentation", () => {
     await flushPromises();
     expect(evaluated).toContain("mount");
     expect(evaluated).toContain("vue");
-    await vi.waitFor(() => expect(document.body.textContent).toContain("Moin"));
+    await vi.waitFor(() => expect(document.body.textContent).toContain("Beirat/Gemeinschaften"));
     plugin.unload();
   });
 });

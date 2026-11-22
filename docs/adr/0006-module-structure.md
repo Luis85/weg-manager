@@ -1,6 +1,6 @@
 # ADR 0006 · Modules inside the layers, English in code
 
-- Status: accepted; public entries of `presentation/shell` amended on 2026-11-21 (see the note at the end)
+- Status: accepted; public entries of `presentation/shell` and the enforcement amended on 2026-11-21 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -46,3 +46,9 @@ The product's words are German (Gemeinschaft, Punkt, Kürzel). The one file cont
 Decision: `presentation/shell` has two public files. `index.ts` is the interface for feature components and may load Vue: `useQuery`, `useCommand`, `useStream`, `useMessages`, `useRoute`, `useNavigate` and shared components such as `ErrorNotice`. `host.ts` is Vue-free and holds what code at plugin load needs: `releaseAll`, `loadSurface` and the types of a surface. Every other module, and every other layer of the shell, keeps the single `index.ts`.
 
 Consequence: ESLint and fallow accept exactly these two files as entries of `presentation/shell`. ESLint also rejects a value import of the Vue-loading `index.ts` from `main.ts`, `bootstrap.ts`, `src/infrastructure/**` and the composition files in `src/presentation/`. A test fails if loading `host.ts` evaluates Vue.
+
+## Amendment, 2026-11-21: ESLint enforces the modules, and what was built
+
+- **Who enforces what.** The decision says oxlint and fallow reject a cross-module import. As built, oxlint keeps the layer rules, ESLint enforces the module boundaries (the index rule, the direction `feature → notes → shell`, no in-memory adapters in `src/`), and fallow checks both with zones. An oxlint override replaces the `no-restricted-imports` options of an earlier matching override, so a module rule there would have switched the layer rule off. Details: [architecture](../engineering/architecture.md#enforcement).
+- **`host.ts` also exports `memoryNavigation`.** The Vue-free entry of `presentation/shell` holds `releaseAll`, `loadSurface`, `memoryNavigation` and the surface types, because `ShellView` keeps its own history ([ADR 0008](0008-navigation-and-view-state.md), amendment).
+- **Built as decided.** The modules are `shell`, `notes` and `communities`. The root files compose only: `AppError`, `AppEvent`, `AppServices`, `Catalog`, `Route`, `appNoteTypes`, `appLayer` and `appSurface`. The first feature module added no vault adapter and no Layer of its own beyond the community selection.

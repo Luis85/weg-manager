@@ -1,12 +1,12 @@
 # GitHub setup
 
-The repository's CI runs on GitHub Actions (decided 2026-11-21, replacing the blueprint's Azure Pipelines). The workflows are committed; the steps below change repository settings and are yours to do. An agent must not perform them.
+The repository's CI runs on GitHub Actions (decided 2026-11-21, replacing the Azure Pipelines of the [archived blueprint](../plans/archive/obsidian-plugin-shell-blueprint.md)). The workflows are committed; the steps below change repository settings and are yours to do. An agent must not perform them.
 
 ## Workflows
 
 | File | Trigger | What it does |
 | --- | --- | --- |
-| `.github/workflows/ci.yml` | push to `main`, every pull request | job `verify`: `npm ci`, `npm run verify`; uploads `reports` (JUnit, Cobertura) even on failure and `plugin` (`dist/`) on success. Job `e2e`: `npm run test:e2e` in the latest real Obsidian under Xvfb, with Obsidian kept in the Actions cache. |
+| `.github/workflows/ci.yml` | push to `main`, every pull request | job `verify`: `npm ci`, `npm run verify`; uploads `reports` (JUnit, Cobertura) even on failure and `plugin` (`dist/`) on success. Job `e2e`: `npm run test:e2e` in the latest real Obsidian under Xvfb, with Obsidian kept in the Actions cache. Job `scanner-lint`: `npm run lint:scanner`, informational, never fails the workflow (see [testing.md](testing.md#scanner-equivalent-lint)). |
 | `.github/workflows/nightly-mutation.yml` | nightly 02:17 UTC on the default branch, or by hand | `npm run test:mutation:full`; uploads `reports/mutation/` |
 | `.github/workflows/release.yml` | a pushed tag `x.y.z` (no `v`) | `npm run verify`, `npm run release:package -- --tag x.y.z`, a build-provenance attestation of the three assets (`actions/attest`), then a GitHub release with `main.js`, `manifest.json` and `styles.css` |
 
@@ -14,7 +14,7 @@ All logic lives in npm scripts. The YAML only installs Node from `.nvmrc` and ca
 
 ## Dependency and action updates
 
-Every action in `.github/workflows/` is pinned by its full commit SHA, with the release tag as a comment (`uses: actions/checkout@<sha> # v4.4.0`). A tag can be moved after the fact; a SHA cannot. Never write `@v4` in a workflow.
+Every action in `.github/workflows/` is pinned by its full commit SHA, with the release tag as a comment (`uses: actions/checkout@<sha> # v7.0.1`). A tag can be moved after the fact; a SHA cannot. Never write `@v7` in a workflow.
 
 `.github/dependabot.yml` runs weekly and keeps both the pins and `package.json` current:
 
@@ -30,8 +30,6 @@ How to treat these pull requests:
 - Do not merge a change to a workflow pin that lacks the tag comment.
 - **Action updates, the owner's standing rule (2026-11-21):** an agent may merge a Dependabot action update, major or not, after three checks. First, read the action's changes between the old and the new tag (its `action.yml`, README and changelog at both tags) against the inputs and behaviour our workflows rely on. Second, verify the new SHA against its tag with `git ls-remote https://github.com/<owner>/<action> refs/tags/<tag>`. Third, see CI green on the pull request. Anything doubtful goes to the owner. `release.yml` and `nightly-mutation.yml` do not run on a pull request, so say in the report what in them depends on the action.
 - **Majors held back** by ADR 0001 (TypeScript 7, ESLint 10, `@eslint/js` 10) are on Dependabot's `ignore` list. Remove an entry when its blocker is gone.
-
-Making `CI / e2e` a required check is a repository setting. It is yours to set, not the agent's (see step 2 below).
 
 ## Steps for you
 

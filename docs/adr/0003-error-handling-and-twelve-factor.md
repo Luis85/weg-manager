@@ -51,3 +51,8 @@ The first version redacted the report by key name and string length. That failed
 Decision: a log entry carries `data` (counts and flags) and `error` (`{ name, message, frames }`) instead of free-form `context`. `toLoggedError` reduces a cause to a strict-identifier name and frames that hold only the last path segment of a location. The diagnostics report prints name and frames, never the message. The raw message goes to the console sink only. `redact` and its length rule are deleted.
 
 Consequence: a defect in a user's report shows its error type and where it happened, and the type system, not a filter, keeps note content and paths out. Details: `docs/engineering/error-handling.md`.
+
+## Amendment, 2026-11-21: errors per module
+
+The list of `AppError` members above is the shell's as first built. Since [ADR 0006](0006-module-structure.md) each module owns its tagged errors and their texts, and `AppError` is the union of the modules' error unions (`src/application/errors.ts`). `describeError` hands an error to its module's describer and stays exhaustive: an error without a text does not compile. The current members are in each module's `errors.ts`.
+

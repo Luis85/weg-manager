@@ -1,111 +1,128 @@
 # Adding a feature
 
-The walking skeleton (greeting and markdown file count) in module `shell` is the worked example. A new module gets a folder per layer; see [Modules](architecture.md#modules) for its `index.ts` and the composing files. Each step lists the file it uses as a model and the test that comes **first**: write it, see it fail, then implement.
+The tracer slice, module `communities`, is the worked example: the first record type through every layer (PBI-56). A new feature follows the same steps in the same order. Each step names the real files of the slice and the test that comes **first**: write it, see it fail, then implement. How the pieces fit is in [architecture.md](architecture.md); how to run the tests is in [testing.md](testing.md).
 
-1. **Domain rule** (`src/domain/shell/settings.ts`). Pure functions and Effect Schema, no services, no language: a broken rule is a `SettingsIssue` code with its data (`{ code: "greeting.length", max }`). Test: `tests/unit/domain/<module>/*.test.ts`, with the exact issues.
-   - A new setting is one entry in `FIELDS` in `settings.ts` plus its key in `Settings` and its issue code; see [Settings](architecture.md#settings). Decode, patch validation and encode follow from it.
-   - Word each new issue code in both catalogs (`src/application/shell/i18n/de.ts`, `en.ts`) and pin both sentences in `tests/unit/application/shell/i18n.test.ts`.
-2. **Port, service, use case** (`src/application/shell/`).
-   - A new capability the host provides becomes a port in the module's `ports.ts`.
-   - A new expected failure becomes a tagged error, as described in [error-handling.md](error-handling.md).
-   - The use case in the module's `use-cases.ts`, exported from its `index.ts`, is the only API presentation calls.
-   - A text the user sees (notice, command name, label) is a key in the module's catalog part (`ShellCatalog`) with a German and an English value; take the catalog with `yield* Messages` and read your part (`.shell`). Never write a literal user-visible string outside `src/application/shell/i18n/`.
-   - To react to vault or workspace changes, subscribe via `EventBus.on("FileCreated")` (or `subscribe` for a forked consumer) instead of listening to Obsidian. A new kind of event, including a domain event, becomes a member of the module's event record (`ShellEvents`), which `AppEvent` includes (see [ADR 0004](../adr/0004-event-system.md)). Read the vault's state only after the startup edge it needs: the file list after `LayoutReady`, frontmatter (`NoteStore.list`, `read`) after `VaultReady`, which comes once the metadata cache holds every note. A consumer that builds state from the notes builds it at `VaultReady`, drops the events before it and applies the ones after it as idempotent updates keyed by path (see [Events](architecture.md#events)). In a component, use `useAppEvents(handler)`, and debounce work that reacts to file changes (see `ShellPanel.vue`, which recounts 300 ms after a burst of Markdown changes).
-   - A value that a view follows (the settings, later the community selection) is a pair a use case hands out: an effect that reads it now, which must not suspend, and a stream of its changes, ideally `SubscriptionRef.changes`, which emits the current value first.
-   - Test: `tests/unit/application/shell/*.test.ts` with the in-memory Layers from `tests/support/layers.ts`; `recordingEventBus()` records what was published.
-3. **Adapter** (`src/infrastructure/obsidian/shell/layers.ts`). This is the only place that touches the `obsidian` API. Add the Layer to the module's Layer (`shellLayer`), which `appLayer` merges. Test: `tests/dom/infrastructure/shell/*.test.ts` against the Obsidian double. Extend the double in `tests/support/obsidian/` when the API you need is missing.
-4. **Component** (`src/presentation/shell/components/`). A feature module imports the shell's presentation only from `src/presentation/shell/index.ts`.
-   - Run a read through `useQuery(useCase)` and a state change through `useCommand(useCase)`. Follow a value with `useStream(read, changes)`: the ref holds `read`'s value from the first render on and follows `changes` until the component's scope ends; a defect is reported once. Read settings through `useSettings()` and texts through `useMessages()`.
-     - `useQuery`: the latest call wins. A second `run` interrupts the first, and closing the view interrupts a pending run.
-     - `useCommand`: nothing in the view interrupts it. A `run` while one is pending returns the pending run's promise and starts nothing, so disable the control on `pending`. After the view closed, the command still finishes; a typed failure then becomes a notice.
-     - A use case that writes must make its write atomic with respect to interruption: once a write that cannot be cancelled has started, setting the in-memory state runs uninterruptibly with it (see `SettingsService.update`). Plugin unload can still interrupt a command.
-   - Render failures with `ErrorNotice.vue`.
-   - Every form uses TanStack Form (`useForm`), and its validators call the domain rule (see `GreetingForm.vue`). Never duplicate a rule in a component.
-   - Each setting has exactly one edit location: plugin-wide technical settings (the log level) in Obsidian's settings tab (`src/infrastructure/obsidian/shell/settings-tab.ts`), feature data (the greeting) in the plugin's views. The other place shows the value read-only at most (PBI-49).
-   - Import Nuxt UI components explicitly (`@nuxt/ui/components/Button.vue`). Prefix every Tailwind class with `wm:`.
-   - A Nuxt UI component that is new to the plugin goes into the `@source` lists in `src/styles/app.css`. A new icon goes into `SHELL_ICONS` in `configs/vite.shared.ts`.
-   - Test: `tests/dom/presentation/shell/*.test.ts` through `mountApp` (`tests/support/surface.ts`) with `testRuntime()` from `tests/support/runtime.ts` (German by default; `testRuntime({ language: "en" })` for English).
-5. **Route and screen** (ADR 0008). A screen of its own is a route, never a placeholder: add it only with the screen.
-   - Add the route schema to the module's application layer and to the union in `src/application/routes.ts`:
+A feature is a module: one folder per layer, each with an `index.ts` (see [Modules](architecture.md#modules)). It imports `notes` and `shell` only through their indexes; `shell` and `notes` never import it.
 
-     ```ts
-     // src/application/communities/routes.ts
-     export const CommunitiesRoute = Schema.Struct({
-       name: Schema.Literal("settings"),
-       section: Schema.Literal("communities"),
-     });
-     // src/application/routes.ts
-     const Route = Schema.Union([ShellRoute, CommunitiesRoute]);
-     ```
+The shared files only compose. A new module adds one line to each of these. Typecheck fails until it adds the lines marked *typecheck*, as soon as the module's code uses the part (a use case that needs its services, an error, a text, an event, a route); a unit test fails until it adds the note types; nothing fails for a missing navigation entry or frame part, which only does not show:
 
-   - Offer the screen from the module's presentation `index.ts` (`communitiesScreens = { settings: CommunitySettings }`, like `shellScreens`) and map the name in `src/presentation/app-surface.ts`, with a navigation entry if it should have one. Typecheck fails until every route name has a screen.
+| File | Line | Enforced by |
+| --- | --- | --- |
+| `src/application/app-services.ts` | its services in `AppServices` | typecheck |
+| `src/application/errors.ts` and `user-messages.ts` | its errors in `AppError`, its describer in `describeError` | typecheck |
+| `src/application/messages.ts` | its part of `Catalog`, in `de` and `en` | typecheck |
+| `src/application/events.ts` | its event record, when it has events | typecheck |
+| `src/application/routes.ts` | its route schema in `Route` | typecheck |
+| `src/application/note-types.ts` | its note types in `appNoteTypes` | `tests/unit/application/note-types.test.ts`: every note type a domain `index.ts` exports must be registered once; the test lists the domain indexes and fails until the new folder is in `DOMAIN_INDEXES` |
+| `src/infrastructure/obsidian/app-layer.ts` | its Layer in `appLayer` | typecheck (`appLayer` must provide `AppServices`) |
+| `src/presentation/app-surface.ts` | its screens, navigation entry and frame parts | typecheck for the screens (one per `Route` name); the navigation entry and the frame parts are not checked |
 
-     ```ts
-     settings: () => import("./communities").then(({ communitiesScreens }) => communitiesScreens.settings),
-     ```
+Inside the module, its error union and the tag record its type guard reads (`COMMUNITIES_ERROR_TAG_KEYS` in `src/application/communities/errors.ts`) must name the same errors; typecheck fails while the record misses one or has one too many.
 
-   - The screen reads its route with `useRoute()` and moves on with `useNavigate()`; the view's own history records the step, and `useHistory()` offers `back` and `forward` if a screen needs them beside the frame's controls. A record that no longer exists renders `NotFoundState` from the shell's index.
-   - A command that opens the screen calls `openRoute(plugin.app.workspace, route)`.
-   - Test: navigation through `mountTest` with test routes, or the app's routes through `mountApp` (`tests/support/surface.ts`); the decoder's fallbacks in `tests/unit/application/`.
-6. **Registration** (`src/bootstrap.ts`). Push an undo step for everything you register, so a failed bootstrap releases it. Test: `tests/dom/lifecycle.test.ts`.
-7. **Harness scenario** (`harness/layers.ts`). Make the new states reachable through `?scenario=`. Test: `tests/unit/harness-layers.test.ts`.
-8. **Gate.** `npm run verify` exits 0. Before pushing a change to domain or application, run `npm run test:mutation`.
+## 0. Words and contract
 
-## Writing to the vault
+- Put each new domain term into `GLOSSARY.md` before it enters code: English in code, German in the UI and in `docs/` (ADR 0006). The slice uses *community*, *short code*, *kind*, *unit label* and *community selection*, and added *colour*, *community switch*, *conflict* and *read-only*.
+- Register the module in `FEATURE_MODULES` in `eslint.config.mjs`. Its folders become fallow zones by themselves and fall under the layer rules (`domain`, `application`, `adapters`, `presentation`) of `configs/fallow.json`, so the module may import `shell`, `notes` and every feature listed there. For other features to import it, add `<layer>/<module>` to the `allow` list of each of those layer rules where the module has a folder, next to `<layer>/communities`: fallow does not let a discovered zone import a sibling the rule does not name, and it has no wildcard for that. fallow refuses a rule that names a zone with no folder yet, so add each entry with the first file of that folder. fallow's cycle check keeps imports between features acyclic.
+- Write the file contract page with the note type: one German page per type and version in `docs/contracts/` (`DV-01 - Gemeinschaft v1.md`), in the manner described in [docs/README_DOCS.md](../README_DOCS.md).
 
-Every feature reads and writes notes through the `NoteStore` port of module `notes` (`src/application/notes/`, ADR 0007); see [Architecture → Vault notes](architecture.md#vault-notes). Import it from the module's index. The Obsidian adapter (`src/infrastructure/obsidian/notes/`) is the only code that changes vault files; a feature adds no vault adapter of its own.
+## 1. Domain: the note type and the rules
 
-- **Declare the note type** in the feature's domain (`src/domain/<module>/`) with `defineNoteType` from `src/domain/notes`; see [The note codec](architecture.md#the-note-codec). Give the type name (English singular, kebab-case), the version, the fields in file order and the migration table. Keys are English snake_case; the record uses the same keys. Build fields from the kinds `text`, `number`, `checkbox`, `date` and `list`, mark the ones a record needs with `required`, and give a narrower schema its own issue code where a value has a rule (a length, a list of codes). For example (not the real community contract):
+Folder `src/domain/communities/`. Pure functions and Effect Schema; no services, no language, issue codes instead of sentences.
 
-  ```ts
-  export const communityType = defineNoteType({
-    type: "community",
-    version: 1,
-    fields: {
-      name: required(text()),
-      short_code: required(text({ schema: ShortCode, issue: "short-code.invalid" })),
-    },
-    migrations: {},
-  });
-  ```
+1. **The note type** (`community-type.ts`). `defineNoteType` from `src/domain/notes` with the type name, the version, the fields in file order and the migrations:
 
-  Write the type's file contract page with it (ADR 0007). Test the declaration with the exact issues of broken notes, as `tests/unit/domain/notes/decode.test.ts` does for the test type.
-- **Register the type** with the note index: add it to `appNoteTypes` in `src/application/note-types.ts`, imported from your domain's `index.ts`:
+   ```ts
+   export const communityType = defineNoteType({
+     type: "community",
+     version: 1,
+     fields: {
+       name: required(text({ schema: lineOfText(NAME_MAX_LENGTH), issue: "name.invalid" })),
+       short_code: required(
+         text({ schema: Schema.String.check(Schema.isPattern(SHORT_CODE_PATTERN)), issue: "short-code.invalid" }),
+       ),
+       color: required(text({ schema: Schema.Literals(COMMUNITY_COLORS), issue: "color.unknown" })),
+       kind: required(text({ schema: lineOfText(LABEL_MAX_LENGTH), issue: "kind.invalid" })),
+       unit_label: required(text({ schema: lineOfText(LABEL_MAX_LENGTH), issue: "unit-label.invalid" })),
+     },
+     migrations: {},
+   });
+   ```
 
-  ```ts
-  export const appNoteTypes: NoteTypeRegistry = [communityType];
-  ```
+   First test: `tests/unit/domain/communities/community-type.test.ts`, with the exact outcome of a valid note, a missing field, each broken field and a newer version.
+2. **The rules** (`rules.ts`, `file-name.ts`, `kinds.ts`, `selection.ts`). One function per rule, over plain values: `validateCommunity(input, { others, loaded })` checks the field rules through the codec's `check` and adds `short-code.taken` and `color.taken`; `duplicateShortCodes`, `colorsInUse`, `communityFileName`, `followsName`, `kindSuggestions`, `selectedCommunity`. The form's validators and the use cases call the same function, so a rule lives in one place. First tests: `rules.test.ts`, `file-name.test.ts` (with a property test that every file name passes `noteNameIssue`), `kinds-and-selection.test.ts`.
+3. A capability every feature needs belongs to `notes` or `shell`, not to the feature. The slice added `check` to `defineNoteType` (`src/domain/notes/codec.ts`, test `tests/unit/domain/notes/check.test.ts`): form values against a type's field rules.
 
-  That is the one line a feature adds; the index then holds its records. Each type name once: a second one with the same name is a defect at load.
-- **Read the records** from the index, not with `list`: `noteSnapshot(type)` and `noteChanges(type)` from the notes application index are the pair `useStream` follows. In a component:
+## 2. Application: list, use cases, selection, texts
 
-  ```ts
-  const communities = useStream(noteSnapshot(communityType), noteChanges(communityType));
-  ```
+Folder `src/application/communities/`. Test fixture: `tests/support/communities/fixture.ts` builds the module over the note index, the in-memory `NoteStore`, a sequential id generator and an in-memory device store; its specs run under `TestClock`, and `indexed` moves the clock past one index batch.
 
-  `communities.value` is `{ ready, failure, notes }`. Show loading while `ready` is false. Each note is an `editable` or `read-only` record of your type with its issues, duplicates marked, sorted by path; sort for display yourself. When `failure` is set, the notes are the last ones read: render `ErrorNotice` with `describeError(failure, messages)` and give its `retry` action `useCommand(() => rebuildNoteIndex)` (see `tests/dom/presentation/notes/index-failure.test.ts`). Notes of no registered type, with a broken `schema` or unreadable frontmatter in the root folder, come from `unindexedSnapshot` and `unindexedChanges`; `describeUnindexedIssue` words them.
-- **After a write**, the view follows by itself: the index reads the note again after Obsidian has indexed it, about 100 ms later. Do not patch the list from the write's result; use that result only for the form that wrote it.
-- **Word its issues.** The notes catalog words the shared codes; `describeNoteIssue(issue, messages.notes, label)` takes the field label from your catalog. A code your declaration adds gets its text in your module's catalog part, in both languages.
-- **Read a record** with `type.decode(note)`. Show a `read-only` record without a save button and its issues; an `editable` one may still have field issues, which the form marks by `key`. Keep the decoded `frontmatter` in the form as the loaded state.
-- **Bump the version** only for a change older notes cannot be read as. Add the step for the old version to the table and test it with real-shaped old notes. A note is lifted in memory and written in the new form only when the user saves it.
-- **Create a record** with `create({ folder, name, frontmatter, body })`, the frontmatter from `newRecordFrontmatter(type, values)`, which draws the id from the `IdGenerator` port. Folders come from settings and are created when missing; a taken name gets ` (2)`. A name is taken also in another case or Unicode form (`ahornweg` beside `Ahornweg`), as on Windows and macOS.
-- **Save a form** with `update(path, editChange(type, loaded, edited))`: the per-field merge runs inside the atomic write. It fails with `NoteEditConflictError` (show each field's `base`, `edited` and `current` and let the user choose) or `NoteWriteRefusedError` (the note is no longer the loaded record), and then writes nothing.
-- **Change frontmatter** with `update(path, change)`. `change` runs inside Obsidian's atomic `processFrontMatter` on the frontmatter just read from the file and returns `Result.succeed({ set, remove })` or `Result.fail(yourError)` to write nothing. Write only the keys your type knows; the store keeps every other key, the key order and the body.
-- **Delete** with `trash(path)`, **rename** with `rename(path, newName)`.
-- **Read** one note with `read(path)`; for lists, follow the index (above). `list` is what the index builds from. Both come from the metadata cache, which catches up with a write a moment later: use the note a write returns, not a read right after it.
-- **Never** call `vault.modify`, `vault.adapter`, or `read` followed by a write. A body change needs a contract section first (ADR 0007) and then a `NoteStore` call for it.
-- **Find files without scanning.** Do not call `getFiles()` or `getMarkdownFiles()` in a hot path (an event handler, a render, a loop). `list` scans once; keep it behind `VaultReady` and a debounce. Before `VaultReady` it can miss records Obsidian has not indexed yet.
-- **Errors.** The store's failures and the merge's conflict and refusal are tagged `AppError`s of module `notes` with texts in both catalogs. A failure your own `change` decides on is your module's error and needs its own text.
-- **Tests.** Use the in-memory adapter (`memoryNoteStore()` from `src/infrastructure/memory/notes`, also in `testRuntime().notes`) to seed notes, switch failures on and look behind the port. `testRuntime({ noteTypes: [yourType] })` runs the index for your type; `vaultReady()` publishes what Obsidian's host adapter publishes at start, so the first build runs. Seeds and writes publish the host's file events, so the index follows them as in Obsidian. `sequentialIdGenerator()` from the same folder gives known ids (`…-000000000001`, `…-000000000002`); `testRuntime` and the harness provide one. `tests/unit/application/notes/edit-through-store.test.ts` shows create, outside edit and save end to end.
+1. **Register the type** in `src/application/note-types.ts`: `export const appNoteTypes: NoteTypeRegistry = [communityType];`. The index then holds its notes. First test: `tests/unit/application/note-types.test.ts`.
+2. **Read the records** (`list.ts`). `toCommunityList` turns the index's snapshot into what the views show: each note with its path, file name, id, valid values, issues and frontmatter, sorted by name, plus `short-code.duplicate` on every community whose code another one has. `communityList` and `communityListChanges` (`use-cases.ts`) are the pair `useStream` follows. First test: `tests/unit/application/communities/list.test.ts`.
+3. **Write through `NoteStore`** (`use-cases.ts`). Each use case checks its rule against the current list, then writes:
+   - `createCommunity(input)`: `newRecordFrontmatter` and `NoteStore.create` into `<rootFolder>/Gemeinschaften/`, named by `communityFileName`.
+   - `updateCommunity(community, input)`: `NoteStore.update(path, editChange(type, loaded, values))`, so the per-field merge runs inside the atomic write; then the file follows the name. A note renamed meanwhile is found by its id.
+   - `deleteCommunity(community)`: `NoteStore.trash`.
 
-## Checklist for a new view
+   First tests: `create-delete.test.ts` and `update.test.ts`, with the note's exact frontmatter, the merge, the conflict, the refusal and a note that is gone.
+4. **A shared value** (`selection.ts`). The community selection is a service with a current value and a stream (`SubscriptionRef`), like the settings. It follows the index, applies `selectedCommunity` and stores the choice through the shell's `DeviceStore`. Its Layer joins `appLayer` through the module's infrastructure folder (step 3). First test: `selection.test.ts`.
+5. **Errors** (`errors.ts`, `user-messages.ts`). `InvalidCommunityError { issues }`, a `Schema.TaggedError`, with `COMMUNITIES_ERROR_TAGS` and the guard `isCommunitiesError`; the module's union joins `AppError` and its describer joins `describeError`. See [error-handling.md](error-handling.md).
+6. **Texts** (`i18n/catalog.ts`, `de.ts`, `en.ts`, `describe.ts`). The module's part of `Catalog`, typed, German in du-form and English in sentence case, cause then action. `describeCommunityIssue` words the module's codes with the field's label and hands the shared ones to the notes catalog. First test: `i18n.test.ts`, which pins every text in both languages.
+7. **The route** (`routes.ts`). `CommunitiesRoute` joins the union in `src/application/routes.ts`, which also sets the start route.
 
-Each item needs a passing test:
+Mutation testing covers `src/domain` and `src/application`; the slice's score is 100 %, keep it there. Run Stryker on the module's files only (see [testing.md](testing.md#mutation-testing)).
 
-- [ ] Disable → enable → disable in one session, and unload while load is pending: nothing leaks, and the second load behaves like the first.
-- [ ] `data.json` missing, corrupt, partially invalid, or from a newer version: the plugin still loads, invalid fields fall back one by one, and a read-only file is never written.
-- [ ] A host theme switch while the view is open: the view follows it without reopening.
-- [ ] The view in a pop-out window: its app, portals and theme binding live in the leaf's `ownerDocument`.
-- [ ] Two views open, one closed: the other keeps working.
+## 3. Infrastructure: the Layer
 
-A view with routes also restores its route from the view state, falls back to the start route for a broken one, and keeps its own route beside a second view (`tests/dom/infrastructure/shell/view-state.test.ts`, `tests/e2e/specs/navigation.e2e.ts`).
+Folder `src/infrastructure/obsidian/communities/`. A feature adds no vault adapter: notes go through the notes module's `NoteStore`. Its `index.ts` holds `communitiesLayer`, the module's services over the shell's and the notes module's. `appLayer` (`src/infrastructure/obsidian/app-layer.ts`) builds it on `notesLayer`:
+
+```ts
+shellLayer(plugin, options, communitiesLayer.pipe(Layer.provideMerge(notesLayer(plugin, appNoteTypes))));
+```
+
+Test: `tests/dom/infrastructure/runtime.test.ts` runs `createCommunity` against the Obsidian adapters on the double. `tests/support/runtime.ts` and `harness/layers.ts` compose the same Layers over the in-memory adapters (`src/infrastructure/memory/`, never imported by `src/`).
+
+## 4. Presentation: screen, form, switch
+
+Folder `src/presentation/communities/`. Components import the shell only from `src/presentation/shell/index.ts`, never `effect`; they run use cases through `useQuery`, `useCommand` and `useStream`, and take texts from `useMessages()`. Test helper: `tests/support/communities/screen.ts` mounts the app on the community settings over the in-memory store.
+
+1. **The screen** (`CommunitySettings.vue`): follows `communityListChanges` and `unindexedChanges` with `useStream`; shows loading until the index is ready, the index's failure with `ErrorNotice` and a retry through `useCommand(() => rebuildNoteIndex)`, an empty state with a create action, the list (`CommunityCard.vue`, `CommunityBadge.vue`) and the notes of no known type. First test: `tests/dom/presentation/communities/screen.test.ts`.
+2. **The form** (`CommunityForm.vue`): TanStack Form; each field's validators call `validateCommunity`; the use case has the final word and its issues land at their fields; submit is disabled while the command runs. The same component creates and edits. A conflict shows `ConflictChoice.vue`, one choice per field; the form then saves again against the note's current values. First tests: `create.test.ts`, `edit.test.ts`.
+3. **Delete** (`DeleteCommunityDialog.vue`): a `UModal` that asks first and runs `deleteCommunity` as a command. **The switch** (`CommunitySwitch.vue`) fills the frame's context area. First test: `delete-and-switch.test.ts`.
+4. **Compose**: `index.ts` offers `communitiesScreens` and `communitiesFrame`; `src/presentation/app-surface.ts` maps the route name to its screen, adds the navigation entry and loads the context area, all through lazy `import()`.
+5. **CSS ownership**: Tailwind classes carry `wm:`; Nuxt UI components are imported from `@nuxt/ui/components/*.vue`; a new one (`Slideover`) goes into the `@source` lists of `src/styles/app.css`, a new icon into `SHELL_ICONS` (`configs/vite.shared.ts`). Colours the feature owns are CSS custom properties per theme in its own stylesheet (`src/styles/communities.css`), and colour never carries meaning alone.
+
+### Checklist for a new view
+
+Each item needs a passing test. The slice's screen is the start route, so the shell's tests cover it:
+
+- [ ] Disable → enable → disable in one session, and unload while load is pending: nothing leaks, and the second load behaves like the first (`tests/dom/lifecycle.test.ts`, `tests/e2e/specs/lifecycle.e2e.ts`).
+- [ ] `data.json` missing, corrupt, partially invalid, or from a newer version: the plugin still loads, invalid fields fall back one by one, and a read-only file is never written (`tests/dom/external-settings.test.ts`, `external-settings.e2e.ts`, `settings-and-theme.e2e.ts`).
+- [ ] A host theme switch while the view is open: the view follows it without reopening (`tests/dom/presentation/shell/theme.test.ts`, `settings-and-theme.e2e.ts`).
+- [ ] The view in a pop-out window: its app, portals and theme binding live in the leaf's `ownerDocument` (`tests/dom/presentation/shell/mount.test.ts`, `popout.e2e.ts` with the form's sheet).
+- [ ] Two views open, one closed: the other keeps working (`mount.test.ts`, `lifecycle.e2e.ts`, `community-selection.e2e.ts`).
+
+A view with routes also restores its route from the view state, falls back to the start route for a broken one, and keeps its own route beside a second view (`tests/dom/infrastructure/shell/view-state.test.ts`, `navigation.e2e.ts`).
+
+## 5. End to end in Obsidian
+
+One spec per behaviour in `tests/e2e/specs/`, with helpers in `tests/e2e/communities.ts`: create, edit and delete with the note's exact file text, folder, file name and trash (`communities-crud.e2e.ts`); an outside edit while the form is open (`communities-outside-edit.e2e.ts`); a newer schema version (`communities-newer-schema.e2e.ts`); notes that break the contract (`communities-invalid.e2e.ts`); the selection and its persistence across a restart (`community-selection.e2e.ts`). Each ends with a clean console. See [testing.md](testing.md#end-to-end-tests-in-obsidian).
+
+## 6. Harness
+
+Make the new states reachable through `?scenario=` in `harness/layers.ts`: `loaded`, `empty`, `invalid`, `readonly`, `failure`. Test: `tests/unit/harness-layers.test.ts`.
+
+## 7. Gate
+
+`npm run verify` exits 0, and `xvfb-run -a npm run test:e2e` passes. Before pushing a change to domain or application, run Stryker on the files you changed.
+
+## Reference: the notes module
+
+What a feature author needs when it reads or writes notes. The mechanics are in [Vault notes](architecture.md#vault-notes).
+
+- **Writing** goes through `NoteStore` only (`src/application/notes/ports.ts`); its Obsidian adapter is the only code that changes vault files. Writes are commands: run them through `useCommand`. A body change needs a contract section first (ADR 0007).
+- **Create** with `create({ folder, name, frontmatter })`, the frontmatter from `newRecordFrontmatter(type, values)`. A taken name gets ` (2)`, also in another case or Unicode form.
+- **Save a form** with `update(path, editChange(type, loaded, edited))`. It fails with `NoteEditConflictError` (each field's `base`, `edited` and `current`) or `NoteWriteRefusedError`, and then writes nothing. After a conflict, save again with the conflicting fields of `loaded` replaced by their `current` values, as `CommunityForm.vue` does.
+- **Rename** with `rename(path, newName)`; a taken name is `NotePathTakenError`. **Delete** with `trash(path)`.
+- **Read lists from the index**, not with `list`: `noteSnapshot(type)` and `noteChanges(type)`. After a write the view follows by itself, about 100 ms later; use a write's result only for the form that wrote it.
+- **Notes with problems** are shown, never repaired silently: a `read-only` record has no save; an `editable` one may have field issues, which the form marks by `key` and saving repairs. Unindexed notes come from `unindexedSnapshot` and `unindexedChanges`, worded by `describeUnindexedIssue`.
+- **Never** call `vault.modify`, `vault.adapter`, or `read` followed by a write, and never scan the vault in a hot path.

@@ -1,5 +1,5 @@
 import { Effect, Layer } from "effect";
-import { DeviceStore, type DeviceValue } from "./ports";
+import { DeviceStore, type DeviceValue } from "../../../application/shell";
 
 const copy = (value: DeviceValue): DeviceValue => structuredClone(value);
 

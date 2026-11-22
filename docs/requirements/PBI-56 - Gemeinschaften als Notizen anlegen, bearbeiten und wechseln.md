@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-21
 horizon: ""
 start: ""
 due: ""
@@ -32,7 +32,7 @@ user-flows: []
 dependsOn:
   - "[[PBI-54 - Index der Notizen aufbauen und aktuell halten]]"
   - "[[PBI-55 - Navigation und App-Rahmen der Plugin-Ansicht bereitstellen]]"
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-56 · Gemeinschaften als Notizen anlegen, bearbeiten und wechseln
@@ -73,3 +73,12 @@ Das Plugin hat die technischen Grundlagen (Notizspeicher, Codec, Index, Navigati
   - **Dateivertrag:** Der Vertrag der Gemeinschaftsnotiz (`weg-manager.community/v1`) wird mit dem Durchstich als deutsche Seite unter `docs/` geschrieben: deutscher Text um die englischen Schlüssel und Codes. Je Notiztyp und Version eine Seite.
   - **Keine Auswahl:** Ist keine Gemeinschaft gespeichert ausgewählt (erster Start, neues Gerät, ausgewählte Gemeinschaft gelöscht), wird bei genau einer Gemeinschaft diese gewählt. Bei zwei oder mehr ist nichts ausgewählt, und der Rahmen fordert zur Auswahl auf, bevor bearbeitet werden kann.
   - **Vorabversion:** Nach dem Durchstich entsteht eine Vorabversion (0.2.0) für die manuellen Prüfungen im eigenen Vault, mit einer kurzen Prüfliste.
+- 21.11.2026: Abgeschlossen. Stand der Umsetzung und Entscheidungen in Lücken:
+  - **Notiz:** `schema: weg-manager.community/v1`, `id`, `name` (höchstens 100 Zeichen), `short_code`, `color`, `kind` und `unit_label` (je höchstens 50 Zeichen), alle Pflicht und einzeilig. Der Dateivertrag steht in `docs/contracts/DV-01 - Gemeinschaft v1.md`.
+  - **Dateiname:** der Name der Gemeinschaft; Zeichen, die in Dateinamen nicht gehen, werden zu einem Bindestrich. Wird der Name geändert, wird die Datei mit umbenannt, solange ihr Name noch dem alten Namen entspricht; eine von Hand umbenannte Datei bleibt.
+  - **Kürzel:** nach dem Anlegen fest. Solange es fehlt, ungültig oder doppelt ist, lässt es sich im Formular reparieren.
+  - **Auswahl:** Eine einzige Gemeinschaft wird von selbst ausgewählt und die Auswahl gespeichert; kommt eine zweite dazu, bleibt die erste gewählt. Eine gespeicherte, aber verschwundene Gemeinschaft zählt wieder, wenn ihre Notiz zurückkommt.
+  - **Bearbeiten und Löschen** gibt es nur für bearbeitbare Notizen; schreibgeschützte (neuere Version, fehlerhafte oder doppelte `id`) werden mit ihrem Problem angezeigt.
+  - **Formular:** seitliches Blatt; Löschen fragt in einem Dialog nach und legt die Notiz in Obsidians Papierkorb.
+  - **Demo gelöscht:** Begrüßung, Befehl, Dateianzahl und Info-Dialog sind entfernt; ein alter Schlüssel `greeting` in `data.json` wird ohne Meldung übergangen.
+  - **Offen:** Tastatur- und Screenreader-Bedienung hat noch kein Mensch geprüft; das gehört zur manuellen Prüfung mit der Vorabversion.

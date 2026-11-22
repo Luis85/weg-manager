@@ -7,12 +7,8 @@ import {
   type Catalog,
 } from "../../../../src/application/messages";
 import { LANGUAGES } from "../../../../src/application/shell/i18n/catalog";
-import {
-  describeIssue,
-  describeIssues,
-  greetingOf,
-} from "../../../../src/application/shell/i18n/describe";
-import { DEFAULT_SETTINGS, type SettingsIssue } from "../../../../src/domain/shell/settings";
+import { describeIssue, describeIssues } from "../../../../src/application/shell/i18n/describe";
+import type { SettingsIssue } from "../../../../src/domain/shell/settings";
 
 /** Each leaf as `path: kind`, where a function is called with a sample to check it returns text. */
 const shape = (value: unknown, path = ""): string[] => {
@@ -36,7 +32,6 @@ const ISSUES: readonly SettingsIssue[] = [
   { code: "schema.newer", version: 3 },
   { code: "schema.invalid" },
   { code: "migration.failed", from: 1 },
-  { code: "greeting.length", max: 200 },
   { code: "logLevel.unknown", allowed: ["error", "warn", "info", "debug"] },
   { code: "rootFolder.invalid", max: 100 },
 ];
@@ -76,7 +71,6 @@ describe("catalogs", () => {
       "Die Einstellungen stammen aus einer neueren Plugin-Version (Schemaversion 3).",
       "Die Schemaversion muss eine positive ganze Zahl sein.",
       "Die Einstellungen aus Schemaversion 1 ließen sich nicht auf die aktuelle Version umstellen.",
-      "Die Begrüßung muss 1 bis 200 Zeichen lang sein.",
       "Die Protokollstufe muss eine von error, warn, info, debug sein.",
       'Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?.',
     ]);
@@ -85,24 +79,10 @@ describe("catalogs", () => {
       "The settings come from a newer plugin version (schema version 3).",
       "The schema version must be a positive whole number.",
       "The settings from schema version 1 couldn't be upgraded to the current version.",
-      "The greeting must be 1 to 200 characters long.",
       "The log level must be one of error, warn, info, debug.",
       'The root folder must be a vault folder path of at most 100 characters, with "/" between folder names, without "." or ".." as folder names and without the characters * " \\ < > : | ?.',
     ]);
     expect(describeIssues([], en.shell)).toBe("");
-  });
-});
-
-describe("greetingOf", () => {
-  it("shows the default greeting of the UI language while it is not customised", () => {
-    expect(greetingOf(DEFAULT_SETTINGS, de.shell)).toBe("Hallo von WEG Manager");
-    expect(greetingOf(DEFAULT_SETTINGS, en.shell)).toBe("Hello from WEG Manager");
-  });
-
-  it("keeps a typed greeting in every language", () => {
-    const settings = { ...DEFAULT_SETTINGS, greeting: "Moin" };
-    expect(greetingOf(settings, de.shell)).toBe("Moin");
-    expect(greetingOf(settings, en.shell)).toBe("Moin");
   });
 });
 
@@ -112,7 +92,6 @@ describe("surface texts", () => {
     expect([de.shell.commands, de.shell.actions]).toEqual([
       {
         openView: "Ansicht öffnen",
-        showGreeting: "Begrüßung anzeigen",
         copyDiagnostics: "Diagnose kopieren",
       },
       {
@@ -122,7 +101,7 @@ describe("surface texts", () => {
       },
     ]);
     expect([en.shell.commands, en.shell.actions]).toEqual([
-      { openView: "Open view", showGreeting: "Show greeting", copyDiagnostics: "Copy diagnostics" },
+      { openView: "Open view", copyDiagnostics: "Copy diagnostics" },
       {
         retry: "Try again",
         "open-settings": "Open settings",
@@ -138,23 +117,9 @@ describe("surface texts", () => {
     });
   });
 
-  it("counts Markdown files in singular and plural", () => {
-    expect([0, 1, 2].map((count) => de.shell.panel.markdownFiles(count))).toEqual([
-      "0 Markdown-Dateien im Vault",
-      "1 Markdown-Datei im Vault",
-      "2 Markdown-Dateien im Vault",
-    ]);
-    expect([0, 1, 2].map((count) => en.shell.panel.markdownFiles(count))).toEqual([
-      "0 Markdown files in the vault",
-      "1 Markdown file in the vault",
-      "2 Markdown files in the vault",
-    ]);
-  });
-
-  it("words the app frame, its routes and the not-found state", () => {
-    expect([de.shell.frame, de.shell.routes, de.shell.notFound]).toEqual([
+  it("words the app frame and the not-found state", () => {
+    expect([de.shell.frame, de.shell.notFound]).toEqual([
       { navigation: "Ansichten", content: "Inhalt", back: "Zurück", forward: "Vorwärts" },
-      { welcome: "Start" },
       {
         title: "Nicht gefunden",
         detail:
@@ -162,9 +127,8 @@ describe("surface texts", () => {
         back: "Zur Startseite",
       },
     ]);
-    expect([en.shell.frame, en.shell.routes, en.shell.notFound]).toEqual([
+    expect([en.shell.frame, en.shell.notFound]).toEqual([
       { navigation: "Views", content: "Content", back: "Back", forward: "Forward" },
-      { welcome: "Home" },
       {
         title: "Not found",
         detail: "What you wanted to open no longer exists. It may have been deleted or renamed.",
@@ -173,27 +137,10 @@ describe("surface texts", () => {
     ]);
   });
 
-  it("words the panel, the form, the About dialog and the copy confirmation", () => {
-    expect([de.shell.panel.counting, de.shell.greetingForm, de.shell.diagnosticsCopied]).toEqual([
-      "Zähle Notizen …",
-      { label: "Begrüßung", save: "Speichern" },
+  it("words the copy confirmation", () => {
+    expect([de.shell.diagnosticsCopied, en.shell.diagnosticsCopied]).toEqual([
       { title: "Diagnose kopiert", detail: "Füge den Bericht in deine Support-Anfrage ein." },
-    ]);
-    expect([
-      en.shell.panel.counting,
-      en.shell.greetingForm,
-      en.shell.diagnosticsCopied,
-      en.shell.about,
-    ]).toEqual([
-      "Counting notes…",
-      { label: "Greeting", save: "Save" },
       { title: "Diagnostics copied", detail: "Paste the report into your support request." },
-      {
-        title: "About WEG Manager",
-        description: "Tools for the advisory boards of condominium owners' associations.",
-        button: "About",
-        body: "Copy the version, platform and log with the “Copy diagnostics” command.",
-      },
     ]);
   });
 });

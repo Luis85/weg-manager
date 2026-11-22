@@ -1,6 +1,6 @@
 # ADR 0002 · Layered plugin architecture
 
-- Status: accepted
+- Status: accepted; the presentation bridge and the enforcement amended on 2026-11-21 (see the note at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -22,3 +22,10 @@ An Obsidian plugin runs inside a host it does not own. It shares the page, the C
 - `infrastructure` imports `presentation` (to mount the surface). A mount port would remove that edge if it ever matters.
 - Every Nuxt UI component the plugin uses must be listed in `src/styles/app.css`. Without the list, `styles.css` exceeds its 250 KB budget.
 - Per-surface portals stack on Obsidian's modal layer. A dialog cannot escape a stacking context that Obsidian itself creates around a leaf.
+
+## Amendment, 2026-11-21: the bridge after the module split
+
+- **Where the bridge is.** [ADR 0006](0006-module-structure.md) moved it to `src/presentation/shell/runtime/` (`use-runtime.ts` and `use-stream.ts`), and the only place in presentation that imports `effect` is that folder. Its composables are `useQuery`, `useCommand` and `useStream`, plus `useSettings`, `useSettingsStatus`, `useAppEvents` and `useMessages`; navigation adds `useRoute`, `useNavigate` and `useHistory` ([ADR 0008](0008-navigation-and-view-state.md)). The single `useEffectAction` of the first build was split into the query and the command form (PR #6); no component uses it any more.
+- **What a view mounts.** Each view's Vue app mounts the app frame and the screen of its route (ADR 0008), not a single panel.
+- **Enforcement.** Layers are enforced by oxlint and fallow as written above. The module boundaries of ADR 0006 are enforced by ESLint and fallow (see [architecture](../engineering/architecture.md#enforcement)).
+- **The edge to presentation.** `infrastructure/obsidian` imports only the Vue-free `presentation/shell/host`; the Vue-loading surface comes through a dynamic `import()`, so the edge costs nothing at plugin load.

@@ -1,6 +1,6 @@
 # ADR 0004 · Typed event system
 
-- Status: accepted
+- Status: accepted; `VaultReady` added and the module paths amended on 2026-11-21 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -58,3 +58,10 @@ Decision:
 - **Rules as for the other host events.** The `resolved` listener goes through `plugin.registerEvent` and is removed with `offref` when the runtime's scope closes; the check runs inside `publish`, so a throwing cache goes to `reportDefect`, and after the dispose nothing is published.
 - **Events in between.** File events between `LayoutReady` and `VaultReady` are still published. A consumer builds from a read at `VaultReady`, drops what came before it, and applies what comes after as idempotent updates keyed by path ([architecture](../engineering/architecture.md#events)).
 - This replaces the wording of ADR 0007 ("when the layout is ready and the metadata cache has reported `resolved`"), which the measurement showed to be wrong on a cold start and in a running app.
+
+## Amendment 2026-11-21: modules and the first consumer
+
+- **Paths after [ADR 0006](0006-module-structure.md).** `EventBus` is `src/application/shell/event-bus.ts`; `AppEvent` stays in `src/application/events.ts`, built from the modules' event records (the shell's `ShellEvents` are in `src/application/shell/events.ts`). `hostEventsLayer` is `src/infrastructure/obsidian/shell/events.ts`, its tests `tests/dom/infrastructure/shell/events.test.ts`. "Adding an event" therefore starts with a member in the module's own record, which the root `AppEvent` composes with `&`.
+- **The adapter is built last by the shell's Layer.** `shellLayer(plugin, options, followers)` (`src/infrastructure/obsidian/shell/shell-layer.ts`) builds the other modules' services before the host event adapter, which `appLayer` calls. A subscriber that such a service starts sees `LayoutReady` and `VaultReady`.
+- **What consumers wait for.** The first consumer, the note index ([ADR 0007](0007-vault-data-access.md)), builds at `VaultReady`, drops every event before it and applies the later ones as idempotent re-reads by path. No consumer uses `LayoutReady` for anything but ordering. The rule is in [architecture](../engineering/architecture.md#events).
+- **Domain events.** No feature publishes one yet: the tracer slice follows the vault through the index.

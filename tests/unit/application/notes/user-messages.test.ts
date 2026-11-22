@@ -99,7 +99,7 @@ describe.each([de, en])("describeError for notes ($shell.language)", (messages) 
   it("never leaks the cause text", () => {
     expect.hasAssertions();
     fcAssert(
-      property(string(), (text) => {
+      property(content, (text) => {
         for (const error of [
           new NoteWriteError({ cause: new Error(text) }),
           new NoteUnreadableError({ cause: new Error(text) }),

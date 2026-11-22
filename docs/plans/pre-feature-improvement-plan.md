@@ -2,7 +2,7 @@
 
 - Date: 2026-11-21
 - Reviewed: PR #4 at `e10ce37` (branch `claude/upbeat-lovelace-v4rir1`), all of `src/`, `harness/`, `configs/`, `scripts/`, the workflows, `docs/engineering/`, ADR 0001–0005, the handoff, and the product backlog as the source of what features will demand.
-- Status (2026-11-21): PR #4 and phase 1 (PR #6) are merged. Phase 2 is decided: ADR 0006, 0007, 0008 and `GLOSSARY.md`. Phases 3 and 4 are open and filed as PBIs under F-24. Sections 1 to 3 are the review as it was written; section 6 lists what the owner decided since.
+- Status (2026-11-21): every step of the plan has landed; this documentation step (4.1, PBI-59) is the last. Section 4 says where each step landed, section 5 which readiness criteria are met and what is still open. Sections 1 to 3 are the review as it was written; section 6 lists what the owner decided since.
 
 ## Verdict
 
@@ -64,49 +64,49 @@ Ranked by how much feature code would have to be rewritten if the gap were close
 
 Sizes are relative: S is one focused change with its tests, M touches several layers, L is a design plus its implementation. Each step is one pull request against `main` and ends with `npm run verify` at exit 0; steps that touch lifecycle, view or vault behaviour also need a passing e2e run.
 
-**Merge first.** Done: PR #4 was squash-merged on 2026-11-21; the plan runs as small pull requests against `main`.
+**Merge first.** Done: PR #4 was squash-merged on 2026-11-21; the plan ran as small pull requests against `main`. The *Landed* column names the pull request of each step.
 
 ### Phase 1: fix the defects (no decisions needed)
 
 **Done** in PR #6, merged on 2026-11-21.
 
-| Step | Change | Done when | Size |
-| --- | --- | --- | --- |
-| 1.1 | Writes run to completion. Make save-then-set in `SettingsService.update` uninterruptible. Split `useEffectAction` into a query form (latest wins, interrupted on scope end) and a command form (never interrupted by scope end or a second call; a second call while pending is refused or queued, to be decided in the step). | The A1 probe is a unit test that fails on today's code and passes; a dom test closes a view during a held save and finds disk and memory equal. | S |
-| 1.2 | Typed diagnostics. Log context becomes an allow-list type (ids, counts, codes, booleans). A defect entry carries the error name and stack frames; the free-text message stays in the console entry and is left out of the report. Delete the length rule. | The A2 probe is a test: the report for a defect shows name and frames; the existing property test also covers non-`Error` causes that contain a path. ADR 0003 and `error-handling.md` updated. | S |
+| Step | Change | Done when | Size | Landed |
+| --- | --- | --- | --- | --- |
+| 1.1 | Writes run to completion. Make save-then-set in `SettingsService.update` uninterruptible. Split `useEffectAction` into a query form (latest wins, interrupted on scope end) and a command form (never interrupted by scope end or a second call; a second call while pending is refused or queued, to be decided in the step). | The A1 probe is a unit test that fails on today's code and passes; a dom test closes a view during a held save and finds disk and memory equal. | S | PR #6. A second call while one is pending returns the pending run. |
+| 1.2 | Typed diagnostics. Log context becomes an allow-list type (ids, counts, codes, booleans). A defect entry carries the error name and stack frames; the free-text message stays in the console entry and is left out of the report. Delete the length rule. | The A2 probe is a test: the report for a defect shows name and frames; the existing property test also covers non-`Error` causes that contain a path. ADR 0003 and `error-handling.md` updated. | S | PR #6 |
 
 ### Phase 2: decide (ADRs, no feature code)
 
 **Done** on 2026-11-21. The decisions are in `docs/adr/0006-module-structure.md`, `0007-vault-data-access.md` and `0008-navigation-and-view-state.md`. Where they differ from the recommendations in this table, the ADRs hold: code identifiers are English, and step 2.4 is dropped because mobile comes after the MVP.
 
-| Step | Decision | Recommendation | Size |
-| --- | --- | --- | --- |
-| 2.1 | **ADR 0006, module structure.** | Keep the four layers; slice each by module: `src/{domain,application,infrastructure/obsidian,presentation}/<module>/`. Each module owns its ports, errors, use cases, events and catalog fragment; the central files only compose (`AppError = ShellError \| GemeinschaftError`, `Catalog = { shell, gemeinschaft, … }`, `describeError` delegating per module). Lint and fallow rules: a module imports another module only through its `index.ts`. Also fix the language of domain identifiers (ADR 0004 already uses `PunktErstellt`, so German terms) and start `GLOSSARY.md` with the terms the tracer uses. | M |
-| 2.2 | **ADR 0007, vault data access.** | One `NoteStore` port in domain terms, never `TFile`. Reads come from `metadataCache`, writes go through `processFrontMatter`/`vault.process` only. A note carries `schema: weg-manager.<type>/v<n>`, the convention the Gmail skill already ships. One generic codec: Effect Schema in, an entity or issue codes out, unknown keys preserved on write, newer version read-only. Conflict rule for an external edit while a form is open. Readiness is its own `AppEvent`, after `resolved` (B5). The index is a service fed by the `EventBus`, rebuildable at any time. | L |
-| 2.3 | **ADR 0008, navigation and view state.** | One `ItemView`; a small typed route union in application (`{ name: "punkt", id }`) rather than a router library; `getState`/`setState` serialise it; commands navigate through one use case. The community filter is a service with a stream, like settings. | M |
-| 2.4 | **Mobile stance.** | Keep `isDesktopOnly: true` until the first slice runs on a phone, but add the guard now: a mobile-emulation e2e smoke (`wdio-obsidian-service` supports it) and container-width breakpoints in the app frame. Needs the owner's answer on K-09 and O-02. | S |
+| Step | Decision | Recommendation | Size | Landed |
+| --- | --- | --- | --- | --- |
+| 2.1 | **ADR 0006, module structure.** | Keep the four layers; slice each by module: `src/{domain,application,infrastructure/obsidian,presentation}/<module>/`. Each module owns its ports, errors, use cases, events and catalog fragment; the central files only compose (`AppError = ShellError \| GemeinschaftError`, `Catalog = { shell, gemeinschaft, … }`, `describeError` delegating per module). Lint and fallow rules: a module imports another module only through its `index.ts`. Also fix the language of domain identifiers (ADR 0004 already uses `PunktErstellt`, so German terms) and start `GLOSSARY.md` with the terms the tracer uses. | M | PR #7 (ADR 0006, `GLOSSARY.md`) |
+| 2.2 | **ADR 0007, vault data access.** | One `NoteStore` port in domain terms, never `TFile`. Reads come from `metadataCache`, writes go through `processFrontMatter`/`vault.process` only. A note carries `schema: weg-manager.<type>/v<n>`, the convention the Gmail skill already ships. One generic codec: Effect Schema in, an entity or issue codes out, unknown keys preserved on write, newer version read-only. Conflict rule for an external edit while a form is open. Readiness is its own `AppEvent`, after `resolved` (B5). The index is a service fed by the `EventBus`, rebuildable at any time. | L | PR #7 (ADR 0007). The readiness signal is not `resolved`, which the measurement ruled out: PR #24 and ADR 0004's amendment. |
+| 2.3 | **ADR 0008, navigation and view state.** | One `ItemView`; a small typed route union in application (`{ name: "punkt", id }`) rather than a router library; `getState`/`setState` serialise it; commands navigate through one use case. The community filter is a service with a stream, like settings. | M | PR #7 (ADR 0008), amended for the fixed tab in PR #22. |
+| 2.4 | **Mobile stance.** | Keep `isDesktopOnly: true` until the first slice runs on a phone, but add the guard now: a mobile-emulation e2e smoke (`wdio-obsidian-service` supports it) and container-width breakpoints in the app frame. Needs the owner's answer on K-09 and O-02. | S | Dropped: mobile comes after the MVP (section 6). PR #20 aligned the product documents. |
 
 ### Phase 3: build the groundwork
 
-| Step | Change | Done when | Size |
-| --- | --- | --- | --- |
-| 3.1 | Restructure into modules per ADR 0006. Mechanical; the existing shell becomes module `shell`. | Gate green with no test changed except import paths; a planted cross-module import fails lint. | M |
-| 3.2 | `NoteStore` port, the Obsidian adapter, and one in-memory adapter used by both the tests and the harness (today `tests/support/layers.ts` and `harness/layers.ts` each build their own fakes). Extend the Obsidian double with `getFileByPath`, `create`, `process`, `metadataCache.getFileCache`, `fileManager.processFrontMatter`/`trashFile`/`renameFile`, firing the same events as Obsidian. | Adapter tests against the double; one e2e spec creates, changes, renames and trashes a note through the adapter in real Obsidian and compares the events with the double's. | L |
-| 3.3 | Note codec and schema versioning per ADR 0007. | Unit and property tests: round trip keeps unknown keys and key order; invalid YAML, a duplicate id and a newer schema each give an issue code and never a write; mutation score holds. | M |
-| 3.4 | Index service: full build after readiness, incremental on file events, debounced, rebuild on demand. Reference-vault fixture generator (2,000 notes, 200 Punkte) and a timing test against B-NFR-04. | The e2e spec proves the readiness event on a cold vault; the timing test fails when the budget is exceeded. | L |
-| 3.5 | Presentation primitives: `useQuery`, `useCommand` (from 1.1), `useStream` replacing the settings-only `useFollowing`; routes and view state per ADR 0008; the app frame (navigation, community filter) with the first Nuxt UI table and sheet in the `@source` lists. | Dom tests for route restore and filter persistence; e2e: reopen Obsidian and land on the same route; pop-out and theme checks still pass. | M |
-| 3.6 | **Tracer slice, replacing the demo.** The thinnest real path through everything above: list and create one entity as vault notes, follow an external edit, survive a newer schema. Then delete the greeting setting, the `show-greeting` command, the file count, the About dialog and `LEGACY_DEFAULT_GREETING` (compatibility with a 0.1.0 that was never released). | One e2e spec per behaviour; harness scenarios for empty, loaded, invalid note, read-only; `adding-a-feature.md` rewritten with this slice as its worked example. | L |
+| Step | Change | Done when | Size | Landed |
+| --- | --- | --- | --- | --- |
+| 3.1 | Restructure into modules per ADR 0006. Mechanical; the existing shell becomes module `shell`. | Gate green with no test changed except import paths; a planted cross-module import fails lint. | M | PR #15. The module rules are in ESLint, not oxlint (ADR 0006, amendment). |
+| 3.2 | `NoteStore` port, the Obsidian adapter, and one in-memory adapter used by both the tests and the harness (today `tests/support/layers.ts` and `harness/layers.ts` each build their own fakes). Extend the Obsidian double with `getFileByPath`, `create`, `process`, `metadataCache.getFileCache`, `fileManager.processFrontMatter`/`trashFile`/`renameFile`, firing the same events as Obsidian. | Adapter tests against the double; one e2e spec creates, changes, renames and trashes a note through the adapter in real Obsidian and compares the events with the double's. | L | PR #21 |
+| 3.3 | Note codec and schema versioning per ADR 0007. | Unit and property tests: round trip keeps unknown keys and key order; invalid YAML, a duplicate id and a newer schema each give an issue code and never a write; mutation score holds. | M | PR #23 |
+| 3.4 | Index service: full build after readiness, incremental on file events, debounced, rebuild on demand. Reference-vault fixture generator (2,000 notes, 200 Punkte) and a timing test against B-NFR-04. | The e2e spec proves the readiness event on a cold vault; the timing test fails when the budget is exceeded. | L | PR #24 (the readiness event, the reference vault generator, the cold-vault e2e spec) and PR #25 (the index and its timing tests) |
+| 3.5 | Presentation primitives: `useQuery`, `useCommand` (from 1.1), `useStream` replacing the settings-only `useFollowing`; routes and view state per ADR 0008; the app frame (navigation, community filter) with the first Nuxt UI table and sheet in the `@source` lists. | Dom tests for route restore and filter persistence; e2e: reopen Obsidian and land on the same route; pop-out and theme checks still pass. | M | PR #22. The history is the view's own, because a navigable tab let a file click replace the view (ADR 0008, amendment). No Nuxt UI table yet; the sheet came with 3.6. |
+| 3.6 | **Tracer slice, replacing the demo.** The thinnest real path through everything above: list and create one entity as vault notes, follow an external edit, survive a newer schema. Then delete the greeting setting, the `show-greeting` command, the file count, the About dialog and `LEGACY_DEFAULT_GREETING` (compatibility with a 0.1.0 that was never released). | One e2e spec per behaviour; harness scenarios for empty, loaded, invalid note, read-only; `adding-a-feature.md` rewritten with this slice as its worked example. | L | PR #26 |
 
 For 3.6 the entity is **Community (Gemeinschaft, PBI-01)**, released by the owner for this cut only: create, list, edit and delete (to Obsidian's trash) with name, short code, colour, kind and unit label, plus the community switch. Contacts, Punkte, address, owner languages and the first-start wizard stay out, and PBI-01 stays open.
 
 ### Phase 4: guardrails and hygiene (parallel to phase 3)
 
-| Step | Change | Size |
-| --- | --- | --- |
-| 4.1 | Docs: move the blueprint and the handoff to an archive note (sections 1–6 of the handoff describe a state that no longer exists); `architecture.md` and `adding-a-feature.md` follow ADR 0006–0008. | S |
-| 4.2 | Backlog: set PBI-48 and PBI-49 to done, rewrite PBI-50's criterion 1 (it names a `VaultEvents` port; the `EventBus` replaced it) and keep its indexing part open against step 3.4; give F-24 a release; file the steps of this plan as PBIs under F-24. | S |
-| 4.3 | Settings: a schema-driven decode with per-field fallback and a migration table, before the second real setting arrives (B8). | S |
-| 4.4 | CI: remove the duplicated `obsidian-guard` plugin that makes Vitest warn on every run (`configs/vitest.config.ts`); pin actions by commit SHA; add automated dependency updates, since every version is pinned exactly and three overrides wait for upstream; make `CI / e2e` required once phase 3 has added vault specs. | S |
+| Step | Change | Size | Landed |
+| --- | --- | --- | --- |
+| 4.1 | Docs: move the blueprint and the handoff to an archive note (sections 1–6 of the handoff describe a state that no longer exists); `architecture.md` and `adding-a-feature.md` follow ADR 0006–0008. | S | This step (PBI-59): the two plans are in `docs/plans/archive/`, every engineering guide was read as a whole and checked against the code, and the ADRs got amendments where later steps made them false. |
+| 4.2 | Backlog: set PBI-48 and PBI-49 to done, rewrite PBI-50's criterion 1 (it names a `VaultEvents` port; the `EventBus` replaced it) and keep its indexing part open against step 3.4; give F-24 a release; file the steps of this plan as PBIs under F-24. | S | PR #7 filed PBI-48 to PBI-59 under F-24 (which has its release) and closed PBI-48 and PBI-49; PBI-50 closed with PR #25. F-24 stays open while PBI-58 criterion 5 is open. |
+| 4.3 | Settings: a schema-driven decode with per-field fallback and a migration table, before the second real setting arrives (B8). | S | PR #19 (PBI-57; the root folder is the second setting) |
+| 4.4 | CI: remove the duplicated `obsidian-guard` plugin that makes Vitest warn on every run (`configs/vitest.config.ts`); pin actions by commit SHA; add automated dependency updates, since every version is pinned exactly and three overrides wait for upstream; make `CI / e2e` required once phase 3 has added vault specs. | S | PR #8 (Vitest warning, actions pinned by SHA, Dependabot) and PR #16 (Dependabot ignores the blocked majors; the owner's decisions recorded). **Not done:** `CI / e2e` as a required check, a repository setting that is the owner's. |
 
 ### Order and dependencies
 
@@ -121,12 +121,27 @@ merge PR #4
 
 ## 5. Ready for feature development when
 
-- A write started by the user finishes or reports a failure; no test can produce disk and memory out of step.
-- The diagnostics report for a defect names the error and its frames and contains no name, path or note content.
-- A new feature adds a module folder per layer and touches only composition lines in shared files.
-- One entity lives in the vault as notes, with a versioned schema, and an external edit, a newer schema and an invalid note each have a passing e2e spec.
-- The view restores its route after a restart, and the reference vault meets B-NFR-04 in a test.
-- No demo code ships: no greeting, no file count.
+Checked on 2026-11-21 against `71e39c4`. "Met" means the code and a test in the repository show it; the end-to-end specs ran in the pull request that added them (PR #26 for the communities specs) and were not run again for this check.
+
+| Criterion | State | Evidence |
+| --- | --- | --- |
+| A write started by the user finishes or reports a failure; no test can produce disk and memory out of step. | Met | PR #6: `tests/unit/application/shell/settings-interruption.test.ts` (an interrupted update keeps disk and memory equal), the group *useCommand after the scope ended* in `tests/dom/presentation/shell/use-command.test.ts`. Note writes are uninterruptible too (PR #21): `tests/unit/application/notes/command.test.ts`. Open edge: the notice for a failed settings save after its view has closed says "Deine Eingabe ist erhalten", which is no longer true then. |
+| The diagnostics report for a defect names the error and its frames and contains no name, path or note content. | Met | PR #6: `tests/unit/application/shell/diagnostics.test.ts`, `diagnostics-leaks.test.ts` (property tests), `logged-error.test.ts`. |
+| A new feature adds a module folder per layer and touches only composition lines in shared files. | Met | PR #15 and the communities slice (PR #26): outside its own folders the slice changed the composing files listed in [adding a feature](../engineering/adding-a-feature.md), plus one capability for every feature (`check` in `src/domain/notes/codec.ts`). A planted cross-module import fails ESLint and fallow (see [architecture](../engineering/architecture.md#enforcement)). |
+| One entity lives in the vault as notes, with a versioned schema, and an external edit, a newer schema and an invalid note each have a passing e2e spec. | Met | Communities (PR #26): `docs/contracts/DV-01 - Gemeinschaft v1.md`; `tests/e2e/specs/communities-outside-edit.e2e.ts`, `communities-newer-schema.e2e.ts`, `communities-invalid.e2e.ts`, `communities-crud.e2e.ts`. |
+| The view restores its route after a restart, and the reference vault meets B-NFR-04 in a test. | Met | PR #22: `tests/e2e/specs/navigation.e2e.ts` (the view restored on its route after Obsidian restarts). PR #24 and PR #25: `scripts/reference-vault.mjs`, `tests/unit/application/notes/note-index-budget.test.ts`, `tests/e2e/specs/note-index.e2e.ts`. |
+| No demo code ships: no greeting, no file count. | Met | PR #26 deleted the greeting setting, the `show-greeting` command, the file count and the About dialog. An old `greeting` key in `data.json` is dropped without a notice (`tests/e2e/specs/language.e2e.ts`). Two icons of the demo remain in `SHELL_ICONS` (`lucide:info`, `lucide:refresh-cw`) and are unused. |
+
+### Not done
+
+- **Manual checks in a personal vault:** keyboard-only use, a screen reader, other themes, other plugins. No person has done them (the list is in [testing](../engineering/testing.md#manual-checks-in-obsidian)).
+- **`CI / e2e` as a required check.** It runs on every pull request but does not block. It is a repository setting of the owner ([github-setup](../engineering/github-setup.md)); PBI-58 criterion 5.
+- **The 0.2.0 pre-release** for those manual checks. It has not been tagged; `manifest.json` is 0.1.0.
+- **Open robustness items:**
+  - `VaultReady` has no fallback if a Markdown file is never indexed; it would hold the index back. No such file was seen.
+  - The known gap of PBI-52: an existing root folder whose name differs from the setting only in case (`weg manager/` for `WEG Manager/`) is not detected, and on Windows and macOS creating a note then fails as a write error.
+  - The storage-failure notice after a closed view (see the first criterion).
+- **Not part of this plan:** mobile (after the MVP), the other entities, and PBI-01 criteria 2 and 3, which need Punkte.
 
 ## 6. Owner decisions (2026-11-21)
 

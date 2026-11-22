@@ -21,7 +21,7 @@ import type { SettingsIssue } from "../../../../src/domain/shell/settings";
 const FORBIDDEN = ["Error", "stack", "/", "\\"];
 const CATALOGS = [de, en] as const;
 
-const GREETING: SettingsIssue = { code: "greeting.length", max: 200 };
+const ROOT_FOLDER: SettingsIssue = { code: "rootFolder.invalid", max: 100 };
 const LOG_LEVEL: SettingsIssue = { code: "logLevel.unknown", allowed: ["error", "warn"] };
 
 const expectPlain = (message: UserMessage, rawCause?: string) => {
@@ -63,11 +63,12 @@ describe.each(CATALOGS)("describeError ($language)", (messages) => {
   });
 
   it("lists every issue of invalid settings and offers no action", () => {
-    const error = new InvalidSettingsError({ issues: [GREETING, LOG_LEVEL] });
+    const other: SettingsIssue = { code: "schema.invalid" };
+    const error = new InvalidSettingsError({ issues: [other, LOG_LEVEL] });
     const message = describeError(error, messages);
     expectPlain(message);
     expect(message.detail).toBe(
-      `${describeIssue(GREETING, messages.shell)} ${describeIssue(LOG_LEVEL, messages.shell)}`,
+      `${describeIssue(other, messages.shell)} ${describeIssue(LOG_LEVEL, messages.shell)}`,
     );
     expect(message.action).toBeUndefined();
     expect(message.severity).toBe("warning");
@@ -81,8 +82,10 @@ describe.each(CATALOGS)("describeError ($language)", (messages) => {
 
   it("never leaks the cause text of any error", () => {
     expect.hasAssertions();
+    // Bracketed, so no catalog text can hold it by chance (a bare "rope" is in "properties").
+    const cause = string().map((text) => `⟦${text}⟧`);
     fcAssert(
-      property(string(), (text) => {
+      property(cause, (text) => {
         const errors: AppError[] = [
           new StorageError({ cause: new Error(text) }),
           new VaultReadError({ cause: new Error(text) }),
@@ -105,11 +108,13 @@ describe.each(CATALOGS)("describeError ($language)", (messages) => {
 /** The catalog is product copy: a change here is a deliberate wording change. */
 describe("message catalog texts", () => {
   it("has exact German texts for every expected failure", () => {
-    expect(describeError(new InvalidSettingsError({ issues: [GREETING, LOG_LEVEL] }), de)).toEqual({
+    expect(
+      describeError(new InvalidSettingsError({ issues: [ROOT_FOLDER, LOG_LEVEL] }), de),
+    ).toEqual({
       severity: "warning",
       title: "Eingabe ungültig",
       detail:
-        "Die Begrüßung muss 1 bis 200 Zeichen lang sein. Die Protokollstufe muss eine von error, warn sein.",
+        'Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?. Die Protokollstufe muss eine von error, warn sein.',
     });
     expect(describeError(new VaultReadError({ cause: null }), de)).toEqual({
       severity: "error",
@@ -153,19 +158,20 @@ describe("message catalog texts", () => {
         "The settings file can't be read. Default values apply and the file stays unchanged. Copy the diagnostics for support.",
       action: "copy-diagnostics",
     });
-    expect(describeError(new InvalidSettingsError({ issues: [GREETING] }), en)).toEqual({
+    expect(describeError(new InvalidSettingsError({ issues: [ROOT_FOLDER] }), en)).toEqual({
       severity: "warning",
       title: "Invalid input",
-      detail: "The greeting must be 1 to 200 characters long.",
+      detail:
+        'The root folder must be a vault folder path of at most 100 characters, with "/" between folder names, without "." or ".." as folder names and without the characters * " \\ < > : | ?.',
     });
   });
 
   it("explains partially reset settings with every issue", () => {
-    expect(describeSettingsIssues([GREETING, { code: "file.invalid" }], de.shell)).toEqual({
+    expect(describeSettingsIssues([ROOT_FOLDER, { code: "file.invalid" }], de.shell)).toEqual({
       severity: "warning",
       title: "Einstellungen teilweise zurückgesetzt",
       detail:
-        "Die Begrüßung muss 1 bis 200 Zeichen lang sein. Die Einstellungsdatei enthält keine gültigen Einstellungen. Für diese Werte gelten Standardwerte. Prüfe die Einstellungen.",
+        'Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens 100 Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne „.“ und „..“ als Ordnernamen und ohne die Zeichen * " \\ < > : | ?. Die Einstellungsdatei enthält keine gültigen Einstellungen. Für diese Werte gelten Standardwerte. Prüfe die Einstellungen.',
       action: "open-settings",
     });
     expect(describeSettingsIssues([{ code: "schema.invalid" }], en.shell)).toEqual({

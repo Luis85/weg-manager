@@ -31,36 +31,26 @@ afterEach(() => {
 });
 
 describe("plugin lifecycle", () => {
-  it("registers three commands, one view, one settings tab and one ribbon icon", async () => {
+  it("registers two commands, one view, one settings tab and one ribbon icon", async () => {
     const { registry, plugin } = await loaded();
-    expect(counts(registry)).toEqual({ commands: 3, views: 1, settingTabs: 1, ribbonIcons: 1 });
-    expect([...registry.commands.keys()].toSorted()).toEqual([
-      "copy-diagnostics",
-      "open-view",
-      "show-greeting",
-    ]);
+    expect(counts(registry)).toEqual({ commands: 2, views: 1, settingTabs: 1, ribbonIcons: 1 });
+    expect([...registry.commands.keys()].toSorted()).toEqual(["copy-diagnostics", "open-view"]);
     expect([...registry.views.keys()]).toEqual([SHELL_VIEW_TYPE]);
     for (const command of registry.commands.values()) expect(command.hotkeys).toBeUndefined();
     plugin.unload();
   });
 
-  it("shows the greeting", async () => {
-    const { registry, plugin } = await loaded({ data: { greeting: "Moin" } });
-    await registry.runCommand("show-greeting");
-    expect(noticeTexts()).toEqual([expect.stringContaining("Moin")]);
-    plugin.unload();
-  });
-
   it("reports a dying command with an incident id and stays usable", async () => {
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { registry, plugin } = await loaded({ data: { greeting: "Moin" } });
+    vi.stubGlobal("navigator", { clipboard: { writeText: () => Promise.resolve() } });
+    const { registry, plugin } = await loaded();
     failNextNotice();
-    await registry.runCommand("show-greeting");
+    await registry.runCommand("copy-diagnostics");
     expect(noticeTexts()).toEqual([expect.stringMatching(/Unerwarteter Fehler.*[0-9A-Z]{6}/s)]);
     expect(error).toHaveBeenCalledTimes(1);
     expect(error.mock.calls[0]?.[1]).toBe("defect.reported");
-    await registry.runCommand("show-greeting");
-    expect(noticeTexts().at(-1)).toContain("Moin");
+    await registry.runCommand("copy-diagnostics");
+    expect(noticeTexts().at(-1)).toContain("Diagnose kopiert");
     plugin.unload();
   });
 
@@ -126,7 +116,7 @@ describe("plugin lifecycle", () => {
 
   it("loads read-only with one notice when data.json is unreadable", async () => {
     const { registry, plugin } = await loaded({ failLoadData: true });
-    expect(registry.commands.size).toBe(3);
+    expect(registry.commands.size).toBe(2);
     expect(noticeTexts()).toEqual([expect.stringContaining("schreibgeschützt")]);
     plugin.unload();
   });
@@ -176,7 +166,7 @@ describe("bootstrap handle", () => {
     const first = await bootstrap(plugin);
     const second = await bootstrap(plugin);
     await first.dispose();
-    expect(registry.commands.size).toBe(3);
+    expect(registry.commands.size).toBe(2);
     expect(registry.ribbonIcons).toHaveLength(1);
     await second.dispose();
   });

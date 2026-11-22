@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import { afterEach, describe, expect, it } from "vitest";
 import { VaultReadError } from "../../../../src/application/shell/errors";
 import { SettingsService } from "../../../../src/application/shell/settings-service";
-import { countMarkdownFiles, updateGreeting } from "../../../../src/application/shell/use-cases";
+import { setLogLevel } from "../../../../src/application/shell/use-cases";
 import { encodeSettings } from "../../../../src/domain/shell";
 import { useCommand } from "../../../../src/presentation/shell";
 import { host, runtimes } from "../../../support/composable";
@@ -22,14 +22,15 @@ const settle = async () => {
 const defects = (logger: { entries(): readonly { event: string }[] }) =>
   logger.entries().filter((entry) => entry.event === "defect.reported");
 
-/** A command whose effect waits for the vault, then records that it ran to its end. */
-const counting = (counted: number[]) => () =>
-  Effect.tap(countMarkdownFiles, (count) => Effect.sync(() => counted.push(count)));
+/** A command whose effect waits for the source, then records that it ran to its end. */
+const counting =
+  (source: { readonly read: Effect.Effect<number, VaultReadError> }, counted: number[]) => () =>
+    Effect.tap(source.read, (count) => Effect.sync(() => counted.push(count)));
 
 describe("useCommand while the scope is alive", () => {
   it("stores a success value and clears pending", async () => {
-    const { runtime } = make();
-    const { exposed } = host(runtime, () => useCommand(() => countMarkdownFiles));
+    const { runtime, source } = make();
+    const { exposed } = host(runtime, () => useCommand(() => source.read));
     const running = exposed.run();
     expect(exposed.pending.value).toBe(true);
     await running;
@@ -74,11 +75,11 @@ describe("useCommand while the scope is alive", () => {
   });
 
   it("clears the previous failure when it runs again", async () => {
-    const { runtime, vault } = make({ vault: "fail" });
-    const { exposed } = host(runtime, () => useCommand(() => countMarkdownFiles));
+    const { runtime, source } = make({ source: "fail" });
+    const { exposed } = host(runtime, () => useCommand(() => source.read));
     await exposed.run();
     expect(exposed.error.value?._tag).toBe("VaultReadError");
-    vault.set(5);
+    source.set(5);
     await exposed.run();
     expect(exposed.error.value).toBeUndefined();
     expect(exposed.message.value).toBeUndefined();
@@ -86,8 +87,8 @@ describe("useCommand while the scope is alive", () => {
   });
 
   it("treats a disposed runtime as a defect it cannot report, without rejecting", async () => {
-    const { runtime } = make();
-    const { exposed } = host(runtime, () => useCommand(() => countMarkdownFiles));
+    const { runtime, source } = make();
+    const { exposed } = host(runtime, () => useCommand(() => source.read));
     await runtime.dispose();
     await expect(exposed.run()).resolves.toBeUndefined();
     expect(exposed.error.value).toBeUndefined();
@@ -96,15 +97,15 @@ describe("useCommand while the scope is alive", () => {
 
 describe("useCommand runs once per pending call", () => {
   it("returns the pending run's promise for a second run and starts nothing new", async () => {
-    const { runtime, vault } = make();
-    vault.hold();
+    const { runtime, source } = make();
+    source.hold();
     const counted: number[] = [];
-    const { exposed } = host(runtime, () => useCommand(counting(counted)));
+    const { exposed } = host(runtime, () => useCommand(counting(source, counted)));
     const first = exposed.run();
     await flushPromises();
     const second = exposed.run();
     expect(second).toBe(first);
-    vault.release();
+    source.release();
     await first;
     await settle();
     expect(counted).toEqual([3]);
@@ -115,21 +116,21 @@ describe("useCommand runs once per pending call", () => {
   it("ignores the arguments of a run made while one is pending", async () => {
     const { runtime, store } = make({ store: { uncancellableSaves: true } });
     store.holdSaves();
-    const { exposed } = host(runtime, () => useCommand(updateGreeting));
-    const first = exposed.run("Eins");
+    const { exposed } = host(runtime, () => useCommand(setLogLevel));
+    const first = exposed.run("debug");
     await settle();
-    void exposed.run("Zwei");
+    void exposed.run("error");
     store.releaseSaves();
     await first;
     await settle();
-    expect(store.saved()).toEqual([expect.objectContaining({ greeting: "Eins" })]);
-    expect(exposed.value.value?.greeting).toBe("Eins");
+    expect(store.saved()).toEqual([expect.objectContaining({ logLevel: "debug" })]);
+    expect(exposed.value.value?.logLevel).toBe("debug");
   });
 
   it("starts a new execution once the previous one settled", async () => {
-    const { runtime } = make();
+    const { runtime, source } = make();
     const counted: number[] = [];
-    const { exposed } = host(runtime, () => useCommand(counting(counted)));
+    const { exposed } = host(runtime, () => useCommand(counting(source, counted)));
     await exposed.run();
     await exposed.run();
     expect(counted).toEqual([3, 3]);
@@ -138,14 +139,14 @@ describe("useCommand runs once per pending call", () => {
 
 describe("useCommand after the scope ended", () => {
   it("runs to completion silently and leaves the component's refs alone", async () => {
-    const { runtime, vault, notifier, logger } = make();
-    vault.hold();
+    const { runtime, source, notifier, logger } = make();
+    source.hold();
     const counted: number[] = [];
-    const { wrapper, exposed } = host(runtime, () => useCommand(counting(counted)));
+    const { wrapper, exposed } = host(runtime, () => useCommand(counting(source, counted)));
     const running = exposed.run();
     await flushPromises();
     wrapper.unmount();
-    vault.release();
+    source.release();
     await running;
     await settle();
     expect(counted).toEqual([3]);
@@ -155,17 +156,17 @@ describe("useCommand after the scope ended", () => {
     expect(defects(logger)).toEqual([]);
   });
 
-  it("saves the greeting into the store and the service alike", async () => {
+  it("saves the setting into the store and the service alike", async () => {
     const { runtime, store } = make({ store: { uncancellableSaves: true } });
     store.holdSaves();
-    const { wrapper, exposed } = host(runtime, () => useCommand(updateGreeting));
-    const running = exposed.run("Moin");
+    const { wrapper, exposed } = host(runtime, () => useCommand(setLogLevel));
+    const running = exposed.run("info");
     await settle();
     wrapper.unmount();
     store.releaseSaves();
     await running;
     await settle();
-    expect(store.stored()).toEqual(expect.objectContaining({ greeting: "Moin" }));
+    expect(store.stored()).toEqual(expect.objectContaining({ logLevel: "info" }));
     const current = await runtime.runPromise(SettingsService.use((service) => service.current));
     expect(encodeSettings(current)).toEqual(store.stored());
   });
@@ -174,8 +175,8 @@ describe("useCommand after the scope ended", () => {
     const { runtime, store, notifier } = make({ store: { uncancellableSaves: true } });
     store.holdSaves();
     store.setFailSave(true);
-    const { wrapper, exposed } = host(runtime, () => useCommand(updateGreeting));
-    const running = exposed.run("Moin");
+    const { wrapper, exposed } = host(runtime, () => useCommand(setLogLevel));
+    const running = exposed.run("info");
     await settle();
     wrapper.unmount();
     store.releaseSaves();
@@ -196,15 +197,15 @@ describe("useCommand after the scope ended", () => {
   });
 
   it("reports a defect exactly once", async () => {
-    const { runtime, vault, notifier, logger } = make();
-    vault.hold();
+    const { runtime, source, notifier, logger } = make();
+    source.hold();
     const { wrapper, exposed } = host(runtime, () =>
-      useCommand(() => Effect.andThen(countMarkdownFiles, Effect.die(new Error("late")))),
+      useCommand(() => Effect.andThen(source.read, Effect.die(new Error("late")))),
     );
     const running = exposed.run();
     await flushPromises();
     wrapper.unmount();
-    vault.release();
+    source.release();
     await running;
     await settle();
     expect(defects(logger)).toHaveLength(1);
@@ -213,9 +214,9 @@ describe("useCommand after the scope ended", () => {
   });
 
   it("stays silent when the runtime is disposed meanwhile", async () => {
-    const { runtime, vault, notifier, logger } = make();
-    vault.hold();
-    const { wrapper, exposed } = host(runtime, () => useCommand(() => countMarkdownFiles));
+    const { runtime, source, notifier, logger } = make();
+    source.hold();
+    const { wrapper, exposed } = host(runtime, () => useCommand(() => source.read));
     const running = exposed.run();
     await flushPromises();
     wrapper.unmount();

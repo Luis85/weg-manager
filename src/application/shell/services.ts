@@ -7,7 +7,6 @@ import type {
   Logger,
   Messages,
   Notifier,
-  VaultReader,
 } from "./ports";
 import type { SettingsService } from "./settings-service";
 
@@ -15,7 +14,6 @@ import type { SettingsService } from "./settings-service";
 export type ShellServices =
   | SettingsService
   | Notifier
-  | VaultReader
   | Logger
   | Incidents
   | Clipboard

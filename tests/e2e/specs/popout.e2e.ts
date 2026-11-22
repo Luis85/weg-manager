@@ -53,11 +53,24 @@ describe("view in a pop-out window", function () {
 
     await browser.switchToWindow(await popoutHandle(main));
     const root = browser.$(ROOT);
-    await expect(root.$("[data-testid=greeting]")).toHaveText("Hallo von WEG Manager");
-    await root.$("button=Über").click();
-    await expect(root.$("[data-testid=about-body]")).toBeDisplayed();
+    await expect(root.$("[data-testid=communities-screen] h2")).toHaveText("Gemeinschaften");
+    await root.$("[data-testid=community-add]").click();
+    await expect(root.$("[data-testid=community-form]")).toBeDisplayed();
+    const dialog = await browser.executeObsidian(({ app }, type) => {
+      const view = app.workspace.getLeavesOfType(type)[0]?.view;
+      const doc = view?.containerEl.ownerDocument;
+      const form = doc?.querySelector("[data-testid=community-form]");
+      return {
+        inPopout: form !== null && form !== undefined,
+        inPortal: form?.closest(".weg-manager-portal") != null,
+        inMain:
+          app.workspace.containerEl.ownerDocument.querySelector("[data-testid=community-form]") !==
+          null,
+      };
+    }, VIEW_TYPE);
+    expect(dialog).toEqual({ inPopout: true, inPortal: true, inMain: false });
     await browser.keys("Escape");
-    await expect(root.$("[data-testid=about-body]")).not.toExist();
+    await expect(root.$("[data-testid=community-form]")).not.toExist();
 
     await setColorScheme("dark");
     await expect(root).toHaveElementClass("dark");

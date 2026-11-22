@@ -49,6 +49,17 @@ Coverage (`npm run test:coverage`) applies to `src/**` and enforces lines 90, st
 - `tests/support/adapters.ts` provides `testAdapters(options)`: an in-memory adapter for every field of `AppAdapters` (the settings store, recording notifier and clipboard, `testHostInfo`, an in-memory device store seeded by `device`, sequential incidents, a recording log sink, the in-memory `NoteStore` and its `NoteOpener`, a sequential id generator, and no host event adapter unless `hostEvents` is given), with handles to them. A new port adds its in-memory adapter here, once.
 - `tests/support/runtime.ts` provides `testRuntime(options)`: a full `AppRuntime` built as the plugin builds it, `appServicesLayer` over `testAdapters`, with the handles `store`, `notifier`, `clipboard`, `logger` (what the log sink received: the logger runs in development mode, so every level), `notes` (the in-memory `NoteStore`) and `source` (see above). The index holds the plugin's types (`appNoteTypes`) and any extra `noteTypes`; `vaultReady()` publishes `LayoutReady` and `VaultReady`, so the first build runs. Use `language: "en"` for the English catalog (German by default). Hand-built Layers in unit tests add `testMessages` (German) from `tests/support/layers.ts`.
 - **Communities.** The screen's dom specs are split by concern in `tests/dom/presentation/communities/`: `screen`, `create`, `edit`, `delete`, `switch` (the radio group, arrow keys, delayed loading) and `focus` (modality, initial focus, the focus after a sheet or dialog, the failed-submit summary). They read texts from the typed catalog (`de.communities…`), so a wording change touches one place; `language.e2e.ts` and a few e2e specs keep literal German. `tests/support/communities/fixture.ts` builds the module over the index fixture (community type only), a sequential id generator and an in-memory device store that counts writes; its specs run under `TestClock`, `ready` builds the index, `indexed` lets it read one batch. `tests/support/communities/screen.ts` mounts the app on the community settings over the in-memory store (`openCommunities`) with handles to query, type, click and wait for the index (`until`), and `fill`/`save` for the form.
+- `tests/support/wait.ts` provides `eventually(check)`, `vi.waitFor` with an explicit 4 s budget; `tests/support/preload.ts` provides `preloadSurface()`. See [Waiting and timing](#waiting-and-timing).
+
+## Waiting and timing
+
+The unit and dom projects run on loaded machines: the gate beside another suite, Stryker with several runners, CI. A test that holds on an idle laptop must not fail there.
+
+- **No wall-clock assertion.** A bound on elapsed time, and above all a ratio of two times, fails on a slow machine for no reason in the code. Assert counted work instead: reads of the `NoteStore`, decodes of notes (`note-index-budget.test.ts` counts both: a build decodes each record once, a rebuild decodes nothing unchanged, one edit costs one read and one decode). Time belongs to the e2e specs, which record it in `reports/e2e/`.
+- **Waits use `eventually`**, never a bare `vi.waitFor`, whose default budget is 1 s. A wait that succeeds returns at once, so the 4 s budget costs nothing; it stays under the 5 s test timeout, so a wait that never succeeds fails with its own assertion. The poll interval is 10 ms.
+- **Wait on a condition, not on a guess.** Prefer a handle that settles (`tab.pending` on the settings tab double) or a count that proves the work ran (`event-listeners.test.ts` waits until the first runtime's finalizer has called `offref` again) over `setTimeout(n)`. A timer is acceptable only to prove that nothing happens (`icons-offline.test.ts`: no request after Iconify's batch timer).
+- **Preload what a view imports.** The first mount of a surface imports Vue, Nuxt UI and, through `appSurface`, the whole communities module: a few hundred milliseconds of transform and evaluation, seconds on a loaded machine, and the first test of a file used to pay it inside its own timeout (this was the cause of "starts on the community settings" timing out its 1 s wait twice). A file that opens a view awaits `preloadSurface()` once at its top. `lazy-presentation.test.ts` is the one file that must not: it proves nothing of this loads before a view opens.
+- **fast-check runs with random seeds**, on purpose: each run explores new inputs. A failure prints its seed and path (`Property failed after 13 tests { seed: -729116352, path: "12:1:0:…" }`, then the shrunk counterexample), and with `CI=1` the same text lands in `reports/junit.xml`. Every property here calls fast-check's own `assert`, which does not swallow it; keep it that way, and never catch around an `assert(property(…))`. To replay a failure, pass both values as the second argument to that `assert`, `assert(property(…), { seed: -729116352, path: "12:1:0:…" })`: it runs only the failing case. Fix the cause, then remove the two options, and keep the counterexample as an `examples` entry or a plain test if it is worth keeping.
 
 ## Lint
 
@@ -67,6 +78,38 @@ Each was proven with a planted violation before it was turned on (no finding) an
 - Thresholds: break 75, low 80, high 90. Never lower them.
 - A `// Stryker disable` comment needs its reason on the same line.
 - Reports land in `reports/mutation/`. The nightly GitHub workflow runs `npm run test:mutation` against the cached `reports/stryker-incremental.json`, so only mutants whose code or tests changed run again; started by hand with `full` it re-runs every mutant. A failed night opens or updates the issue "Nightly mutation run failed".
+- **An incremental run does not re-test a survivor against a new test.** After adding tests to kill a survivor, run with `--force` (`full` in the workflow); the edge run's survivors for `SHELL_VIEW_TYPE` and the nav icon stayed "Survived" in an incremental run although a hand-planted copy of each failed the new tests.
+- A timed-out mutant counts as killed. On a loaded machine a slow test turns survivors into timeouts, so read the "timed out" count beside the score.
+
+### The edge layers
+
+`npm run test:mutation:edge` (`configs/stryker.edge.config.mjs`, with `configs/vitest.stryker.edge.config.ts` for the unit and dom projects) mutates what the gated run skips: `src/infrastructure/obsidian/**`, `src/infrastructure/memory/**`, `src/presentation/**/*.ts` (not the `.vue` files) and `src/bootstrap.ts`.
+
+- **Informational.** No `break` threshold, and not part of `verify`, `verify:full` or the pre-push hook: the score is read, never enforced. Its cache is `reports/stryker-edge-incremental.json`, its report `reports/mutation-edge/`. Both configs use the `.stryker-tmp` folder, so do not run them in one checkout at the same time.
+- **Cost.** 40 files and about 990 mutants; a full run took 25 to 41 minutes on four cores (two test runners, two checkers; the longer one with another suite running), because the dom tests are slower than the unit tests of the inner layers. One file: `npx stryker run configs/stryker.edge.config.mjs --mutate "src/infrastructure/obsidian/shell/settings-mirror.ts"` (`--force` ignores the cache).
+- **A survivor is a lead, not a verdict.** Plant the mutation by hand (edit the line, run `npx vitest run`) before writing a test: an incremental run can report a survivor that a test already kills, and some survivors are equivalent (the result is the same, only the cost differs). Write a test only where nothing fails, and state behaviour in it: "a closed surface unmounts its Vue app and removes its scope class", not "calls `releases.push`".
+- **Score.** 94.81 % (506 killed, 6 timed out, 26 survived, 2 without coverage) after the tests of 2026-11-22; 85.37 % before them on the same code (the reviewer's earlier run: 82.75 %). Per file, before to after: `bootstrap.ts` 74.5 to 93.6, `settings-mirror.ts` 0 to 85.7, `layers.ts` 37.5 to 100, `notices.ts` 71.4 to 100, `open-route.ts` 81.3 to 93.8, `settings-tab.ts` 81.3 to 100, `mount.ts` 83.9 to 100, `navigation.ts` 83.3 to 100, `theme.ts` 81.8 to 100, `app-surface.ts` 66.7 to 100, `shell-view.ts` 93.8 to 100, `memory-note-store.ts` 87 to 91. The survivors that remain, with the reason for each, are below.
+- **Nightly.** The job `mutation-edge` in `nightly-mutation.yml` runs it (cache and report as in the gated job, `full` forces every mutant); `report-failure` also covers it.
+
+Survivors left on 2026-11-22, each planted by hand or read in the code, and why none gets a test:
+
+| Where | Mutation | Why it stays |
+| --- | --- | --- |
+| `bootstrap.ts` | `undo.push(() => mirror.stop())` emptied | `runtime.dispose()` ends the mirror's fiber anyway, so nothing observable differs; `stop` itself is pinned in `settings-mirror.test.ts` |
+| `bootstrap.ts` | `surfaces.clear()` removed | The set is garbage once the load is disposed, and every close is idempotent |
+| `bootstrap.ts` | `padEnd(6, "")` | Differs only for a random string shorter than six characters |
+| `settings-mirror.ts` | `discard: false` | `Effect.all` then returns an array nobody reads |
+| `open-route.ts` | `route === undefined` false | `state: { route: undefined }` decodes to the start route, as no state does |
+| `icons-offline.ts` | `{ status: 404 }` emptied | No test sees the answer's status: `icons-offline.test.ts` only sees that no request leaves and that the placeholder stays empty. Not investigated further |
+| `cache-completeness.ts` (3) | the resume shortcut (`settled`, `next += 1`, the early return) | They only save lookups; the answer is the same, because the rescan finds the same files. A test would pin a lookup count |
+| `note-store.ts` (Obsidian) 57, 59, 74 | root-folder branches, the `?? []` filler | `vault.getRoot()` is `getFolderByPath("/")`, and a placeholder name cannot clash; the root cases are in the contract (`contract-clashes.ts`) |
+| `note-store.ts` 39 | `find` for any section, not the `yaml` one | The double models no other section; the e2e spec `note-store.e2e.ts` runs it against real sections |
+| `note-store.ts` 100, 105 | the deleted-meanwhile test, the "did not call back" defect | Not investigated: they need a `vault.process` failure that the double cannot inject (the double's own write failures are ENOENT or the callback's throw); the e2e spec is the place |
+| `memory-note-store.ts` 43, 44 | `ancestors("/")` | The phantom folders are not reachable through the port |
+| `memory-note-store.ts` 54, 56 | extension of a name without a dot, or of a folder with one | A file without an extension is no note |
+| `memory-note-store.ts` 99 | `siblingsOf` unfiltered | Callers compare whole paths, so extra paths change nothing |
+| `memory-note-store.ts` 177 | rename onto the same path written again | No test sees a difference; at most the write would publish its events again. Not investigated further |
+| `normalize-path.ts` (2) | `^\/+` or `\/+$` as one slash | The step before already collapses runs of slashes |
 
 ## Browser harness
 

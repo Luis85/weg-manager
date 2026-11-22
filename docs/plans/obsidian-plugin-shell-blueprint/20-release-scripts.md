@@ -20,7 +20,7 @@ Create: `scripts/version-bump.mjs`, `scripts/package-release.mjs`, `scripts/bund
 
 - `npm run notices` then `git diff --exit-code THIRD-PARTY-NOTICES.txt` exits 0 on a second run (deterministic).
 - `npm run build && npm run release:package` writes `release/<plugin-id>/` with exactly three files and `release/THIRD-PARTY-NOTICES.txt`.
-- `npm run build -- --mode development && npm run release:package` exits non-zero: a development build fails `check:dist` (on the `main.js` budget: about 9.5 MB unminified with an inline sourcemap). Run `npm run build` afterwards to restore `dist/`.
+- `npm run build -- --mode development && npm run release:package` exits non-zero: a development build fails `check:dist` (on the `main.js` budget: an unminified build with an inline sourcemap is far larger than 1.5 MB; reported: about 9.5 MB). Run `npm run build` afterwards to restore `dist/`.
 
 ## Done when
 

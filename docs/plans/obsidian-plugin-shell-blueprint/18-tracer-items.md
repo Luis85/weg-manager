@@ -50,10 +50,12 @@ Domain (create): `src/domain/items/{item-type,rules,index}.ts`. Application: cre
 
 ## Without note data
 
+**Untested proposal.** The project this plan was drawn from always had note data, so this variant has not been built or run. If a step does not hold, build the missing piece with its own test first and say so in the commit message.
+
 Keep steps 0 (glossary and the data contract of the plugin's own store), 3, 4, 5 and 6 with the plugin's own source of data in place of `NoteStore`: one port with an in-memory and a host adapter and a contract suite on both (as Task 13 does), a use case per write run as a command, a routed view that follows a stream, and an e2e spec for an outside change. The manifest, screens, catalogs and the gate are the same.
 
 ## Done when
 
 `npm run verify` and `xvfb-run -a npm run test:e2e` exit 0 (mutation testing of the module follows in Task 19); a planted cross-feature import into `notes` (`src/application/notes/_p.ts` importing `../items`) fails ESLint and fallow. Commit `feat: tracer record type items`.
 
-Untested proposal: the `item` type itself. Every step follows a record feature that has been built on this kit with other fields; `status` as a text with value codes and titles unique by `clashKey` are new. If the record kit does not carry one of them as written (a value-code field needs more than `text` with `Schema.Literals`), add the missing piece to `notes` with its own test first, so the next feature finds it there.
+Untested proposal: the whole example feature (the `item` type, its rules, manifest, screens, harness scenarios and e2e specs, with the sizes and timings you measure on it). Every step follows a record feature that was built on this kit with other fields; `status` as a text with value codes and titles unique by `clashKey` are new. If the record kit does not carry one of them as written (a value-code field needs more than `text` with `Schema.Literals`), add the missing piece to `notes` with its own test first, so the next feature finds it there.

@@ -2,7 +2,7 @@
 
 Phase A. Needs: Task 00.
 
-**Goal.** One pinned version per package, proven to work together by small probes, written down in ADR 0001 with every fallback and its blocker. Peer ranges allowed every pair below on 2026-11-22, yet two of the pairs still failed, so a probe checks behaviour, not metadata.
+**Goal.** One pinned version per package, proven to work together by small probes, written down in ADR 0001 with every fallback and its blocker. A peer range says what a package declares, not what works, so a probe checks behaviour, not metadata.
 
 ## Files
 

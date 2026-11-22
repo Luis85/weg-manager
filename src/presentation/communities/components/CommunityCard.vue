@@ -7,9 +7,9 @@ import {
   shownName,
   type Community,
 } from "../../../application/communities";
+import { OpenNoteButton } from "../../notes";
 import { useMessages } from "../../shell";
 import CommunityBadge from "./CommunityBadge.vue";
-import OpenNoteButton from "./OpenNoteButton.vue";
 
 /**
  * One community in the list (VIEW-07): badge, name, kind and unit label, and its issues as text. An
@@ -46,6 +46,7 @@ const issues = computed(() =>
       <h3
         class="wm:text-base wm:font-semibold wm:wrap-break-word wm:hyphens-auto"
         tabindex="-1"
+        data-focus="name"
         data-testid="community-name"
       >
         {{ name }}
@@ -91,6 +92,7 @@ const issues = computed(() =>
         icon="i-lucide-pencil"
         :label="t.screen.edit"
         :aria-label="t.screen.editLabel(name)"
+        data-focus="edit"
         data-testid="community-edit"
         @click="emit('edit')"
       />
@@ -102,6 +104,7 @@ const issues = computed(() =>
         icon="i-lucide-trash-2"
         :label="t.screen.remove"
         :aria-label="t.screen.removeLabel(name)"
+        data-focus="remove"
         data-testid="community-remove"
         @click="emit('remove')"
       />

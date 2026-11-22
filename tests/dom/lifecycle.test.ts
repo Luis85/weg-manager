@@ -1,11 +1,13 @@
 import { Effect } from "effect";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { preloadSurface } from "../support/preload";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
 const { createTestPlugin, failNextNotice, recordedNotices } = await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../src/main");
 const { bootstrap, SHELL_VIEW_TYPE } = await import("../../src/bootstrap");
+await preloadSurface();
 
 type Registry = ReturnType<typeof createTestPlugin>["registry"];
 
@@ -36,6 +38,8 @@ describe("plugin lifecycle", () => {
     expect(counts(registry)).toEqual({ commands: 2, views: 1, settingTabs: 1, ribbonIcons: 1 });
     expect([...registry.commands.keys()].toSorted()).toEqual(["copy-diagnostics", "open-view"]);
     expect([...registry.views.keys()]).toEqual([SHELL_VIEW_TYPE]);
+    // Obsidian saves this id in workspace.json, so a rename would orphan every saved tab.
+    expect(SHELL_VIEW_TYPE).toBe("weg-manager-view");
     for (const command of registry.commands.values()) expect(command.hotkeys).toBeUndefined();
     plugin.unload();
   });

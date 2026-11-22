@@ -1,7 +1,7 @@
 import { assert } from "@effect/vitest";
 import { Effect, Fiber, type Layer } from "effect";
-import { vi } from "vitest";
 import { NoteStore, type Frontmatter } from "../../../src/application/notes";
+import { eventually } from "../wait";
 
 /** One adapter under test, with the handles the contract needs to look behind the port. */
 export type NoteStoreFixture = {
@@ -41,7 +41,7 @@ export const interruptWhileHeld = <A, E>(fixture: NoteStoreFixture, write: Effec
     fixture.holdWrites();
     const fiber = yield* Effect.forkChild(write);
     yield* promise(() =>
-      vi.waitFor(() => {
+      eventually(() => {
         if (fixture.heldWrites() !== 1) throw new Error("the write is not waiting yet");
       }),
     );

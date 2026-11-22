@@ -1,7 +1,5 @@
 import { Context, Effect, Layer, PubSub, Stream, type Scope } from "effect";
-import type { AppEvent, AppEventTag } from "../events";
-
-type EventOf<Tag extends AppEventTag> = Extract<AppEvent, { readonly _tag: Tag }>;
+import type { AppEvent } from "../events";
 
 /**
  * The plugin's one event bus. Host adapters and use cases publish `AppEvent`s; features subscribe.
@@ -13,14 +11,9 @@ export class EventBus extends Context.Service<
   EventBus,
   {
     publish(event: AppEvent): Effect.Effect<void>;
-    /** Every event from the moment the stream starts running. */
-    readonly events: Stream.Stream<AppEvent>;
-    /** `events`, narrowed to one member of the union. */
-    on<Tag extends AppEventTag>(tag: Tag): Stream.Stream<EventOf<Tag>>;
     /**
-     * Subscribes now and returns the stream of every later event. Use it when the consumer is
-     * forked: a forked `events` stream subscribes only once its fiber runs and can miss what is
-     * published in between.
+     * Subscribes now and returns the stream of every later event, so a consumer that is forked
+     * afterwards misses nothing published in between.
      */
     readonly subscribe: Effect.Effect<Stream.Stream<AppEvent>, never, Scope.Scope>;
   }
@@ -37,12 +30,8 @@ export const EventBusLive = Layer.effect(
   EventBus,
   Effect.gen(function* () {
     const pubsub = yield* Effect.acquireRelease(PubSub.unbounded<AppEvent>(), PubSub.shutdown);
-    const events = Stream.fromPubSub(pubsub);
     return EventBus.of({
       publish: (event) => Effect.asVoid(PubSub.publish(pubsub, event)),
-      events,
-      on: <Tag extends AppEventTag>(tag: Tag) =>
-        Stream.filter(events, (event): event is EventOf<Tag> => event._tag === tag),
       subscribe: Effect.map(PubSub.subscribe(pubsub), Stream.fromSubscription),
     });
   }),

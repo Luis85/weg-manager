@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { eventually } from "../support/wait";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -14,7 +15,7 @@ const listeners = (app: TestApp) => ({
 });
 
 const NONE = { vault: 0, metadataCache: 0, workspace: 0 };
-const ONE_LOAD = { vault: 4, metadataCache: 2, workspace: 2 };
+const ONE_LOAD = { vault: 4, metadataCache: 2, workspace: 0 };
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -29,7 +30,7 @@ describe("host event listeners across the plugin lifecycle", () => {
       await registry.load();
       expect(listeners(app)).toEqual(ONE_LOAD);
       plugin.unload();
-      await vi.waitFor(() => expect(listeners(app)).toEqual(NONE));
+      expect(listeners(app)).toEqual(NONE);
     };
     await cycle();
     await cycle();
@@ -44,13 +45,20 @@ describe("host event listeners across the plugin lifecycle", () => {
 
   it("survive the old runtime's late dispose after a quick re-enable", async () => {
     const app = new App();
+    const releases = [app.vault, app.metadataCache, app.workspace].map((events) =>
+      vi.spyOn(events, "offref"),
+    );
+    const released = () => releases.reduce((total, spy) => total + spy.mock.calls.length, 0);
     const first = createTestPlugin(WegManagerPlugin, { app });
     await first.registry.load();
     first.plugin.unload();
+    // Unload released each of the first load's refs once; the runtime's own finalizer, which runs
+    // later and asynchronously, releases each of them again. Wait for that second round.
+    const afterUnload = released();
+    expect(afterUnload).toBe(ONE_LOAD.vault + ONE_LOAD.metadataCache + ONE_LOAD.workspace);
     const second = createTestPlugin(WegManagerPlugin, { app });
     await second.registry.load();
-    // The first runtime's finalizer calls offref on refs that unload already removed.
-    await new Promise((resolve) => setTimeout(resolve, 20));
+    await eventually(() => expect(released()).toBe(2 * afterUnload));
     expect(listeners(app)).toEqual(ONE_LOAD);
     second.plugin.unload();
     expect(listeners(app)).toEqual(NONE);
@@ -63,7 +71,7 @@ describe("host event listeners across the plugin lifecycle", () => {
     plugin.unload();
     registry.releaseLoadData();
     await loading;
-    await vi.waitFor(() => expect(listeners(app)).toEqual(NONE));
+    expect(listeners(app)).toEqual(NONE);
   });
 
   it("are all removed when bootstrap fails, without unloading the plugin", async () => {

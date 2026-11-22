@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { appSurface } from "../../../../src/presentation/app-surface";
 import { SCOPE_CLASS } from "../../../../src/presentation/shell/scope";
 import { testRuntime } from "../../../support/runtime";
+import { eventually } from "../../../support/wait";
+import { preloadSurface } from "../../../support/preload";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -10,6 +12,7 @@ const { App, createTestPlugin, WorkspaceLeaf } = await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../../../src/main");
 const { bootstrap, SHELL_VIEW_TYPE } = await import("../../../../src/bootstrap");
 const { ShellView } = await import("../../../../src/infrastructure/obsidian/shell/shell-view");
+await preloadSurface();
 
 const settle = async () => {
   await flushPromises();
@@ -75,7 +78,7 @@ describe("ShellView", () => {
     const leaf = app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)[0];
     const view = leaf?.view as InstanceType<typeof ShellView> | undefined;
     expect(view?.contentEl.classList.contains(SCOPE_CLASS)).toBe(true);
-    await vi.waitFor(() => expect(view?.contentEl.textContent).toContain("Beirat/Gemeinschaften"));
+    await eventually(() => expect(view?.contentEl.textContent).toContain("Beirat/Gemeinschaften"));
     const children = view?.contentEl.children.length;
     await view?.onOpen();
     expect(view?.contentEl.children.length).toBe(children);
@@ -99,7 +102,7 @@ describe("ShellView", () => {
   it("opens from the ribbon icon", async () => {
     const { app, plugin, registry } = await loaded();
     registry.ribbonIcons[0]?.el.click();
-    await vi.waitFor(() => expect(shellLeaves(app)).toHaveLength(1));
+    await eventually(() => expect(shellLeaves(app)).toHaveLength(1));
     plugin.unload();
   });
 
@@ -134,7 +137,7 @@ describe("ShellView", () => {
     view.contentEl.append(document.createElement("p"));
     await view.onOpen();
     expect(view.contentEl.querySelector("p")).toBeNull();
-    await vi.waitFor(() => expect(view.contentEl.textContent).toContain("Beirat/Gemeinschaften"));
+    await eventually(() => expect(view.contentEl.textContent).toContain("Beirat/Gemeinschaften"));
     await view.onClose();
     await runtime.dispose();
   });

@@ -36,7 +36,8 @@ const probeRoute = () =>
     return leaf?.getViewState().state?.["route"];
   }, VIEW_TYPE);
 
-const control = (label: string) => browser.$(`${PROBE} ${ROOT} nav button[aria-label="${label}"]`);
+const control = (label: string) =>
+  browser.$(`${PROBE} ${ROOT} [data-testid=frame-navigation] button[aria-label="${label}"]`);
 
 /** ADR 0008 and its amendment: a fixed tab with its own history; Obsidian keeps the route. */
 describe("navigation and view state in Obsidian", function () {
@@ -48,9 +49,9 @@ describe("navigation and view state in Obsidian", function () {
       type: VIEW_TYPE,
       state: { route: COMMUNITIES },
     });
-    await expect(browser.$(ROOT).$("nav li button[aria-current=page]")).toHaveText(
-      "Gemeinschaften",
-    );
+    await expect(
+      browser.$(ROOT).$("[data-testid=frame-navigation] li button[aria-current=page]"),
+    ).toHaveText("Einstellungen");
     // No step yet, so the frame shows no history controls.
     await expect(browser.$(ROOT).$("[data-testid=frame-history]")).not.toExist();
   });
@@ -149,7 +150,7 @@ describe("navigation and view state in Obsidian", function () {
     await expect(root.$("[data-testid=communities-screen]")).toBeDisplayed();
     await expect(root.$("[data-testid=frame-history]")).not.toExist();
 
-    await root.$("nav").$("button=Probe").click();
+    await root.$("[data-testid=frame-navigation]").$("button=Probe").click();
     await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
     await root.$("[data-testid=not-found] button").click();
     await expect(root.$("[data-testid=communities-screen]")).toBeDisplayed();

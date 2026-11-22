@@ -119,7 +119,14 @@ describe("surface texts", () => {
 
   it("words the app frame and the not-found state", () => {
     expect([de.shell.frame, de.shell.notFound]).toEqual([
-      { navigation: "Ansichten", content: "Inhalt", back: "Zurück", forward: "Vorwärts" },
+      {
+        navigation: "Ansichten",
+        settings: "Einstellungen",
+        content: "Inhalt",
+        back: "Zurück",
+        forward: "Vorwärts",
+        settingsSections: "Bereiche der Einstellungen",
+      },
       {
         title: "Nicht gefunden",
         detail:
@@ -128,7 +135,14 @@ describe("surface texts", () => {
       },
     ]);
     expect([en.shell.frame, en.shell.notFound]).toEqual([
-      { navigation: "Views", content: "Content", back: "Back", forward: "Forward" },
+      {
+        navigation: "Views",
+        settings: "Settings",
+        content: "Content",
+        back: "Back",
+        forward: "Forward",
+        settingsSections: "Settings sections",
+      },
       {
         title: "Not found",
         detail: "What you wanted to open no longer exists. It may have been deleted or renamed.",

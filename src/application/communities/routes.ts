@@ -1,14 +1,13 @@
-import { Schema } from "effect";
+import type { SettingsRoute } from "../shell";
 
 /**
- * The routes of the communities module (ADR 0008): the community settings, the screen
- * `einstellungen/gemeinschaften` of the design. It is the start route until the overview exists.
+ * The communities module's section of the settings screen (ADR 0008): the design's
+ * `einstellungen/gemeinschaften`, with the community list, the form and the delete dialog.
  */
-export const CommunitiesRoute = Schema.Struct({
-  name: Schema.Literal("settings"),
-  section: Schema.Literal("communities"),
-});
-export type CommunitiesRoute = typeof CommunitiesRoute.Type;
+export const COMMUNITIES_SECTION = "communities";
 
-/** The community settings. */
-export const COMMUNITY_SETTINGS: CommunitiesRoute = { name: "settings", section: "communities" };
+/** The community settings. It is the start route until the overview exists. */
+export const COMMUNITY_SETTINGS: SettingsRoute<typeof COMMUNITIES_SECTION> = {
+  name: "settings",
+  section: COMMUNITIES_SECTION,
+};

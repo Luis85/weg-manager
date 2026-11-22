@@ -1,18 +1,17 @@
 import { Schema } from "effect";
-import type { Frontmatter } from "../notes";
+import { trimmedValues, type FormDraft, type FormInput } from "../notes";
 import {
   COMMUNITY_COLORS,
-  COMMUNITY_KEYS,
   communityType,
   type CommunityColor,
-  type CommunityKey,
+  type CommunityFields,
 } from "./community-type";
 
 /** What the community form holds: the text of each field as typed. */
-export type CommunityInput = { readonly [K in CommunityKey]: string };
+export type CommunityInput = FormInput<CommunityFields>;
 
 /** The values a form saves: trimmed, blank as unset, the short code upper-case. */
-export type CommunityDraft = { readonly [K in CommunityKey]: string | undefined };
+export type CommunityDraft = FormDraft<CommunityFields>;
 
 /** The issue codes whose sentence needs nothing but the field's label. */
 const PlainIssueCode = Schema.Literals([
@@ -32,7 +31,7 @@ const PlainIssueCode = Schema.Literals([
  * name (`other`); a colour that is no palette colour carries the saved text (`value`).
  */
 export const CommunityFieldIssue = Schema.Union([
-  Schema.Struct({ key: Schema.Literals(COMMUNITY_KEYS), code: PlainIssueCode }),
+  Schema.Struct({ key: Schema.Literals(communityType.keys), code: PlainIssueCode }),
   Schema.Struct({
     key: Schema.Literal("short_code"),
     code: Schema.Literal("short-code.taken"),
@@ -79,40 +78,10 @@ export type CommunityRuleContext = {
 /** The short code as stored: what the user typed, trimmed and upper-case. */
 export const normalizeShortCode = (value: string): string => value.trim().toUpperCase();
 
-const blankAsUnset = (value: string): string | undefined => {
-  const trimmed = value.trim();
-  return trimmed === "" ? undefined : trimmed;
-};
-
-/** The values a form saves from what it holds. */
-export const communityValues = (input: CommunityInput): CommunityDraft => ({
-  name: blankAsUnset(input.name),
-  short_code: blankAsUnset(normalizeShortCode(input.short_code)),
-  color: blankAsUnset(input.color),
-  kind: blankAsUnset(input.kind),
-  unit_label: blankAsUnset(input.unit_label),
-});
-
-/**
- * The values an edit saves (DV-01: only the fields the person changed are written). A field whose
- * input is still the text the form loaded keeps the note's value as written, surrounding spaces
- * included, while that value is valid; every other field is what `communityValues` makes of it,
- * so a broken value the form shows is repaired by a save.
- */
-export const editedValues = (input: CommunityInput, loaded: Frontmatter): CommunityDraft => {
-  const draft = communityValues(input);
-  const broken = new Set(communityType.check(loaded).map((issue) => issue.key));
-  const kept = (key: CommunityKey): string | undefined => {
-    const value = loaded[key];
-    return value === input[key] && !broken.has(key) ? value : draft[key];
-  };
-  return {
-    name: kept("name"),
-    short_code: kept("short_code"),
-    color: kept("color"),
-    kind: kept("kind"),
-    unit_label: kept("unit_label"),
-  };
+/** The values a form saves from what it holds: every text trimmed, the short code upper-case. */
+export const communityValues = (input: CommunityInput): CommunityDraft => {
+  const values = trimmedValues(input);
+  return { ...values, short_code: values.short_code?.toUpperCase() };
 };
 
 /** Each short code that more than one of `communities` has. */

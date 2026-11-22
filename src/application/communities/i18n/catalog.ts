@@ -4,22 +4,9 @@ import type {
   CommunityKey,
   KindPair,
 } from "../../../domain/communities";
+import type { IssueSentences } from "../../notes";
 
 type Text = { readonly title: string; readonly detail: string };
-
-/** One sentence per issue code of this module; the issue's data and the field's label fill it. */
-type IssueTexts = {
-  readonly [Code in Exclude<CommunityFieldIssue["code"], "field.missing">]: (
-    issue: IssueOf<Code>,
-    label: string,
-  ) => string;
-};
-
-/** The issue of `Code`: with its data, or (a code that carries none) just its key and code. */
-type IssueOf<Code extends string> =
-  Extract<CommunityFieldIssue, { code: Code }> extends never
-    ? { readonly key: CommunityKey; readonly code: Code }
-    : Extract<CommunityFieldIssue, { code: Code }>;
 
 /**
  * Every text of the communities module the user sees, for one language: the module's part of the
@@ -46,11 +33,6 @@ export type CommunitiesCatalog = {
     readonly selected: string;
     /** What a list row shows under the name: kind and unit label. */
     summary(kind: string, unitLabel: string): string;
-    /** WEG Manager notes that are no community record, listed on this screen for now. */
-    readonly otherNotes: string;
-    /** The action that opens a note in another Obsidian tab, and its accessible name. */
-    readonly openNote: string;
-    openNoteLabel(name: string): string;
   };
   /** The label of each field, also used to word its issues. */
   readonly fields: Readonly<Record<CommunityKey, string>>;
@@ -77,23 +59,8 @@ export type CommunitiesCatalog = {
     readonly save: string;
     readonly cancel: string;
   };
-  /** The per-field choice after an outside edit (ADR 0007). */
-  readonly conflict: {
-    readonly title: string;
-    readonly detail: string;
-    loaded(value: string): string;
-    mine(value: string): string;
-    theirs(value: string): string;
-    readonly apply: string;
-    /** How an unset value is shown. */
-    readonly empty: string;
-  };
-  readonly deletion: {
-    readonly title: string;
-    detail(name: string): string;
-    readonly confirm: string;
-    readonly cancel: string;
-  };
+  /** The title of the dialog that asks before a community goes to the trash. */
+  readonly deletion: { readonly title: string };
   /** The community switch in the frame. */
   readonly switcher: {
     readonly label: string;
@@ -105,13 +72,7 @@ export type CommunitiesCatalog = {
   };
   /** What a missing field asks for, per field. */
   readonly missing: Readonly<Record<CommunityKey, string>>;
-  /** One sentence per issue code of this module. */
-  readonly issues: IssueTexts;
-  /** The notices that confirm a write (handoff: Toast, only for short-lived success). */
-  readonly notices: {
-    created(name: string): string;
-    saved(name: string): string;
-    deleted(name: string): string;
-  };
+  /** One sentence per issue code of this module; the issue's data and the field's label fill it. */
+  readonly issues: IssueSentences<CommunityFieldIssue>;
   readonly errors: { readonly invalid: Text };
 };

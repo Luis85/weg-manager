@@ -39,7 +39,7 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 | `id` | Text | `community-` und eine UUID in Kleinbuchstaben. Einmal vergeben, nie geändert. | `community-3f2b8c1e-7a44-4d0b-9c2e-5b1f0a6d9e21` |
 | `name` | Text | Eine Zeile, nicht leer, höchstens 100 Zeichen. So, wie der Mensch ihn schreibt. | `Ahornweg 12` |
 | `short_code` | Text | 2 bis 5 Zeichen, nur `A`–`Z` und `0`–`9`, in Großbuchstaben. Unter allen Gemeinschaften eindeutig. Nach dem Anlegen fest. | `AW` |
-| `color` | Text | Ein Name der Palette: `teal`, `violet`, `blue`, `rust`, `slate`, `cyan`, `pink`, `olive`. Jede Gemeinschaft eine andere Farbe. Die Farbtöne je Theme legt das Plugin fest. | `teal` |
+| `color` | Text | Ein Name der Palette: `teal`, `violet`, `blue`, `rust`, `slate`, `amber`, `pink`, `olive`. Jede Gemeinschaft eine andere Farbe. Die Farbtöne je Theme legt das Plugin fest. `cyan` war bis 22.11.2026 ein Name der Palette und gilt jetzt als unbekannt (`color.unknown`): das Plugin ersetzt ihn nicht von selbst, der Mensch wählt eine Farbe und speichert neu. | `teal` |
 | `kind` | Text | Die Art in eigenen Worten. Eine Zeile, nicht leer, höchstens 50 Zeichen. Aus ihr folgt weder Rechtsform noch Befugnis. | `WEG`, `Tiefgarage` |
 | `unit_label` | Text | Wie die Gemeinschaft ihre Einheiten nennt. Eine Zeile, nicht leer, höchstens 50 Zeichen. | `Einheiten`, `Stellplätze` |
 
@@ -47,6 +47,7 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 
 - Die Identität ist allein `id`. Der Dateiname und der Ordner sind für Menschen und dürfen sich ändern; andere Notizen verweisen später mit `community_id` auf die `id`.
 - `v1` ist die Version dieses Vertrags. Eine Notiz mit höherer Version (`v2`) stammt aus einer neueren Plugin-Version. Dieses Plugin zeigt sie schreibgeschützt und schreibt sie nie.
+- Der Wechsel von `cyan` zu `amber` am 22.11.2026 ändert nur die Werte des Feldes `color`, nicht die Schlüssel, und liegt vor dem ersten Release; er bleibt deshalb in `v1`, ohne Migrationsschritt (eine Migration würde die Farbe still ändern).
 
 ## Ablage und Dateiname
 
@@ -82,7 +83,7 @@ Eine Notiz, die den Vertrag bricht, wird nie still repariert. Das Plugin zeigt s
 | `name.invalid`, `kind.invalid`, `unit-label.invalid` | Kein Text, leer, zu lang oder mehrzeilig. | Wie oben. |
 | `short-code.invalid` | Nicht 2 bis 5 Zeichen aus `A`–`Z` und `0`–`9`, etwa in Kleinbuchstaben. | Wie oben; das Kürzel ist dann im Formular änderbar. |
 | `short-code.duplicate` | Eine andere Gemeinschaft hat dasselbe Kürzel. | Zeigt es an beiden; das Kürzel ist im Formular änderbar. |
-| `color.unknown` | Kein Name der Palette. | Wie oben. |
+| `color.unknown` | Kein Name der Palette, auch nicht das frühere `cyan`. | Wie oben; die Notiz wird nicht umgeschrieben, bis der Mensch eine Farbe wählt und speichert. |
 | `schema.newer` | Höhere Version als `v1`. | Schreibgeschützt, Felder werden nicht gelesen; „In Obsidian öffnen“. |
 | `id.missing`, `id.malformed`, `id.other-type` | `id` fehlt, hat nicht die Form `community-<uuid>` oder gehört zu einem anderen Typ. | Schreibgeschützt. |
 | `id.duplicate` | Eine andere Notiz hat dieselbe `id`. | Beide schreibgeschützt; der Hinweis nennt den Pfad der anderen Notiz. |

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
-const { createTestPlugin, settingsIn } = await import("@test/obsidian");
+const { createTestPlugin, recordedNotices, settingsIn } = await import("@test/obsidian");
 const { default: WegManagerPlugin } = await import("../../../../src/main");
 
 type Select = { selectEl: HTMLSelectElement };
@@ -15,7 +15,7 @@ const openTab = async (data?: unknown) => {
   const [tab] = registry.settingTabs;
   if (tab === undefined) throw new Error("no settings tab registered");
   tab.display();
-  await vi.waitFor(() => expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(1));
+  expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(1);
   return { registry, plugin, tab, rows: () => settingsIn(tab.containerEl) };
 };
 
@@ -51,9 +51,10 @@ describe("settings tab", () => {
   });
 
   it("saves the log level", async () => {
-    const { rows, registry, plugin } = await openTab();
+    const { rows, tab, registry, plugin } = await openTab();
     control<{ simulateSelect(value: string): unknown }>(rows(), 0).simulateSelect("debug");
-    await vi.waitFor(() => expect(registry.saved.at(-1)).toMatchObject({ logLevel: "debug" }));
+    await tab.pending;
+    expect(registry.saved.at(-1)).toMatchObject({ logLevel: "debug" });
     plugin.unload();
   });
 
@@ -63,6 +64,15 @@ describe("settings tab", () => {
       expect(row.components.every((component: Control) => component.disabled)).toBe(true);
     }
     expect(tab.containerEl.textContent).toContain("neueren Version");
+    plugin.unload();
+  });
+
+  it("keeps the read-only explanation out of the settings search, the log level in", async () => {
+    const { tab, plugin } = await openTab({ schemaVersion: 2 });
+    expect(tab.settingItems.map((item) => [item.name, item.searchable])).toEqual([
+      ["Protokollstufe", undefined],
+      ["Einstellungen schreibgeschützt", false],
+    ]);
     plugin.unload();
   });
 
@@ -84,6 +94,17 @@ describe("settings tab", () => {
     }
     expect(tab.containerEl.textContent).toContain("neueren Version");
     expect(registry.saved).toEqual([]);
+    plugin.unload();
+  });
+
+  it("answers only for its own control: another key has no value and changes nothing", async () => {
+    const { tab, registry, plugin } = await openTab({ logLevel: "info" });
+    expect(tab.getControlValue("logLevel")).toBe("info");
+    expect(tab.getControlValue("rootFolder")).toBeUndefined();
+    await tab.setControlValue("rootFolder", "debug");
+    expect(registry.saved).toEqual([]);
+    expect(recordedNotices()).toEqual([]);
+    expect(tab.getControlValue("logLevel")).toBe("info");
     plugin.unload();
   });
 

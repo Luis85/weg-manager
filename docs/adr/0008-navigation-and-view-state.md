@@ -1,6 +1,6 @@
 # ADR 0008 · One view, typed routes
 
-- Status: accepted; history and the place of the selection amended on 2026-11-21, the selectable communities on 2026-11-22 (see the notes at the end)
+- Status: accepted; history and the place of the selection amended on 2026-11-21, the selectable communities on 2026-11-22, the settings route and its sections on 22.11.2026 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -15,6 +15,7 @@ The design (`docs/design/handoff/03 - Ansichten, Navigation und Befehle.md`) des
   | Screen in the design | Route |
   | --- | --- |
   | `einstellungen/gemeinschaften` | `{ name: "settings", section: "communities" }` |
+  | `einstellungen/datenprobleme` | `{ name: "settings", section: "data-issues" }` (amendment 22.11.2026) |
 
   Each later slice adds its rows here.
 - **No router library.** Eight screens with one parameter need a `switch`, which the compiler checks. If nested layouts or guards appear, a router can replace the mechanism behind the same navigate use case.
@@ -64,3 +65,20 @@ Decision (owner, 22.11.2026):
 - With communities listed but none without issues, nothing is selected and nothing is asked; the switch says that no community can be chosen until one is repaired.
 
 Consequences: the choice prompt counts candidates, not notes. A note that breaks for a moment while someone edits it in Obsidian drops the selection for that moment, as a note that is gone does.
+
+## Amendment, 22.11.2026: the settings route belongs to the shell, its sections to the modules
+
+Context: the route `{ name: "settings", section: "communities" }` was the communities module's own (`CommunitiesRoute`), and `appSurface` mapped one screen per route name, ignoring `section`. The design's settings view (VIEW-07, `einstellungen/<bereich>`) has about nine areas from several modules: a second module's area would have had to share the communities screen or take a route name of its own, against the design. The notes the plugin cannot read sat on the communities screen, though they are no community concern.
+
+Decision (owner, 22.11.2026):
+
+- **The shell owns the settings route and its screen.** `settingsRoute(sections)` (`src/application/shell/routes.ts`) is the schema `{ name: "settings", section }`, with `section` one of the given ids. The application root composes the ids, as it composes `Route`: `SETTINGS_SECTIONS` and `SettingsSection` in `src/application/routes.ts`, one id per module that contributes a section (`COMMUNITIES_SECTION` = `communities`, the notes module's `DATA_ISSUES_SECTION` = `data-issues`). `SettingsScreen.vue` (`src/presentation/shell/`) is the screen of the route name `settings`.
+- **Each module contributes its section through `appSurface`:** `{ label, component, badge? }` by section id (`SettingsSectionPart`), typed by `SettingsSection`, so a section id without a part, or a part for an id no module has, fails typecheck. Components load lazily. `communities` contributes the community list, its form and dialogs; `notes` contributes "Datenprobleme" (glossary: data issues), the notes of no known type, with a badge that counts them.
+- **The screen** shows a labelled navigation between the sections (`aria-label` from the catalog, one button per section, `aria-current="page"` and a bar on the current one, in the tab order, wrapping at 320 px) above the current section. With a single section it shows no navigation. It stays mounted across its sections (the route outlet keys it by its name), so the entry the user chose keeps the focus; the section remounts. A section no module contributes shows not-found.
+- **Saved states keep working.** A stored `{ name: "settings", section: "communities" }` opens the communities section; an unknown section decodes as no route and falls back to the start route, as every unknown state does. The frame's navigation entry ("Gemeinschaften", the community settings) and the start route are unchanged.
+
+Consequences: a module adds a settings area with its id in `SETTINGS_SECTIONS` and its part in `appSurface`'s `sections`, nothing in the shell. Another screen with several areas of its own would need the same keying in the route outlet; today the settings screen is the only one. The frame marks its entry as the current page only on the communities section; whether the entry should become "Einstellungen" once more sections exist is the owner's to decide.
+
+## Amendment, 2026-11-22: the frame's entry is "Einstellungen" and is current on every settings section
+
+The frame's one entry is labelled "Einstellungen" / "Settings" (shell catalog `frame.settings`, icon `lucide:settings`) and opens the communities section; it is the current page on every section, "Datenprobleme" included: the frame compares an entry with the route by name (the screen), not by value. This resolves the open point of the amendment above (no entry current on "Datenprobleme").

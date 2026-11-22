@@ -21,9 +21,10 @@ const decode = (frontmatter: Record<string, unknown>) =>
   communityType.decode({ path: PATH, frontmatter });
 
 describe("the community note type (weg-manager.community/v1)", () => {
-  it("is version 1 of `community` with the five keys in file order", () => {
+  it("is version 1 of `community` with the five keys in file order, filed in Gemeinschaften", () => {
     expect(communityType.type).toBe("community");
     expect(communityType.version).toBe(1);
+    expect(communityType.folder).toBe("Gemeinschaften");
     expect(communityType.keys).toEqual(["name", "short_code", "color", "kind", "unit_label"]);
   });
 
@@ -34,7 +35,7 @@ describe("the community note type (weg-manager.community/v1)", () => {
       "blue",
       "rust",
       "slate",
-      "cyan",
+      "amber",
       "pink",
       "olive",
     ]);
@@ -87,7 +88,7 @@ describe("the community note type (weg-manager.community/v1)", () => {
         ...NOTE,
         name: " ",
         short_code: "aw",
-        color: "amber",
+        color: "cyan",
         kind: "K".repeat(LABEL_MAX_LENGTH + 1),
         unit_label: "Ein\nheiten",
       }),
@@ -101,6 +102,17 @@ describe("the community note type (weg-manager.community/v1)", () => {
         { code: "kind.invalid", key: "kind" },
         { code: "unit-label.invalid", key: "unit_label" },
       ],
+    });
+  });
+
+  it("does not migrate cyan, a palette colour until 22.11.2026: it is an unknown colour now", () => {
+    expect(COMMUNITY_COLORS).not.toContain("cyan");
+    expect(decode({ ...NOTE, color: "cyan" })).toMatchObject({
+      issues: [{ code: "color.unknown", key: "color" }],
+    });
+    expect(decode({ ...NOTE, color: "amber" })).toMatchObject({
+      kind: "editable",
+      values: { color: "amber" },
     });
   });
 

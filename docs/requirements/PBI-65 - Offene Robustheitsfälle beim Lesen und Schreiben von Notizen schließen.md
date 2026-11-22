@@ -23,12 +23,12 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: needs-triage
+triage: ready-for-agent
 ---
 
 # PBI-65 · Offene Robustheitsfälle beim Lesen und Schreiben von Notizen schließen
 
-**Planungsstand:** Restpunkte aus dem Korrektheits-Review und den Umsetzungen; einer braucht eine Entscheidung · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, Review-Runde vom 22.11.2026)
+**Planungsstand:** Entschieden am 22.11.2026; vier Punkte vor der Vorabversion 0.2.0, drei bleiben offen · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, Review-Runde vom 22.11.2026)
 
 ## User Story
 
@@ -56,9 +56,12 @@ Die sieben nachgestellten Fehler des Korrektheits-Reviews sind mit PR #29 und PR
 6. Die Meldung nach geschlossener Ansicht sagt, was zutrifft.
 7. Jede Änderung beginnt mit einem scheiternden Test; `npm run verify` und die e2e-Suite bestehen.
 
-## Offene Entscheidung
+## Entscheidungen (22.11.2026)
 
-Welche der abgelehnten Schreibweisen aus Punkt 6 das Plugin schreiben können soll (Kriterium 5).
+- **Abgelehnte Schreibweisen (Punkt 6):** Das Plugin lernt nur die beiden Abschlusszeilen, die Obsidian liest: `---` mit Leerzeichen dahinter und `----`. Flow-Schreibweise, Anker und ungewöhnliche Schlüssel bleiben abgelehnt; die Meldung bleibt.
+- **Kommentar am Zeilenende (Punkt 5):** Der Kommentar bleibt erhalten; der neue Wert steht davor.
+- **Vor dem Tag 0.2.0** werden umgesetzt: die beiden Punkte oben, der Wurzelordner in anderer Schreibweise (Punkt 2) und die Grenze von 255 Bytes für Dateinamen (Punkt 3). Diese beiden können einen echten Vault treffen.
+- **Im Backlog bleiben:** `VaultReady` ohne Rückfall (Punkt 1), die Meldung für eine während des Speicherns gelöschte Notiz (Punkt 4) und die Meldung nach geschlossener Ansicht (Punkt 7). Keiner verliert Daten.
 
 ## Herkunft und Bezüge
 
@@ -67,3 +70,4 @@ Korrektheits-Review vom 22.11.2026 (Verdachtsfälle), Berichte zu PR #29 und PR 
 ## Kommentare
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
+- 22.11.2026 (Interview nach der Review-Runde): Entscheidungen eingetragen; `triage` auf `ready-for-agent`. Kriterien 2, 3 und 5 vor dem Tag 0.2.0; Kriterien 1, 4 und 6 bleiben offen.

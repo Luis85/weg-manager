@@ -1,5 +1,5 @@
 import { Result } from "effect";
-import type { Frontmatter } from "./note-type";
+import type { Frontmatter, FrontmatterPatch } from "./note-type";
 import { yamlEntry } from "./yaml-text";
 
 /**
@@ -28,12 +28,6 @@ export type NoteText = {
   readonly block: Block | undefined;
   /** Everything after the block: the body. */
   readonly rest: string;
-};
-
-/** Keys to set (in place, or appended in this order) and keys to remove; nothing else changes. */
-export type NoteTextPatch = {
-  readonly set?: Frontmatter;
-  readonly remove?: readonly string[];
 };
 
 /** One top-level key and the lines it spans, `end` exclusive. */
@@ -168,7 +162,7 @@ const sameKeys = (entries: readonly Entry[], current: Frontmatter): boolean => {
 const rewrite = (
   lines: readonly string[],
   entries: readonly Entry[],
-  patch: NoteTextPatch,
+  patch: FrontmatterPatch,
   eol: string,
 ): { readonly written: string[]; readonly added: number } => {
   const set = patch.set ?? {};
@@ -216,7 +210,7 @@ const assemble = (
 export const editNoteText = (
   note: NoteText,
   current: Frontmatter,
-  patch: NoteTextPatch,
+  patch: FrontmatterPatch,
 ): Result.Result<string, "layout"> => {
   const lines = note.block?.lines ?? [];
   const entries = entriesOf(lines);

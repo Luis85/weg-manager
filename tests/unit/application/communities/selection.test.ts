@@ -222,7 +222,7 @@ describe("the community selection", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {
       seed(fixture, 1);
-      fixture.memory.seed(`${FOLDER}/Farbe.md`, communityNote(2, { color: "amber" }));
+      fixture.memory.seed(`${FOLDER}/Farbe.md`, communityNote(2, { color: "cyan" }));
       fixture.memory.seed(`${FOLDER}/Neu.md`, {
         ...communityNote(3, { color: "blue" }),
         schema: "weg-manager.community/v2",
@@ -255,7 +255,7 @@ describe("the community selection", () => {
       yield* ready;
       yield* settle;
       assert.deepStrictEqual(yield* communitySelection, selection(communityId(2)));
-      fixture.memory.seed(`${FOLDER}/G2.md`, communityNote(2, { color: "amber" }));
+      fixture.memory.seed(`${FOLDER}/G2.md`, communityNote(2, { color: "cyan" }));
       yield* indexed;
       assert.deepStrictEqual(yield* communitySelection, selection(undefined, true));
       // A user's choice is never offered a community with an issue.

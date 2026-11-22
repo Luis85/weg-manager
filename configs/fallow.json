@@ -137,6 +137,7 @@
         "from": "presentation",
         "allow": [
           "presentation/shell",
+          "presentation/notes",
           "presentation/communities",
           "application",
           "application-composition",
@@ -209,6 +210,18 @@
       {
         "from": "presentation/shell",
         "allow": ["application/shell", "application-describe-error", "domain/shell"],
+        "allowTypeOnly": ["application-composition"]
+      },
+      {
+        "from": "presentation/notes",
+        "allow": [
+          "presentation/shell",
+          "application/shell",
+          "application/notes",
+          "application-describe-error",
+          "domain/shell",
+          "domain/notes"
+        ],
         "allowTypeOnly": ["application-composition"]
       }
     ],

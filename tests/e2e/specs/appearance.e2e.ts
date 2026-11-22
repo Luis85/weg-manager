@@ -1,9 +1,11 @@
 import { browser, expect } from "@wdio/globals";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { describe, it } from "mocha";
-import { BOUNDARY_CONTRAST, TEXT_CONTRAST } from "../../support/contrast";
+import { COMMUNITY_COLORS } from "../../../src/domain/communities";
+import { BOUNDARY_CONTRAST, TEXT_CONTRAST, contrast, floor2 } from "../../support/contrast";
 import {
   measureFieldBoundaries,
+  measurePalette,
   measureTexts,
   overflow,
   parkPointer,
@@ -11,7 +13,14 @@ import {
   useScheme,
   type Measured,
 } from "../appearance";
-import { FOLDER, community, communityText, expectListed, writeNotes } from "../communities";
+import {
+  FOLDER,
+  community,
+  communityText,
+  expectListed,
+  openSection,
+  writeNotes,
+} from "../communities";
 import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
 
 /** A legal name of exactly 100 characters (the name rule's maximum), a German compound first. */
@@ -50,6 +59,9 @@ const NOTES = (
 ).map(([name, text]): [string, string] => [`${FOLDER}/${name}`, text]);
 
 const SCHEMES = ["light", "dark"] as const;
+
+/** The least luminance contrast between amber's fill and rust's or olive's, in each theme. */
+const AMBER_APART = 1.25;
 
 /** Every measurement, for the report beside the e2e logs. */
 const measured: Record<string, Measured[]> = {};
@@ -131,6 +143,37 @@ describe("appearance in Obsidian's default theme", function () {
     writeFileSync("reports/e2e/appearance-contrast.json", JSON.stringify(measured, null, 1));
   });
 
+  it("keeps the short code of every palette colour at 4.5:1 and amber apart from rust and olive", async function () {
+    const fills: Record<string, Record<string, number>> = {};
+    for (const scheme of SCHEMES) {
+      await useScheme(scheme);
+      const badges = await measurePalette(COMMUNITY_COLORS);
+      expect(badges.map((badge) => badge.color)).toEqual([...COMMUNITY_COLORS]);
+      expect(badges.filter((badge) => badge.ratio < TEXT_CONTRAST)).toEqual([]);
+      const amber = badges.find((badge) => badge.color === "amber");
+      expect(amber).toBeDefined();
+      // The luminance contrast of amber's fill against each other fill, for the report. Amber has
+      // to stay apart from its nearest neighbours in hue, rust and olive, by brightness too.
+      const against = Object.fromEntries(
+        badges
+          .filter((badge) => badge.color !== "amber")
+          .map((badge) => [badge.color, floor2(contrast(badge.fill, amber?.fill ?? badge.fill))]),
+      );
+      fills[scheme] = against;
+      measured[`palette-${scheme}`] = badges.map(({ color, ratio }) => ({
+        text: color,
+        testid: "community-badge",
+        ratio,
+      }));
+      expect(Math.min(against["rust"] ?? 0, against["olive"] ?? 0)).toBeGreaterThanOrEqual(
+        AMBER_APART,
+      );
+    }
+    await useScheme("light");
+    mkdirSync("reports/e2e", { recursive: true });
+    writeFileSync("reports/e2e/amber-fills.json", JSON.stringify(fills, null, 1));
+  });
+
   it("starts the plugin's lists, headings and paragraphs from zero", async function () {
     const lists = await stylesOf("ul, ol", ["list-style-type", "padding-left", "margin-top"]);
     expect(lists.length).toBeGreaterThanOrEqual(4);
@@ -169,11 +212,43 @@ describe("appearance in Obsidian's default theme", function () {
       kindsIn(texts, {
         choice: testid("community-choice"),
         issue: testid("community-issues"),
-        problem: (text) => text.testid === "unindexed-notes" && !text.text.endsWith(".md"),
+        count: testid("data-issues-count"),
         remove: testid("community-remove"),
         add: testid("community-add"),
       }),
-    ).toEqual(["choice", "issue", "problem", "remove", "add"]);
+    ).toEqual(["choice", "issue", "count", "remove", "add"]);
+  });
+
+  it("keeps every text of the data issues section at 4.5:1, its issues and current entry included", async function () {
+    await openSection("Datenprobleme");
+    const texts = await textsInBothSchemes("data-issues");
+    expect(failing(texts)).toEqual([]);
+    expect(
+      kindsIn(texts, {
+        problem: (text) => text.testid === "unindexed-notes" && !text.text.endsWith(".md"),
+        path: (text) => text.testid === "unindexed-notes" && text.text.endsWith(".md"),
+        section: (text) =>
+          text.testid === "settings-sections" && text.text.includes("Datenprobleme"),
+      }),
+    ).toEqual(["problem", "path", "section"]);
+    // The current section is marked by a bar too, not by its colour alone.
+    const [current] = await stylesOf("[data-testid=settings-sections] button[aria-current=page]", [
+      "box-shadow",
+    ]);
+    expect(current?.["box-shadow"]).not.toBe("none");
+    // The frame's entry stays the current page on this section too, with its bar.
+    const [entry] = await stylesOf("[data-testid=frame-navigation] button[aria-current=page]", [
+      "box-shadow",
+    ]);
+    expect(entry?.["box-shadow"]).not.toBe("none");
+    await openSection("Gemeinschaften");
+    await expectListed([
+      "Ahornweg 12",
+      "Aus der Zukunft",
+      "Doppelt",
+      "Tiefgarage Ahornweg",
+      LONG_NAME,
+    ]);
   });
 
   it("marks the selected community and the current page beyond colour, at 4.5:1", async function () {
@@ -186,7 +261,7 @@ describe("appearance in Obsidian's default theme", function () {
         selected: (text) =>
           text.testid === "community-option-name" && text.text.endsWith("Tiefgarage Ahornweg"),
         marker: testid("community-selected"),
-        page: (text) => text.testid === "app-frame" && text.text.endsWith("Gemeinschaften"),
+        page: (text) => text.testid === "frame-navigation" && text.text.endsWith("Einstellungen"),
       }),
     ).toEqual(["selected", "marker", "page"]);
     // Not by colour alone: a check mark on the selected option, "Aktuell" on its card, a bar on
@@ -194,7 +269,9 @@ describe("appearance in Obsidian's default theme", function () {
     await expect(option("Tiefgarage Ahornweg").$("[data-testid=community-option-check]")).toExist();
     await expect(option(LONG_NAME).$("[data-testid=community-option-check]")).not.toExist();
     await expect(browser.$(ROOT).$("[data-testid=community-selected]")).toHaveText("Aktuell");
-    const [current] = await stylesOf("nav button[aria-current=page]", ["box-shadow"]);
+    const [current] = await stylesOf("[data-testid=frame-navigation] button[aria-current=page]", [
+      "box-shadow",
+    ]);
     expect(current?.["box-shadow"]).not.toBe("none");
   });
 

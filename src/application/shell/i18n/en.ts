@@ -67,7 +67,14 @@ export const shellEn: ShellCatalog = {
       labels: { error: "Errors", warn: "Warnings", info: "Information", debug: "Details" },
     },
   },
-  frame: { navigation: "Views", content: "Content", back: "Back", forward: "Forward" },
+  frame: {
+    navigation: "Views",
+    settings: "Settings",
+    content: "Content",
+    back: "Back",
+    forward: "Forward",
+    settingsSections: "Settings sections",
+  },
   notFound: {
     title: "Not found",
     detail: "What you wanted to open no longer exists. It may have been deleted or renamed.",

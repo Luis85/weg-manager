@@ -3,7 +3,6 @@ import {
   colorOwners,
   communityValues,
   duplicateShortCodes,
-  editedValues,
   firstFreeColor,
   normalizeShortCode,
   validateCommunity,
@@ -58,41 +57,6 @@ describe("communityValues: what a form saves", () => {
   });
 });
 
-describe("editedValues: what an edit saves", () => {
-  const LOADED = {
-    schema: "weg-manager.community/v1",
-    id: "community-3f2b8c1e-7a44-4d0b-9c2e-5b1f0a6d9e21",
-    name: "Ahornweg 12 ",
-    short_code: "AW",
-    color: "teal",
-    kind: " WEG",
-    unit_label: "Einheiten",
-  };
-
-  it("keeps a valid field as written while its input is the loaded text", () => {
-    const input = { ...INPUT, name: "Ahornweg 12 ", kind: "Haus " };
-    expect(editedValues(input, LOADED)).toEqual({ ...INPUT, name: "Ahornweg 12 ", kind: "Haus" });
-  });
-
-  it("makes every changed field what a form saves", () => {
-    const input = { ...INPUT, name: " Ahornweg 14 ", kind: " WEG " };
-    expect(editedValues(input, LOADED)).toEqual({ ...INPUT, name: "Ahornweg 14" });
-  });
-
-  it("repairs a broken field even when its input is the loaded text", () => {
-    const loaded = { ...LOADED, short_code: "aw", unit_label: "  " };
-    const input = { ...INPUT, short_code: "aw", unit_label: "  " };
-    expect(editedValues(input, loaded)).toEqual({ ...INPUT, unit_label: undefined });
-  });
-
-  it("reads a value of another kind as no text to keep", () => {
-    expect(editedValues({ ...INPUT, unit_label: "12" }, { ...LOADED, unit_label: 12 })).toEqual({
-      ...INPUT,
-      unit_label: "12",
-    });
-  });
-});
-
 describe("validateCommunity", () => {
   it("accepts a valid community beside others with other codes and colours", () => {
     expect(validateCommunity(INPUT, { others: [TG, {}] })).toEqual([]);
@@ -105,13 +69,13 @@ describe("validateCommunity", () => {
   it("names every missing and broken field, at most one issue each, in file order", () => {
     expect(
       validateCommunity(
-        { name: "", short_code: "A", color: "amber", kind: "", unit_label: "x".repeat(51) },
+        { name: "", short_code: "A", color: "cyan", kind: "", unit_label: "x".repeat(51) },
         { others: [] },
       ),
     ).toEqual([
       { key: "name", code: "field.missing" },
       { key: "short_code", code: "short-code.invalid" },
-      { key: "color", code: "color.unknown", value: "amber" },
+      { key: "color", code: "color.unknown", value: "cyan" },
       { key: "kind", code: "field.missing" },
       { key: "unit_label", code: "unit-label.invalid" },
     ]);
@@ -195,7 +159,7 @@ describe("firstFreeColor", () => {
   });
 
   it("is none when every colour is taken", () => {
-    const all = ["teal", "violet", "blue", "rust", "slate", "cyan", "pink", "olive"];
+    const all = ["teal", "violet", "blue", "rust", "slate", "amber", "pink", "olive"];
     expect(firstFreeColor(all.map((color) => ({ color })))).toBeUndefined();
   });
 });
@@ -203,10 +167,10 @@ describe("firstFreeColor", () => {
 describe("validateCommunity: the data of an issue", () => {
   it("is the value as the rules saw it: trimmed, the short code upper-case", () => {
     expect(
-      validateCommunity({ ...INPUT, short_code: " tg ", color: " amber " }, { others: [TG] }),
+      validateCommunity({ ...INPUT, short_code: " tg ", color: " cyan " }, { others: [TG] }),
     ).toEqual([
       { key: "short_code", code: "short-code.taken", value: "TG", other: "Tiefgarage" },
-      { key: "color", code: "color.unknown", value: "amber" },
+      { key: "color", code: "color.unknown", value: "cyan" },
     ]);
   });
 });

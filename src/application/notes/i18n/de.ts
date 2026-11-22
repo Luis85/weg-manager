@@ -62,6 +62,40 @@ export const notesDe: NotesCatalog = {
         "Obsidian konnte nicht alle Notizen lesen, deshalb ist die Liste vielleicht unvollständig. Versuche es erneut.",
     },
   },
+  openNote: {
+    label: "In Obsidian öffnen",
+    labelFor: (name) => `${name} in Obsidian öffnen`,
+  },
+  conflict: {
+    title: "Notiz geändert, während du bearbeitet hast",
+    detail:
+      "Diese Angaben wurden auch außerhalb dieses Formulars geändert, etwa auf einem anderen Gerät. Wähle je Angabe den Wert, der gelten soll, und speichere.",
+    loaded: (value) => `Beim Öffnen: ${value}`,
+    mine: (value) => `Deine Eingabe: ${value}`,
+    theirs: (value) => `Jetzt in der Notiz: ${value}`,
+    apply: "Auswahl speichern",
+    empty: "(leer)",
+  },
+  deletion: {
+    detail: (name) =>
+      `„${name}“ wird in Obsidians Papierkorb verschoben. Dort kannst du die Notiz wiederherstellen.`,
+    confirm: "In den Papierkorb verschieben",
+    cancel: "Abbrechen",
+  },
+  dataIssues: {
+    title: "Datenprobleme",
+    intro:
+      "Hier stehen Notizen von WEG Manager, die das Plugin nicht lesen oder keinem Typ zuordnen kann. Öffne eine Notiz in Obsidian und korrigiere sie dort.",
+    loading: "Notizen werden geprüft …",
+    none: "Alle Notizen von WEG Manager lassen sich lesen.",
+    otherNotes: "Andere Notizen von WEG Manager",
+    count: (notes) => (notes === 1 ? "1 Notiz" : `${notes} Notizen`),
+  },
+  notices: {
+    created: (name) => `„${name}“ angelegt`,
+    saved: (name) => `„${name}“ gespeichert`,
+    deleted: (name) => `„${name}“ in den Papierkorb verschoben`,
+  },
   recordIssues: {
     "schema.malformed": () =>
       "Die Eigenschaft „schema“ ist falsch geschrieben, deshalb ist die Notiz schreibgeschützt. Öffne die Notiz und korrigiere „schema“.",

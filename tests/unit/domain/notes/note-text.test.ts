@@ -6,8 +6,8 @@ import {
   frontmatterYaml,
   newNoteText,
   splitNoteText,
-  type NoteTextPatch,
 } from "../../../../src/domain/notes/note-text";
+import type { FrontmatterPatch } from "../../../../src/domain/notes";
 
 const BOM = "\uFEFF";
 
@@ -35,14 +35,14 @@ const split = (text: string) => {
 };
 
 /** Edits `text` as the store does: on the frontmatter YAML reads from it. */
-const edit = (text: string, patch: NoteTextPatch) => {
+const edit = (text: string, patch: FrontmatterPatch) => {
   const note = split(text);
   const yaml = frontmatterYaml(note);
   const current = (yaml === undefined ? null : (parse(yaml) as unknown)) ?? {};
   return editNoteText(note, current as Record<string, unknown>, patch);
 };
 
-const edited = (text: string, patch: NoteTextPatch): string => {
+const edited = (text: string, patch: FrontmatterPatch): string => {
   const result = edit(text, patch);
   if (Result.isFailure(result)) throw new Error("the edit was refused");
   return result.success;

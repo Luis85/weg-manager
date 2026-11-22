@@ -13,6 +13,7 @@ import {
 afterEach(closeAll);
 
 const t = de.communities;
+const n = de.notes;
 
 const AW = communityNote(1, { name: "Ahornweg 12", short_code: "AW" });
 const VALID = {
@@ -51,7 +52,7 @@ describe("the sheet and the dialog are modal", () => {
   it("opens the delete dialog with the focus on Abbrechen", async () => {
     const screen = await openCommunities({ seed: (notes) => notes.seed(`${FOLDER}/A.md`, AW) });
     await screen.click(screen.button(t.screen.removeLabel("Ahornweg 12")));
-    await focusOn(screen, () => screen.button(t.deletion.cancel));
+    await focusOn(screen, () => screen.button(n.deletion.cancel));
     expect(screen.root.querySelector("[role=dialog]")?.getAttribute("aria-modal")).toBe("true");
     expect(frame(screen)?.hasAttribute("inert")).toBe(true);
   });
@@ -90,7 +91,7 @@ describe("the focus after a sheet or dialog", () => {
   it("goes back to the card's delete button when the dialog is cancelled", async () => {
     const screen = await openCommunities({ seed: (notes) => notes.seed(`${FOLDER}/A.md`, AW) });
     await screen.click(screen.button(t.screen.removeLabel("Ahornweg 12")));
-    await screen.click(screen.button(t.deletion.cancel));
+    await screen.click(screen.button(n.deletion.cancel));
     await focusOn(screen, () => screen.button(t.screen.removeLabel("Ahornweg 12")));
     expect(screen.q("delete-dialog")).toBeUndefined();
   });
@@ -110,9 +111,9 @@ describe("the focus after a sheet or dialog", () => {
     await fill(screen, { kind: "Haus" });
     (screen.q("community-save") as HTMLButtonElement).focus();
     await save(screen);
-    const heading = screen.q("community-conflict")?.querySelector("h3");
+    const heading = screen.q("record-conflict")?.querySelector("h3");
     expect([heading?.textContent.trim(), heading?.getAttribute("tabindex")]).toEqual([
-      t.conflict.title,
+      n.conflict.title,
       "-1",
     ]);
     expect(active()).toBe(heading);
@@ -138,7 +139,7 @@ describe("a failed submit", () => {
   it("puts the focus on the first free colour when the colour is the first invalid field", async () => {
     const screen = await openCommunities({
       seed: (notes) => {
-        notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", color: "amber" }));
+        notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", color: "cyan" }));
         notes.seed(`${FOLDER}/B.md`, communityNote(2, { name: "B", short_code: "B2" }));
       },
     });

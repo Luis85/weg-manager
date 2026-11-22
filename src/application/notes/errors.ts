@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { NoteNameIssue, WriteRefusal } from "../../domain/notes";
+import { FieldConflict, NoteNameIssue, WriteRefusal } from "../../domain/notes";
 
 // No error here carries a path, and only `NoteEditConflictError` carries note content: the form
 // needs the values to let the user choose. Its describer and its message never use them.
@@ -37,14 +37,6 @@ export class NoteWriteError extends Schema.TaggedError<NoteWriteError>()("NoteWr
 export class NoteTrashError extends Schema.TaggedError<NoteTrashError>()("NoteTrashError", {
   cause: Schema.Defect(),
 }) {}
-
-/** One field both the user and an outside edit changed: loaded, saved and current value. */
-const FieldConflict = Schema.Struct({
-  key: Schema.String,
-  base: Schema.Unknown,
-  edited: Schema.Unknown,
-  current: Schema.Unknown,
-});
 
 /**
  * The note was changed outside the form in fields the user changed too, to other values (ADR

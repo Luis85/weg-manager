@@ -71,6 +71,13 @@ _Avoid_: tour, tutorial, coach mark, tooltip (a tooltip shows on hover every tim
 **Matter** (German: Vorgang):
 One thing the board member follows up until it has one checkable result: a promise, a deadline, a question or a task. It belongs to exactly one community, has a number that runs across all communities and is never deleted. Routes say `vorgang`, command ids and code say `matter`.
 _Avoid_: point, item, ticket, issue (an issue is a broken note), task (a to-do is the board member's own step)
+**Settings section** (German: Bereich der Einstellungen):
+One area of the plugin's settings screen, such as the communities or the data issues, contributed by one module and reached through the screen's own navigation. Its id is part of the route (`einstellungen/<bereich>`).
+_Avoid_: tab, page, panel, category
+
+**Data issues** (German: Datenprobleme):
+The settings section that lists the notes the plugin cannot read or assign to a record type, each with its issue and a way to open it in Obsidian. A record with an issue of its own stays in its module's section.
+_Avoid_: data problems, errors, broken notes
 
 **Tracer slice** (German: Durchstich):
 The first record type built through every layer, to prove the path that all later types take.

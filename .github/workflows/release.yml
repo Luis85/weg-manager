@@ -3,12 +3,15 @@
 #
 #   build    read-only token, no persisted credentials. Checks that the tagged commit is on main,
 #            installs (dependency install scripts run here), runs the gate and the real-Obsidian e2e
-#            suite, stages main.js, manifest.json and styles.css (`release:package` re-runs
-#            check:dist and checks versions.json) and uploads them as an artifact.
-#   release  write permissions, no checkout and no npm. Downloads that artifact, attests the three
+#            suite (the gate includes check:notices, so THIRD-PARTY-NOTICES.txt is current), stages
+#            main.js, manifest.json and styles.css in release/weg-manager/ and the notices file
+#            beside that folder (`release:package` re-runs check:dist and checks versions.json) and
+#            uploads release/ as an artifact.
+#   release  write permissions, no checkout and no npm. Downloads that artifact, attests the four
 #            files (the signed build-provenance attestation the Obsidian developer docs recommend,
 #            "Release your plugin with GitHub Actions") and creates the GitHub release with exactly
-#            those files, which is what Obsidian installs. A 0.x release is a pre-release (BRAT).
+#            those files. Obsidian and BRAT install only the first three; the notices file is for
+#            people who read the licences. A 0.x release is a pre-release (BRAT).
 #
 # Never run so far; see docs/engineering/releasing.md.
 name: Release
@@ -75,7 +78,7 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-files
-          path: release/weg-manager/
+          path: release/
           if-no-files-found: error
       - name: Upload e2e logs
         if: ${{ failure() }}
@@ -98,7 +101,7 @@ jobs:
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: release-files
-          path: release/weg-manager
+          path: release
       - name: Generate artifact attestation
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
@@ -106,6 +109,7 @@ jobs:
             release/weg-manager/main.js
             release/weg-manager/manifest.json
             release/weg-manager/styles.css
+            release/THIRD-PARTY-NOTICES.txt
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -116,4 +120,5 @@ jobs:
           # Major version 0 is a pre-release, so it reaches BRAT testers without being "Latest".
           if [ "${TAG%%.*}" = "0" ]; then flags+=(--prerelease); fi
           gh release create "$TAG" "${flags[@]}" --verify-tag --title "$TAG" --generate-notes \
-            release/weg-manager/main.js release/weg-manager/manifest.json release/weg-manager/styles.css
+            release/weg-manager/main.js release/weg-manager/manifest.json release/weg-manager/styles.css \
+            release/THIRD-PARTY-NOTICES.txt

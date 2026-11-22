@@ -12,7 +12,7 @@ export {
   type Community,
   type CommunityNoteIssue,
 } from "./list";
-export { COMMUNITY_SETTINGS, CommunitiesRoute } from "./routes";
+export { COMMUNITIES_SECTION, COMMUNITY_SETTINGS } from "./routes";
 export {
   CommunitySelectionService,
   communitySelection,
@@ -23,7 +23,6 @@ export {
 } from "./selection";
 export type { CommunitiesServices } from "./services";
 export {
-  COMMUNITIES_FOLDER,
   communityList,
   communityListChanges,
   createCommunity,

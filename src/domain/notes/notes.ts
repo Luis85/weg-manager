@@ -30,6 +30,9 @@ export const noteNameIssue = (name: string): NoteNameIssue | undefined => {
   return name.startsWith(".") ? "leading-dot" : undefined;
 };
 
+/** How many names a create or a rename tries when names clash: `Name`, `Name (2)`, … `Name (100)`. */
+export const MAX_NAME_ATTEMPTS = 100;
+
 /** The name for the `attempt`-th try when names clash: `Name`, `Name (2)`, `Name (3)`, … */
 export const clashName = (name: string, attempt: number): string =>
   attempt === 1 ? name : `${name} (${attempt})`;

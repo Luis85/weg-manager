@@ -10,7 +10,7 @@ import { ErrorNotice, useCommand, useMessages } from "../../shell";
  */
 const props = defineProps<{ path: string; name: string }>();
 
-const t = useMessages().communities;
+const t = useMessages().notes.openNote;
 const open = useCommand(openNote);
 </script>
 
@@ -22,8 +22,8 @@ const open = useCommand(openNote);
       color="neutral"
       variant="outline"
       icon="i-lucide-external-link"
-      :label="t.screen.openNote"
-      :aria-label="t.screen.openNoteLabel(props.name)"
+      :label="t.label"
+      :aria-label="t.labelFor(props.name)"
       data-testid="open-note"
       @click="open.run(props.path)"
     />

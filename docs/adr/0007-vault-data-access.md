@@ -88,3 +88,9 @@ unit_label: Einheiten
 - **A safety net.** A line scanner and a YAML parser can disagree about odd documents (a flow mapping as the block, anchors, explicit keys, a key YAML reads as a number). So the step writes only when the keys it found by line are exactly the keys `parseYaml` read, and when `parseYaml` reads the edited text as exactly the frontmatter the patch means, every other key deeply equal and in its order. Otherwise nothing is written and the update fails with `NoteWriteRefusedError`, reason `layout`, whose text asks the user to write the properties one per line. Unreadable YAML stays `NoteUnreadableError`, now without the parser's message, which quotes the note.
 - **Failures.** What the plugin's own code throws inside the write (the merge, the serialiser) is a defect, not a `NoteWriteError` the user could retry (`asDefect`, `writeCommand`). A note deleted between the lookup and the write makes `vault.process` reject with ENOENT without calling back; the adapter reports `NoteNotFoundError` when the file is no longer at its path.
 - `fileManager.processFrontMatter` is no longer called by the plugin. The Obsidian double keeps it, because the fidelity scenarios still record what it does.
+
+## Amendment, 2026-11-22: a contact's role stays flat
+
+- **Decision (owner, O-D10).** A contact has one role, and a list of the communities it is responsible for. The same person with a different role in another community is a remark in the contact's note for now.
+- **What it means here.** The contact record needs no nested value: one key for the role (a code) and one key with the list of community `id`s. The rule "flat keys only" stands, and no assignment record type, parallel lists or coded list entries are introduced.
+- **Later.** A role per community would come as a new schema version of the contact type, with its own decision on storage. The reference field kind, lookup by `id` and a source for "today" are PBI-61.

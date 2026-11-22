@@ -18,13 +18,17 @@ import { showMessage } from "./notices";
 
 export { NOTICE_DURATION } from "./notices";
 
+/**
+ * The app flags come first: Obsidian sets `isMacOS` on iPhones and iPads too ("a device that
+ * pretends to be one"), and an Android device may say Linux.
+ */
 const platformName = (): string => {
   const kind = Platform.isMobile ? "mobile" : "desktop";
+  if (Platform.isIosApp) return `${kind}-ios`;
+  if (Platform.isAndroidApp) return `${kind}-android`;
   if (Platform.isMacOS) return `${kind}-macos`;
   if (Platform.isWin) return `${kind}-windows`;
-  if (Platform.isLinux) return `${kind}-linux`;
-  if (Platform.isIosApp) return `${kind}-ios`;
-  return Platform.isAndroidApp ? `${kind}-android` : kind;
+  return Platform.isLinux ? `${kind}-linux` : kind;
 };
 
 const storeLayer = (plugin: Plugin) =>

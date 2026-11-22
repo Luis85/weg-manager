@@ -62,10 +62,14 @@ export type ShellCatalog = {
   /** The app frame's landmarks, for screen readers. */
   readonly frame: {
     readonly navigation: string;
+    /** The navigation's one entry, which opens the settings screen. */
+    readonly settings: string;
     readonly content: string;
     /** The view's own history (icon buttons, so these are their accessible names). */
     readonly back: string;
     readonly forward: string;
+    /** The settings screen's navigation between its sections. */
+    readonly settingsSections: string;
   };
   /** A route to something that no longer exists. */
   readonly notFound: { readonly title: string; readonly detail: string; readonly back: string };

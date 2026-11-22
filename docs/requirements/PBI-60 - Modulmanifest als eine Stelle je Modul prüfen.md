@@ -23,12 +23,12 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: needs-triage
+triage: ready-for-agent
 ---
 
 # PBI-60 · Modulmanifest als eine Stelle je Modul prüfen
 
-**Planungsstand:** Option aus dem Architektur-Review, noch nicht entschieden · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, Review-Runde vom 22.11.2026)
+**Planungsstand:** Entschieden am 22.11.2026: Das Modulmanifest wird jetzt eingeführt, vor der Vorabversion 0.2.0 · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, Review-Runde vom 22.11.2026)
 
 ## User Story
 
@@ -59,9 +59,15 @@ Seit dem Review hat sich die Lage geändert:
 3. Fällt die Entscheidung dagegen: Die Note wird mit Begründung geschlossen, und `docs/engineering/adding-a-feature.md` nennt die verbleibenden ungeprüften Zeilen ausdrücklich.
 4. `npm run verify` endet mit Exit 0.
 
-## Offene Entscheidung
+## Entscheidung (22.11.2026)
 
-Manifest ja oder nein. Sinnvoller Zeitpunkt: wenn das zweite Fachmodul (Personen oder Vorgänge) eingetragen wird und der Aufwand der Stellen an einem echten Fall sichtbar ist.
+Der Produktverantwortliche hat entschieden:
+
+- Das Modulmanifest wird **jetzt** eingeführt, vor der Vorabversion 0.2.0 und vor dem zweiten Fachmodul.
+- **Zwei Einträge je Modul:** einer für die Anwendungsseite (Notiztypen, Routen, Texte, Fehlertexte, Fehler-Tags, Dienste, Befehle) und einer für die Bildschirme, der wie heute spät geladen wird. Der Start des Plugins lädt weiterhin kein Vue.
+- **Die Modullisten in `eslint.config.mjs` und `configs/fallow.json` werden aus der einen Modulliste erzeugt.** Die erzeugte fallow-Konfiguration prüft das Gate auf Aktualität.
+
+Kriterium 3 entfällt damit.
 
 ## Herkunft und Bezüge
 
@@ -70,3 +76,4 @@ Architektur-Review vom 22.11.2026, Option C1. ADR `docs/adr/0006-module-structur
 ## Kommentare
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
+- 22.11.2026 (Interview nach der Review-Runde): Entscheidung „jetzt einführen, zwei Einträge je Modul, Lint- und fallow-Listen erzeugt“ eingetragen; `triage` auf `ready-for-agent`. Umsetzung nach dem Schritt „Datensatz-Baukasten in `notes`“, vor dem Tag 0.2.0.

@@ -28,7 +28,7 @@ Die Befehle haben keine voreingestellten Tastenkürzel; eigene lassen sich unter
 ## Kernreise (Ziel, noch nicht im Plugin)
 
 1. Gemeinschaften getrennt einrichten und vorhandene Registerpunkte übernehmen.
-2. Nachrichten, Unterlagen und einzelne erledigbare Punkte mit Quelle erfassen.
+2. Nachrichten, Unterlagen und einzelne erledigbare Vorgänge mit Quelle erfassen.
 3. In der **Lage** sehen, was seit der letzten Übergabe passiert ist, was drängt und welche Fristen anstehen.
 4. Die **Wochenarbeit** in fünf Schritten erledigen: Eingänge zuordnen, Zusagen prüfen, Entscheidungen treffen, Nachrichten prüfen und senden, Schwerpunkte für nächste Woche festlegen.
 5. Nachrichten bewusst außerhalb des Plugins senden und den tatsächlichen Versand dokumentieren.
@@ -46,7 +46,7 @@ Was ist neu, was drängt, was steht in den nächsten 14 Tagen an, welche Schwerp
 
 ### Wochenarbeit
 
-Geführter Ablauf in fünf Schritten. Eingänge werden Punkten zugeordnet, erkannte Termine bewusst übernommen.
+Geführter Ablauf in fünf Schritten. Eingänge werden Vorgängen zugeordnet, erkannte Termine bewusst übernommen.
 
 ![Wochenarbeit – Eingang](docs/design/sitemap/assets/v2-P-D-02-Woche-Eingang.png)
 
@@ -54,9 +54,9 @@ Höchstens sieben reguläre Entscheidungen pro Woche, Dringendes zusätzlich. Be
 
 ![Wochenarbeit – Entscheiden](docs/design/sitemap/assets/v2-P-D-04-Woche-Entscheiden.png)
 
-### Punktakte
+### Vorgangsakte
 
-Ein Punkt mit Fakten, Fremdtermin und Wiedervorlage, Verlauf und Quellen an einem Ort.
+Ein Vorgang mit Fakten, Fremdtermin und Wiedervorlage, Verlauf und Quellen an einem Ort.
 
 ![Vorgangsakte](docs/design/sitemap/assets/v2-P-D-09-Vorgangsakte.png)
 
@@ -76,7 +76,7 @@ Personen, Firmen und Eigentümer-Verteiler, gruppiert nach Rolle und zuständig 
 
 Geplant ist, dass die vollständige Wochenarbeit auch auf dem Handy funktioniert ([K-09](docs/decisions/K-09%20-%20Vollst%C3%A4ndige%20mobile%20Wochenarbeit%20unterst%C3%BCtzen.md)). Die Bildschirme unten sind Entwürfe des Prototyps; das Plugin selbst läuft derzeit nur auf dem Desktop und wird erst nach einer Prüfung in Obsidian Mobile dafür freigegeben.
 
-| Lage | Entscheiden | Punktakte | Zusage erfassen |
+| Lage | Entscheiden | Vorgangsakte | Zusage erfassen |
 | --- | --- | --- | --- |
 | ![Lage mobil](docs/design/sitemap/assets/v2-P-M-01-Lage.png) | ![Entscheiden mobil](docs/design/sitemap/assets/v2-P-M-04-Woche-Entscheiden.png) | ![Vorgangsakte mobil](docs/design/sitemap/assets/v2-P-M-09-Vorgangsakte.png) | ![Erfassen mobil](docs/design/sitemap/assets/v2-P-M-13-Erfassen-Zusage.png) |
 
@@ -132,3 +132,5 @@ Entwicklerdokumentation (englisch): [Architektur](docs/engineering/architecture.
 ## Lizenz
 
 [MIT](LICENSE)
+
+Die Lizenzen der Pakete von Dritten, die in `main.js` und `styles.css` stecken, stehen in [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt). Die Datei wird mit `npm run notices` erzeugt und liegt jedem GitHub-Release bei.

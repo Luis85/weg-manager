@@ -6,7 +6,7 @@ date: 2026-11-22
 
 # Mockup-Quellen
 
-Die Mockups unter `docs/design/sitemap/assets/v2-*.png` entstehen aus den HTML-Dateien in diesem Ordner, mit Ausnahme der Prototyp-Screenshots `v2-P-*`. So lassen sie sich nachziehen, wenn sich Begriffe oder Gestaltung ändern ([[K-20 - WCS-Datenmodell als fachliche Grundlage]], O-D13).
+Die Mockups unter `docs/design/sitemap/assets/v2-*.png` entstehen aus den HTML-Dateien in diesem Ordner, mit Ausnahme der Prototyp-Screenshots `v2-P-*`. So lassen sie sich nachziehen, wenn sich Begriffe oder Gestaltung ändern ([[K-20 - WCS-Datenmodell als fachliche Grundlage]], O-D15).
 
 - **Eine Datei je Bild.** Jede Quelle trägt im `<head>` die Angabe `<meta name="mockup" content="out=v2-….png; width=1440; height=1024; scale=2">`. `width` und `height` sind die Größe des Fensters in CSS-Pixeln, `scale` der Faktor für die Bildpixel.
 - **Gemeinsame Gestaltung:** `shared.css` enthält die Tokens und Bausteine des Prototyps, hell und dunkel (`<html data-theme="dark">`). Eigene Regeln stehen im `<style>` der Datei.

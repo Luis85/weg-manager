@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { h } from "vue";
 import { mountApp } from "../../../support/surface";
 import { testRuntime } from "../../../support/runtime";
+import { eventually } from "../../../support/wait";
 
 /**
  * Iconify reads `fetch` once, when its module loads, so the spy has to be in place before the
@@ -52,7 +53,7 @@ const mountIcons = async (names: string[]) => {
 describe("icons without network", () => {
   it("draws a bundled icon from the bundle", async () => {
     const { root, done } = await mountIcons(["i-lucide-plus"]);
-    await vi.waitFor(() => expect(root.querySelector("svg")?.innerHTML).not.toBe(""));
+    await eventually(() => expect(root.querySelector("svg")?.innerHTML).not.toBe(""));
     expect(requests).toEqual([]);
     await done();
   });

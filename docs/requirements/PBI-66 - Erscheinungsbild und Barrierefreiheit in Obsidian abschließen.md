@@ -48,10 +48,18 @@ Die Befunde des UX-Reviews zu Kontrast, Rücksetzen der Grundstile, langen Namen
 **Technische Reste:**
 
 - **Fokusring an Eingabefeldern.** Obsidians eigener grauer Ring (`input:focus`, etwa 1,87:1) erscheint neben dem 3 px breiten Akzent-Umriss des Plugins. Der Umriss erreicht etwa 3,4 bis 4:1 (im Review gemessen, vom Umsetzer aus den berechneten Farben nachgerechnet); `appearance.e2e.ts` misst bisher nur das Feld in Ruhe. Obsidians Regeln für Hover und gedrückte Felder greifen ebenfalls noch.
-- **Zwei ähnliche Farben.** `teal` und `cyan` unterscheiden sich fast nur im Farbton (Helligkeitsverhältnis 1,02 hell, 1,44 dunkel). Das Kürzel trägt die Bedeutung, zwei benachbarte Abzeichen sehen bei Farbfehlsichtigkeit aber gleich aus.
+- **Zwei ähnliche Farben.** `teal` und `cyan` unterscheiden sich fast nur im Farbton (Helligkeitsverhältnis 1,02 hell, 1,44 dunkel). Das Kürzel trägt die Bedeutung, zwei benachbarte Abzeichen sehen bei Farbfehlsichtigkeit aber gleich aus. **Entschieden am 22.11.2026:** `cyan` wird durch `amber` (dunkles Gold) ersetzt, vor dem Tag 0.2.0. Eine Notiz, die noch `cyan` nennt, zeigt einen Hinweis und lässt sich neu speichern.
 - **Silbentrennung.** Auf Linux hat Obsidians Electron kein Trennwörterbuch; lange Komposita brechen ohne Trennstrich um. Auf macOS und Windows ungeprüft.
 
+**Kleine Punkte aus dem UX-Schritt (PR #34), bisher in keiner Note.** Sie sind im Bericht zu PR #34 nur als Stichworte genannt, ohne Entscheidung und ohne Korrektur; jeder ist zuerst am Bildschirm zu bestätigen:
+
+- die Platzierung von „Löschen“ auf der Karte einer Gemeinschaft,
+- die Größe der Auswahlknöpfe in der Konfliktansicht (13 px),
+- der Status „Auswahl nötig“, der je geöffneter Ansicht angesagt wird.
+
 **Dokumente, die nicht mehr stimmen:**
+
+**Entschieden am 22.11.2026:** Die drei Handoff-Dokumente und die Archify-Diagramme werden vollständig auf den heutigen Stand gebracht, nicht nur als überholt markiert.
 
 - `docs/design/handoff/02 - Komponenten.md` und `docs/design/handoff/03 - Ansichten, Navigation und Befehle.md` beschreiben einen `CommunityFilter` mit „Alle“ als Filter, „nie Bearbeitungskontext“. Umgesetzt und entschieden ist eine Auswahl ohne „Alle“ (ADR 0008).
 - `docs/design/handoff/01 - Design Tokens.md` sieht eine neutrale Primärfarbe und einen eigenen Fokuswert vor. Entschieden am 22.11.2026: Obsidians Akzentfarbe bleibt, für Kontrast abgedunkelt.
@@ -77,3 +85,5 @@ UX-Review vom 22.11.2026 (Abschnitte C und D), Berichte zu PR #31 und PR #34. [[
 ## Kommentare
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
+- 22.11.2026 (Interview nach der Review-Runde): Entscheidungen eingetragen: `cyan` wird `amber`; Handoff-Dokumente und Diagramme werden neu geschrieben. Drei kleine UX-Punkte aus PR #34 ergänzt. Die manuellen Prüfungen bleiben beim Produktverantwortlichen, deshalb weiter `ready-for-human`.
+- 22.11.2026: `cyan` ist durch `amber` ersetzt (PR #42); im hellen Theme wirkt der Farbton wie dunkle Bronze, weil weiße Schrift bei 4,5:1 eine dunkle Fläche verlangt. Der Produktverantwortliche sieht ihn in der manuellen Prüfung von 0.2.0 an. Die Handoff-Dokumente 00 bis 09 und das Ablaufdiagramm der Ereignisse sind auf den heutigen Stand gebracht; das Architekturdiagramm folgt nach dem Modulmanifest. Offen bleiben: die manuellen Prüfungen, der Fokusring an Eingabefeldern, die Silbentrennung, die drei kleinen UX-Punkte.

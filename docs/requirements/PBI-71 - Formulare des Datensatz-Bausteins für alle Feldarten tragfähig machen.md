@@ -65,6 +65,7 @@ Der Reviewer hat den ganzen Weg vom Laden des Formulars über `editedValues`, `m
 5. Feature-Dienste dürfen von Diensten eines früheren Features abhängen: Die Layer werden in der Reihenfolge von `APP_MODULES` gefaltet (je `provideMerge` auf das vorige), und `Layer<AppServices>` prüft das Ergebnis weiter. Ein Test mit zwei Modulen, von denen das spätere einen Dienst des früheren braucht, zeigt es.
 6. Ein Helfer in `notes` liefert den angezeigten Namen eines referenzierten Datensatzes über `byId` des Zieltyps; Karten, Konflikte und der Text zu `reference.missing` benutzen ihn, kein Feature baut ihn selbst.
 7. `npm run verify` endet mit Exit 0 und `npm run test:e2e` (unter `xvfb-run -a`) ebenfalls, weil Formular- und Notizverhalten sich ändern.
+8. Ein Datensatz, dessen Verweis auf ein fehlendes Ziel zeigt (etwa eine gelöschte Notiz), lässt sich speichern. Das Formular markiert das Feld; das Speichern wird aus diesem Grund nie verweigert. Ein Test deckt es für Verweis und Verweisliste ab. (Entscheidung vom 22.11.2026, viertes Interview.)
 
 ## Herkunft und Bezüge
 
@@ -73,3 +74,4 @@ Review-Runde vom 22.11.2026 am Stand `65eb006`, Bericht zum Produktcode: Befund 
 ## Kommentare
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Stand `65eb006` (vier unabhängige Reviews: Produktcode, Tests, CI und Release, Blueprint und Dokumente). Befund 1 und die Verbesserungen 2 und 5 stammen aus dem Bericht zum Produktcode und sind gegen den Code gelesen, aber nicht ausgeführt; nichts davon ist umgesetzt. `triage` ist `ready-for-agent`, weil Kriterien und Lösungsrichtung feststehen; kein heutiger Typ ist betroffen.
+- 22.11.2026 (viertes Interview): Entscheidungen des Eigentümers, soweit sie diese Note betreffen. (2) Die Formulare für alle Feldarten werden jetzt gebaut, vor dem ersten Fachfeature. (5) Ein Datensatz, dessen Verweis auf ein fehlendes Ziel zeigt, wird trotzdem gespeichert; das Formular markiert das Feld, und die Notiz erscheint unter den Datenproblemen. Das Speichern wird aus diesem Grund nie verweigert (Kriterium 8). (6) Ein Verweis zwischen Datensätzen wird nur als `id` des Ziels geschrieben. Es gibt keine Wikilink-Eigenschaft; Obsidians Graph und Rückverweise zeigen die Beziehung nicht. Die Felder `reference` und `references` schreiben und lesen deshalb nur die `id`. Die Version 0.2.1 folgt, wenn diese Note und [[PBI-72 - Eingaben im Gemeinschaftsblatt gehen beim Schließen verloren]] zusammengeführt und grün sind; der Agent startet die Veröffentlichung dann.

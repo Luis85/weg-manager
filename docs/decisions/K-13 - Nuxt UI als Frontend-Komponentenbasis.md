@@ -20,6 +20,10 @@ Die gewählte Basis liefert eine einheitliche Sprache für Navigation, Tabellen,
 
 Die Entscheidung führt weder Nuxt-SSR noch einen Server, ein eigenes Konto oder eine Pflichtintegration ein. Das bestehende lokale Obsidian-Produkt bleibt maßgeblich; die vollständige mobile Kernreise bleibt Produktziel und folgt nach dem MVP (Stand 21.11.2026, [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]). Paketversion, technische Einbettung, CSS-Isolation, lokale Assets, Host-Themes, mobile Dateiabläufe (erst für den Ausbau nach dem MVP) und tatsächliche Accessibility sind vor Implementierung beziehungsweise Release gesondert zu klären.
 
+## Nachtrag, 22.11.2026: Schrift des Hosts
+
+Entscheidung des Produktverantwortlichen (O-D12): Das Plugin verwendet die Schriften, die Obsidian vorgibt (`--font-interface`, `--font-monospace`), und bündelt keine eigene Schrift. Die Geist-Schrift aus dem Designstand v2 entfällt. Das Plugin folgt damit der Schrift und der Größe, die der Nutzer in Obsidian gewählt hat, und dem Theme. Am Code ändert sich nichts; so ist es gebaut.
+
 ## Bezüge
 
 [[UI-Design - Leitlinien und Reviewumfang]], [[UI-Research - NuxtUI und Komponentenwahl]], [[F-21 - Nichtfunktionale Anforderungen]], [[K-11 - Lokalen Obsidian-Kern ohne Konto und KI-Pflicht anbieten]].

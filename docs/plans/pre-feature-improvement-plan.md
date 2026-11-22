@@ -238,7 +238,12 @@ The architecture diagram under `docs/archify/` is regenerated after the manifest
 | `CI / e2e` required | Not yet. | PBI-67 |
 | Main entry | The frame's main entry is "Einstellungen", current on every settings section. | ADR 0008 amendment |
 | Data issues | Whether readable records with a problem of their own (duplicate id, newer version) are also listed under "Datenprobleme" is decided with the second record type. | this plan |
-| After the tag | References and dates (PBI-61), the test double and e2e (PBI-63), gate and CI cost (PBI-64), while the owner checks 0.2.0. | this plan |
+| After the tag | References and dates (PBI-61), the test double and e2e (PBI-63), gate and CI cost (PBI-64) and the three cases left in PBI-65, while the owner checks 0.2.0. | this plan |
+| Fonts | Obsidian's fonts stay; Geist is not bundled (O-D12). | K-13 amendment |
+| First feature | Decided after the manual check of 0.2.0. | this plan |
+| Manual check | The owner installs 0.2.0 through BRAT on Windows and checks theme (light, dark) and zoom. Keyboard-only use, a screen reader and other plugins stay unchecked. | PBI-66 |
+| Dependabot and notices | An agent may push the regenerated notices file onto a Dependabot branch; an unusual licence goes to the owner. | [github-setup](../engineering/github-setup.md) |
+| Nightly mutation run | The agent starts it by hand once after the tag. | PBI-67 |
 
 ### Not fixed, in the backlog
 

@@ -32,6 +32,7 @@ How to treat these pull requests:
 - Dependabot does not touch `overrides`. When an update makes an override unnecessary, remove it by hand (see ADR 0001), then run `npm run verify`.
 - Do not merge a change to a workflow pin that lacks the tag comment.
 - **Action updates, the owner's standing rule (2026-11-21):** an agent may merge a Dependabot action update, major or not, after three checks. First, read the action's changes between the old and the new tag (its `action.yml`, README and changelog at both tags) against the inputs and behaviour our workflows rely on. Second, verify the new SHA against its tag with `git ls-remote https://github.com/<owner>/<action> refs/tags/<tag>`. Third, see CI green on the pull request. Anything doubtful goes to the owner. `release.yml` and `nightly-mutation.yml` do not run on a pull request, so say in the report what in them depends on the action.
+- **Third-party notices on an update, the owner's standing rule (2026-11-22):** when an update adds or removes a bundled package, `check:notices` turns the pull request red. An agent may push one commit with the regenerated `THIRD-PARTY-NOTICES.txt` (`npm run notices`) onto the Dependabot branch, names the licence of every new package in its review, and merges when CI is green. A new licence that is not MIT, ISC, BSD or Apache goes to the owner first.
 - **Majors held back** by ADR 0001 (TypeScript 7, ESLint 10, `@eslint/js` 10) are on Dependabot's `ignore` list. Remove an entry when its blocker is gone.
 
 ## Steps for you

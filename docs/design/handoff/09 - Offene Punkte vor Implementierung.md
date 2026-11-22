@@ -39,7 +39,7 @@ date: 2026-11-22
 | O-D10 | Kann derselbe Kontakt je Gemeinschaft eine andere Rolle haben (z. B. Verwaltung in AW, Eigentümer in TG)? | **Entschieden am 22.11.2026:** nein. Ein Kontakt hat eine Rolle und eine Zuständigkeit für eine oder mehrere Gemeinschaften, wie im Prototyp. Eine abweichende Rolle steht in der Notiz des Kontakts; eine Rolle je Gemeinschaft kann mit einer neuen Schemaversion folgen ([[PBI-61 - Beziehungen zwischen Datensätzen und abgeleitete Werte vorbereiten]]). AT-B01 in [[08 - Abnahme und Testszenarien]] ist angepasst; PBI-02 ist beim Ausarbeiten der Funktion anzupassen |
 | O-D11 | Benennung des nativen Chats (PBI-47) vs. Schreibregel „kein KI in Labels“ ([[06 - Texte und Begriffe]]) | Vorschlag: Regel gilt für die regelbasierte Kernreise; der Chat heißt nach seiner Funktion („Chat mit Claude“) und zeigt den Abrechnungsmodus |
 | O-D6 | Punkte-Liste als Bases-View oder eigene Liste | Spike: Bases-View für Lesen, eigene Liste für Bearbeitung |
-| O-D12 | Schrift: Geist lokal bündeln (Entwurf vom 15.11.2026, [[K-13 - Nuxt UI als Frontend-Komponentenbasis]]) oder die Schrift des Hosts behalten? | Offen. Gebaut ist die Schrift des Hosts (`--font-interface`, `--font-monospace`); Geist ist nicht eingebaut und keine Entscheidung ersetzt sie |
+| O-D12 | Schrift: Geist lokal bündeln (Entwurf vom 15.11.2026, [[K-13 - Nuxt UI als Frontend-Komponentenbasis]]) oder die Schrift des Hosts behalten? | **Entschieden am 22.11.2026:** die Schrift des Hosts (`--font-interface`, `--font-monospace`) bleibt; Geist wird nicht gebündelt (Nachtrag in K-13) |
 
 ## Noch nicht gestaltet
 
@@ -55,6 +55,6 @@ Weitere Lücken: Erststart Schritt 2 (Kontakte) und 3 (Register, entspricht dem 
 ## Technische Spikes
 
 1. Erledigt: Nuxt UI (Vue) in einer Obsidian-`ItemView` inkl. CSS-Kapselung und Theme-Wechsel (ADR 0002, ADR 0008); Mobile erst nach dem MVP.
-2. Icons ohne Netz sind gelöst (Liste in `SHELL_ICONS`, kein Abruf zur Laufzeit); lokale Schriften offen, siehe O-D12.
+2. Icons ohne Netz sind gelöst (Liste in `SHELL_ICONS`, kein Abruf zur Laufzeit); lokale Schriften entfallen, das Plugin nutzt die Schrift des Hosts (O-D12).
 3. Nach dem MVP: `visualViewport`-Verhalten der Aktionsleisten mit Obsidian-Mobile-Tastatur.
 4. Leistung: Lage mit 500 Punkten < 5 s Start, < 300 ms Filtern (B-NFR-04). Gemessen ist bisher der Notizindex mit 2.000 Datensätzen (`docs/engineering/architecture.md`, Abschnitt „The index“), nicht die Lage.

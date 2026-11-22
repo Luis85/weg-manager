@@ -206,14 +206,65 @@ describe("the community selection", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
-  it.effect("counts a duplicated id once and selects it", () => {
+  it.effect("leaves out both notes of a duplicated id, and asks for nothing", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {
       fixture.memory.seed(`${FOLDER}/A.md`, communityNote(1));
       fixture.memory.seed(`${FOLDER}/B.md`, communityNote(1, { short_code: "B1" }));
       yield* ready;
       yield* settle;
+      assert.deepStrictEqual(yield* communitySelection, selection(undefined));
+      assert.isUndefined(yield* storedSelection);
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("selects only a community without issues", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      seed(fixture, 1);
+      fixture.memory.seed(`${FOLDER}/Farbe.md`, communityNote(2, { color: "amber" }));
+      fixture.memory.seed(`${FOLDER}/Neu.md`, {
+        ...communityNote(3, { color: "blue" }),
+        schema: "weg-manager.community/v2",
+      });
+      yield* ready;
+      yield* settle;
       assert.deepStrictEqual(yield* communitySelection, selection(communityId(1)));
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("leaves out both communities of a duplicate short code", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      seed(fixture, 1);
+      fixture.memory.seed(`${FOLDER}/G2.md`, communityNote(2, { color: "blue" }));
+      fixture.memory.seed(
+        `${FOLDER}/G3.md`,
+        communityNote(3, { short_code: "G2", color: "violet" }),
+      );
+      yield* ready;
+      yield* settle;
+      assert.deepStrictEqual(yield* communitySelection, selection(communityId(1)));
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("treats a stored community with an issue as gone for the moment", () => {
+    const fixture = communitiesFixture({ device: { [SELECTION_KEY]: communityId(2) } });
+    return Effect.gen(function* () {
+      seed(fixture, 3);
+      yield* ready;
+      yield* settle;
+      assert.deepStrictEqual(yield* communitySelection, selection(communityId(2)));
+      fixture.memory.seed(`${FOLDER}/G2.md`, communityNote(2, { color: "amber" }));
+      yield* indexed;
+      assert.deepStrictEqual(yield* communitySelection, selection(undefined, true));
+      // A user's choice is never offered a community with an issue.
+      yield* selectCommunity(communityId(2));
+      assert.deepStrictEqual(yield* communitySelection, selection(undefined, true));
+      fixture.memory.seed(`${FOLDER}/G2.md`, communityNote(2, { color: "violet" }));
+      yield* indexed;
+      assert.deepStrictEqual(yield* communitySelection, selection(communityId(2)));
+      assert.strictEqual(yield* storedSelection, communityId(2));
     }).pipe(Effect.provide(fixture.layer));
   });
 

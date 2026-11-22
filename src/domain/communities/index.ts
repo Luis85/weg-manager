@@ -23,4 +23,9 @@ export {
   type CommunityIssueCode,
   type CommunityInput,
 } from "./rules";
-export { isCommunityChoice, selectedCommunity } from "./selection";
+export {
+  isCommunityChoice,
+  selectableIds,
+  selectedCommunity,
+  type SelectionCandidate,
+} from "./selection";

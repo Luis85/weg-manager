@@ -15,26 +15,37 @@ const CONTRACT = "NoteStore contract in Obsidian";
 const CASES = 53;
 
 /**
+ * The cases that need failing writes. The fixture makes the vault read-only with `chmod`, which
+ * only works for a user that is not root (the GitHub runner is not, this file's `process` is the
+ * runner's as the app's is). For root they are skipped, by name, with the reason.
+ */
+const FAIL_WRITES = [
+  "create > fails with NoteWriteError when the vault rejects the write",
+  "update > fails with NoteWriteError when the vault rejects the write",
+  "trash > fails with NoteTrashError when the vault rejects it, and keeps the note",
+  "rename > fails with NoteWriteError when the vault rejects it",
+];
+const AS_ROOT = process.getuid?.() === 0;
+
+/**
  * The cases that need a hook a real app cannot give, by name, with the hook. They still run
  * against the in-memory adapter and the Obsidian adapter on the double
  * (`tests/unit/infrastructure/notes/`); the case-insensitive disk of Windows and macOS is not
  * Linux's at all, so that run of the contract is the double's alone.
  */
 const SKIPPED: Readonly<Record<string, string>> = {
+  ...Object.fromEntries(
+    AS_ROOT ? FAIL_WRITES.map((name) => [name, SKIP_REASONS.failWritesAsRoot]) : [],
+  ),
   "list > fails with VaultReadError when the vault cannot be read": SKIP_REASONS.failReads,
   "read > fails with VaultReadError when the vault cannot be read": SKIP_REASONS.failReads,
   "unreadable > fails with VaultReadError when the vault cannot be read": SKIP_REASONS.failReads,
-  "create > fails with NoteWriteError when the vault rejects the write": SKIP_REASONS.failWrites,
   "create > completes a create that has started, also when interrupted": SKIP_REASONS.holdWrites,
-  "update > fails with NoteWriteError when the vault rejects the write": SKIP_REASONS.failWrites,
   "update > fails with NoteNotFoundError when the note is deleted before the write":
     SKIP_REASONS.holdWrites,
   "update > fails with NoteNotFoundError at the first attempt when the note is deleted outside and the host has not noticed":
     SKIP_REASONS.unnoticed,
   "update > completes an update that has started, also when interrupted": SKIP_REASONS.holdWrites,
-  "trash > fails with NoteTrashError when the vault rejects it, and keeps the note":
-    SKIP_REASONS.failWrites,
-  "rename > fails with NoteWriteError when the vault rejects it": SKIP_REASONS.failWrites,
 };
 
 /**

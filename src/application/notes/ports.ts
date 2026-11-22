@@ -80,7 +80,14 @@ export class NoteStore extends Context.Service<
     >;
     /** Moves the note to the trash the user chose in Obsidian. */
     trash(path: string): Effect.Effect<void, NoteNotFoundError | NoteTrashError>;
-    /** Renames the note in its folder; Obsidian updates the links to it. */
+    /**
+     * Renames the note in its folder; Obsidian updates the links to it. Returns the note at its
+     * new path with its frontmatter as the store reads it after the move. Obsidian moves the file
+     * only once its metadata cache has indexed earlier writes, so that includes a write just
+     * before; but a rename that joined another rename in progress returns before its own move
+     * (measured in 1.15.1), with the cache's frontmatter of that moment. A caller that has just
+     * written keeps the frontmatter its write returned, as the record kit does.
+     */
     rename(
       path: string,
       newName: string,

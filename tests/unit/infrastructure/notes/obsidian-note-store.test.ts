@@ -1,12 +1,17 @@
 import { assert, describe, expect, it } from "@effect/vitest";
-import { Effect, Result } from "effect";
+import { Effect, Fiber, Result } from "effect";
 import { vi } from "vitest";
-import { NoteStore, NoteWriteRefusedError } from "../../../../src/application/notes";
+import {
+  NoteNotFoundError,
+  NoteStore,
+  NoteWriteRefusedError,
+} from "../../../../src/application/notes";
 import { noteStoreLayer } from "../../../../src/infrastructure/obsidian/notes";
 import { App, TFile, normalizePath, stringifyYaml } from "../../../support/obsidian";
 import { splitFrontmatter } from "../../../support/obsidian/metadata-cache";
 import { noteStoreContract, type NoteStoreFixture } from "../../../support/notes/contract";
 import { NORMALIZE_CASES } from "../../../support/notes/fidelity";
+import { eventually } from "../../../support/wait";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -216,6 +221,33 @@ describe("Obsidian NoteStore adapter", () => {
         );
         assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "layout" }));
         assert.strictEqual(modified.mock.calls.length, 0);
+      }),
+  );
+
+  it.effect(
+    "reports a note that left the vault as not found, whatever the rejected write says",
+    () =>
+      Effect.gen(function* () {
+        const app = new App();
+        app.vault.seedFile("A.md", "---\na: 1\n---\n");
+        yield* Effect.promise(() => app.metadataCache.whenIndexed());
+        app.vault.holdWrites();
+        const fiber = yield* Effect.forkChild(
+          run(app, (notes) => notes.update("A.md", () => Result.succeed({ set: { a: 2 } }))),
+        );
+        yield* Effect.promise(() =>
+          eventually(() => {
+            if (app.vault.heldWrites() !== 1) throw new Error("the write is not waiting yet");
+          }),
+        );
+        // The write then fails with an error that does not say ENOENT (the double's EACCES).
+        app.vault.failWrites = true;
+        const file = app.vault.getFileByPath("A.md");
+        if (file === null) throw new Error("no A.md");
+        app.metadataCache.forget(file);
+        app.vault.remove(file);
+        app.vault.releaseWrites();
+        assert.instanceOf(yield* Effect.flip(Fiber.join(fiber)), NoteNotFoundError);
       }),
   );
 

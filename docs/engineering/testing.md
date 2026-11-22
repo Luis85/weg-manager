@@ -125,10 +125,11 @@ Survivors left on 2026-11-22, each planted by hand or read in the code, and why 
 | `settings-mirror.ts` | `discard: false` | `Effect.all` then returns an array nobody reads |
 | `open-route.ts` | `route === undefined` false | `state: { route: undefined }` decodes to the start route, as no state does |
 | `icons-offline.ts` | `{ status: 404 }` emptied | No test sees the answer's status: `icons-offline.test.ts` only sees that no request leaves and that the placeholder stays empty. Not investigated further |
-| `cache-completeness.ts` (3) | the resume shortcut (`settled`, `next += 1`, the early return) | They only save lookups; the answer is the same, because the rescan finds the same files. A test would pin a lookup count |
+| `cache-completeness.ts` (2) | the resume shortcut (`settled`, `next += 1`, the early return) | They only save lookups; the answer is the same, because the rescan finds the same files. A test would pin a lookup count |
 | `note-store.ts` (Obsidian) 57, 59, 74 | root-folder branches, the `?? []` filler | `vault.getRoot()` is `getFolderByPath("/")`, and a placeholder name cannot clash; the root cases are in the contract (`contract-clashes.ts`) |
 | `note-store.ts` 39 | `find` for any section, not the `yaml` one | The double models no other section; the e2e spec `note-store.e2e.ts` runs it against real sections |
-| `note-store.ts` 100, 105 | the deleted-meanwhile test, the "did not call back" defect | Not investigated: they need a `vault.process` failure that the double cannot inject (the double's own write failures are ENOENT or the callback's throw); the e2e spec is the place |
+| `note-store.ts` (Obsidian) 117, 121 | `decided.outcome === undefined` as always true in the not-found test, and the text of the "did not call back" defect | The double never rejects after the callback ran, nor resolves without calling it, and Obsidian 1.15.1 does neither (`processGone`, `vanishedScenario`), so the guard cannot change an outcome; the listing test and the ENOENT test themselves are killed (`vault.vanish`, the contract case, and a rejection without a code for a file that left the vault) |
+| `events.ts` 90 | `if (!vaultReady)` before the sign of life for the deadline's fiber, as always true | A sign offered after `VaultReady` only wakes the fiber, which sees `vaultReady` and ends |
 | `memory-note-store.ts` 43, 44 | `ancestors("/")` | The phantom folders are not reachable through the port |
 | `memory-note-store.ts` 54, 56 | extension of a name without a dot, or of a folder with one | A file without an extension is no note |
 | `memory-note-store.ts` 99 | `siblingsOf` unfiltered | Callers compare whole paths, so extra paths change nothing |

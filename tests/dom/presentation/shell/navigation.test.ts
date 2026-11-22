@@ -376,7 +376,10 @@ describe("the app frame", () => {
   it("keeps the settings entry current on every section, and opens the communities from another", async () => {
     const { runtime } = make();
     const root = newRoot();
-    const navigation = memoryNavigation(appSurface, { name: "settings", section: "data-issues" } as const);
+    const navigation = memoryNavigation(appSurface, {
+      name: "settings",
+      section: "data-issues",
+    } as const);
     closes.push(mountApp(root, runtime, { navigation }));
     await settle();
     expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Einstellungen"]);

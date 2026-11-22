@@ -1,5 +1,5 @@
 // @ts-check
-/** Mutation testing of domain and application (blueprint Task 10). Thresholds are never lowered. */
+/** Mutation testing of domain and application. Thresholds are never lowered. */
 const config = {
   testRunner: "vitest",
   vitest: { configFile: "configs/vitest.stryker.config.ts" },

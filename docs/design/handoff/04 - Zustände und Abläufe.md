@@ -3,13 +3,15 @@ type: Handoff
 id: HO-04
 status: entwurf
 scope: mvp
-version: "1.0"
-date: 2026-11-15
+version: "1.1"
+date: 2026-11-22
 ---
 
 # Handoff · Zustände und Abläufe
 
-Zustandsnamen sind fachliche Vorschläge; das technische Schema folgt in der technischen Konzeption. Jeder Übergang erzeugt ein Ereignis (ENT-06) mit Ereignis- und Erfassungszeit.
+**Auf den Stand vom 22.11.2026 gebracht** nach [ADR 0007](../../adr/0007-vault-data-access.md) (Notizen als Datensätze, Speichern je Feld, Konflikt) und den Entscheidungen vom 22.11.2026. Keiner der Zustandsautomaten unten ist gebaut; sie gelten wie geplant. Gebaut ist nur der Abschnitt „Speichern und Fehler“.
+
+Zustandsnamen sind fachliche Vorschläge. Das technische Schema folgt je Datensatz mit seinem Dateivertrag (`docs/contracts/`): Schlüssel und Wertcodes sind englisch, ein Zustand steht als Code in einem flachen Schlüssel der Notiz (ADR 0007). Jeder Übergang erzeugt ein Ereignis (ENT-06) mit Ereignis- und Erfassungszeit.
 
 ## Wochensitzung
 
@@ -89,5 +91,6 @@ stateDiagram-v2
 
 ## Speichern und Fehler
 
-- Jede bestätigende Aktion speichert sofort (Ziel < 500 ms, B-NFR-05). Fehlschlag: Eingabe bleibt, Alert am Element mit Handlung („Erneut speichern“).
-- Externe Dateiänderung während der Bearbeitung: Alert „Geändert außerhalb des Plugins“ mit „Vergleichen“; nie still überschreiben (DF-23).
+- Jede bestätigende Aktion speichert sofort (Ziel < 500 ms, B-NFR-05). Gebaut: Eine Notiz speichert über `vault.process` und ändert nur die Zeilen der Felder, die der Mensch geändert hat; fremde Schlüssel, Kommentare, Zeilenenden und der Text darunter bleiben. Eine Notiz, deren Frontmatter das Plugin so nicht ändern kann, schreibt es nicht und sagt es.
+- Fehlschlag: Die Eingabe bleibt, ein Alert nennt Ursache und Handlung („Notiz nicht gespeichert“, „Erneut versuchen“). Nach einem Erfolg meldet eine Notice den Namen („Name“ gespeichert).
+- Änderung außerhalb des Formulars während der Bearbeitung (Sync, ein anderes Gerät, ein Agent): Das Plugin führt je Feld zusammen. Ein Feld, das nur eine Seite geändert hat, gilt. Haben beide Seiten dasselbe Feld verschieden geändert, schreibt das Plugin nichts und zeigt je Feld drei Werte (beim Öffnen, Deine Eingabe, jetzt in der Notiz); der Mensch wählt und speichert („Notiz geändert, während du bearbeitet hast“). Nie still überschreiben (DF-23).

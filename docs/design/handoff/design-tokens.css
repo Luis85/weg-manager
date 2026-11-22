@@ -1,4 +1,8 @@
-/* WEG Manager · Design Tokens v2 (Stand 15.11.2026)
+/* Gestaltungswerte vom 15.11.2026, nicht der gebaute Stand. Gebaut sind src/styles/tokens.css,
+   bridge.css und communities.css (Farben aus Obsidians Variablen abgeleitet); siehe
+   "01 - Design Tokens.md", Stand 22.11.2026.
+
+   WEG Manager · Design Tokens v2 (Stand 15.11.2026)
    Präfix --wm-, gekapselt auf .wm-root, damit Host-Themes nicht kollidieren.
    Dunkelmodus folgt Obsidian: body.theme-dark. */
 .wm-root{

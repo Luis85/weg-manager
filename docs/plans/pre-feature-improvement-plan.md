@@ -193,22 +193,19 @@ After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its 
 | #34 | The communities screen: focus and modality, only communities without issues selectable, texts in plain words that name their data, notices after writes, notes the plugin cannot write open in Obsidian. |
 | #35 | The backlog notes PBI-60 to PBI-67 and the owner decisions of the first interview; an e2e spec waits for the list before it clicks. |
 | #37 | Tests for the edge layers where planted mutations survived, a shared wait budget and counted work instead of wall-clock bounds, a second, non-gating mutation run for those layers with its own nightly job; the diagnostics name an iOS or Android app correctly. |
+| #39 | Generic record handling moved from `communities` into `notes` in every layer (`defineRecords`, `useRecordForm`, `useRecordScreen`); the settings screen belongs to the shell and has one section per module, with the new section "Datenprobleme". |
+| #40 | Third-party notices generated from the bundle (26 packages: 25 MIT, 1 ISC), checked by the gate, staged and attested as a fourth release asset. |
+| #41 | The unhandled events `ActiveFileChanged` and `ColorSchemeChanged`, `isMarkdown` and the event bus's unused subscription are deleted (PBI-62, criterion 3). |
+| #42 | `amber` replaces the community colour `cyan`; the main entry is "Einstellungen" and current on every settings section. |
 
-### In progress on 2026-11-22
+### Still open before the 0.2.0 tag
 
-- Generic record handling moves from `communities` into `notes`, and the settings screen gets one section per module (owner decision: before the pre-release).
-- A generated third-party notices file, checked by the gate and attached to each release (PBI-67).
+One pull request each (owner decisions of the second interview):
 
-### Before the 0.2.0 tag (owner decisions of the second interview)
+1. The module manifest: two entries per module, the lint and fallow module lists generated from the one module list (PBI-60).
+2. Write fixes and two rare cases: the closing lines `---` with trailing spaces and `----` are accepted, a comment at the end of a written line stays, a root folder that differs only in case is found, a file name is limited to 255 bytes (PBI-65).
 
-In this order after the two steps above, one pull request each:
-
-1. The unhandled events `ActiveFileChanged` and `ColorSchemeChanged`, `isMarkdown` and the event bus's unused subscription are deleted (PBI-62).
-2. The module manifest: two entries per module, the lint and fallow module lists generated from the one module list (PBI-60).
-3. Write fixes and two rare cases: the closing lines `---` with trailing spaces and `----` are accepted, a comment at the end of a written line stays, a root folder that differs only in case is found, a file name is limited to 255 bytes (PBI-65).
-4. The community colour `cyan` is replaced by `amber` (PBI-66).
-
-Beside these, not holding the tag: the design handoff documents and the Archify diagrams are rewritten to the current state (PBI-66).
+The architecture diagram under `docs/archify/` is regenerated after the manifest; it does not hold the tag.
 
 ### Owner decisions (2026-11-22)
 
@@ -239,6 +236,8 @@ Beside these, not holding the tag: the design handoff documents and the Archify 
 | Palette | `cyan` is replaced by `amber`. | PBI-66 |
 | Design documents | Rewritten to the current state, diagrams included. | PBI-66 |
 | `CI / e2e` required | Not yet. | PBI-67 |
+| Main entry | The frame's main entry is "Einstellungen", current on every settings section. | ADR 0008 amendment |
+| Data issues | Whether readable records with a problem of their own (duplicate id, newer version) are also listed under "Datenprobleme" is decided with the second record type. | this plan |
 | After the tag | References and dates (PBI-61), the test double and e2e (PBI-63), gate and CI cost (PBI-64), while the owner checks 0.2.0. | this plan |
 
 ### Not fixed, in the backlog

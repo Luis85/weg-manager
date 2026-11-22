@@ -3,11 +3,13 @@ type: Handoff
 id: HO-07
 status: entwurf
 scope: mvp
-version: "1.0"
-date: 2026-11-15
+version: "1.1"
+date: 2026-11-22
 ---
 
 # Handoff · Responsive, Barrierefreiheit und Plattform
+
+**Auf den Stand vom 22.11.2026 gebracht** nach [ADR 0002](../../adr/0002-architecture.md) (Nachtrag „CSS ownership in Obsidian“), [ADR 0008](../../adr/0008-navigation-and-view-state.md) und dem UX-Review vom 22.11.2026 (`docs/plans/pre-feature-improvement-plan.md`, Abschnitt 8). „Gebaut“ nennt die Umsetzung im Durchstich (Rahmen, Gemeinschaften, Einstellungen); die Prüfungen, die ein Mensch machen muss, stehen in [[PBI-66 - Erscheinungsbild und Barrierefreiheit in Obsidian abschließen]].
 
 ## Breakpoints (Breite der Plugin-View, nicht des Fensters)
 
@@ -15,9 +17,9 @@ date: 2026-11-15
 | --- | --- |
 | ≥ 1200 | Sidebar + Inhalt + Kontextpanel (Woche, Akte) |
 | 860–1199 | Sidebar + Inhalt; Kontextpanel umbrechend unter den Inhalt |
-| < 860 | mobil: Titel, Gemeinschafts-Pill, Segmentnavigation oben, schwebendes „Erfassen“, Panels als Tabs oder darunter |
+| < 860 | Gebaut: die Navigation steht als umbrechende Reihe über dem Inhalt, in ihr zuerst Zurück und Vorwärts, die Gemeinschaftsauswahl und dann die Einträge. Entwurf für den mobilen Ausbau: Titel, Gemeinschafts-Pill, Segmentnavigation oben, schwebendes „Erfassen“, Panels als Tabs oder darunter |
 
-Die View-Breite (Container Query / ResizeObserver) entscheidet, nicht der Gerätetyp: Obsidian-Desktop mit schmaler Seitenleiste zeigt das mobile Layout.
+Gebaut: Die Breite des Containers der View (Container Query) entscheidet, nicht der Gerätetyp: Obsidian-Desktop mit schmaler Seitenleiste zeigt das mobile Layout.
 
 ## Obsidian Mobil
 
@@ -44,11 +46,14 @@ Tastenkürzel nur, wenn der Fokus nicht in einem Eingabefeld liegt; in der Hilfe
 
 ## Barrierefreiheit (B-NFR-06, WCAG 2.2 AA als Ziel)
 
-- Sichtbarer Fokus (`--wm-focus`, 2 px, Abstand 2 px) auf allen Bedienelementen.
+- Sichtbarer Fokus auf allen Bedienelementen: Obsidians Akzentfarbe als 2-px-Umriss mit 1 px Abstand (`:focus-visible`), `Highlight` bei erzwungenen Farben; kein eigener Fokuswert ([[01 - Design Tokens]]). An Eingabefeldern zeigt Obsidian daneben einen eigenen grauen Ring; genau ein Fokuszeichen ist Ziel von PBI-66.
+- Fokus nach einer Aktion: Ein Blatt oder Dialog setzt den Fokus beim Öffnen in sich (erstes Feld, beim Löschen „Abbrechen“) und gibt ihn beim Schließen an den Auslöser zurück. Nach Anlegen und Ändern steht er auf der Schaltfläche der Karte, nach dem Löschen auf „Gemeinschaft anlegen“. Der Rahmen ist hinter einem offenen Blatt `inert` und `aria-modal` gesetzt.
 - Fortschritt: `ol` mit `aria-current="step"`; Optionen als `radiogroup`; Segmente als Button-Gruppe mit `aria-pressed`; Tabs mit `role="tablist"`.
 - Grafiken (BudgetBar, AgeBar, 14-Tage-Leiste) mit `role="img"` und Text-Alternative oder `aria-hidden` plus sichtbarer Zahl.
-- Toasts in `aria-live="polite"`; Fehler als persistente Alerts mit Fokussprung.
-- 200 % Zoom und 320 px Breite ohne horizontales Scrollen (Tabelle im Import scrollt in eigenem Rahmen).
+- Meldungen nach einem Schreibvorgang sind Obsidian-Notices; Zustände in der Ansicht („Wird geladen …“, „Wähle die Gemeinschaft …“) tragen `role="status"`; Fehler sind persistente Alerts (`role="alert"`), nach einem misslungenen Speichern mit Fokus auf dem ersten ungültigen Feld.
+- 320 px Breite ohne horizontales Scrollen (Tabelle im Import scrollt in eigenem Rahmen); gebaut und gemessen für den Rahmen, die Einstellungen und die Gemeinschaftsansicht. 200 % Zoom von Obsidian ist nur an Bildschirmfotos mit doppelter Pixeldichte gezeigt, nicht von einem Menschen geprüft.
+- Lange Namen brechen um und sprengen nicht die Karte. Die Silbentrennung fehlt auf Linux (Obsidians Electron hat dort kein Trennwörterbuch), auf macOS und Windows ist sie ungeprüft.
+- Noch nicht von einem Menschen geprüft: Bedienung mit einem echten Screenreader und die Darstellung in Community-Themes. Die Farben nutzen nur Variablen des Hosts; getestet sind Obsidians helles und dunkles Standard-Theme.
 - Bewegung nur bei `prefers-reduced-motion: no-preference`.
 
 ## Obsidian-Plugin-Richtlinien

@@ -3,17 +3,19 @@ type: Handoff
 id: HO-08
 status: entwurf
 scope: mvp
-version: "1.0"
-date: 2026-11-15
+version: "1.1"
+date: 2026-11-22
 ---
 
 # Handoff · Abnahme und Testszenarien
+
+**Auf den Stand vom 22.11.2026 gebracht:** Ein Kontakt hat eine Rolle und eine Zuständigkeit für eine oder mehrere Gemeinschaften (O-D10, [[09 - Offene Punkte vor Implementierung]]); AT-B01 ist daran angepasst. Die Spalte „Prototyp“ bleibt der Stand vom 15.11.2026; was im Plugin gebaut ist, steht in den Dokumenten 02, 03 und 07.
 
 Abbildung der geplanten internen Abnahmen AT-B01–18 aus dem [[02-MVP-PRD]] auf Ansichten und Komponenten. AT-B13 (mobil) gehört zum Ausbau nach dem MVP. „Prototyp“ nennt, ob das Verhalten im klickbaren Prototyp nachvollziehbar ist (✓), angedeutet (~) oder fehlt (–).
 
 | AT | Szenario (Kurz) | Ansichten | Prüfpunkte im UI | Prototyp |
 | --- | --- | --- | --- | --- |
-| AT-B01 | WEG und Tiefgarage mit gleichem Thema/Kontakt | Einstellungen, Erfassen, alle Listen | Kürzel + Farbe überall; Erfassen ohne Gemeinschaft nicht speicherbar; Kontakt mit Rollen in beiden Gemeinschaften, Punkte getrennt; „Nicht mehr verwenden“ erhält Verweise | ✓ |
+| AT-B01 | WEG und Tiefgarage mit gleichem Thema/Kontakt | Einstellungen, Erfassen, alle Listen | Kürzel + Farbe überall; Erfassen ohne Gemeinschaft nicht speicherbar; Kontakt mit einer Rolle und Zuständigkeit für beide Gemeinschaften, Punkte getrennt; „Nicht mehr verwenden“ erhält Verweise | ✓ |
 | AT-B02 | Registerimport mit Dubletten, unbekanntem Status, fehlendem Datum | Import-Assistent | Kacheln Bereit/Klären/Dublette; „ungeklärt“ statt Raten; „Termin fehlt“; Wiederholung ohne Dubletten | – |
 | AT-B03 | Sammelpunkt teilen, Dublette verbinden, Bewertung | Punktakte (Dialoge) | Herkunft mit Zielverweisen; Bewertung ◆ ändert Bearbeitungsstand nicht | ~ (Bewertung) |
 | AT-B04 | Fremdtermin 30.11., Wiedervorlage 23.11., terminlose Zusage > 14 T | Punktakte, Nachhalten, Lage | Getrennte Kacheln Fremdtermin/Wiedervorlage; „Termin fehlt“ + Anlass A3 | ✓ |

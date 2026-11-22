@@ -3,11 +3,13 @@ type: Handoff
 id: HO-05
 status: entwurf
 scope: mvp
-version: "1.0"
-date: 2026-11-15
+version: "1.1"
+date: 2026-11-22
 ---
 
 # Handoff · Datenbindung und Ableitungen
+
+**Auf den Stand vom 22.11.2026 gebracht** nach [ADR 0007](../../adr/0007-vault-data-access.md) und den Entscheidungen vom 22.11.2026 (ein Kontakt hat eine Rolle, O-D10; Gemeinschaft als Notiz). Gebaut ist nur die Anzeige der Gemeinschaft und der Datenprobleme; die übrigen Zeilen sind Entwurf.
 
 Welche fachlichen Angaben (Entitätsnotes `docs/design/entities`) wo erscheinen und wie abgeleitete Werte berechnet werden. Stichtag aller Berechnungen: Öffnen der Ansicht bzw. Start der Wochenarbeit (K-04), Zeitzone Europe/Berlin, Datum ohne Uhrzeit gilt bis Tagesende (DF-05).
 
@@ -15,6 +17,8 @@ Welche fachlichen Angaben (Entitätsnotes `docs/design/entities`) wo erscheinen 
 
 | Ansicht | Entitäten | Angezeigte Felder |
 | --- | --- | --- |
+| Einstellungen · Gemeinschaften (gebaut) | ENT-01 Gemeinschaft | Kürzel, Name, Farbe, Art, Einheitenbezeichnung, Hinweis zu Problemen; die Auswahl steht nicht in der Notiz, sondern je Gerät ([[DV-01 - Gemeinschaft v1]]) |
+| Einstellungen · Datenprobleme (gebaut) | Notizen von WEG Manager ohne lesbaren Typ | Pfad, Problem, „In Obsidian öffnen“; Zähler in der Navigation |
 | Lage · Feed | ENT-06 Ereignis, ENT-04 Punkt | Ereignisdatum (gruppiert nach Tag), Gemeinschaft, Kurztext, Statuschip, Punkt-ID |
 | Lage · Schwerpunkte | ENT-14 Wochenübergabe | bis 3 Schwerpunkte mit Gemeinschaft, aktueller Status des verknüpften Punkts, Kontextnotiz |
 | Lage · 14 Tage | ENT-05 Termin, ENT-12 Aufgabe | Datum, Gemeinschaft, Titel, Art (Fremdfrist / eigene) |
@@ -24,7 +28,7 @@ Welche fachlichen Angaben (Entitätsnotes `docs/design/entities`) wo erscheinen 
 | Woche 5 | ENT-14 | Zählwerte, Schwerpunkte, Notiz, aktive Minuten, Doppelpflege |
 | Punktakte | ENT-04, 05, 06, 07, 16 | Ergebnis, Verantwortlich, Fremdtermin + Herkunft, Wiedervorlage, nächster Schritt, Verlauf, Quellen mit Einstufung |
 | Postausgang | ENT-10 Entwurf, ENT-11 Versand | Empfänger, Gemeinschaft, enthaltene Punkte, Text je Sprache, Prüfstatus, Anlagen mit Einstufung |
-| Kontakte | ENT-02 Ansprechpartner, ENT-04, ENT-10, ENT-11 | Art, Name, Organisation, „Zuständig für“ (Gemeinschaften) + Rolle, Kontaktdaten, Sprache, Kanal, aktiv; abgeleitet: verantwortete Punkte, offene Entwürfe, gesendete Nachrichten. Verteiler: Gemeinschaft, Anzahl, Sprachaufteilung, Quelle, Stand |
+| Kontakte | ENT-02 Ansprechpartner, ENT-04, ENT-10, ENT-11 | Art, Name, Organisation, genau eine Rolle, „Zuständig für“ (Liste der Gemeinschaften, O-D10), Kontaktdaten, Sprache, Kanal, aktiv; abgeleitet: verantwortete Punkte, offene Entwürfe, gesendete Nachrichten. Verteiler: Gemeinschaft, Anzahl, Sprachaufteilung, Quelle, Stand |
 | Ausgabe | ENT-15 Ausgabestand | Empfängerart, Auswahl, Bausteine, Standdatum |
 
 ## Abgeleitete Werte

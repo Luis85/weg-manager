@@ -68,3 +68,4 @@ Test-Review vom 22.11.2026, Befunde B2, B3 und B4. `docs/engineering/testing.md`
 ## Kommentare
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
+- 22.11.2026: Die Kriterien 6 bis 8 sind erfüllt (e2e-Specs ohne feste Wartezeit auf eine Wirkung bis auf die begründete Sekunde in `no-network.e2e.ts`, maschinenabhängige Beobachtungen in `vault-ready.e2e.ts` aufgezeichnet statt geprüft, Texte über den Katalog, e2e-Suite mehrfach hintereinander grün); die Kriterien 1 bis 5 sind offen.

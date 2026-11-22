@@ -51,7 +51,8 @@ describe("navigation and view state in Obsidian", function () {
     await expect(browser.$(ROOT).$("nav li button[aria-current=page]")).toHaveText(
       "Gemeinschaften",
     );
-    await expect(browser.$(ROOT).$('nav button[aria-label="Zurück"]')).toBeDisabled();
+    // No step yet, so the frame shows no history controls.
+    await expect(browser.$(ROOT).$("[data-testid=frame-history]")).not.toExist();
   });
 
   it("falls back to the start route for a broken or unknown state", async function () {
@@ -146,7 +147,7 @@ describe("navigation and view state in Obsidian", function () {
     }, VIEW_TYPE);
     const root = browser.$(`${PROBE} ${ROOT}`);
     await expect(root.$("[data-testid=communities-screen]")).toBeDisplayed();
-    await expect(control("Zurück")).toBeDisabled();
+    await expect(root.$("[data-testid=frame-history]")).not.toExist();
 
     await root.$("nav").$("button=Probe").click();
     await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
@@ -159,7 +160,10 @@ describe("navigation and view state in Obsidian", function () {
     expect(await probeRoute()).toEqual({ name: "probe" });
     await control("Zurück").click();
     await expect(root.$("[data-testid=communities-screen]")).toBeDisplayed();
-    await expect(control("Zurück")).toBeDisabled();
+    // Nowhere to go back to: the control says so and keeps the focus, never `disabled`.
+    await expect(control("Zurück")).toHaveAttribute("aria-disabled", "true");
+    await expect(control("Zurück")).toBeEnabled();
+    await expect(control("Zurück")).toBeFocused();
     await control("Vorwärts").click();
     await expect(root.$("[data-testid=not-found]")).toBeDisplayed();
     expect(await probeRoute()).toEqual({ name: "probe" });
@@ -188,7 +192,7 @@ describe("navigation and view state in Obsidian", function () {
     await openView();
     await expect(browser.$(ROOT).$("[data-testid=communities-screen]")).toBeDisplayed();
     expect(await viewState()).toMatchObject({ state: { route: COMMUNITIES } });
-    await expect(browser.$(ROOT).$('nav button[aria-label="Zurück"]')).toBeDisabled();
+    await expect(browser.$(ROOT).$("[data-testid=frame-history]")).not.toExist();
     expect(await pluginProblems()).toEqual([]);
   });
 });

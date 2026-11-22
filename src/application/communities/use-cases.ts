@@ -19,9 +19,10 @@ import {
   noteSnapshot,
   type Note,
 } from "../notes";
-import { Logger, SettingsService } from "../shell";
+import { Logger, Messages, Notifier, SettingsService } from "../shell";
+import type { CommunitiesCatalog } from "./i18n/catalog";
 import { InvalidCommunityError } from "./errors";
-import { canChangeShortCode, fileNameOf, toCommunityList, type Community } from "./list";
+import { canChangeShortCode, fileNameOf, shownName, toCommunityList, type Community } from "./list";
 
 /**
  * The folder below the root folder where new community notes go. Part of the file contract, so it
@@ -32,6 +33,20 @@ export const COMMUNITIES_FOLDER = "Gemeinschaften";
 /** How many file names a rename tries: the name, then ` (2)` up to ` (100)`, as `create` does. */
 const RENAME_ATTEMPTS = 100;
 
+/**
+ * Confirms a write with a short notice through the `Notifier` (handoff: a toast only confirms a
+ * short-lived success; failures stay at the form). The title says it all.
+ */
+const confirm = (title: (notices: CommunitiesCatalog["notices"]) => string) =>
+  Effect.gen(function* () {
+    const { communities } = yield* Messages;
+    yield* (yield* Notifier).notify({
+      severity: "info",
+      title: title(communities.notices),
+      detail: "",
+    });
+  });
+
 /** The communities now, for `useStream`. Never suspends. */
 export const communityList = Effect.map(noteSnapshot(communityType), toCommunityList);
 
@@ -39,10 +54,11 @@ export const communityList = Effect.map(noteSnapshot(communityType), toCommunity
 export const communityListChanges = Stream.map(noteChanges(communityType), toCommunityList);
 
 /**
- * Every community's valid values: what the uniqueness rules compare with. The edited community is
- * among them; the rules never check its loaded values against anything.
+ * Every community's valid values and shown name: what the uniqueness rules compare with and name.
+ * The edited community is among them; the rules never check its loaded values against anything.
  */
-const valuesOf = (communities: readonly Community[]) => communities.map((c) => c.values);
+const valuesOf = (communities: readonly Community[]) =>
+  communities.map((c) => ({ ...c.values, name: shownName(c) }));
 
 /** The values to save, or the issues why not. Every field is set once the rules pass. */
 const checked = (
@@ -66,17 +82,19 @@ export const createCommunity = (input: CommunityInput) =>
     const values = yield* checked(input, { others: valuesOf(communities) });
     const { rootFolder } = yield* (yield* SettingsService).current;
     const frontmatter = yield* newRecordFrontmatter(communityType, values);
-    return yield* (yield* NoteStore).create({
+    const note = yield* (yield* NoteStore).create({
       folder: `${rootFolder}/${COMMUNITIES_FOLDER}`,
       name: communityFileName(values.name, values.short_code),
       frontmatter,
     });
+    yield* confirm((notices) => notices.created(values.name));
+    return note;
   });
 
 /**
  * Where the community lives now: a note renamed meanwhile is found by its id (ADR 0007). An id
  * that another note carries too (a copy made meanwhile) is read-only on every note that has it,
- * so the write is refused rather than guessing which note the form loaded.
+ * so the write is refused (`duplicate-id`) rather than guessing which note the form loaded.
  */
 const pathOf = (community: Community) =>
   Effect.flatMap(communityList, ({ communities }) => {
@@ -87,7 +105,7 @@ const pathOf = (community: Community) =>
       candidate.issues.some((issue) => issue.code === "id.duplicate"),
     );
     return duplicated
-      ? Effect.fail(new NoteWriteRefusedError({ reason: "identity" }))
+      ? Effect.fail(new NoteWriteRefusedError({ reason: "duplicate-id" }))
       : Effect.succeed(found[0]?.path ?? community.path);
   });
 
@@ -135,14 +153,20 @@ export const updateCommunity = (community: Community, input: CommunityInput) =>
     const path = yield* pathOf(community);
     const store = yield* NoteStore;
     // One command: an unload while the save is written still lets the file follow the name.
-    return yield* Effect.uninterruptible(
+    const note = yield* Effect.uninterruptible(
       Effect.flatMap(
         store.update(path, editChange(communityType, community.frontmatter, values)),
         (written) => followName(written, community, values),
       ),
     );
+    yield* confirm((notices) => notices.saved(values.name));
+    return note;
   });
 
 /** Moves the community's note to Obsidian's trash; one renamed meanwhile is found by its id. */
 export const deleteCommunity = (community: Community) =>
-  Effect.flatMap(pathOf(community), (path) => NoteStore.use((store) => store.trash(path)));
+  Effect.gen(function* () {
+    const path = yield* pathOf(community);
+    yield* NoteStore.use((store) => store.trash(path));
+    yield* confirm((notices) => notices.deleted(shownName(community)));
+  });

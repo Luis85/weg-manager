@@ -12,7 +12,7 @@ const ISSUES: readonly NoteIssue[] = [
   { code: "id.missing" },
   { code: "id.malformed" },
   { code: "id.other-type" },
-  { code: "id.duplicate" },
+  { code: "id.duplicate", other: "Notizen/Kopie.md" },
   { code: "field.missing", key: "title" },
   { code: "field.text", key: "title" },
   { code: "field.number", key: "count" },
@@ -39,13 +39,13 @@ const english = (key: string): string => ENGLISH[key] ?? key;
 describe("describeNoteIssue", () => {
   it("has exact German texts, a field's label in its sentence", () => {
     expect(ISSUES.map((issue) => describeNoteIssue(issue, de.notes, label))).toEqual([
-      "Die Eigenschaft „schema“ ist nicht lesbar, deshalb ist die Notiz schreibgeschützt. Korrigiere sie in Obsidian nach dem Dateivertrag.",
-      "Die Notiz stammt aus einer neueren Plugin-Version (Schemaversion 4), deshalb ist sie schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.",
-      "Die Notiz ließ sich nicht von Schemaversion 2 auf die aktuelle Version umstellen, deshalb ist sie schreibgeschützt. Prüfe ihre Eigenschaften in Obsidian.",
+      "Die Eigenschaft „schema“ ist falsch geschrieben, deshalb ist die Notiz schreibgeschützt. Öffne die Notiz und korrigiere „schema“.",
+      "Die Notiz wurde mit einer neueren Version von WEG Manager gespeichert, etwa auf einem anderen Gerät, deshalb ist sie hier schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.",
+      "Die Notiz ließ sich nicht auf die aktuelle Version umstellen, deshalb ist sie schreibgeschützt. Öffne die Notiz und prüfe ihre Eigenschaften.",
       "Die Notiz hat keine Eigenschaft „id“, deshalb ist sie schreibgeschützt. Stelle die „id“ in Obsidian wieder her, etwa aus einer Sicherung.",
       "Die Eigenschaft „id“ der Notiz ist ungültig, deshalb ist sie schreibgeschützt. Stelle die ursprüngliche „id“ in Obsidian wieder her.",
       "Die „id“ der Notiz gehört zu einem anderen Typ, deshalb ist sie schreibgeschützt. Prüfe „schema“ und „id“ in Obsidian.",
-      "Eine andere Notiz hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.",
+      "Die Notiz „Notizen/Kopie.md“ hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.",
       "„Name“ fehlt. Gib einen Wert ein.",
       "„Name“ ist kein Text. Gib einen Text ein.",
       "„Anzahl“ ist keine Zahl. Gib eine Zahl ein.",
@@ -57,13 +57,13 @@ describe("describeNoteIssue", () => {
 
   it("has exact English texts", () => {
     expect(ISSUES.map((issue) => describeNoteIssue(issue, en.notes, english))).toEqual([
-      "The schema property can't be read, so the note is read-only. Fix it in Obsidian as the file contract describes.",
-      "The note comes from a newer plugin version (schema version 4), so it's read-only. Update WEG Manager to edit it.",
-      "The note couldn't be converted from schema version 2 to the current one, so it's read-only. Check its properties in Obsidian.",
+      "The schema property is malformed, so the note is read-only. Open the note and fix its schema property.",
+      "The note was saved by a newer version of WEG Manager, for example on another device, so it's read-only here. Update WEG Manager to edit it.",
+      "The note couldn't be converted to the current version, so it's read-only. Open the note and check its properties.",
       "The note has no id property, so it's read-only. Restore the id in Obsidian, for example from a backup.",
       "The note's id property isn't valid, so it's read-only. Restore the original id in Obsidian.",
       "The note's id belongs to another type, so it's read-only. Check schema and id in Obsidian.",
-      "Another note has the same id, so both are read-only. Delete the duplicate note in Obsidian.",
+      "The note “Notizen/Kopie.md” has the same id, so both are read-only. Delete the duplicate note in Obsidian.",
       "“Name” is missing. Enter a value.",
       "“Name” isn't text. Enter text.",
       "“Count” isn't a number. Enter a number.",

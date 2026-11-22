@@ -74,7 +74,7 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 
 ## Probleme
 
-Eine Notiz, die den Vertrag bricht, wird nie still repariert. Das Plugin zeigt sie mit dem Problem an; die übrigen Gemeinschaften bleiben davon unberührt.
+Eine Notiz, die den Vertrag bricht, wird nie still repariert. Das Plugin zeigt sie mit dem Problem an; die übrigen Gemeinschaften bleiben davon unberührt. Eine Gemeinschaft mit einem Problem bietet der Gemeinschaftswechsel nicht an, bis sie repariert ist (ADR 0008, Nachtrag vom 22.11.2026).
 
 | Problem (Code) | Wann | Was das Plugin tut |
 | --- | --- | --- |
@@ -83,8 +83,8 @@ Eine Notiz, die den Vertrag bricht, wird nie still repariert. Das Plugin zeigt s
 | `short-code.invalid` | Nicht 2 bis 5 Zeichen aus `A`–`Z` und `0`–`9`, etwa in Kleinbuchstaben. | Wie oben; das Kürzel ist dann im Formular änderbar. |
 | `short-code.duplicate` | Eine andere Gemeinschaft hat dasselbe Kürzel. | Zeigt es an beiden; das Kürzel ist im Formular änderbar. |
 | `color.unknown` | Kein Name der Palette. | Wie oben. |
-| `schema.newer` | Höhere Version als `v1`. | Schreibgeschützt, Felder werden nicht gelesen. |
+| `schema.newer` | Höhere Version als `v1`. | Schreibgeschützt, Felder werden nicht gelesen; „In Obsidian öffnen“. |
 | `id.missing`, `id.malformed`, `id.other-type` | `id` fehlt, hat nicht die Form `community-<uuid>` oder gehört zu einem anderen Typ. | Schreibgeschützt. |
-| `id.duplicate` | Eine andere Notiz hat dieselbe `id`. | Beide schreibgeschützt. |
-| `schema.malformed` | `schema` beginnt mit `weg-manager.`, hat aber nicht die Form `weg-manager.<typ>/v<n>`. | Unter „Notizen mit Problemen“. |
-| `frontmatter.unreadable` | Das Frontmatter ist kein gültiges YAML; nur im Wurzelordner erkennbar. | Unter „Notizen mit Problemen“. |
+| `id.duplicate` | Eine andere Notiz hat dieselbe `id`. | Beide schreibgeschützt; der Hinweis nennt den Pfad der anderen Notiz. |
+| `schema.malformed` | `schema` beginnt mit `weg-manager.`, hat aber nicht die Form `weg-manager.<typ>/v<n>`. | Unter „Andere Notizen von WEG Manager“, mit „In Obsidian öffnen“. |
+| `frontmatter.unreadable` | Das Frontmatter ist kein gültiges YAML; nur im Wurzelordner erkennbar. | Unter „Andere Notizen von WEG Manager“, mit „In Obsidian öffnen“. |

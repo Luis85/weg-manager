@@ -3,7 +3,13 @@ import type { AppServices } from "./app-services";
 import { communitySelectionLayer } from "./communities";
 import { messagesLayer } from "./messages";
 import { appNoteTypes } from "./note-types";
-import { noteIndexLayer, type IdGenerator, type NoteStore, type NoteTypeRegistry } from "./notes";
+import {
+  noteIndexLayer,
+  type IdGenerator,
+  type NoteOpener,
+  type NoteStore,
+  type NoteTypeRegistry,
+} from "./notes";
 import {
   EventBusLive,
   LoggerLive,
@@ -40,6 +46,8 @@ export type AppAdapters = {
   /** Built on the shell's services: the in-memory store publishes its writes on the event bus. */
   readonly noteStore: Layer.Layer<NoteStore, never, ShellServices>;
   readonly idGenerator: Layer.Layer<IdGenerator>;
+  /** Opens a note for the user in the host, beside the plugin's view. */
+  readonly noteOpener: Layer.Layer<NoteOpener>;
   /**
    * Publishes the host's events. Built last, so every service that subscribes to the event bus
    * while it is built (the note index) sees `LayoutReady` and `VaultReady`, which the adapter may
@@ -79,7 +87,9 @@ export const appServicesLayer = (
   const shell = Layer.mergeAll(logger.pipe(Layer.provideMerge(settings)), EventBusLive);
   const notes = noteIndexLayer(options.noteTypes ?? appNoteTypes).pipe(
     Layer.provideMerge(
-      Layer.merge(adapters.noteStore, adapters.idGenerator).pipe(Layer.provideMerge(shell)),
+      Layer.mergeAll(adapters.noteStore, adapters.idGenerator, adapters.noteOpener).pipe(
+        Layer.provideMerge(shell),
+      ),
     ),
   );
   const features = communitySelectionLayer.pipe(Layer.provideMerge(notes));

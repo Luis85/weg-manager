@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
-  colorsInUse,
+  colorOwners,
   communityValues,
   duplicateShortCodes,
   editedValues,
+  firstFreeColor,
   normalizeShortCode,
   validateCommunity,
   type CommunityInput,
@@ -16,7 +17,7 @@ const INPUT: CommunityInput = {
   kind: "WEG",
   unit_label: "Einheiten",
 };
-const TG = { short_code: "TG", color: "violet" };
+const TG = { name: "Tiefgarage", short_code: "TG", color: "violet" };
 
 describe("normalizeShortCode", () => {
   it("trims and upper-cases what the user typed", () => {
@@ -110,7 +111,7 @@ describe("validateCommunity", () => {
     ).toEqual([
       { key: "name", code: "field.missing" },
       { key: "short_code", code: "short-code.invalid" },
-      { key: "color", code: "color.unknown" },
+      { key: "color", code: "color.unknown", value: "amber" },
       { key: "kind", code: "field.missing" },
       { key: "unit_label", code: "unit-label.invalid" },
     ]);
@@ -118,7 +119,7 @@ describe("validateCommunity", () => {
 
   it("refuses a short code another community has, in any case", () => {
     expect(validateCommunity({ ...INPUT, short_code: "tg" }, { others: [TG] })).toEqual([
-      { key: "short_code", code: "short-code.taken" },
+      { key: "short_code", code: "short-code.taken", value: "TG", other: "Tiefgarage" },
     ]);
   });
 
@@ -132,7 +133,7 @@ describe("validateCommunity", () => {
     expect(
       validateCommunity({ ...INPUT, short_code: "TG", color: "violet" }, { others: [TG] }),
     ).toEqual([
-      { key: "short_code", code: "short-code.taken" },
+      { key: "short_code", code: "short-code.taken", value: "TG", other: "Tiefgarage" },
       { key: "color", code: "color.taken" },
     ]);
   });
@@ -176,10 +177,44 @@ describe("duplicateShortCodes", () => {
   });
 });
 
-describe("colorsInUse", () => {
-  it("lists the colours of the other communities", () => {
-    expect(colorsInUse([TG, { color: "teal" }, {}, { color: "teal" }])).toEqual(
-      new Set(["violet", "teal"]),
+describe("colorOwners", () => {
+  it("gives each colour the others use with the short code of its first owner", () => {
+    expect(colorOwners([TG, { color: "teal" }, {}, { color: "teal", short_code: "AW" }])).toEqual(
+      new Map([
+        ["violet", "TG"],
+        ["teal", undefined],
+      ]),
     );
+  });
+});
+
+describe("firstFreeColor", () => {
+  it("is the first colour of the palette no other community uses", () => {
+    expect(firstFreeColor([])).toBe("teal");
+    expect(firstFreeColor([{ color: "teal" }, TG])).toBe("blue");
+  });
+
+  it("is none when every colour is taken", () => {
+    const all = ["teal", "violet", "blue", "rust", "slate", "cyan", "pink", "olive"];
+    expect(firstFreeColor(all.map((color) => ({ color })))).toBeUndefined();
+  });
+});
+
+describe("validateCommunity: the data of an issue", () => {
+  it("is the value as the rules saw it: trimmed, the short code upper-case", () => {
+    expect(
+      validateCommunity({ ...INPUT, short_code: " tg ", color: " amber " }, { others: [TG] }),
+    ).toEqual([
+      { key: "short_code", code: "short-code.taken", value: "TG", other: "Tiefgarage" },
+      { key: "color", code: "color.unknown", value: "amber" },
+    ]);
+  });
+});
+
+describe("validateCommunity: the other community a taken short code belongs to", () => {
+  it("names it by its short code when it has no valid name", () => {
+    expect(
+      validateCommunity({ ...INPUT, short_code: "TG" }, { others: [{ short_code: "TG" }] }),
+    ).toEqual([{ key: "short_code", code: "short-code.taken", value: "TG", other: "TG" }]);
   });
 });

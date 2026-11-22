@@ -50,7 +50,11 @@ export class Workspace extends Events {
     if (index !== -1) this.leaves.splice(index, 1);
   }
 
-  getLeaf(_newLeaf?: boolean | "tab" | "split" | "window"): WorkspaceLeaf {
+  /** Test helper: what each `getLeaf` call asked for, in order. */
+  readonly leafRequests: (boolean | "tab" | "split" | "window" | undefined)[] = [];
+
+  getLeaf(newLeaf?: boolean | "tab" | "split" | "window"): WorkspaceLeaf {
+    this.leafRequests.push(newLeaf);
     return this.addLeaf(new WorkspaceLeaf(this));
   }
 

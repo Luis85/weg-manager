@@ -10,6 +10,7 @@ import {
   type UpdateSettingsError,
 } from "../../../application/shell";
 import type { LogLevel } from "../../../domain/shell";
+import { detailFragment } from "./notices";
 import { runSafely } from "./run";
 import type { SettingsMirror } from "./settings-mirror";
 
@@ -50,7 +51,7 @@ export class ShellSettingTab extends PluginSettingTab {
         new ReadOnlySettingsError({ reason: readOnly }),
         this.messages,
       );
-      items.push({ name: message.title, desc: message.detail, searchable: false });
+      items.push({ name: message.title, desc: detailFragment(message), searchable: false });
     }
     return items;
   }

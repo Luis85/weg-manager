@@ -24,7 +24,7 @@ export const shellEn: ShellCatalog = {
       detail: {
         "newer-version": `The settings come from a newer version of ${PRODUCT_NAME}. Update the plugin to change them.`,
         unreadable:
-          "The settings file can't be read. Default values apply and the file stays unchanged. Copy the diagnostics for support.",
+          "The settings file can't be read. Default values apply and the file stays unchanged. Copy the diagnostics and report this on the plugin's GitHub page.",
       },
     },
     invalidSettings: { title: "Invalid input" },
@@ -40,7 +40,7 @@ export const shellEn: ShellCatalog = {
   defect: {
     title: `Unexpected error in ${PRODUCT_NAME}`,
     detail: (incidentId) =>
-      `The action was stopped (error code ${incidentId}). Copy the diagnostics and send them to support with the error code.`,
+      `The action was stopped (error code ${incidentId}). Copy the diagnostics and report the error with its code on the plugin's GitHub page. The report contains no content of your notes.`,
   },
   settingsReset: {
     title: "Settings partly reset",
@@ -48,7 +48,8 @@ export const shellEn: ShellCatalog = {
   },
   diagnosticsCopied: {
     title: "Diagnostics copied",
-    detail: "Paste the report into your support request.",
+    detail:
+      "Attach the report to your issue on the plugin's GitHub page. It contains no content of your notes.",
   },
   actions: {
     retry: "Try again",

@@ -9,6 +9,12 @@ export type Language = (typeof LANGUAGES)[number];
 /** The product name. It is not translated (ADR 0005); the ribbon icon's title is just this. */
 export const PRODUCT_NAME = "WEG Manager";
 
+/**
+ * Where a user reports a problem with the plugin: its GitHub issues. The one place of the URL; a
+ * message that asks for a report carries it as its `link`, and every renderer shows it as a link.
+ */
+export const ISSUES_URL = "https://github.com/Luis85/weg-manager/issues";
+
 type Text = { readonly title: string; readonly detail: string };
 
 /** One sentence per domain issue code; the issue's data fills the parameters. */

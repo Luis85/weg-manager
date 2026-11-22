@@ -53,37 +53,58 @@ const byName: Order.Order<Community> = Order.combine(
   Order.mapInput(Order.String, (community: Community) => community.path),
 );
 
-const communityOf = (note: IndexedNote<CommunityFields>, duplicates: ReadonlySet<string>) => {
-  const code = note.values.short_code;
-  const duplicate = code !== undefined && duplicates.has(code);
-  const issues: CommunityNoteIssue[] = [...(note.issues as readonly CommunityNoteIssue[])];
-  if (duplicate) issues.push(DUPLICATE);
-  return {
-    path: note.path,
-    fileName: fileNameOf(note.path),
-    id: note.id,
-    editable: note.kind === "editable",
-    values: note.values,
-    issues,
-    frontmatter: note.frontmatter,
-  } satisfies Community;
+/** A value of the note as text, as the user wrote it; anything but text, a number or a flag is "". */
+const textOf = (value: unknown): string =>
+  typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+    ? String(value)
+    : "";
+
+/** The codec's issue with the data its sentence needs: an unknown colour carries the saved text. */
+const withData = (
+  issue: IndexedNote<CommunityFields>["issues"][number],
+  frontmatter: Frontmatter,
+): CommunityNoteIssue =>
+  "key" in issue && issue.code === "color.unknown"
+    ? { key: "color", code: "color.unknown", value: textOf(frontmatter["color"]) }
+    : (issue as CommunityNoteIssue);
+
+const communityOf = (note: IndexedNote<CommunityFields>): Community => ({
+  path: note.path,
+  fileName: fileNameOf(note.path),
+  id: note.id,
+  editable: note.kind === "editable",
+  values: note.values,
+  issues: note.issues.map((issue) => withData(issue, note.frontmatter)),
+  frontmatter: note.frontmatter,
+});
+
+/**
+ * `short-code.duplicate` on every community whose short code another one has (a duplicate made
+ * outside the plugin, PBI-56), naming the first other community with that code.
+ */
+const markDuplicateShortCodes = (communities: readonly Community[]): Community[] => {
+  const duplicates = duplicateShortCodes(communities.map((community) => community.values));
+  return communities.map((community) => {
+    const value = community.values.short_code;
+    if (value === undefined || !duplicates.has(value)) return community;
+    const other = communities.find(
+      (candidate) => candidate !== community && candidate.values.short_code === value,
+    );
+    const name = other === undefined ? value : shownName(other);
+    const issue = { ...DUPLICATE, value, other: name } satisfies CommunityNoteIssue;
+    return { ...community, issues: [...community.issues, issue] };
+  });
 };
 
 /**
  * The communities of an index snapshot: each note with its issues, plus `short-code.duplicate` on
- * every community whose short code another one has (a duplicate made outside the plugin, PBI-56).
+ * every community whose short code another one has, sorted as people read names.
  */
-export const toCommunityList = (snapshot: NoteSnapshot<CommunityFields>): CommunityList => {
-  const duplicates = duplicateShortCodes(snapshot.notes.map((note) => note.values));
-  return {
-    ready: snapshot.ready,
-    failure: snapshot.failure,
-    communities: Arr.sort(
-      snapshot.notes.map((note) => communityOf(note, duplicates)),
-      byName,
-    ),
-  };
-};
+export const toCommunityList = (snapshot: NoteSnapshot<CommunityFields>): CommunityList => ({
+  ready: snapshot.ready,
+  failure: snapshot.failure,
+  communities: markDuplicateShortCodes(Arr.sort(snapshot.notes.map(communityOf), byName)),
+});
 
 /**
  * Whether the form lets the user set the short code. It is fixed once given (PBI-56), unless the

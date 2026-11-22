@@ -11,7 +11,8 @@ import { useCommand, useMessages } from "../runtime/use-runtime";
 
 /**
  * Renders any `UserMessage` the same way in every view. Its action becomes a button when a
- * handler exists: `copy-diagnostics` is built in, the others come from the parent.
+ * handler exists: `copy-diagnostics` is built in, the others come from the parent. Its link (the
+ * plugin's issues) is a plain link that opens in the browser.
  */
 const props = defineProps<{
   message: UserMessage;
@@ -44,5 +45,16 @@ const actions = computed<ButtonProps[]>(() => {
     :title="message.title"
     :description="message.detail"
     :actions="actions"
-  />
+  >
+    <template v-if="message.link" #description>
+      {{ message.detail }}
+      <a
+        :href="message.link"
+        target="_blank"
+        rel="noopener"
+        class="wm:block wm:underline wm:wrap-anywhere"
+        >{{ message.link }}</a
+      >
+    </template>
+  </UAlert>
 </template>

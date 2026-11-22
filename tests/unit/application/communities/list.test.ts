@@ -49,10 +49,53 @@ describe("toCommunityList", () => {
         id: communityId(1),
         editable: true,
         values: { name: "Ahornweg 12", short_code: "G1", kind: "WEG", unit_label: "Einheiten" },
-        issues: [{ key: "color", code: "color.unknown" }],
+        issues: [{ key: "color", code: "color.unknown", value: "7" }],
         frontmatter,
       },
     ]);
+  });
+
+  it("gives an unknown colour its text as written, and leaves the other issues as they are", () => {
+    const list = toCommunityList({
+      ready: true,
+      failure: undefined,
+      notes: [
+        decoded("A.md", communityNote(1, { name: "A", color: "amber", short_code: "a" })),
+        decoded("B.md", communityNote(2, { name: "B", color: true })),
+        decoded("C.md", communityNote(3, { name: "C", color: ["teal"] })),
+      ],
+    });
+    assert.deepStrictEqual(
+      list.communities.map((community) => community.issues),
+      [
+        [
+          { key: "short_code", code: "short-code.invalid" },
+          { key: "color", code: "color.unknown", value: "amber" },
+        ],
+        [{ key: "color", code: "color.unknown", value: "true" }],
+        [{ key: "color", code: "color.unknown", value: "" }],
+      ],
+    );
+  });
+
+  it("names the other community with the same short code, not just any other", () => {
+    const list = toCommunityList({
+      ready: true,
+      failure: undefined,
+      notes: [
+        decoded("A.md", communityNote(1, { name: "A", short_code: "AW" })),
+        decoded("B.md", communityNote(2, { name: "B", short_code: "TG" })),
+        decoded("C.md", communityNote(3, { name: "C", short_code: "AW" })),
+      ],
+    });
+    assert.deepStrictEqual(
+      list.communities.map((community) => community.issues),
+      [
+        [{ key: "short_code", code: "short-code.duplicate", value: "AW", other: "C" }],
+        [],
+        [{ key: "short_code", code: "short-code.duplicate", value: "AW", other: "A" }],
+      ],
+    );
   });
 
   it("sorts by name as people read it, then by path, and puts nameless notes by file name", () => {
@@ -87,8 +130,8 @@ describe("toCommunityList", () => {
     assert.deepStrictEqual(
       list.communities.map((community) => community.issues),
       [
-        [{ key: "short_code", code: "short-code.duplicate" }],
-        [{ key: "short_code", code: "short-code.duplicate" }],
+        [{ key: "short_code", code: "short-code.duplicate", value: "AW", other: "B" }],
+        [{ key: "short_code", code: "short-code.duplicate", value: "AW", other: "A" }],
         [],
       ],
     );

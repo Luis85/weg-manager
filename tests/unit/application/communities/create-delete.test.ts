@@ -113,7 +113,7 @@ describe("createCommunity", () => {
         error,
         new InvalidCommunityError({
           issues: [
-            { key: "short_code", code: "short-code.taken" },
+            { key: "short_code", code: "short-code.taken", value: "AW", other: "Gemeinschaft 9" },
             { key: "color", code: "color.taken" },
           ],
         }),
@@ -169,7 +169,7 @@ describe("deleteCommunity", () => {
       fixture.memory.seed(`${FOLDER}/Gemeinschaft 1 (Kopie).md`, communityNote(1));
       yield* indexed;
       const error = yield* Effect.flip(deleteCommunity(first));
-      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "identity" }));
+      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "duplicate-id" }));
       assert.deepStrictEqual(
         (yield* listed).map((note) => note.path),
         [`${FOLDER}/Gemeinschaft 1 (Kopie).md`, `${FOLDER}/Gemeinschaft 1.md`],

@@ -1,30 +1,27 @@
 <script setup lang="ts">
 import UButton from "@nuxt/ui/components/Button.vue";
-import { reactive, useId } from "vue";
+import { onMounted, reactive, useId, useTemplateRef } from "vue";
 import type { CommunityKey } from "../../../domain/communities";
 import { useMessages } from "../../shell";
-
-/** One field the user and an outside edit both changed (`NoteEditConflictError`). */
-export type FieldConflict = {
-  readonly key: string;
-  readonly base: unknown;
-  readonly edited: unknown;
-  readonly current: unknown;
-};
-
-/** Which value applies to a conflicting field: the user's input or the note's current value. */
-export type ConflictChoices = Readonly<Record<string, "mine" | "theirs">>;
+import type { ConflictChoices, FieldConflict } from "../conflict";
 
 /**
  * The per-field choice after an outside edit (ADR 0007, VIEW-07 "Konflikt klären"): for each
  * field both sides changed, the value when the form opened, the user's and the note's current
  * one. The user picks one per field; `apply` hands the choices back for the form to save again.
+ * It takes the focus to its heading when it appears, so a screen reader announces it and the
+ * keyboard continues there (WCAG 2.4.3); the save button it replaces may hold the focus no longer.
  */
 const props = defineProps<{ conflicts: readonly FieldConflict[]; disabled: boolean }>();
 const emit = defineEmits<{ apply: [choices: ConflictChoices] }>();
 
 const t = useMessages().communities;
 const titleId = useId();
+const title = useTemplateRef<HTMLElement>("title");
+onMounted(() => title.value?.focus());
+const apply = () => {
+  if (!props.disabled) emit("apply", { ...choices });
+};
 const choices = reactive<Record<string, "mine" | "theirs">>(
   Object.fromEntries(props.conflicts.map(({ key }) => [key, "mine"])),
 );
@@ -43,7 +40,7 @@ const label = (key: string): string => t.fields[key as CommunityKey];
     :aria-labelledby="titleId"
     data-testid="community-conflict"
   >
-    <h3 :id="titleId" class="wm:text-sm wm:font-semibold">
+    <h3 :id="titleId" ref="title" tabindex="-1" class="wm:text-sm wm:font-semibold">
       {{ t.conflict.title }}
     </h3>
     <p class="wm:text-sm">{{ t.conflict.detail }}</p>
@@ -80,9 +77,10 @@ const label = (key: string): string => t.fields[key as CommunityKey];
       <UButton
         type="button"
         :label="t.conflict.apply"
-        :disabled="disabled"
+        :aria-disabled="disabled ? 'true' : undefined"
+        class="wm:aria-disabled:cursor-not-allowed wm:aria-disabled:opacity-75"
         data-testid="conflict-apply"
-        @click="emit('apply', { ...choices })"
+        @click="apply"
       />
     </div>
   </section>

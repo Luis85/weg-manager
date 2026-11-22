@@ -4,7 +4,9 @@ import { CommunityFieldIssue } from "../../domain/communities";
 /**
  * A community the user wants to save breaks a rule: a field rule of the note type, a short code
  * another community has, or a colour another community uses. Nothing was written. The form shows
- * each issue at its field; the issues hold codes and keys, no values.
+ * each issue at its field. The issues hold codes and keys and, where the sentence needs them, the
+ * taken short code with the other community's name or the unknown colour as written: note content
+ * for the form, as in `NoteEditConflictError`. Its message is empty and nothing logs it.
  */
 export class InvalidCommunityError extends Schema.TaggedError<InvalidCommunityError>()(
   "InvalidCommunityError",

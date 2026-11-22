@@ -13,14 +13,14 @@ export {
 export { communityFileName, followsName } from "./file-name";
 export { kindSuggestions, type KindPair } from "./kinds";
 export {
-  colorsInUse,
+  colorOwners,
   communityValues,
   duplicateShortCodes,
   editedValues,
+  firstFreeColor,
   normalizeShortCode,
   validateCommunity,
   CommunityFieldIssue,
-  type CommunityIssueCode,
   type CommunityInput,
 } from "./rules";
-export { isCommunityChoice, selectedCommunity } from "./selection";
+export { isCommunityChoice, selectableIds, selectedCommunity } from "./selection";

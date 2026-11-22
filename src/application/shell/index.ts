@@ -12,7 +12,7 @@ export {
 } from "./errors";
 export { EventBus, EventBusLive } from "./event-bus";
 export type { ShellEvents } from "./events";
-export { PRODUCT_NAME, type Language, type ShellCatalog } from "./i18n/catalog";
+export { ISSUES_URL, PRODUCT_NAME, type Language, type ShellCatalog } from "./i18n/catalog";
 export { shellDe } from "./i18n/de";
 
 export { shellEn } from "./i18n/en";

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { de } from "../../../../src/application/messages";
 import {
   FOLDER,
   closeAll,
@@ -8,6 +9,16 @@ import {
 } from "../../../support/communities/screen";
 
 afterEach(closeAll);
+
+const t = de.communities;
+
+const duplicateCode = (other: string) =>
+  t.issues["short-code.duplicate"](
+    { key: "short_code", code: "short-code.duplicate", value: "AW", other },
+    "Kürzel",
+  );
+const duplicateId = (other: string) =>
+  de.notes.recordIssues["id.duplicate"]({ code: "id.duplicate", other: `${FOLDER}/${other}` });
 
 const TWO = (notes: Memory) => {
   notes.seed(
@@ -24,8 +35,11 @@ const TWO = (notes: Memory) => {
 };
 
 describe("the community settings", () => {
-  it("shows a busy status while the index is not built, then the empty state with a create action", async () => {
+  it("shows a busy status once the index takes longer than 300 ms, then the empty state", async () => {
     const screen = await openCommunities({ ready: false });
+    // Nothing in between for a read that is quick (handoff 02, B-NFR-04).
+    expect(screen.q("communities-loading")).toBeUndefined();
+    await screen.until(() => expect(screen.q("communities-loading")).toBeDefined());
     const loading = screen.q("communities-loading");
     expect(loading?.getAttribute("role")).toBe("status");
     expect(loading?.getAttribute("aria-busy")).toBe("true");
@@ -52,7 +66,7 @@ describe("the community settings", () => {
   it("shows the index's failure with a retry that reads the vault again", async () => {
     const screen = await openCommunities({ seed: (notes) => notes.setFailReads(true) });
     expect(screen.root.querySelector("[role=alert]")?.textContent).toContain(
-      "Notizen nicht aktuell",
+      de.notes.errors.indexRead.title,
     );
     expect(screen.q("communities-loading")).toBeUndefined();
     screen.notes.setFailReads(false);
@@ -73,12 +87,25 @@ describe("the community settings", () => {
       ["TG", "violet"],
     ]);
     expect(screen.all("community-summary").map((element) => element.textContent.trim())).toEqual([
-      "WEG · Einheiten",
-      "Tiefgarage · Stellplätze",
+      t.screen.summary("WEG", "Einheiten"),
+      t.screen.summary("Tiefgarage", "Stellplätze"),
     ]);
     expect(screen.button("Ahornweg 12 bearbeiten")).toBeDefined();
     expect(screen.button("Tiefgarage Ahornweg löschen")).toBeDefined();
     expect(screen.q("communities")?.getAttribute("aria-label")).toBe("Gemeinschaften");
+  });
+
+  it("marks the selected community's card in words and with a mark, not by colour", async () => {
+    const screen = await openCommunities({ seed: TWO });
+    expect(screen.q("community-selected")).toBeUndefined();
+    await screen.click(screen.all("community-option")[1]);
+    const marked = screen
+      .all("community")
+      .map((card) => card.querySelector("[data-testid=community-selected]")?.textContent.trim());
+    expect(marked).toEqual([undefined, t.screen.selected]);
+    expect(screen.q("community-selected")?.querySelector("svg")?.getAttribute("aria-hidden")).toBe(
+      "true",
+    );
   });
 
   it("follows a note created outside the plugin", async () => {
@@ -98,7 +125,7 @@ describe("the community settings", () => {
         notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", color: "amber" })),
     });
     expect(screen.text("community-issues")).toBe(
-      "„Farbe“ ist keine Farbe der Palette. Wähle eine Farbe aus.",
+      t.issues["color.unknown"]({ key: "color", code: "color.unknown", value: "amber" }, "Farbe"),
     );
     expect(screen.all("community-badge")[0]?.dataset["communityColor"]).toBe("none");
     expect(screen.q("community-edit")).toBeDefined();
@@ -113,7 +140,7 @@ describe("the community settings", () => {
     expect(screen.names()).toEqual(["Neu"]);
     expect(screen.text("community-read-only")).toBe("Schreibgeschützt");
     expect(screen.text("community-issues")).toBe(
-      "Die Notiz stammt aus einer neueren Plugin-Version (Schemaversion 2), deshalb ist sie schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.",
+      de.notes.recordIssues["schema.newer"]({ code: "schema.newer", version: 2 }),
     );
     expect(screen.q("community-edit")).toBeUndefined();
     expect(screen.q("community-remove")).toBeUndefined();
@@ -141,11 +168,12 @@ describe("the community settings", () => {
     const issues = screen
       .all("community")
       .map((row) => row.querySelector("[data-testid=community-issues]")?.textContent.trim());
-    const duplicateCode =
-      "Eine andere Gemeinschaft hat dasselbe Kürzel. Gib einer der beiden ein anderes.";
-    const duplicateId =
-      "Eine andere Notiz hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.";
-    expect(issues).toEqual([duplicateCode, duplicateCode, duplicateId, duplicateId]);
+    expect(issues).toEqual([
+      duplicateCode("B"),
+      duplicateCode("A"),
+      duplicateId("D.md"),
+      duplicateId("C.md"),
+    ]);
     expect(screen.all("community-read-only")).toHaveLength(2);
   });
 
@@ -160,15 +188,50 @@ describe("the community settings", () => {
     });
     expect(screen.names()).toEqual(["A"]);
     const section = screen.q("unindexed-notes");
-    expect(section?.querySelector("h3")?.textContent).toBe("Notizen mit Problemen");
+    expect(section?.querySelector("h3")?.textContent).toBe(t.screen.otherNotes);
     expect(
       [...(section?.querySelectorAll("li") ?? [])].map((item) =>
-        [...item.querySelectorAll("span")].map((part) => part.textContent.trim()).join(" | "),
+        [...item.querySelectorAll(":scope > span")]
+          .map((part) => part.textContent.trim())
+          .join(" | "),
       ),
     ).toEqual([
-      "Irgendwo/Fremd.md | Die Eigenschaft „schema“ ist nicht lesbar, deshalb kann WEG Manager die Notiz keinem Typ zuordnen. Korrigiere sie in Obsidian nach dem Dateivertrag.",
-      "WEG Manager/Gemeinschaften/Kaputt.md | Die Eigenschaften der Notiz sind kein gültiges YAML, deshalb kann WEG Manager sie nicht lesen. Korrigiere sie in Obsidian.",
+      `Irgendwo/Fremd.md | ${de.notes.unindexedIssues["schema.malformed"]({ code: "schema.malformed" })}`,
+      `WEG Manager/Gemeinschaften/Kaputt.md | ${de.notes.unindexedIssues["frontmatter.unreadable"]({ code: "frontmatter.unreadable" })}`,
     ]);
+  });
+
+  it("opens each other note and each read-only community in Obsidian, and only those", async () => {
+    const screen = await openCommunities({
+      seed: (notes) => {
+        notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A" }));
+        notes.seed(`${FOLDER}/Neu.md`, communityNote(2, { schema: "weg-manager.community/v2" }));
+        notes.seed("Irgendwo/Fremd.md", { schema: "weg-manager.punkt" });
+      },
+    });
+    const openers = screen.all("open-note");
+    expect(openers.map((button) => button.getAttribute("aria-label"))).toEqual([
+      t.screen.openNoteLabel("Neu"),
+      t.screen.openNoteLabel("Irgendwo/Fremd.md"),
+    ]);
+    expect(openers.map((button) => button.textContent.trim())).toEqual([
+      t.screen.openNote,
+      t.screen.openNote,
+    ]);
+    await screen.click(openers[1]);
+    await screen.click(openers[0]);
+    expect(screen.notes.opened()).toEqual(["Irgendwo/Fremd.md", `${FOLDER}/Neu.md`]);
+  });
+
+  it("says so when a note to open is gone", async () => {
+    const screen = await openCommunities({
+      seed: (notes) => notes.seed("Irgendwo/Fremd.md", { schema: "weg-manager.punkt" }),
+    });
+    screen.notes.removeOutside("Irgendwo/Fremd.md");
+    await screen.click(screen.q("open-note"));
+    expect(screen.q("unindexed-notes")?.querySelector("[role=alert]")?.textContent).toContain(
+      de.notes.errors.notFound.title,
+    );
   });
 
   it("speaks English in an English Obsidian", async () => {

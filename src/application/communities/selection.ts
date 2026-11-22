@@ -2,11 +2,13 @@ import { Context, Effect, Equal, Layer, Semaphore, Stream, SubscriptionRef } fro
 import {
   communityType,
   isCommunityChoice,
+  selectableIds,
   selectedCommunity,
   type CommunityFields,
 } from "../../domain/communities";
 import { NoteIndex, type NoteSnapshot } from "../notes";
 import { DeviceStore } from "../shell";
+import { toCommunityList } from "./list";
 
 /** The device store key of the selection (ADR 0008): per device and vault, never in `data.json`. */
 export const SELECTION_KEY = "community-selection";
@@ -17,7 +19,7 @@ export type CommunitySelection = {
   readonly ready: boolean;
   /** The id of the selected community, or none. */
   readonly id: string | undefined;
-  /** Two or more communities and none selected: the frame asks the user to choose. */
+  /** Two or more selectable communities and none selected: the frame asks the user to choose. */
   readonly choiceNeeded: boolean;
 };
 
@@ -35,26 +37,23 @@ export class CommunitySelectionService extends Context.Service<
   }
 >()("weg-manager/application/CommunitySelectionService") {}
 
-/** The ids that can be selected: each community's id once, a duplicated one included. */
-const selectable = (snapshot: NoteSnapshot<CommunityFields>): string[] => [
-  ...new Set(snapshot.notes.flatMap((note) => (note.id === undefined ? [] : [note.id]))),
-];
-
 /** The selection the rule gives for the stored choice and the index's communities. */
 const derive = (stored: unknown, snapshot: NoteSnapshot<CommunityFields>): CommunitySelection => {
   if (!snapshot.ready) return { ready: false, id: undefined, choiceNeeded: false };
-  const ids = selectable(snapshot);
+  // The list adds the issues between communities (a duplicate short code) to the index's own.
+  const ids = selectableIds(toCommunityList(snapshot).communities);
   const id = selectedCommunity(stored, ids);
   return { ready: true, id, choiceNeeded: id === undefined && ids.length > 0 };
 };
 
 /**
  * The selection over the note index and the device store. It follows the index's communities and
- * applies the rule (`selectedCommunity`) to each snapshot. A community the rule selects by itself
- * (the only one) is stored too when no community's id is stored, once the index has read the vault
- * without a failure, so adding a second community keeps it selected. A stored community that is
- * gone stays stored, also while the rule selects another: it counts again if its note comes back,
- * as after Sync. Only the user's choice (`select`) replaces it.
+ * applies the rule (`selectedCommunity`) to each snapshot, over the communities without issues
+ * (`selectableIds`, owner decision 22.11.2026). A community the rule selects by itself (the only
+ * one) is stored too when no community's id is stored, once the index has read the vault without a
+ * failure, so adding a second community keeps it selected. A stored community that is gone, or has
+ * an issue now, stays stored, also while the rule selects another: it counts again once its note
+ * comes back or is repaired, as after Sync. Only the user's choice (`select`) replaces it.
  */
 export const communitySelectionLayer = Layer.effect(
   CommunitySelectionService,

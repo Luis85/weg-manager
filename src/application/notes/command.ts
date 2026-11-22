@@ -1,6 +1,6 @@
 import { Effect, Result } from "effect";
 import { copyFrontmatter } from "./frontmatter";
-import { NoteWriteError, type NewNote, type Note } from "./index";
+import { NoteTrashError, NoteWriteError, type NewNote, type Note } from "./index";
 import { planNewNote, type Normalize, type PlannedNote, type SiblingsOf } from "./paths";
 
 /** What plugin code threw inside a vault write, carried past the vault call to `writeCommand`. */
@@ -52,6 +52,17 @@ export const writeCommand = <A, E>(
         : Effect.fail(new NoteWriteError({ cause: rejected }));
     }),
   );
+
+/**
+ * `NoteStore.trash` for any adapter: runs `write` (the move to the trash) as a command; a rejected
+ * move is a `NoteTrashError`, so the user reads that the note was not deleted, not that it was not
+ * saved. What came through `asDefect` stays a defect.
+ */
+export const trashCommand = (write: () => Promise<unknown>): Effect.Effect<void, NoteTrashError> =>
+  writeCommand(async () => {
+    await write();
+    return Result.succeed(undefined);
+  }).pipe(Effect.mapError(({ cause }) => new NoteTrashError({ cause })));
 
 /**
  * `NoteStore.create` for any adapter: checks the name, picks a free path (`siblingsOf` says what

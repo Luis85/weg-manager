@@ -17,6 +17,7 @@ import {
   pathsInFolder,
   recordNotes,
   planRename,
+  trashCommand,
   updateNoteText,
   writeCommand,
 } from "../../../application/notes/adapter";
@@ -111,13 +112,8 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
     );
 
   const trash = (path: string) =>
-    Effect.flatMap(find(path), (file) =>
-      writeCommand(async () => {
-        // Obsidian 1.15 resolves with `true` although its d.ts says `void`; the port promises void.
-        await fileManager.trashFile(file);
-        return Result.succeed(undefined);
-      }),
-    );
+    // Obsidian 1.15 resolves with `true` although its d.ts says `void`; the port promises void.
+    Effect.flatMap(find(path), (file) => trashCommand(() => fileManager.trashFile(file)));
 
   const rename = (path: string, newName: string) =>
     Effect.gen(function* () {

@@ -338,7 +338,7 @@ describe("updateCommunity", () => {
       const error = yield* Effect.flip(
         updateCommunity(community, inputOf(community, { kind: "Haus" })),
       );
-      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "identity" }));
+      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "duplicate-id" }));
       assert.deepStrictEqual((yield* stored(PATH)).frontmatter, communityNote(1));
       assert.deepStrictEqual((yield* stored(copy)).frontmatter, communityNote(1));
     }).pipe(Effect.provide(fixture.layer));

@@ -139,8 +139,16 @@ describe("surface texts", () => {
 
   it("words the copy confirmation", () => {
     expect([de.shell.diagnosticsCopied, en.shell.diagnosticsCopied]).toEqual([
-      { title: "Diagnose kopiert", detail: "Füge den Bericht in deine Support-Anfrage ein." },
-      { title: "Diagnostics copied", detail: "Paste the report into your support request." },
+      {
+        title: "Diagnose kopiert",
+        detail:
+          "Hänge den Bericht an deine Meldung auf der GitHub-Seite des Plugins an. Er enthält keine Inhalte deiner Notizen.",
+      },
+      {
+        title: "Diagnostics copied",
+        detail:
+          "Attach the report to your issue on the plugin's GitHub page. It contains no content of your notes.",
+      },
     ]);
   });
 });

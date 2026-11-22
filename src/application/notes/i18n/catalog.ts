@@ -40,6 +40,7 @@ export type NotesCatalog = {
     };
     readonly unreadable: Text;
     readonly write: Text;
+    readonly trash: Text;
     readonly editConflict: Text;
     readonly writeRefused: {
       readonly title: string;

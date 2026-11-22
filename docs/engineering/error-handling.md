@@ -30,6 +30,10 @@ Every message exists in German and English ([ADR 0005](../adr/0005-ui-language.m
 
 `action` (`retry`, `open-settings`, `copy-diagnostics`) becomes a button in `ErrorNotice.vue`, but only where the parent provides a handler. `copy-diagnostics` is built in.
 
+A message that asks the user to report a problem names the plugin's GitHub page in its detail and carries `link: ISSUES_URL` (`src/application/shell/i18n/catalog.ts`, the one place of `https://github.com/Luis85/weg-manager/issues`): the defect, unreadable settings and the "Diagnose kopiert" confirmation. The user attaches the diagnostics report, which holds no note content. The Obsidian notice and the settings tab build the link with DOM APIs (`createEl("a")`), `ErrorNotice.vue` with a template; nothing uses `innerHTML`. The link opens in the browser (`target="_blank"`, `rel="noopener"`). The detail itself never holds the URL, so it stays free of `/`.
+
+A write that succeeds is confirmed by a short notice through `Notifier` (`severity: "info"`, the title alone, e.g. „Ahornweg 12“ gespeichert); the communities use cases send it after the write (design handoff 02: a toast only confirms a short-lived success, a failure stays as an alert at the form).
+
 ## The defect path
 
 Every boundary catches defects and calls `reportDefect`, once:

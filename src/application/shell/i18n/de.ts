@@ -26,7 +26,7 @@ export const shellDe: ShellCatalog = {
       detail: {
         "newer-version": `Die Einstellungen stammen aus einer neueren Version von ${PRODUCT_NAME}. Aktualisiere das Plugin, um sie zu ändern.`,
         unreadable:
-          "Die Einstellungsdatei ist nicht lesbar. Es gelten Standardwerte, die Datei bleibt unverändert. Kopiere die Diagnose für den Support.",
+          "Die Einstellungsdatei ist nicht lesbar. Es gelten Standardwerte, die Datei bleibt unverändert. Kopiere die Diagnose und melde es auf der GitHub-Seite des Plugins.",
       },
     },
     invalidSettings: { title: "Eingabe ungültig" },
@@ -42,7 +42,7 @@ export const shellDe: ShellCatalog = {
   defect: {
     title: `Unerwarteter Fehler in ${PRODUCT_NAME}`,
     detail: (incidentId) =>
-      `Die Aktion wurde abgebrochen (Fehlercode ${incidentId}). Kopiere die Diagnose und schicke sie mit dem Fehlercode an den Support.`,
+      `Die Aktion wurde abgebrochen (Fehlercode ${incidentId}). Kopiere die Diagnose und melde den Fehler mit dem Fehlercode auf der GitHub-Seite des Plugins. Der Bericht enthält keine Inhalte deiner Notizen.`,
   },
   settingsReset: {
     title: "Einstellungen teilweise zurückgesetzt",
@@ -50,7 +50,8 @@ export const shellDe: ShellCatalog = {
   },
   diagnosticsCopied: {
     title: "Diagnose kopiert",
-    detail: "Füge den Bericht in deine Support-Anfrage ein.",
+    detail:
+      "Hänge den Bericht an deine Meldung auf der GitHub-Seite des Plugins an. Er enthält keine Inhalte deiner Notizen.",
   },
   actions: {
     retry: "Erneut versuchen",

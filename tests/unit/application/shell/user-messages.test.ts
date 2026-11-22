@@ -135,6 +135,14 @@ describe("message catalog texts", () => {
         "Die Einstellungsdatei konnte nicht geschrieben werden. Deine Eingabe ist erhalten. Speichere erneut.",
       action: "retry",
     });
+    expect(describeError(new ReadOnlySettingsError({ reason: "unreadable" }), de)).toEqual({
+      severity: "warning",
+      title: "Einstellungen schreibgeschützt",
+      detail:
+        "Die Einstellungsdatei ist nicht lesbar. Es gelten Standardwerte, die Datei bleibt unverändert. Kopiere die Diagnose und melde es auf der GitHub-Seite des Plugins.",
+      action: "copy-diagnostics",
+      link: "https://github.com/Luis85/weg-manager/issues",
+    });
     expect(describeError(new ReadOnlySettingsError({ reason: "newer-version" }), de)).toEqual({
       severity: "warning",
       title: "Einstellungen schreibgeschützt",
@@ -155,7 +163,8 @@ describe("message catalog texts", () => {
       severity: "warning",
       title: "Settings are read-only",
       detail:
-        "The settings file can't be read. Default values apply and the file stays unchanged. Copy the diagnostics for support.",
+        "The settings file can't be read. Default values apply and the file stays unchanged. Copy the diagnostics and report this on the plugin's GitHub page.",
+      link: "https://github.com/Luis85/weg-manager/issues",
       action: "copy-diagnostics",
     });
     expect(describeError(new InvalidSettingsError({ issues: [ROOT_FOLDER] }), en)).toEqual({
@@ -188,14 +197,16 @@ describe("message catalog texts", () => {
       severity: "error",
       title: "Unerwarteter Fehler in WEG Manager",
       detail:
-        "Die Aktion wurde abgebrochen (Fehlercode K7Q2). Kopiere die Diagnose und schicke sie mit dem Fehlercode an den Support.",
+        "Die Aktion wurde abgebrochen (Fehlercode K7Q2). Kopiere die Diagnose und melde den Fehler mit dem Fehlercode auf der GitHub-Seite des Plugins. Der Bericht enthält keine Inhalte deiner Notizen.",
+      link: "https://github.com/Luis85/weg-manager/issues",
       action: "copy-diagnostics",
     });
     expect(describeDefect("K7Q2", en.shell)).toEqual({
       severity: "error",
       title: "Unexpected error in WEG Manager",
       detail:
-        "The action was stopped (error code K7Q2). Copy the diagnostics and send them to support with the error code.",
+        "The action was stopped (error code K7Q2). Copy the diagnostics and report the error with its code on the plugin's GitHub page. The report contains no content of your notes.",
+      link: "https://github.com/Luis85/weg-manager/issues",
       action: "copy-diagnostics",
     });
   });

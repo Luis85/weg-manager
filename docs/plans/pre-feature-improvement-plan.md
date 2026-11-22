@@ -197,15 +197,14 @@ After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its 
 | #40 | Third-party notices generated from the bundle (26 packages: 25 MIT, 1 ISC), checked by the gate, staged and attested as a fourth release asset. |
 | #41 | The unhandled events `ActiveFileChanged` and `ColorSchemeChanged`, `isMarkdown` and the event bus's unused subscription are deleted (PBI-62, criterion 3). |
 | #42 | `amber` replaces the community colour `cyan`; the main entry is "Einstellungen" and current on every settings section. |
+| #43 | The design handoff documents and the event-flow diagram follow the current state. |
+| #44 | The module manifest: one per module and layer side; a new module registers in two shared places; the lint and fallow module lists are generated (PBI-60). |
+| #45 | The frame's settings entry belongs to the shell; the architecture diagram is regenerated. |
+| #46 | Four cases from PBI-65: more closing lines are writable, a line comment is kept, the root folder is found in any case, file names are limited to 255 bytes. |
 
-### Still open before the 0.2.0 tag
+### The 0.2.0 pre-release
 
-One pull request each (owner decisions of the second interview):
-
-1. The module manifest: two entries per module, the lint and fallow module lists generated from the one module list (PBI-60).
-2. Write fixes and two rare cases: the closing lines `---` with trailing spaces and `----` are accepted, a comment at the end of a written line stays, a root folder that differs only in case is found, a file name is limited to 255 bytes (PBI-65).
-
-The architecture diagram under `docs/archify/` is regenerated after the manifest; it does not hold the tag.
+Everything the owner asked for before the tag is on `main` (PRs #39 to #46). The version bump to 0.2.0 goes through its own pull request; the tag follows on the merged commit and is the first run of the release workflow. A fresh plugin-shell blueprint for other plugins is written beside it and does not hold the tag.
 
 ### Owner decisions (2026-11-22)
 
@@ -249,11 +248,10 @@ The architecture diagram under `docs/archify/` is regenerated after the manifest
 
 | Note | What |
 | --- | --- |
-| PBI-60 | The module manifest: decided, before the 0.2.0 tag. |
 | PBI-61 | References between records, lookup by id, a source for "today": after the tag. The contact role is decided. |
-| PBI-62 | One index snapshot across types (with the second note type). The unused machinery is decided, before the 0.2.0 tag. |
+| PBI-62 | One index snapshot across types, with the second note type. |
 | PBI-63 | Fidelity of the Obsidian double, fixed pauses and literal sentences in e2e specs. |
 | PBI-64 | Run time and cost of the gate and CI. |
-| PBI-65 | Four cases before the 0.2.0 tag; three stay open (no `VaultReady` fallback, two wrong messages). |
-| PBI-66 | Manual accessibility checks, the focus ring on inputs, three small points from the UX step; the palette and the documents are decided. |
+| PBI-65 | Three cases stay open (no `VaultReady` fallback, two wrong messages); after the tag. |
+| PBI-66 | Manual accessibility checks, the focus ring on inputs, three small points from the UX step. |
 | PBI-67 | The first release: workflows that have never run; `CI / e2e` as a required check is postponed. |

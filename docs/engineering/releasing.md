@@ -2,15 +2,17 @@
 
 Versions are bare `x.y.z`. Tags carry no `v`; `.npmrc` sets `tag-version-prefix=""`.
 
-1. On an up-to-date `main` with a green CI, run `npm version 0.2.0` (or `minor`/`patch`). npm's `version` hook runs `scripts/version-bump.mjs`:
+1. On a branch from an up-to-date `main` with a green CI, run `npm version 0.3.0 --no-git-tag-version` (or `minor`/`patch`). npm's `version` hook runs `scripts/version-bump.mjs`:
    - it copies the version into `manifest.json`;
-   - it adds `"0.2.0": <minAppVersion>` to `versions.json`;
+   - it adds `"0.3.0": <minAppVersion>` to `versions.json`;
    - it stages both files.
 
-   npm then commits and tags `0.2.0`. The bump refuses a version that is not greater than the current one.
-2. Push the commit and the tag: `git push --follow-tags`.
+   The bump refuses a version that is not greater than the current one. Commit `package.json`, `package-lock.json`, `manifest.json` and `versions.json` (`chore: release 0.3.0`) and bring the commit to `main` through a pull request, like every change.
+2. When the pull request is merged and CI on `main` is green, tag the merge commit on `main` and push the tag: `git tag 0.3.0 origin/main && git push origin 0.3.0`. The tag is what publishes: confirm with the owner before pushing it.
+
+   (Where direct pushes to `main` are allowed, plain `npm version 0.3.0` on `main` followed by `git push --follow-tags` does the same in one step.)
 3. `.github/workflows/release.yml` runs two jobs:
-   - `build` (read-only token, credentials not persisted, `fetch-depth: 0`) fails unless the tagged commit is an ancestor of `origin/main`: tag from `main` only. It then runs `npm ci`, `npm run verify` and the real-Obsidian e2e suite (`npm run test:e2e`, set up as in `ci.yml`), then `npm run release:package -- --tag 0.2.0` and uploads `release/` (the folder `weg-manager/` with the three plugin files, and `THIRD-PARTY-NOTICES.txt` beside it) as the artifact `release-files`.
+   - `build` (read-only token, credentials not persisted, `fetch-depth: 0`) fails unless the tagged commit is an ancestor of `origin/main`: tag from `main` only. It then runs `npm ci`, `npm run verify` and the real-Obsidian e2e suite (`npm run test:e2e`, set up as in `ci.yml`), then `npm run release:package -- --tag 0.3.0` and uploads `release/` (the folder `weg-manager/` with the three plugin files, and `THIRD-PARTY-NOTICES.txt` beside it) as the artifact `release-files`.
    - `release` (`contents: write`, `id-token: write`, `attestations: write`; no checkout, no `npm`) downloads that artifact, attests the four assets and creates the GitHub release with `main.js`, `manifest.json`, `styles.css` and `THIRD-PARTY-NOTICES.txt`. The release is marked a pre-release while the major version is 0 (the tag starts with `0.`).
 
    `release:package` fails when the tag and `manifest.json` disagree, when `dist/` fails the `check:dist` invariants (a stale or development build), when `versions.json` has no entry for the manifest version equal to its `minAppVersion`, or when `THIRD-PARTY-NOTICES.txt` is missing or empty.
@@ -22,7 +24,7 @@ The workflow has never run. A failed run leaves the tag without a release: fix t
 
 Raise `minAppVersion` in `manifest.json` before you bump whenever the plugin starts using a newer Obsidian API.
 
-The next release is 0.2.0, a pre-release (see *Beta testing with BRAT* below) for the manual checks in a personal vault (see [testing.md](testing.md#manual-checks-in-obsidian)).
+0.2.0 is the first release: a pre-release (see *Beta testing with BRAT* below) for the owner's manual checks in a personal vault (see [testing.md](testing.md#manual-checks-in-obsidian)).
 
 ## Third-party notices
 

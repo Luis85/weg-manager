@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: 2026-11-22
-finished: ""
+finished: 2026-11-22
 horizon: ""
 start: ""
 due: ""
@@ -23,7 +23,7 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-68 · Befunde der zweiten Review-Runde am Notizspeicher und am Testdouble beheben
@@ -73,3 +73,4 @@ Review-Berichte „tests“ und „product-code“ der zweiten Runde am Stand `6
   - Kriterium 6 erfüllt. `NoteOpenError` („Notiz nicht geöffnet“ / „Note not opened“, erneut versuchen), `NoteNotFoundError` bei verschwundener Datei oder ENOENT.
   - Kriterium 7 erfüllt. Die Pfeiltasten bitten nur um die Wahl, der Fokus folgt der gewählten Option nach dem Rendern und nur in der Ansicht, die ihn hat.
   - Kriterium 8 erfüllt. Abgelehnte oder unlesbare Zone gilt als Standardzone des Systems; ein Fehler beim Planen wird gemeldet und der Timer auf eine Minute gesetzt. DOM-Tests ohne eingesetzte Uhr mit `TZ` Kiritimati und Los Angeles; mit `zone: () => "UTC"` als Einpflanzung scheitern sie.
+- 22.11.2026 (Entscheidung zu Kriterium 3): Der Adapter bleibt, wie er ist. Ein eingereihtes Umbenennen entsteht nur, wenn `renameFile` während einer laufenden Link-Aktualisierung gerufen wird, also wenn zur selben Zeit eine andere Notiz umbenannt wird. Dann meldet der Adapter den Pfad, den die Datei in dem Augenblick hat; der Index folgt dem Verschieben über das `rename`-Ereignis, das Record-Kit findet die Notiz über ihre `id`, und der Dateiname ist nur für Menschen. Die beiden anderen Wege sind verworfen: `fileManager.updateQueue` ist keine öffentliche API, und ein Warten auf das `rename`-Ereignis mit Frist würde ein spätes Verschieben als Fehler melden. Was offen bleibt, steht in ADR 0007 und `architecture.md`: Ein eingereihtes Umbenennen, das scheitert, erfährt das Plugin nicht. Damit sind alle acht Kriterien erfüllt.

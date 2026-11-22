@@ -13,10 +13,11 @@ export {
 export { communityFileName, followsName } from "./file-name";
 export { kindSuggestions, type KindPair } from "./kinds";
 export {
-  colorsInUse,
+  colorOwners,
   communityValues,
   duplicateShortCodes,
   editedValues,
+  firstFreeColor,
   normalizeShortCode,
   validateCommunity,
   CommunityFieldIssue,

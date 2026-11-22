@@ -123,13 +123,13 @@ describe.each([de, en])("describeError for notes ($shell.language)", (messages) 
 });
 
 /** The catalog is product copy: a change here is a deliberate wording change. */
-describe("notes message texts", () => {
-  const texts = (messages: typeof de) =>
-    ALL.map((error) => {
-      const { severity, title, detail, action } = describeError(error, messages);
-      return [severity, title, detail, action];
-    });
+const texts = (messages: typeof de) =>
+  ALL.map((error) => {
+    const { severity, title, detail, action } = describeError(error, messages);
+    return [severity, title, detail, action];
+  });
 
+describe("notes message texts", () => {
   it("has exact German texts", () => {
     expect(texts(de)).toEqual([
       [

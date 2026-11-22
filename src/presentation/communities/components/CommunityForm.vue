@@ -12,7 +12,7 @@ import {
   type Community,
 } from "../../../application/communities";
 import {
-  colorsInUse,
+  colorOwners,
   kindSuggestions,
   validateCommunity,
   type CommunityFieldIssue,
@@ -48,7 +48,7 @@ const others = computed(() =>
     .map((other) => other.values),
 );
 const taken = computed(() => {
-  const colors = new Set(colorsInUse(others.value));
+  const colors = new Map(colorOwners(others.value));
   if (loaded?.color !== undefined) colors.delete(loaded.color);
   return colors;
 });

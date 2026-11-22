@@ -1,3 +1,4 @@
+import { de } from "../../../../src/application/messages";
 import { afterEach, describe, expect, it } from "vitest";
 import { SELECTION_KEY } from "../../../../src/application/communities";
 import { NoteStore } from "../../../../src/application/notes";
@@ -17,6 +18,8 @@ import {
 import { mountApp } from "../../../support/surface";
 
 afterEach(closeAll);
+
+const t = de.communities;
 
 const TWO = (notes: Memory) => {
   notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "Ahornweg 12", short_code: "AW" }));
@@ -52,9 +55,7 @@ describe("deleting a community", () => {
     await screen.click(screen.button("Ahornweg 12 löschen"));
     const dialog = screen.root.querySelector("[role=dialog]");
     expect(dialog?.textContent).toContain("Gemeinschaft löschen");
-    expect(dialog?.textContent).toContain(
-      "„Ahornweg 12“ kommt in den Papierkorb, den du in Obsidian eingestellt hast.",
-    );
+    expect(dialog?.textContent).toContain(t.deletion.detail("Ahornweg 12"));
     await screen.click(screen.button("Abbrechen"));
     expect(screen.q("delete-dialog")).toBeUndefined();
     expect(await paths(screen)).toEqual([`${FOLDER}/A.md`, `${FOLDER}/T.md`]);
@@ -97,11 +98,11 @@ describe("deleting a community", () => {
     await screen.click(screen.button("Abbrechen"));
     await screen.click(screen.button("Tiefgarage löschen"));
     const dialog = () => screen.root.querySelector("[role=dialog]");
-    expect(dialog()?.textContent).toContain("„Tiefgarage“ kommt in den Papierkorb");
+    expect(dialog()?.textContent).toContain(t.deletion.detail("Tiefgarage"));
     expect((screen.q("delete-confirm") as HTMLButtonElement).disabled).toBe(false);
     screen.notes.releaseWrites();
     await screen.until(() => expect(screen.names()).toEqual(["Tiefgarage"]));
-    expect(dialog()?.textContent).toContain("„Tiefgarage“ kommt in den Papierkorb");
+    expect(dialog()?.textContent).toContain(t.deletion.detail("Tiefgarage"));
   });
 
   it("shows no earlier community's failure in the next dialog", async () => {

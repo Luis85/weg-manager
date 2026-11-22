@@ -19,28 +19,60 @@ import { describeError } from "../../../../src/application/user-messages";
 import { COMMUNITY_KEYS, communityType } from "../../../../src/domain/communities";
 
 /** Every text of a catalog, its functions called with samples, as plain data. */
-const rendered = (catalog: CommunitiesCatalog) => ({
-  ...catalog,
-  screen: {
-    ...catalog.screen,
-    intro: catalog.screen.intro("WEG Manager/Gemeinschaften"),
-    editLabel: catalog.screen.editLabel("Ahornweg 12"),
-    removeLabel: catalog.screen.removeLabel("Ahornweg 12"),
-    summary: catalog.screen.summary("WEG", "Einheiten"),
-  },
-  colorTaken: catalog.colorTaken("Petrol"),
-  suggestion: catalog.suggestion({ kind: "WEG", unit_label: "Einheiten" }),
-  conflict: {
-    ...catalog.conflict,
-    loaded: catalog.conflict.loaded("WEG"),
-    mine: catalog.conflict.mine("Haus"),
-    theirs: catalog.conflict.theirs("Tiefgarage"),
-  },
-  deletion: { ...catalog.deletion, detail: catalog.deletion.detail("Ahornweg 12") },
-  issues: Object.fromEntries(
-    Object.entries(catalog.issues).map(([code, text]) => [code, text("Feld")]),
-  ),
-});
+const rendered = (catalog: CommunitiesCatalog) => {
+  const { issues } = catalog;
+  const plain = { key: "name", code: "name.invalid" } as const;
+  return {
+    ...catalog,
+    screen: {
+      ...catalog.screen,
+      intro: catalog.screen.intro("WEG Manager/Gemeinschaften"),
+      editLabel: catalog.screen.editLabel("Ahornweg 12"),
+      removeLabel: catalog.screen.removeLabel("Ahornweg 12"),
+      summary: catalog.screen.summary("WEG", "Einheiten"),
+      openNoteLabel: catalog.screen.openNoteLabel("Ahornweg 12"),
+    },
+    colorTaken: catalog.colorTaken("Petrol"),
+    suggestion: catalog.suggestion({ kind: "WEG", unit_label: "Einheiten" }),
+    conflict: {
+      ...catalog.conflict,
+      loaded: catalog.conflict.loaded("WEG"),
+      mine: catalog.conflict.mine("Haus"),
+      theirs: catalog.conflict.theirs("Tiefgarage"),
+    },
+    deletion: { ...catalog.deletion, detail: catalog.deletion.detail("Ahornweg 12") },
+    issues: {
+      "name.invalid": issues["name.invalid"](plain, "Feld"),
+      "short-code.invalid": issues["short-code.invalid"](
+        { key: "short_code", code: "short-code.invalid" },
+        "Feld",
+      ),
+      "short-code.taken": issues["short-code.taken"](
+        { key: "short_code", code: "short-code.taken", value: "AW", other: "Ahornweg 12" },
+        "Feld",
+      ),
+      "short-code.duplicate": issues["short-code.duplicate"](
+        { key: "short_code", code: "short-code.duplicate", value: "AW", other: "Ahornweg 12" },
+        "Feld",
+      ),
+      "color.unknown": issues["color.unknown"](
+        { key: "color", code: "color.unknown", value: "amber" },
+        "Feld",
+      ),
+      "color.taken": issues["color.taken"]({ key: "color", code: "color.taken" }, "Feld"),
+      "kind.invalid": issues["kind.invalid"]({ key: "kind", code: "kind.invalid" }, "Feld"),
+      "unit-label.invalid": issues["unit-label.invalid"](
+        { key: "unit_label", code: "unit-label.invalid" },
+        "Feld",
+      ),
+    },
+    notices: {
+      created: catalog.notices.created("Ahornweg 12"),
+      saved: catalog.notices.saved("Ahornweg 12"),
+      deleted: catalog.notices.deleted("Ahornweg 12"),
+    },
+  };
+};
 
 describe("the communities catalog", () => {
   it("is the communities part of the app's catalog in both languages", () => {
@@ -62,8 +94,11 @@ describe("the communities catalog", () => {
         editLabel: "Ahornweg 12 bearbeiten",
         removeLabel: "Ahornweg 12 löschen",
         readOnly: "Schreibgeschützt",
-        summary: "WEG · Einheiten",
-        problems: "Notizen mit Problemen",
+        selected: "Aktuell",
+        summary: "WEG · Einheiten: Einheiten",
+        otherNotes: "Andere Notizen von WEG Manager",
+        openNote: "In Obsidian öffnen",
+        openNoteLabel: "Ahornweg 12 in Obsidian öffnen",
       },
       fields: {
         name: "Name",
@@ -73,24 +108,27 @@ describe("the communities catalog", () => {
         unit_label: "Einheitenbezeichnung",
       },
       noShortCode: "?",
-      shortCodeHint: "2 bis 5 Zeichen aus A–Z und 0–9, nach dem Anlegen fest.",
-      shortCodeFixed: "Das Kürzel ist nach dem Anlegen fest.",
+      shortCodeHint:
+        "2 bis 5 Buchstaben oder Ziffern, z. B. AW. Lässt sich nach dem Anlegen nicht mehr ändern.",
+      shortCodeFixed: "Das Kürzel lässt sich nach dem Anlegen nicht mehr ändern.",
+      unitLabelHelp: "Wie die Einheiten heißen, z. B. Einheiten oder Stellplätze.",
       colors: {
         teal: "Petrol",
         violet: "Violett",
         blue: "Blau",
-        rust: "Rost",
-        slate: "Schiefer",
+        rust: "Rostrot",
+        slate: "Schiefergrau",
         cyan: "Cyan",
         pink: "Pink",
         olive: "Oliv",
       },
       colorTaken: "Petrol, schon vergeben",
+      preview: "Vorschau",
       builtInKinds: [
         { kind: "WEG", unit_label: "Einheiten" },
         { kind: "Tiefgarage", unit_label: "Stellplätze" },
       ],
-      suggestions: "Vorschläge",
+      suggestions: "Vorschläge:",
       suggestion: "WEG · Einheiten",
       form: {
         createTitle: "Neue Gemeinschaft",
@@ -99,46 +137,58 @@ describe("the communities catalog", () => {
         cancel: "Abbrechen",
       },
       conflict: {
-        title: "Notiz inzwischen geändert",
+        title: "Notiz geändert, während du bearbeitet hast",
         detail:
-          "Diese Felder wurden auch außerhalb des Formulars geändert. Wähle je Feld den Wert, der gelten soll, und speichere.",
+          "Diese Angaben wurden auch außerhalb dieses Formulars geändert, etwa auf einem anderen Gerät. Wähle je Angabe den Wert, der gelten soll, und speichere.",
         loaded: "Beim Öffnen: WEG",
         mine: "Deine Eingabe: Haus",
-        theirs: "In der Notiz: Tiefgarage",
+        theirs: "Jetzt in der Notiz: Tiefgarage",
         apply: "Auswahl speichern",
         empty: "(leer)",
       },
       deletion: {
         title: "Gemeinschaft löschen",
-        detail: "„Ahornweg 12“ kommt in den Papierkorb, den du in Obsidian eingestellt hast.",
-        confirm: "Löschen",
+        detail:
+          "„Ahornweg 12“ wird in Obsidians Papierkorb verschoben. Dort kannst du die Notiz wiederherstellen.",
+        confirm: "In den Papierkorb verschieben",
         cancel: "Abbrechen",
       },
       switcher: {
         label: "Gemeinschaft",
+        loading: "Wird geladen …",
         choose: "Wähle die Gemeinschaft, in der du arbeitest.",
         none: "Noch keine Gemeinschaft",
+        unavailable:
+          "Keine Gemeinschaft ist wählbar, solange ihre Angaben nicht stimmen. Korrigiere sie unter „Gemeinschaften“.",
+      },
+      missing: {
+        name: "Gib einen Namen ein.",
+        short_code: "Gib ein Kürzel ein.",
+        color: "Wähle eine Farbe.",
+        kind: "Gib eine Art ein oder wähle einen Vorschlag.",
+        unit_label: "Gib an, wie die Einheiten heißen.",
       },
       issues: {
-        "name.invalid":
-          "„Feld“ ist leer, länger als 100 Zeichen oder mehrzeilig. Gib eine Zeile mit höchstens 100 Zeichen ein.",
-        "short-code.invalid":
-          "„Feld“ hat nicht 2 bis 5 Zeichen aus A–Z und 0–9. Gib ein solches Kürzel ein.",
-        "short-code.taken": "Eine andere Gemeinschaft hat dieses Kürzel schon. Wähle ein anderes.",
+        "name.invalid": "Gib für „Feld“ eine Zeile mit höchstens 100 Zeichen ein.",
+        "short-code.invalid": "Das Kürzel braucht 2 bis 5 Buchstaben (A–Z) oder Ziffern.",
+        "short-code.taken": "„Ahornweg 12“ hat schon das Kürzel AW. Wähle ein anderes.",
         "short-code.duplicate":
-          "Eine andere Gemeinschaft hat dasselbe Kürzel. Gib einer der beiden ein anderes.",
-        "color.unknown": "„Feld“ ist keine Farbe der Palette. Wähle eine Farbe aus.",
+          "„Ahornweg 12“ hat dasselbe Kürzel AW. Gib einer der beiden ein anderes Kürzel.",
+        "color.unknown": "Die gespeicherte Farbe „amber“ gibt es nicht. Wähle eine Farbe.",
         "color.taken": "Eine andere Gemeinschaft hat diese Farbe schon. Wähle eine andere.",
-        "kind.invalid":
-          "„Feld“ ist leer, länger als 50 Zeichen oder mehrzeilig. Gib eine Zeile mit höchstens 50 Zeichen ein.",
-        "unit-label.invalid":
-          "„Feld“ ist leer, länger als 50 Zeichen oder mehrzeilig. Gib eine Zeile mit höchstens 50 Zeichen ein.",
+        "kind.invalid": "Gib für „Feld“ eine Zeile mit höchstens 50 Zeichen ein.",
+        "unit-label.invalid": "Gib für „Feld“ eine Zeile mit höchstens 50 Zeichen ein.",
+      },
+      notices: {
+        created: "„Ahornweg 12“ angelegt",
+        saved: "„Ahornweg 12“ gespeichert",
+        deleted: "„Ahornweg 12“ in den Papierkorb verschoben",
       },
       errors: {
         invalid: {
           title: "Gemeinschaft nicht gespeichert",
           detail:
-            "Einige Angaben erfüllen die Regeln nicht. Korrigiere die markierten Felder und speichere erneut.",
+            "Einige Angaben fehlen oder passen nicht. Korrigiere die markierten Felder und speichere erneut.",
         },
       },
     });
@@ -151,15 +201,19 @@ describe("the communities catalog", () => {
         title: "Communities",
         intro: "Each community is a note in the folder “WEG Manager/Gemeinschaften”.",
         add: "Add community",
-        loading: "Loading communities …",
-        empty: "Your communities appear here, such as a WEG and its underground car park.",
+        loading: "Loading communities…",
+        empty:
+          "Your communities appear here, such as a homeowners' association (WEG) and its underground car park.",
         edit: "Edit",
         remove: "Delete",
         editLabel: "Edit Ahornweg 12",
         removeLabel: "Delete Ahornweg 12",
         readOnly: "Read-only",
-        summary: "WEG · Einheiten",
-        problems: "Notes with problems",
+        selected: "Current",
+        summary: "WEG · counted in Einheiten",
+        otherNotes: "Other WEG Manager notes",
+        openNote: "Open in Obsidian",
+        openNoteLabel: "Open Ahornweg 12 in Obsidian",
       },
       fields: {
         name: "Name",
@@ -169,24 +223,26 @@ describe("the communities catalog", () => {
         unit_label: "Unit label",
       },
       noShortCode: "?",
-      shortCodeHint: "2 to 5 characters from A–Z and 0–9, fixed once created.",
-      shortCodeFixed: "The short code is fixed once created.",
+      shortCodeHint: "2–5 letters or digits, e.g. AW. Can't be changed later.",
+      shortCodeFixed: "The short code can't be changed after creation.",
+      unitLabelHelp: "What the units are called, e.g. units or parking spaces.",
       colors: {
         teal: "Teal",
         violet: "Violet",
         blue: "Blue",
-        rust: "Rust",
-        slate: "Slate",
+        rust: "Rust red",
+        slate: "Slate gray",
         cyan: "Cyan",
         pink: "Pink",
         olive: "Olive",
       },
-      colorTaken: "Petrol, already taken",
+      colorTaken: "Petrol, already in use",
+      preview: "Preview",
       builtInKinds: [
         { kind: "WEG", unit_label: "Units" },
         { kind: "Underground car park", unit_label: "Parking spaces" },
       ],
-      suggestions: "Suggestions",
+      suggestions: "Suggestions:",
       suggestion: "WEG · Einheiten",
       form: {
         createTitle: "New community",
@@ -195,45 +251,56 @@ describe("the communities catalog", () => {
         cancel: "Cancel",
       },
       conflict: {
-        title: "Note changed meanwhile",
+        title: "Note changed while you were editing",
         detail:
-          "These fields were also changed outside the form. Choose the value that applies for each field, then save.",
-        loaded: "When opened: WEG",
-        mine: "Your input: Haus",
-        theirs: "In the note: Tiefgarage",
+          "These fields were also changed outside this form, for example on another device. Choose the value to keep for each, then save.",
+        loaded: "When you opened it: WEG",
+        mine: "Your entry: Haus",
+        theirs: "Now in the note: Tiefgarage",
         apply: "Save choice",
         empty: "(empty)",
       },
       deletion: {
         title: "Delete community",
-        detail: "“Ahornweg 12” goes to the trash you set in Obsidian.",
-        confirm: "Delete",
+        detail: "“Ahornweg 12” will be moved to Obsidian's trash, where you can restore it.",
+        confirm: "Move to trash",
         cancel: "Cancel",
       },
       switcher: {
         label: "Community",
+        loading: "Loading…",
         choose: "Choose the community you work in.",
         none: "No community yet",
+        unavailable:
+          "No community can be chosen while its entries are wrong. Fix them under “Communities”.",
+      },
+      missing: {
+        name: "Enter a name.",
+        short_code: "Enter a short code.",
+        color: "Choose a color.",
+        kind: "Enter a kind or choose a suggestion.",
+        unit_label: "Enter what the units are called.",
       },
       issues: {
-        "name.invalid":
-          "“Feld” is blank, longer than 100 characters or more than one line. Enter one line of at most 100 characters.",
-        "short-code.invalid":
-          "“Feld” isn't 2 to 5 characters from A–Z and 0–9. Enter such a short code.",
-        "short-code.taken": "Another community already has this short code. Choose another one.",
+        "name.invalid": "Enter one line of at most 100 characters for “Feld”.",
+        "short-code.invalid": "The short code needs 2–5 letters (A–Z) or digits.",
+        "short-code.taken": "“Ahornweg 12” already uses AW. Choose another short code.",
         "short-code.duplicate":
-          "Another community has the same short code. Give one of them another one.",
-        "color.unknown": "“Feld” isn't a color of the palette. Choose a color.",
+          "“Ahornweg 12” has the same short code AW. Give one of them a different short code.",
+        "color.unknown": "The saved color “amber” isn't available. Choose a color.",
         "color.taken": "Another community already uses this color. Choose another one.",
-        "kind.invalid":
-          "“Feld” is blank, longer than 50 characters or more than one line. Enter one line of at most 50 characters.",
-        "unit-label.invalid":
-          "“Feld” is blank, longer than 50 characters or more than one line. Enter one line of at most 50 characters.",
+        "kind.invalid": "Enter one line of at most 50 characters for “Feld”.",
+        "unit-label.invalid": "Enter one line of at most 50 characters for “Feld”.",
+      },
+      notices: {
+        created: "“Ahornweg 12” created",
+        saved: "“Ahornweg 12” saved",
+        deleted: "“Ahornweg 12” moved to the trash",
       },
       errors: {
         invalid: {
           title: "Community not saved",
-          detail: "Some entries break the rules. Correct the marked fields and save again.",
+          detail: "Some entries are missing or invalid. Fix the marked fields and save again.",
         },
       },
     });
@@ -248,31 +315,53 @@ describe("the communities catalog", () => {
 describe("describeCommunityIssue", () => {
   const ISSUES: CommunityNoteIssue[] = [
     { key: "name", code: "field.missing" },
-    { key: "short_code", code: "short-code.taken" },
+    { key: "color", code: "field.missing" },
+    { key: "short_code", code: "short-code.taken", value: "AW", other: "Ahornweg 12" },
+    { key: "short_code", code: "short-code.duplicate", value: "AW", other: "Tiefgarage" },
+    { key: "color", code: "color.unknown", value: "amber" },
+    { key: "name", code: "name.invalid" },
+    { key: "short_code", code: "short-code.invalid" },
+    { key: "color", code: "color.taken" },
+    { key: "kind", code: "kind.invalid" },
     { key: "unit_label", code: "unit-label.invalid" },
     { code: "schema.newer", version: 2 },
     { code: "id.duplicate", other: "Gemeinschaften/Kopie.md" },
   ];
 
-  it("words record issues, field.missing and this module's codes with the field's label", () => {
+  it("words each issue with its data, a missing field by field, the others with their label", () => {
     expect(ISSUES.map((issue) => describeCommunityIssue(issue, de))).toEqual([
-      "„Name“ fehlt. Gib einen Wert ein.",
-      "Eine andere Gemeinschaft hat dieses Kürzel schon. Wähle ein anderes.",
-      "„Einheitenbezeichnung“ ist leer, länger als 50 Zeichen oder mehrzeilig. Gib eine Zeile mit höchstens 50 Zeichen ein.",
+      "Gib einen Namen ein.",
+      "Wähle eine Farbe.",
+      "„Ahornweg 12“ hat schon das Kürzel AW. Wähle ein anderes.",
+      "„Tiefgarage“ hat dasselbe Kürzel AW. Gib einer der beiden ein anderes Kürzel.",
+      "Die gespeicherte Farbe „amber“ gibt es nicht. Wähle eine Farbe.",
+      "Gib für „Name“ eine Zeile mit höchstens 100 Zeichen ein.",
+      "Das Kürzel braucht 2 bis 5 Buchstaben (A–Z) oder Ziffern.",
+      "Eine andere Gemeinschaft hat diese Farbe schon. Wähle eine andere.",
+      "Gib für „Art“ eine Zeile mit höchstens 50 Zeichen ein.",
+      "Gib für „Einheitenbezeichnung“ eine Zeile mit höchstens 50 Zeichen ein.",
       "Die Notiz wurde mit einer neueren Version von WEG Manager gespeichert, etwa auf einem anderen Gerät, deshalb ist sie hier schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.",
       "Die Notiz „Gemeinschaften/Kopie.md“ hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.",
     ]);
-    expect(describeCommunityIssue({ key: "short_code", code: "short-code.invalid" }, en)).toBe(
-      "“Short code” isn't 2 to 5 characters from A–Z and 0–9. Enter such a short code.",
-    );
     expect(describeCommunityIssue({ key: "kind", code: "field.missing" }, en)).toBe(
-      "“Kind” is missing. Enter a value.",
+      "Enter a kind or choose a suggestion.",
+    );
+    expect(describeCommunityIssue({ key: "kind", code: "kind.invalid" }, en)).toBe(
+      "Enter one line of at most 50 characters for “Kind”.",
     );
   });
 });
 
 describe("communities errors", () => {
   const invalid = new InvalidCommunityError({ issues: [{ key: "name", code: "field.missing" }] });
+
+  it("keeps the other community's name out of its message, which a defect would log", () => {
+    const taken = new InvalidCommunityError({
+      issues: [{ key: "short_code", code: "short-code.taken", value: "AW", other: "Ahornweg 12" }],
+    });
+    expect(taken.message).not.toContain("Ahornweg");
+    expect(String(taken)).not.toContain("Ahornweg");
+  });
 
   it("tells its own errors from the other modules'", () => {
     expect(isCommunitiesError(invalid)).toBe(true);
@@ -285,14 +374,14 @@ describe("communities errors", () => {
       severity: "warning",
       title: "Gemeinschaft nicht gespeichert",
       detail:
-        "Einige Angaben erfüllen die Regeln nicht. Korrigiere die markierten Felder und speichere erneut.",
+        "Einige Angaben fehlen oder passen nicht. Korrigiere die markierten Felder und speichere erneut.",
     };
     expect(describeCommunitiesError(invalid, communitiesDe)).toEqual(german);
     expect(describeError(invalid, de)).toEqual(german);
     expect(describeError(invalid, en)).toEqual({
       severity: "warning",
       title: "Community not saved",
-      detail: "Some entries break the rules. Correct the marked fields and save again.",
+      detail: "Some entries are missing or invalid. Fix the marked fields and save again.",
     });
     expect(describeError(new NoteNotFoundError(), de).title).toBe("Notiz nicht gefunden");
   });

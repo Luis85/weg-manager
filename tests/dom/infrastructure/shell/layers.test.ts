@@ -7,6 +7,7 @@ import {
   Notifier,
   SettingsStore,
 } from "../../../../src/application/shell/ports";
+import { ISSUES_URL } from "../../../../src/application/shell";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -66,6 +67,25 @@ describe("shellAdapters", () => {
       assert.strictEqual(el?.querySelector("strong")?.textContent, "Titel");
       assert.include(el?.textContent ?? "", "Details");
       assert.strictEqual(notices[0]?.duration, NOTICE_DURATION.error);
+    }).pipe(Effect.provide(layer));
+  });
+
+  it.effect("shows a message's link as a link that opens outside Obsidian", () => {
+    const { layer } = setup();
+    return Effect.gen(function* () {
+      yield* (yield* Notifier).notify({
+        severity: "error",
+        title: "Titel",
+        detail: "Details",
+        link: ISSUES_URL,
+      });
+      const link = recordedNotices()[0]?.notice.messageEl.querySelector("a");
+      assert.deepStrictEqual(
+        [link?.getAttribute("href"), link?.textContent, link?.target, link?.rel],
+        [ISSUES_URL, ISSUES_URL, "_blank", "noopener"],
+      );
+      yield* (yield* Notifier).notify({ severity: "info", title: "Ohne", detail: "" });
+      assert.isNull(recordedNotices()[1]?.notice.messageEl.querySelector("a") ?? null);
     }).pipe(Effect.provide(layer));
   });
 

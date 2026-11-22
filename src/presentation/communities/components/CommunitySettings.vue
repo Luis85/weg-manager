@@ -125,7 +125,7 @@ const close = () => {
       class="wm:flex wm:flex-col wm:gap-2"
       data-testid="unindexed-notes"
     >
-      <h3 class="wm:text-base wm:font-semibold">{{ t.screen.problems }}</h3>
+      <h3 class="wm:text-base wm:font-semibold">{{ t.screen.otherNotes }}</h3>
       <ul class="wm:flex wm:flex-col wm:gap-2">
         <li
           v-for="note in unindexed.notes"

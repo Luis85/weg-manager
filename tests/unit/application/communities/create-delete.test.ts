@@ -113,7 +113,7 @@ describe("createCommunity", () => {
         error,
         new InvalidCommunityError({
           issues: [
-            { key: "short_code", code: "short-code.taken" },
+            { key: "short_code", code: "short-code.taken", value: "AW", other: "Gemeinschaft 9" },
             { key: "color", code: "color.taken" },
           ],
         }),

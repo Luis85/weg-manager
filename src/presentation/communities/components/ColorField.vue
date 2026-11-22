@@ -9,7 +9,11 @@ import { useMessages } from "../../shell";
  * keys move between them. A colour another community uses is disabled and says so in its name;
  * the chosen one shows a check mark, not only its colour.
  */
-defineProps<{ modelValue: string; taken: ReadonlySet<string>; error: string | false }>();
+defineProps<{
+  modelValue: string;
+  taken: ReadonlyMap<string, string | undefined>;
+  error: string | false;
+}>();
 const emit = defineEmits<{ "update:modelValue": [color: string]; blur: [] }>();
 
 const t = useMessages().communities;

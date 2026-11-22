@@ -72,9 +72,10 @@ describe("selectedCommunity: the selection rule", () => {
   });
 });
 
-describe("selectableIds: the communities the rule may select", () => {
-  const ok = (id: string | undefined) => ({ id, issues: [] });
+/** A community without issues. */
+const ok = (id: string | undefined) => ({ id, issues: [] });
 
+describe("selectableIds: the communities the rule may select", () => {
   it("is each community without an issue, once, in the list's order", () => {
     expect(selectableIds([ok("community-b"), ok("community-a"), ok("community-b")])).toEqual([
       "community-b",

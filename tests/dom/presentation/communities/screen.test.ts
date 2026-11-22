@@ -10,6 +10,16 @@ import {
 
 afterEach(closeAll);
 
+const t = de.communities;
+
+const duplicateCode = (other: string) =>
+  t.issues["short-code.duplicate"](
+    { key: "short_code", code: "short-code.duplicate", value: "AW", other },
+    "Kürzel",
+  );
+const duplicateId = (other: string) =>
+  de.notes.recordIssues["id.duplicate"]({ code: "id.duplicate", other: `${FOLDER}/${other}` });
+
 const TWO = (notes: Memory) => {
   notes.seed(
     `${FOLDER}/Tiefgarage.md`,
@@ -74,8 +84,8 @@ describe("the community settings", () => {
       ["TG", "violet"],
     ]);
     expect(screen.all("community-summary").map((element) => element.textContent.trim())).toEqual([
-      "WEG · Einheiten",
-      "Tiefgarage · Stellplätze",
+      t.screen.summary("WEG", "Einheiten"),
+      t.screen.summary("Tiefgarage", "Stellplätze"),
     ]);
     expect(screen.button("Ahornweg 12 bearbeiten")).toBeDefined();
     expect(screen.button("Tiefgarage Ahornweg löschen")).toBeDefined();
@@ -99,7 +109,7 @@ describe("the community settings", () => {
         notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A", color: "amber" })),
     });
     expect(screen.text("community-issues")).toBe(
-      "„Farbe“ ist keine Farbe der Palette. Wähle eine Farbe aus.",
+      t.issues["color.unknown"]({ key: "color", code: "color.unknown", value: "amber" }, "Farbe"),
     );
     expect(screen.all("community-badge")[0]?.dataset["communityColor"]).toBe("none");
     expect(screen.q("community-edit")).toBeDefined();
@@ -142,13 +152,9 @@ describe("the community settings", () => {
     const issues = screen
       .all("community")
       .map((row) => row.querySelector("[data-testid=community-issues]")?.textContent.trim());
-    const duplicateCode =
-      "Eine andere Gemeinschaft hat dasselbe Kürzel. Gib einer der beiden ein anderes.";
-    const duplicateId = (other: string) =>
-      de.notes.recordIssues["id.duplicate"]({ code: "id.duplicate", other: `${FOLDER}/${other}` });
     expect(issues).toEqual([
-      duplicateCode,
-      duplicateCode,
+      duplicateCode("B"),
+      duplicateCode("A"),
       duplicateId("D.md"),
       duplicateId("C.md"),
     ]);
@@ -166,7 +172,7 @@ describe("the community settings", () => {
     });
     expect(screen.names()).toEqual(["A"]);
     const section = screen.q("unindexed-notes");
-    expect(section?.querySelector("h3")?.textContent).toBe("Notizen mit Problemen");
+    expect(section?.querySelector("h3")?.textContent).toBe(t.screen.otherNotes);
     expect(
       [...(section?.querySelectorAll("li") ?? [])].map((item) =>
         [...item.querySelectorAll("span")].map((part) => part.textContent.trim()).join(" | "),

@@ -2,7 +2,7 @@ import { LABEL_MAX_LENGTH, NAME_MAX_LENGTH } from "../../../domain/communities";
 import type { CommunitiesCatalog } from "./catalog";
 
 const oneLine = (label: string, max: number) =>
-  `“${label}” is blank, longer than ${max} characters or more than one line. Enter one line of at most ${max} characters.`;
+  `Enter one line of at most ${max} characters for “${label}”.`;
 
 /** English, sentence case as in Obsidian: first the cause, then the action. */
 export const communitiesEn: CommunitiesCatalog = {
@@ -11,15 +11,19 @@ export const communitiesEn: CommunitiesCatalog = {
     title: "Communities",
     intro: (folder) => `Each community is a note in the folder “${folder}”.`,
     add: "Add community",
-    loading: "Loading communities …",
-    empty: "Your communities appear here, such as a WEG and its underground car park.",
+    loading: "Loading communities…",
+    empty:
+      "Your communities appear here, such as a homeowners' association (WEG) and its underground car park.",
     edit: "Edit",
     remove: "Delete",
     editLabel: (name) => `Edit ${name}`,
     removeLabel: (name) => `Delete ${name}`,
     readOnly: "Read-only",
-    summary: (kind, unitLabel) => `${kind} · ${unitLabel}`,
-    problems: "Notes with problems",
+    selected: "Current",
+    summary: (kind, unitLabel) => `${kind} · counted in ${unitLabel}`,
+    otherNotes: "Other WEG Manager notes",
+    openNote: "Open in Obsidian",
+    openNoteLabel: (name) => `Open ${name} in Obsidian`,
   },
   fields: {
     name: "Name",
@@ -29,24 +33,26 @@ export const communitiesEn: CommunitiesCatalog = {
     unit_label: "Unit label",
   },
   noShortCode: "?",
-  shortCodeHint: "2 to 5 characters from A–Z and 0–9, fixed once created.",
-  shortCodeFixed: "The short code is fixed once created.",
+  shortCodeHint: "2–5 letters or digits, e.g. AW. Can't be changed later.",
+  shortCodeFixed: "The short code can't be changed after creation.",
+  unitLabelHelp: "What the units are called, e.g. units or parking spaces.",
   colors: {
     teal: "Teal",
     violet: "Violet",
     blue: "Blue",
-    rust: "Rust",
-    slate: "Slate",
+    rust: "Rust red",
+    slate: "Slate gray",
     cyan: "Cyan",
     pink: "Pink",
     olive: "Olive",
   },
-  colorTaken: (color) => `${color}, already taken`,
+  colorTaken: (color) => `${color}, already in use`,
+  preview: "Preview",
   builtInKinds: [
     { kind: "WEG", unit_label: "Units" },
     { kind: "Underground car park", unit_label: "Parking spaces" },
   ],
-  suggestions: "Suggestions",
+  suggestions: "Suggestions:",
   suggestion: ({ kind, unit_label }) => `${kind} · ${unit_label}`,
   form: {
     createTitle: "New community",
@@ -55,42 +61,57 @@ export const communitiesEn: CommunitiesCatalog = {
     cancel: "Cancel",
   },
   conflict: {
-    title: "Note changed meanwhile",
+    title: "Note changed while you were editing",
     detail:
-      "These fields were also changed outside the form. Choose the value that applies for each field, then save.",
-    loaded: (value) => `When opened: ${value}`,
-    mine: (value) => `Your input: ${value}`,
-    theirs: (value) => `In the note: ${value}`,
+      "These fields were also changed outside this form, for example on another device. Choose the value to keep for each, then save.",
+    loaded: (value) => `When you opened it: ${value}`,
+    mine: (value) => `Your entry: ${value}`,
+    theirs: (value) => `Now in the note: ${value}`,
     apply: "Save choice",
     empty: "(empty)",
   },
   deletion: {
     title: "Delete community",
-    detail: (name) => `“${name}” goes to the trash you set in Obsidian.`,
-    confirm: "Delete",
+    detail: (name) => `“${name}” will be moved to Obsidian's trash, where you can restore it.`,
+    confirm: "Move to trash",
     cancel: "Cancel",
   },
   switcher: {
     label: "Community",
+    loading: "Loading…",
     choose: "Choose the community you work in.",
     none: "No community yet",
+    unavailable:
+      "No community can be chosen while its entries are wrong. Fix them under “Communities”.",
+  },
+  missing: {
+    name: "Enter a name.",
+    short_code: "Enter a short code.",
+    color: "Choose a color.",
+    kind: "Enter a kind or choose a suggestion.",
+    unit_label: "Enter what the units are called.",
   },
   issues: {
-    "name.invalid": (label) => oneLine(label, NAME_MAX_LENGTH),
-    "short-code.invalid": (label) =>
-      `“${label}” isn't 2 to 5 characters from A–Z and 0–9. Enter such a short code.`,
-    "short-code.taken": () => "Another community already has this short code. Choose another one.",
-    "short-code.duplicate": () =>
-      "Another community has the same short code. Give one of them another one.",
-    "color.unknown": (label) => `“${label}” isn't a color of the palette. Choose a color.`,
+    "name.invalid": (_, label) => oneLine(label, NAME_MAX_LENGTH),
+    "short-code.invalid": () => "The short code needs 2–5 letters (A–Z) or digits.",
+    "short-code.taken": ({ value, other }) =>
+      `“${other}” already uses ${value}. Choose another short code.`,
+    "short-code.duplicate": ({ value, other }) =>
+      `“${other}” has the same short code ${value}. Give one of them a different short code.`,
+    "color.unknown": ({ value }) => `The saved color “${value}” isn't available. Choose a color.`,
     "color.taken": () => "Another community already uses this color. Choose another one.",
-    "kind.invalid": (label) => oneLine(label, LABEL_MAX_LENGTH),
-    "unit-label.invalid": (label) => oneLine(label, LABEL_MAX_LENGTH),
+    "kind.invalid": (_, label) => oneLine(label, LABEL_MAX_LENGTH),
+    "unit-label.invalid": (_, label) => oneLine(label, LABEL_MAX_LENGTH),
+  },
+  notices: {
+    created: (name) => `“${name}” created`,
+    saved: (name) => `“${name}” saved`,
+    deleted: (name) => `“${name}” moved to the trash`,
   },
   errors: {
     invalid: {
       title: "Community not saved",
-      detail: "Some entries break the rules. Correct the marked fields and save again.",
+      detail: "Some entries are missing or invalid. Fix the marked fields and save again.",
     },
   },
 };

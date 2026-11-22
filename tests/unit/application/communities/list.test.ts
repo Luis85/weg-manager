@@ -49,7 +49,7 @@ describe("toCommunityList", () => {
         id: communityId(1),
         editable: true,
         values: { name: "Ahornweg 12", short_code: "G1", kind: "WEG", unit_label: "Einheiten" },
-        issues: [{ key: "color", code: "color.unknown" }],
+        issues: [{ key: "color", code: "color.unknown", value: "7" }],
         frontmatter,
       },
     ]);
@@ -87,8 +87,8 @@ describe("toCommunityList", () => {
     assert.deepStrictEqual(
       list.communities.map((community) => community.issues),
       [
-        [{ key: "short_code", code: "short-code.duplicate" }],
-        [{ key: "short_code", code: "short-code.duplicate" }],
+        [{ key: "short_code", code: "short-code.duplicate", value: "AW", other: "B" }],
+        [{ key: "short_code", code: "short-code.duplicate", value: "AW", other: "A" }],
         [],
       ],
     );

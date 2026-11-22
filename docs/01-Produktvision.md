@@ -34,7 +34,7 @@ Der Pilot berichtet von 97 Vorgängen im bestehenden WCS. Das ist Nutzungskontex
 1. Gemeinschaften getrennt einrichten und vorhandene Registerpunkte übernehmen.
 2. Nachrichten, Unterlagen und einzelne erledigbare Vorgänge mit Quelle erfassen.
 3. Eine aktuelle Wochenlage mit Fristen, begrenzter Entscheidungsauswahl und sichtbaren Datenlücken prüfen.
-4. Eigene Entscheidungen mit Notiz festhalten und passende Entwürfe und Aufgaben vorbereiten.
+4. Eigene Entscheidungen mit Notiz festhalten und passende Entwürfe und To-dos vorbereiten.
 5. Nachrichten bewusst außerhalb des Plugins senden und den tatsächlichen Versand dokumentieren.
 6. Ausstehende Reaktionen fristgerecht nachverfolgen, Dringliches im Lagecheck erkennen und die nächste Woche vorbereiten.
 7. Ausgewählte Sachstände und Quellen verständlich übergeben.

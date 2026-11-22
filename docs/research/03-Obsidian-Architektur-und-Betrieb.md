@@ -51,7 +51,7 @@ Geldbeträge werden in ganzzahligen Cent gespeichert. Ungeklärte Dokumentgrundl
 
 **Architekturentscheidung:** Die erste Freigabe erfolgt nur für den tatsächlich geprüften Plattformumfang; Windows 11 ist die vorgeschlagene Desktop-Referenzumgebung. Die Existenz von Obsidian auf mehreren Betriebssystemen begründet noch keine getestete Plugin-Kompatibilität. Die vollständige mobile Wochenarbeit bleibt Produktziel, folgt aber nach dem MVP ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]], Stand 21.11.2026); die Grenzen von Node und Electron auf Mobilgeräten bleiben dafür ein Umsetzungsrisiko.
 
-Fällige Aufgaben erscheinen beim Öffnen und während aktiver Nutzung. Hinweise dürfen nach Neustart weder verloren gehen noch unkontrolliert mehrfach erscheinen. Außerhalb laufenden Obsidian gibt das MVP kein Erinnerungsversprechen. Der vorgesehene Kalenderexport kann Termine an eine externe Kalenderanwendung übergeben; deren Benachrichtigungen liegen anschließend außerhalb der Plugin-Kontrolle.
+Fällige To-dos erscheinen beim Öffnen und während aktiver Nutzung. Hinweise dürfen nach Neustart weder verloren gehen noch unkontrolliert mehrfach erscheinen. Außerhalb laufenden Obsidian gibt das MVP kein Erinnerungsversprechen. Der vorgesehene Kalenderexport kann Termine an eine externe Kalenderanwendung übergeben; deren Benachrichtigungen liegen anschließend außerhalb der Plugin-Kontrolle.
 
 **Annahme:** Diese Erinnerungstiefe reicht dem Pilotnutzer. Wenn er Obsidian selten öffnet, kann ein korrekt funktionierendes Dashboard trotzdem am Bedarf vorbeigehen. Das ist eine wichtige spätere Validierungsfrage, keine zusätzliche Vorbedingung der Veröffentlichung.
 

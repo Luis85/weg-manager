@@ -50,7 +50,7 @@ Interne Klassifikation, Exportfreigabe und tatsächliche Dateirechte sind versch
 
 ## Geplante Abnahmefälle
 
-1. Vollständigen synthetischen Vorgang mit Quelle, Original, Termin, Aufgabe und Verlauf im Plugin speichern. Plugin und Obsidian schließen; Kontext und Beziehungen ausschließlich mit Dateieditor und lokaler Beschreibung rekonstruieren.
+1. Vollständigen synthetischen Vorgang mit Quelle, Original, Termin, To-do und Verlauf im Plugin speichern. Plugin und Obsidian schließen; Kontext und Beziehungen ausschließlich mit Dateieditor und lokaler Beschreibung rekonstruieren.
 2. Ohne Plugin/MCP einen neuen Vorgang und ein To-do anhand des Dateivertrags erstellen. Plugin öffnen; IDs, Beziehungen und Fachangaben korrekt übernehmen, ohne Export/Import-Rundreise.
 3. Bei geöffnetem Formular extern den fachlichen Termin ändern. Das Plugin berücksichtigt den neuen Stand und erhält den eigenen Notizentwurf; eine Konfliktentscheidung überschreibt nicht unbemerkt erneut geänderte Daten.
 4. Ungültiges beziehungsweise unvollständiges YAML und ein neueres unbekanntes Schema einbringen. Verständlicher Fehler, kein stilles Löschen oder Ersetzen durch leere Werte; nach Korrektur fortsetzbar.

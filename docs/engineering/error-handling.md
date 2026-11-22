@@ -25,7 +25,7 @@ Every message exists in German and English ([ADR 0005](../adr/0005-ui-language.m
 | | Title | Detail |
 | --- | --- | --- |
 | Good | Notizen nicht lesbar | Die Dateien im Vault konnten nicht gelesen werden. Versuche es erneut. |
-| Bad | Fehler | ENOENT: no such file or directory, open '/vault/Ahornweg/Punkt 12.md' |
+| Bad | Fehler | ENOENT: no such file or directory, open '/vault/Ahornweg/Vorgang 12.md' |
 | Bad | Keine Sorge! | Deine Daten sind sicher. Etwas ist schiefgelaufen. |
 
 `action` (`retry`, `open-settings`, `copy-diagnostics`) becomes a button in `ErrorNotice.vue`, but only where the parent provides a handler. `copy-diagnostics` is built in.

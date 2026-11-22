@@ -34,6 +34,8 @@ date: 2026-11-15
 
 Desktop: Vorgangsakte aus Lage/Woche öffnet im rechten Panel; aus der Liste als Hauptinhalt. Mobil immer Vollbild.
 
+Routen und Befehls-IDs wie `punkte`, `punkt/<id>` und `open-point` tragen noch die Begriffe vor dem 22.11.2026. Sie werden nach den WCS-Begriffen nachgezogen (O-D13 in [[09 - Offene Punkte vor Implementierung]]).
+
 ## Befehle (Command Palette)
 
 Ohne Standard-Hotkeys (Obsidian-Richtlinie); Namen in Satzanfang-Großschreibung.

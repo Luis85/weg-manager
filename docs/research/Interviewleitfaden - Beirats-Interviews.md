@@ -117,7 +117,7 @@ Einwilligung bestätigen lassen, Aufnahme starten.
 
 ## Teil 4 · Kernteil: zwei jüngste Fälle
 
-Zwei konkrete Fälle aus den letzten sechs Monaten werden als Zeitleiste rekonstruiert. Der erste Fall ist immer eine Zusage oder Aufgabe der Verwaltung, die sich hingezogen hat (Gruppe B). Der zweite ist die letzte Prüfung von Wirtschaftsplan oder Jahresabrechnung (Gruppe C). Erinnert sich die Person kaum an die letzte Prüfung, nimmt man den letzten offenen Punkt, der eine Entscheidung des Beirats brauchte (Gruppe A). Fällt ihr zu Fall 1 kein Beispiel ein, nimmt man die letzte Anfrage an die Verwaltung.
+Zwei konkrete Fälle aus den letzten sechs Monaten werden als Zeitleiste rekonstruiert. Der erste Fall ist immer eine Zusage oder Aufgabe der Verwaltung, die sich hingezogen hat (Gruppe B). Der zweite ist die letzte Prüfung von Wirtschaftsplan oder Jahresabrechnung (Gruppe C). Erinnert sich die Person kaum an die letzte Prüfung, nimmt man den letzten offenen Vorgang, der eine Entscheidung des Beirats brauchte (Gruppe A). Fällt ihr zu Fall 1 kein Beispiel ein, nimmt man die letzte Anfrage an die Verwaltung.
 
 ### Fall 1 · Etwas hat sich hingezogen
 

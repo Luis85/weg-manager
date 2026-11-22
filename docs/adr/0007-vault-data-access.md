@@ -60,7 +60,7 @@ unit_label: Einheiten
 - **A service in module `notes`** holds the decoded records and their issues per type and gives each feature a stream to follow.
 - **It builds after a readiness event.** The workspace layout being ready is not enough: Obsidian may still be reading frontmatter. A new `AppEvent`, `VaultReady`, is published once per load, when the layout is ready and every Markdown file has its entry in the metadata cache. Measured on 2026-11-21 in Obsidian 1.15.1 on the reference vault: on a cold start the layout is ready with 1 of 2,200 notes cached, and `resolved` fires once per indexed note, the first time before the layout is ready; on a warm restart and in a running app the cache is complete at once and `resolved` fires once or never. So `resolved` alone is no signal, and the adapter checks the cache itself ([ADR 0004](0004-event-system.md), amendment of the same day). An e2e spec on a cold vault proves it.
 - **Then it follows file events** (metadata changed, deleted, renamed), in debounced batches. A rebuild is always possible and is a use case.
-- **Budget:** the reference vault of F-21 (2,000 notes, 200 Punkte) within B-NFR-04, checked by a timing test.
+- **Budget:** the reference vault of F-21 (2,000 notes, 200 Vorgänge) within B-NFR-04, checked by a timing test.
 
 ## Consequences
 

@@ -91,7 +91,7 @@ The Obsidian developer docs' self-critique checklist says "less is safer": every
 
 | Package | Why |
 | --- | --- |
-| `vue` | Reactive views for the planned screens (Lage, Wochenarbeit, Punktakte), which hand-built DOM would make hard to test and keep pop-out safe. |
+| `vue` | Reactive views for the planned screens (Lage, Wochenarbeit, Vorgangsakte), which hand-built DOM would make hard to test and keep pop-out safe. |
 | `@nuxt/ui` (pulls `reka-ui`, `@vueuse/core`, `tailwind-merge`, Iconify) | Accessible components (dialogs, forms, focus handling) instead of writing our own; the design handoff is specified in Nuxt UI terms. |
 | `@iconify/vue` | Not an addition: Nuxt UI draws its icons with it, so it is in `main.js` already. `src/presentation/shell/icons-offline.ts` configures it so that an icon missing from the bundle is never requested from Iconify's API (no network at runtime), which is why it is a direct dependency. |
 | `tailwindcss` | Build-time only: it generates the scoped `styles.css` and adds no runtime code. |

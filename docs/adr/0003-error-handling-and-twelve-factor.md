@@ -46,7 +46,7 @@ VII and VIII are listed so that nobody adds a local server or a worker without a
 
 ## Amendment, 2026-11-21: typed diagnostics
 
-The first version redacted the report by key name and string length. That failed both ways. A real stack is longer than 200 characters, so a defect showed only `{"cause":"[redacted]"}`. A short message or a thrown string passed through, although it can name a file ("File already exists: Ahornweg/Punkt 12.md"), which B-NFR-07 forbids in diagnostics.
+The first version redacted the report by key name and string length. That failed both ways. A real stack is longer than 200 characters, so a defect showed only `{"cause":"[redacted]"}`. A short message or a thrown string passed through, although it can name a file ("File already exists: Ahornweg/Vorgang 12.md"), which B-NFR-07 forbids in diagnostics.
 
 Decision: a log entry carries `data` (counts and flags) and `error` (`{ name, message, frames }`) instead of free-form `context`. `toLoggedError` reduces a cause to a strict-identifier name and frames that hold only the last path segment of a location. The diagnostics report prints name and frames, never the message. The raw message goes to the console sink only. `redact` and its length rule are deleted.
 

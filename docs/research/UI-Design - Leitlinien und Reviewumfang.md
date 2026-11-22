@@ -63,7 +63,7 @@ DashboardSidebar (Desktop-Navigation) · DashboardPanel (Arbeitsfläche + Kontex
 | [[PBI-07 - Dubletten zusammenführen]] | [[VIEW-03 - Vorgänge und Vorgangsakte]], [[VIEW-02 - Wochenarbeit]] Eingang |
 | [[PBI-08 - Bearbeitungsstand bewusst ändern]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] |
 | [[PBI-09 - Termin und Wiedervorlage trennen]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Fakten, [[VIEW-02 - Wochenarbeit]] Nachhalten |
-| [[PBI-10 - Eigenes To-do nachhalten]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Segment Aufgaben |
+| [[PBI-10 - Eigenes To-do nachhalten]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Segment To-dos |
 | [[PBI-11 - Nachricht und Original zuordnen]] | [[VIEW-02 - Wochenarbeit]] Eingang, [[VIEW-05 - Erfassen]] |
 | [[PBI-12 - Verlauf nachvollziehen]] | [[VIEW-03 - Vorgänge und Vorgangsakte]] Verlauf |
 | [[PBI-13 - Aktuelle Wochenlage öffnen]] | [[VIEW-01 - Lage]], [[VIEW-02 - Wochenarbeit]] |
@@ -98,7 +98,7 @@ DashboardSidebar (Desktop-Navigation) · DashboardPanel (Arbeitsfläche + Kontex
 | `v2-00-Research-Prinzipien.png` | Research → Designprinzipien |
 | `v2-Sitemap.png`, `v2-Flows.png` | IA und Flows, aus den Mermaid-Diagrammen in [[00 - Sitemap]] und [[FLOW-01 - Gesamtfluss des Beirats-MVP]] erzeugt |
 | `v2-D7-Ausgabe.png`, `v2-D8-Import.png` | Desktop: Sachstand ausgeben, Register-Import (nicht im Prototyp) |
-| `v2-D11-Aufgaben.png` … `v2-D14-Sicherung.png` | Desktop: Aufgaben, Konflikt klären, Erststart, Sicherung |
+| `v2-D11-Aufgaben.png` … `v2-D14-Sicherung.png` | Desktop: To-dos, Konflikt klären, Erststart, Sicherung |
 | `v2-Dlg-*.png` | Dialoge: Aufteilen, Zusammenführen, Bewerten, Reaktion erfassen, Als gesendet markieren |
 | `v2-M8-Nachricht.png` | Mobil: Nachricht prüfen |
 | `v2-D16-Tour-Start.png`, `v2-D17-Tour-Schritt.png`, `v2-M12-Tour-Start.png`, `v2-M13-Tour-Schritt.png` | Einführungstour: Willkommen und Schritt, Desktop und Mobil |

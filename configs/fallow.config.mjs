@@ -1,0 +1,248 @@
+// @ts-check
+
+/**
+ * The source of `configs/fallow.json`, which fallow reads and which must be JSON: fallow has no
+ * JavaScript config and no placeholder for "every module". `npm run fallow:config` writes the file
+ * from this template and the module list (`APP_MODULES`, read by `scripts/modules.mjs`); the gate
+ * fails while the file on disk is not what it would write. Edit this file, never the JSON.
+ *
+ * The module-dependent part is the layer rules: a discovered zone (`<layer>/<module>`) may import a
+ * sibling zone only if a rule names it, and a rule cannot name its own group as a whole, so each
+ * layer rule lists every module that has a folder in that layer. fallow refuses a rule that names
+ * a zone with no folder, so a module without a folder in a layer is left out of that rule. The
+ * rules of the core modules' own zones (`shell`, `notes`) are written out below.
+ */
+
+/**
+ * @typedef {object} ModuleFolders
+ * @property {readonly string[]} modules every module, in the list's order
+ * @property {(folder: string, module: string) => boolean} has whether `src/<folder>/<module>/` exists
+ */
+
+/**
+ * The zones of the modules that have a folder in `folder`, as `<zone>/<module>`.
+ * @param {ModuleFolders} folders
+ * @param {string} zone
+ * @param {string} folder
+ */
+const siblings = ({ modules, has }, zone, folder) =>
+  modules.filter((module) => has(folder, module)).map((module) => `${zone}/${module}`);
+
+/** @param {ModuleFolders} folders */
+export const fallowConfig = (folders) => ({
+  $schema: "../node_modules/fallow/schema.json",
+  entry: ["harness/main.ts"],
+  supportEntry: [
+    "scripts/*.mjs",
+    "tests/**/*.test.ts",
+    "tests/e2e/**/*.ts",
+    "tests/e2e/wdio.conf.mts",
+    "configs/*.ts",
+    "configs/*.mjs",
+    "*.config.mjs",
+  ],
+  ignorePatterns: [
+    "docs/**",
+    ".claude/**",
+    "skills/**",
+    "reports/**",
+    "release/**",
+    ".stryker-tmp/**",
+    ".superpowers/**",
+    ".obsidian-cache/**",
+  ],
+  duplicates: { minTokens: 50 },
+  health: { maxCyclomatic: 10 },
+  boundaries: {
+    zones: [
+      { name: "domain", autoDiscover: ["src/domain"], publicFiles: ["index.ts"] },
+      {
+        name: "application/notes-adapter",
+        patterns: [
+          "src/application/notes/adapter.ts",
+          "src/application/notes/command.ts",
+          "src/application/notes/frontmatter.ts",
+          "src/application/notes/note-text.ts",
+          "src/application/notes/paths.ts",
+        ],
+        publicFiles: ["src/application/notes/adapter.ts"],
+      },
+      { name: "application", autoDiscover: ["src/application"], publicFiles: ["index.ts"] },
+      { name: "application-module", patterns: ["src/application/module.ts"] },
+      { name: "application-describe-error", patterns: ["src/application/user-messages.ts"] },
+      { name: "application-composition", patterns: ["src/application/**"] },
+      {
+        name: "adapters",
+        autoDiscover: ["src/infrastructure/obsidian"],
+        publicFiles: ["index.ts"],
+      },
+      { name: "memory", autoDiscover: ["src/infrastructure/memory"], publicFiles: ["index.ts"] },
+      { name: "infrastructure", patterns: ["src/infrastructure/**"] },
+      {
+        name: "presentation/shell",
+        patterns: ["src/presentation/shell/**"],
+        publicFiles: [
+          "src/presentation/shell/index.ts",
+          "src/presentation/shell/host.ts",
+          "src/presentation/shell/screens.ts",
+        ],
+      },
+      {
+        name: "presentation",
+        autoDiscover: ["src/presentation"],
+        publicFiles: ["index.ts", "screens.ts"],
+      },
+      { name: "presentation-composition", patterns: ["src/presentation/**"] },
+      { name: "composition", patterns: ["src/main.ts", "src/bootstrap.ts"] },
+    ],
+    rules: [
+      { from: "domain", allow: siblings(folders, "domain", "domain") },
+      {
+        from: "application",
+        allow: [
+          "domain",
+          ...siblings(folders, "application", "application"),
+          "application-module",
+          "application-composition",
+        ],
+      },
+      {
+        from: "application-module",
+        allow: [],
+        allowTypeOnly: ["application/shell", "application/notes"],
+      },
+      {
+        from: "application-describe-error",
+        allow: ["application", "application-module", "application-composition"],
+      },
+      {
+        from: "application-composition",
+        allow: ["domain", "application", "application-module"],
+      },
+      {
+        from: "adapters",
+        allow: [
+          ...siblings(folders, "adapters", "infrastructure/obsidian"),
+          "infrastructure",
+          "application",
+          "application/notes-adapter",
+          "application-composition",
+          "domain",
+          "presentation/shell",
+        ],
+      },
+      {
+        from: "infrastructure",
+        allow: ["adapters", "application", "application-composition", "domain"],
+      },
+      {
+        from: "memory",
+        allow: ["application", "application/notes-adapter", "application-composition", "domain"],
+      },
+      {
+        from: "presentation",
+        allow: [
+          ...siblings(folders, "presentation", "presentation"),
+          "application",
+          "application-composition",
+          "application-describe-error",
+          "domain",
+        ],
+      },
+      {
+        from: "presentation-composition",
+        allow: ["presentation", "application", "application-composition", "domain"],
+      },
+      {
+        from: "composition",
+        allow: [
+          "infrastructure",
+          "adapters",
+          "application",
+          "application-composition",
+          "domain",
+          "presentation",
+          "presentation-composition",
+        ],
+      },
+      { from: "domain/shell", allow: [] },
+      { from: "domain/notes", allow: ["domain/shell"] },
+      {
+        from: "application/shell",
+        allow: ["domain/shell", "application-module"],
+        allowTypeOnly: ["application-composition"],
+      },
+      {
+        from: "application/notes",
+        allow: ["domain/shell", "domain/notes", "application/shell", "application-module"],
+        allowTypeOnly: ["application-composition"],
+      },
+      {
+        from: "application/notes-adapter",
+        allow: ["domain/shell", "domain/notes", "application/shell", "application/notes"],
+      },
+      {
+        from: "adapters/shell",
+        allow: [
+          "infrastructure",
+          "application/shell",
+          "application-composition",
+          "domain/shell",
+          "presentation/shell",
+        ],
+      },
+      {
+        from: "adapters/notes",
+        allow: [
+          "adapters/shell",
+          "infrastructure",
+          "application/shell",
+          "application/notes",
+          "application/notes-adapter",
+          "domain/shell",
+          "domain/notes",
+          "presentation/shell",
+        ],
+        allowTypeOnly: ["application-composition"],
+      },
+      {
+        from: "presentation/shell",
+        allow: ["application/shell", "application-describe-error", "domain/shell"],
+        allowTypeOnly: ["application-composition"],
+      },
+      {
+        from: "presentation/notes",
+        allow: [
+          "presentation/shell",
+          "application/shell",
+          "application/notes",
+          "application-describe-error",
+          "domain/shell",
+          "domain/notes",
+        ],
+        allowTypeOnly: ["application-composition"],
+      },
+    ],
+    coverage: {
+      requireAllFiles: true,
+      allowUnmatched: [
+        "src/env.d.ts",
+        "src/styles/**",
+        "tests/**",
+        "scripts/**",
+        "harness/**",
+        "configs/**",
+        "*.mjs",
+      ],
+    },
+  },
+  ignoreDependencies: [
+    "obsidian",
+    "@iconify-json/lucide",
+    "@eslint/js",
+    "wdio-obsidian-reporter",
+    "@wdio/local-runner",
+    "@wdio/mocha-framework",
+  ],
+  overrides: [{ files: ["tests/support/obsidian/**"], rules: { "unused-class-members": "off" } }],
+});

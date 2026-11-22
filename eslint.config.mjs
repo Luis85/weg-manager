@@ -5,6 +5,7 @@ import vue from "eslint-plugin-vue";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
+import { readModules } from "./scripts/modules.mjs";
 
 const LOC = { skipBlankLines: true, skipComments: true };
 const TS_PROJECTS = [
@@ -47,8 +48,9 @@ const obsidianmdForVue = [
  * adding to them, so a module rule there would switch off the layer rule of the same files. This
  * block runs after the oxlint block, which turns the rule off in ESLint.
  *
- * - Modules in dependency order: `shell`, then `notes`, then the feature modules. A new module
- *   is one entry here; its folders need no further rule.
+ * - Modules in dependency order: `shell`, then `notes`, then the feature modules, read from the one
+ *   module list, `APP_MODULES` in `src/application/modules.ts` (`scripts/modules.mjs`). A new
+ *   module needs no edit here.
  * - Every import into a module folder from outside it goes through the folder's `index.ts`
  *   (`../shell`, never `../shell/ports`), also between layers of the same module.
  * - `presentation/shell` has a second entry, the Vue-free `host.ts`, for the code that runs at
@@ -64,9 +66,7 @@ const obsidianmdForVue = [
  * - Nothing in `src/` imports the in-memory adapters (`src/infrastructure/memory/`): they serve the
  *   tests and the harness and must never reach `main.js`.
  */
-const CORE_MODULES = ["shell", "notes"];
-const FEATURE_MODULES = ["communities"];
-const MODULES = [...CORE_MODULES, ...FEATURE_MODULES];
+const { core: CORE_MODULES, all: MODULES } = readModules();
 /** The second entries: `presentation/shell/host.ts` and `application/notes/adapter.ts`. */
 const SECOND_ENTRY = { shell: "host", notes: "adapter" };
 /** Each module's entries besides its `index.ts`: its second entry and `extra`. */

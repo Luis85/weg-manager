@@ -31,9 +31,10 @@ Create in `src/domain/notes/`: `record-id.ts`, `fields.ts`, `codec.ts`, `decode.
   - Only the conflict carries note content, for the form; neither its text nor any log uses it.
 - [ ] **9. Texts.** `describeNoteIssue(issue, messages.notes, label)`: `label(key)` is the field's label from the feature's catalog. Every code has a sentence in every language (`tests/unit/application/notes/issues.test.ts`).
 - [ ] **10. Properties** (`codec-properties.test.ts`, fast-check): decode never throws on `fc.anything()` frontmatter; a round trip keeps unknown keys and key order; invalid YAML, a duplicate id and a newer schema each give an issue code and never a write.
+- [ ] **11. References, only with the first type that points at another** (L21; skip the step until then). Two more field kinds in `fields.ts`: `reference(type)` (one `<type>-<uuid>` of the named type, the target's `id` as text) and `references(type)` (a list of them, empty for none, an id twice kept as written); keys `<type>_id` and `<type>_ids`, flat, which Obsidian edits as text and list. Anything else is the field's issue (`field.reference`, `field.references`; one bad entry makes the whole list one) and the value is left out of `values`. A missing target is not the codec's question, because the codec reads one note: Task 16 step 5 marks it. A test-only type with both kinds (`tests/support/notes/test-link-type.ts`) drives the tests.
 
 ## Done when
 
 `npm run verify` exits 0 (mutation testing of these files follows in Task 19). Commit `feat: note codec with versioned schema and per-field merge`.
 
-The codec is exercised in Obsidian through the tracer's specs (Task 18). A reference field kind, a lookup by id and a "today" source are not built (*Known gaps* in the README); the plugin writes a body only where a type's contract defines one.
+The codec is exercised in Obsidian through the tracer's specs (Task 18). Step 11 waits for its first consumer; a choice of records in a form and a check of references in `check` are decided with that feature. The plugin writes a body only where a type's contract defines one.

@@ -202,10 +202,21 @@ After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its 
 | #44 | The module manifest: one per module and layer side; a new module registers in two shared places; the lint and fallow module lists are generated (PBI-60). |
 | #45 | The frame's settings entry belongs to the shell; the architecture diagram is regenerated. |
 | #46 | Four cases from PBI-65: more closing lines are writable, a line comment is kept, the root folder is found in any case, file names are limited to 255 bytes. |
+| #47 | Version 0.2.0 in `package.json`, `manifest.json` and `versions.json`; the release guide describes the bump through a pull request. |
+| #48 | The plugin shell blueprint for other Obsidian plugins, derived from the code after PRs #27 to #47: an entry file and one file per task. |
+| #49 | A release can be started by hand on `main` with the version as input; the workflow creates the tag on the built commit, together with the release. |
+| #50 | The blueprint becomes a standalone folder: every link stays inside it, and it names no repository it came from. |
+| #51 | The nightly mutation jobs get 120 minutes, the time a full run needs after a lockfile change, and a job cut off by its limit is reported. |
+| #52 | The gate starts format check, lint and type check together; a push of documents only runs the format check; CI installs once less and keeps the Obsidian download after a failed run (PBI-64, criteria 1, 2, 4, 5). |
+| #53 | The three cases left in PBI-65: `VaultReady` after a 10 s deadline when a file is never indexed, a note deleted outside reports "not found" at the first write, and a failed save after its view closed says the input is lost. |
+| #54 | E2e specs wait on what they can observe, read texts from the catalog and record what depends on the machine (PBI-63, criteria 6 to 8). |
+| #55 | Reference fields with a missing-target issue, lookup by id in the index, and a `Today` service; nothing uses them yet (PBI-61). |
+| #56 | The e2e job runs without a window manager and installs nothing per run (PBI-64, criterion 3). |
+| #57 | The Obsidian double agrees with the real app: difficult frontmatter, tabs and deferred views, event orders on a fence instead of settle times, each double class checked against `obsidian.d.ts`, and the `NoteStore` contract run in real Obsidian (40 of 51 cases, 11 skipped with their reason); a block of only comments is no longer unreadable (PBI-63, criteria 1 to 5). |
 
 ### The 0.2.0 pre-release
 
-Everything the owner asked for before the tag is on `main` (PRs #39 to #46). The version bump to 0.2.0 goes through its own pull request; the tag follows on the merged commit and is the first run of the release workflow. A fresh plugin-shell blueprint for other plugins is written beside it and does not hold the tag.
+Everything the owner asked for before the tag is on `main` (PRs #39 to #46). The version bump to 0.2.0 went through its own pull request (#47). Version 0.2.0 was released on 2026-11-22 as a pre-release through the release workflow, started by hand on `main` (#49: the workflow creates the tag itself, because the agent session may not push tags). Both jobs passed on the first run; the release carries `main.js`, `manifest.json`, `styles.css` and `THIRD-PARTY-NOTICES.txt`, and the attestation step passed. The start by a pushed tag has not run yet. The plugin-shell blueprint for other plugins was written beside it (#48, #50) and did not hold the tag.
 
 ### Owner decisions (2026-11-22)
 
@@ -245,14 +256,17 @@ Everything the owner asked for before the tag is on `main` (PRs #39 to #46). The
 | Dependabot and notices | An agent may push the regenerated notices file onto a Dependabot branch; an unusual licence goes to the owner. | [github-setup](../engineering/github-setup.md) |
 | Nightly mutation run | The agent starts it by hand once after the tag. | PBI-67 |
 
-### Not fixed, in the backlog
+### The backlog now
 
-| Note | What |
+As the notes under `docs/requirements/` say it (2026-11-22).
+
+| Note | State |
 | --- | --- |
-| PBI-61 | References between records, lookup by id, a source for "today": after the tag. The contact role is decided. |
-| PBI-62 | One index snapshot across types, with the second note type. |
-| PBI-63 | Fidelity of the Obsidian double, fixed pauses and literal sentences in e2e specs. |
-| PBI-64 | Run time and cost of the gate and CI. |
-| PBI-65 | Three cases stay open (no `VaultReady` fallback, two wrong messages); after the tag. |
-| PBI-66 | Manual accessibility checks, the focus ring on inputs, three small points from the UX step. |
-| PBI-67 | The first release: workflows that have never run; `CI / e2e` as a required check is postponed. |
+| PBI-60 | Finished (PRs #44, #45). |
+| PBI-61 | Finished (PR #55): references, lookup by id and `Today` are built; no feature uses them yet. |
+| PBI-62 | Open, `ready-for-agent`. Criterion 3 is done (PR #41); criteria 1 and 2, one index snapshot across types, wait for the second note type. |
+| PBI-63 | Finished (PRs #54, #57). |
+| PBI-64 | Finished (PRs #52, #56). The e2e job has passed four runs in a row without a window manager; the measured times of gate and CI are in the note. |
+| PBI-65 | Finished (PRs #46, #53). |
+| PBI-66 | Open, `ready-for-human`: the manual checks (the owner checks theme and zoom with 0.2.0 on Windows; keyboard only, screen reader and other plugins have no tester), the focus ring on inputs, hyphenation, three small points from the UX step. |
+| PBI-67 | Open, `ready-for-human`. Criterion 1 (0.2.0 through the release workflow) and criterion 4 (third-party notices) are met; criterion 2 is partly met (a scheduled run passed; a second run that uses the first one's results and the failure issue are not shown yet); criterion 3 (the first Dependabot run) is open; criterion 5 (`CI / e2e` required) is postponed. |

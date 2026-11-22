@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type Frontmatter, type Migrations } from "../../../../src/domain/notes";
+import { defineNoteType, type Frontmatter, type Migrations } from "../../../../src/domain/notes";
 import {
   FULL,
   FULL_VALUES,
@@ -35,6 +35,18 @@ describe("the declaration", () => {
     expect(testItem.type).toBe("test-item");
     expect(testItem.version).toBe(3);
     expect(testItem.keys).toEqual(["title", "short_code", "count", "done", "due", "tags"]);
+  });
+
+  it("names the folder below the root folder where new notes go, when it has one", () => {
+    expect(testItem.folder).toBeUndefined();
+    const filed = defineNoteType({
+      type: "filed",
+      version: 1,
+      folder: "Akten",
+      fields: {},
+      migrations: {},
+    });
+    expect(filed.folder).toBe("Akten");
   });
 });
 

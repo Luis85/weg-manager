@@ -34,6 +34,11 @@ export type NoteTypeSpec<F extends NoteFields> = {
   readonly type: string;
   /** The version this plugin writes: a positive integer. */
   readonly version: number;
+  /**
+   * The folder below the root folder where new notes of this type go (`Gemeinschaften`); none puts
+   * them into the root folder. Part of the file contract, so German in every UI language (ADR 0007).
+   */
+  readonly folder?: string;
   /** In the order a new note writes them; `schema` and `id` are not fields. */
   readonly fields: F & { readonly schema?: never; readonly id?: never };
   readonly migrations: Migrations;

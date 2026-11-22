@@ -21,9 +21,10 @@ const decode = (frontmatter: Record<string, unknown>) =>
   communityType.decode({ path: PATH, frontmatter });
 
 describe("the community note type (weg-manager.community/v1)", () => {
-  it("is version 1 of `community` with the five keys in file order", () => {
+  it("is version 1 of `community` with the five keys in file order, filed in Gemeinschaften", () => {
     expect(communityType.type).toBe("community");
     expect(communityType.version).toBe(1);
+    expect(communityType.folder).toBe("Gemeinschaften");
     expect(communityType.keys).toEqual(["name", "short_code", "color", "kind", "unit_label"]);
   });
 

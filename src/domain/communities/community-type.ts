@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { defineNoteType, required, text, type RecordValues } from "../notes";
+import { defineNoteType, lineOfText, required, text, type RecordValues } from "../notes";
 
 /**
  * The fixed palette of community colours (PBI-56): English names in the note, shades per theme in
@@ -26,29 +26,16 @@ export const LABEL_MAX_LENGTH = 50;
 /** Two to five upper-case letters A–Z or digits (PBI-56). */
 const SHORT_CODE_PATTERN = /^[A-Z0-9]{2,5}$/;
 
-/** A control character, line breaks and tabs included. */
-export const isControlCharacter = (character: string): boolean => {
-  const code = character.charCodeAt(0);
-  return code < 0x20 || code === 0x7f;
-};
-
-/** One line of text, not blank, at most `max` characters. */
-const lineOfText = (max: number) =>
-  Schema.String.check(
-    Schema.makeFilter(
-      (value: string) =>
-        value.trim() !== "" && value.length <= max && ![...value].some(isControlCharacter),
-    ),
-  );
-
 /**
  * The community note, `weg-manager.community/v1` (ADR 0007, PBI-56; contract page
  * `docs/contracts/DV-01 - Gemeinschaft v1.md`). Every field is required: a community has a
  * name, a short code, a colour, a kind and a unit label. Each broken value reports its own code.
+ * New notes go to `<rootFolder>/Gemeinschaften/`.
  */
 export const communityType = defineNoteType({
   type: "community",
   version: 1,
+  folder: "Gemeinschaften",
   fields: {
     name: required(text({ schema: lineOfText(NAME_MAX_LENGTH), issue: "name.invalid" })),
     short_code: required(
@@ -68,9 +55,8 @@ export const communityType = defineNoteType({
 
 export type CommunityFields = typeof communityType.fields;
 
-/** The keys of a community note's fields, in file order (`communityType.keys` as a constant). */
-export const COMMUNITY_KEYS = ["name", "short_code", "color", "kind", "unit_label"] as const;
-export type CommunityKey = (typeof COMMUNITY_KEYS)[number];
+/** The key of a community note's field. */
+export type CommunityKey = (typeof communityType.keys)[number];
 
 /** A community's values as a form saves them. */
 export type CommunityValues = RecordValues<CommunityFields>;

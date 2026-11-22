@@ -16,7 +16,7 @@ import { de, en } from "../../../../src/application/messages";
 import { NoteNotFoundError } from "../../../../src/application/notes";
 import { VaultReadError } from "../../../../src/application/shell";
 import { describeError } from "../../../../src/application/user-messages";
-import { COMMUNITY_KEYS, communityType } from "../../../../src/domain/communities";
+import { communityType } from "../../../../src/domain/communities";
 
 /** Every text of a catalog, its functions called with samples, as plain data. */
 const rendered = (catalog: CommunitiesCatalog) => {
@@ -307,8 +307,7 @@ describe("the communities catalog", () => {
   });
 
   it("labels the fields in the type's key order", () => {
-    expect(Object.keys(communitiesDe.fields)).toEqual([...COMMUNITY_KEYS]);
-    expect(COMMUNITY_KEYS).toEqual(communityType.keys);
+    expect(Object.keys(communitiesDe.fields)).toEqual(communityType.keys);
   });
 });
 

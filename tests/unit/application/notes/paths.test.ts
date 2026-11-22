@@ -1,7 +1,7 @@
 import { assert, describe, it } from "@effect/vitest";
 import { Effect } from "effect";
+import { MAX_NAME_ATTEMPTS } from "../../../../src/domain/notes";
 import {
-  MAX_NAME_ATTEMPTS,
   checkNoteName,
   planNewNote,
   planRename,

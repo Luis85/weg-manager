@@ -19,6 +19,8 @@ import { mergeEdit, newNoteFrontmatter, type MergeFailure, type NotePatch } from
 export const defineNoteType = <const F extends NoteFields>(spec: NoteTypeSpec<F>) => ({
   type: spec.type,
   version: spec.version,
+  /** Where new notes go below the root folder; `undefined` for the root folder itself. */
+  folder: spec.folder,
   fields: spec.fields as F,
   /** The declared keys in declaration order: the order a new note writes them. */
   keys: Object.keys(spec.fields) as Array<keyof F & string>,

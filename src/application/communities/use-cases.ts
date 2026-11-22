@@ -1,15 +1,18 @@
 import { Effect, Result, Stream } from "effect";
 import {
-  communityFileName,
   communityType,
   communityValues,
-  editedValues,
-  followsName,
   validateCommunity,
   type CommunityInput,
   type CommunityValues,
 } from "../../domain/communities";
-import { clashName } from "../../domain/notes";
+import {
+  MAX_NAME_ATTEMPTS,
+  clashName,
+  editedValues,
+  followsTitle,
+  recordFileName,
+} from "../../domain/notes";
 import {
   NoteStore,
   NoteWriteRefusedError,
@@ -28,10 +31,7 @@ import { canChangeShortCode, fileNameOf, shownName, toCommunityList, type Commun
  * The folder below the root folder where new community notes go. Part of the file contract, so it
  * is German in every UI language (ADR 0007): a vault is shared between devices.
  */
-export const COMMUNITIES_FOLDER = "Gemeinschaften";
-
-/** How many file names a rename tries: the name, then ` (2)` up to ` (100)`, as `create` does. */
-const RENAME_ATTEMPTS = 100;
+export const COMMUNITIES_FOLDER = communityType.folder;
 
 /**
  * Confirms a write with a short notice through the `Notifier` (handoff: a toast only confirms a
@@ -84,7 +84,7 @@ export const createCommunity = (input: CommunityInput) =>
     const frontmatter = yield* newRecordFrontmatter(communityType, values);
     const note = yield* (yield* NoteStore).create({
       folder: `${rootFolder}/${COMMUNITIES_FOLDER}`,
-      name: communityFileName(values.name, values.short_code),
+      name: recordFileName(values.name, values.short_code),
       frontmatter,
     });
     yield* confirm((notices) => notices.created(values.name));
@@ -120,10 +120,10 @@ const followName = (note: Note, before: Community, values: CommunityValues) =>
     const old = before.values.name;
     if (old === undefined || old === values.name) return note;
     const fileName = fileNameOf(note.path);
-    if (!followsName(fileName, old, before.values.short_code ?? values.short_code)) return note;
+    if (!followsTitle(fileName, old, before.values.short_code ?? values.short_code)) return note;
     const store = yield* NoteStore;
-    const target = communityFileName(values.name, values.short_code);
-    for (let attempt = 1; attempt <= RENAME_ATTEMPTS; attempt += 1) {
+    const target = recordFileName(values.name, values.short_code);
+    for (let attempt = 1; attempt <= MAX_NAME_ATTEMPTS; attempt += 1) {
       const renamed = yield* Effect.result(store.rename(note.path, clashName(target, attempt)));
       if (Result.isSuccess(renamed)) return renamed.success;
       if (renamed.failure._tag !== "NotePathTakenError") break;
@@ -149,7 +149,13 @@ export const updateCommunity = (community: Community, input: CommunityInput) =>
       ? input
       : { ...input, short_code: loaded.short_code ?? input.short_code };
     yield* checked(fixed, { others: valuesOf(communities), loaded });
-    const values = editedValues(fixed, community.frontmatter) as CommunityValues;
+    const draft = communityValues(fixed);
+    const values = editedValues(
+      communityType,
+      fixed,
+      draft,
+      community.frontmatter,
+    ) as CommunityValues;
     const path = yield* pathOf(community);
     const store = yield* NoteStore;
     // One command: an unload while the save is written still lets the file follow the name.

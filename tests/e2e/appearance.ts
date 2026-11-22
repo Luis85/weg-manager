@@ -184,3 +184,52 @@ export const overflow = () =>
       .map((element) => element.closest("[data-testid]")?.getAttribute("data-testid") ?? "?");
     return { scroll: root.scrollWidth - root.clientWidth, past: [...new Set(past)] };
   }, ROOT);
+
+/** One badge of the palette: its fill and the contrast of its text against that fill. */
+export type PaletteBadge = {
+  readonly color: string;
+  readonly fill: Rgba;
+  readonly ratio: number;
+};
+
+/**
+ * A badge for each colour in `colors`, drawn the way the plugin draws one (`data-community-color`
+ * inside the root), read back and removed again: its fill and the contrast of its short code.
+ */
+export const measurePalette = async (colors: readonly string[]): Promise<PaletteBadge[]> => {
+  const badges = await browser.execute(
+    (selector, names) => {
+      const probe = document.createElement("i");
+      document.body.append(probe);
+      const parse = (css: string): [number, number, number, number] => {
+        probe.style.color = `color-mix(in srgb, ${css} 100%, transparent)`;
+        const text = getComputedStyle(probe).color;
+        const numbers = (text.match(/-?\d*\.?\d+(?:e-?\d+)?/g) ?? []).map(Number);
+        const scale = text.startsWith("color(") ? 255 : 1;
+        const [r = 0, g = 0, b = 0, a = 1] = numbers;
+        const clamp = (value: number) => Math.min(255, Math.max(0, value * scale));
+        return [clamp(r), clamp(g), clamp(b), a];
+      };
+      const host = document.createElement("div");
+      document.querySelector(selector)?.append(host);
+      const results = names.map((color) => {
+        const badge = document.createElement("span");
+        badge.dataset["communityColor"] = color;
+        badge.textContent = "AB";
+        host.append(badge);
+        const style = getComputedStyle(badge);
+        return { color, fill: parse(style.backgroundColor), text: parse(style.color) };
+      });
+      host.remove();
+      probe.remove();
+      return results;
+    },
+    ROOT,
+    [...colors],
+  );
+  return badges.map(({ color, fill, text }) => ({
+    color,
+    fill,
+    ratio: floor2(contrast(text, fill)),
+  }));
+};

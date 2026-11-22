@@ -121,6 +121,7 @@ describe("surface texts", () => {
     expect([de.shell.frame, de.shell.notFound]).toEqual([
       {
         navigation: "Ansichten",
+        settings: "Einstellungen",
         content: "Inhalt",
         back: "Zurück",
         forward: "Vorwärts",
@@ -136,6 +137,7 @@ describe("surface texts", () => {
     expect([en.shell.frame, en.shell.notFound]).toEqual([
       {
         navigation: "Views",
+        settings: "Settings",
         content: "Content",
         back: "Back",
         forward: "Forward",

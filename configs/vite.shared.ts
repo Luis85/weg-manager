@@ -17,6 +17,7 @@ export const SHELL_ICONS = [
   "lucide:arrow-left",
   "lucide:arrow-right",
   "lucide:building-2",
+  "lucide:settings",
   "lucide:plus",
   "lucide:pencil",
   "lucide:trash-2",

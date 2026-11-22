@@ -51,7 +51,7 @@ describe("navigation and view state in Obsidian", function () {
     });
     await expect(
       browser.$(ROOT).$("[data-testid=frame-navigation] li button[aria-current=page]"),
-    ).toHaveText("Gemeinschaften");
+    ).toHaveText("Einstellungen");
     // No step yet, so the frame shows no history controls.
     await expect(browser.$(ROOT).$("[data-testid=frame-history]")).not.toExist();
   });

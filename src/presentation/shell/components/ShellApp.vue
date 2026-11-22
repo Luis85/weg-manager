@@ -2,6 +2,7 @@
 import UApp from "@nuxt/ui/components/App.vue";
 import { de, en } from "@nuxt/ui/locale";
 import { computed, type Component } from "vue";
+import type { RouteLike } from "../../../application/shell";
 import { provideModals } from "../modal";
 import { useHistory, useRouting, type FrameEntry } from "../navigation";
 import { useMessages } from "../runtime/use-runtime";
@@ -22,11 +23,17 @@ const history = useHistory();
 /** While a screen's sheet or dialog is open, the frame behind it is inert (`useModal`). */
 const behindModal = provideModals();
 
+/**
+ * An entry is the current page on every route of its screen, whatever the parameters (the section
+ * of the settings screen, the record of a detail screen): routes are compared by name.
+ */
+const isCurrent = (entry: RouteLike, route: RouteLike) => entry.name === route.name;
+
 const entries = computed<FrameEntry[]>(() =>
   routing.definition.menu.map((entry) => ({
     label: entry.label(catalog),
     icon: entry.icon,
-    current: routing.definition.equals(entry.route, routing.route.value),
+    current: isCurrent(entry.route, routing.route.value),
     select: () => routing.navigate(entry.route),
   })),
 );

@@ -71,6 +71,7 @@ export const shellDe: ShellCatalog = {
   },
   frame: {
     navigation: "Ansichten",
+    settings: "Einstellungen",
     content: "Inhalt",
     back: "Zurück",
     forward: "Vorwärts",

@@ -39,8 +39,8 @@ export const appSurface: SurfaceDefinition<Route> = {
   menu: [
     {
       route: COMMUNITY_SETTINGS,
-      label: (catalog) => catalog.communities.route,
-      icon: "i-lucide-building-2",
+      label: (catalog) => catalog.shell.frame.settings,
+      icon: "i-lucide-settings",
     },
   ],
   context: () => import("./communities").then(({ communitiesFrame }) => communitiesFrame.context),

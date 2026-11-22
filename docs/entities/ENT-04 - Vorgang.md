@@ -29,7 +29,7 @@ Ein einzeln nachverfolgbares und erledigbares Anliegen mit genau einem überprü
 | Bis wann | `due_on` | Datum | P* | WCS `bisWann`. Der geltende Termin. *Fehlt er, setzt das System den Prüfvermerk „Termin erfragen“ (FR-V2). Bedeutung und Herkunft: [[ENT-05 - Termin]]. |
 | Status | `status` | Text | P | WCS `status` ohne „nicht eingehalten“. Wert aus der geschlossenen Liste. „nicht eingehalten“ ist eine getrennte Bewertung ([[ENT-16 - Beiratsbewertung]]). |
 | Erledigt am | `done_on` | Datum | O | WCS `erledigtAm`. Pflicht bei Status „erledigt“. |
-| Quelle | `source` | Text | P | WCS `quelle`. Herkunft in Kurzform: Mail, Protokoll, Versammlung, Gespräch ([[ENT-07 - Quelle]]). |
+| Quelle | `source` | Text | P | WCS `quelle`. Herkunft in Kurzform: Mail, Protokoll, Versammlung, Gespräch ([[ENT-07 - Quelle]]). „unbekannt“ ist als sichtbare Quellenlücke erlaubt. |
 | Nächster Schritt | `next_step` | Text | P | WCS `naechsterSchritt`. Konkrete nächste Handlung. |
 | Prüfvermerk | – | Text | A | WCS `pruefung`. „überfällig“, „Termin erfragen“ oder leer. Berechnet (FR-V5), nicht gespeichert. |
 | Nachrichtenreferenz | `message_ref` | Text | O | Ersetzt WCS `mailRef`. Kennung der Nachricht oder des Nachrichtenverlaufs in einem beliebigen Postfach, ohne Bindung an einen Dienst. |
@@ -44,7 +44,7 @@ Ein einzeln nachverfolgbares und erledigbares Anliegen mit genau einem überprü
 
 ## Wertelisten
 
-**Art (geschlossen, WCS):** Zusage Verwaltung (`manager_promise`), Frist Beirat (`board_deadline`), Frist gesetzlich (`legal_deadline`), Frage (`question`), Aufgabe Beirat (`board_task`). Neue Werte nur per Schemaänderung. Mangel, Angebotsfrage, Rechnungsfrage und Protokollkorrektur sind bei uns Vorgänge mit Quelle (PRD-Systemgrenze); sie werden als Frage oder Aufgabe Beirat mit passendem Thema geführt (O-ENT04-2).
+**Art (geschlossen, WCS):** Zusage Verwaltung (`manager_promise`), Frist Beirat (`board_deadline`), Frist gesetzlich (`legal_deadline`), Frage (`question`), Aufgabe Beirat (`board_task`) und als unsere Ergänzung Zusage Dritter (`third_party_promise`). Neue Werte nur per Schemaänderung. Mangel, Angebotsfrage, Rechnungsfrage und Protokollkorrektur sind bei uns Vorgänge mit Quelle (PRD-Systemgrenze); sie werden als Frage oder Aufgabe Beirat mit passendem Thema geführt (O-ENT04-2).
 
 **Status (geschlossen, WCS):** offen (`open`), erledigt (`done`), ungeklärt (`unclear`), hinfällig (`obsolete`). „nicht eingehalten“ ist kein Status, sondern eine Bewertung in [[ENT-16 - Beiratsbewertung]].
 
@@ -81,10 +81,10 @@ Zusage, Thema und nächster Schritt erscheinen in Karten und Entwürfen. Sie ent
 ## Offene Punkte
 
 - **O-ENT04-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: „nicht eingehalten“ ist kein Status am Vorgang, sondern eine getrennte Bewertung in [[ENT-16 - Beiratsbewertung]]. Abweichung vom WCS.
-- **O-ENT04-2:** Unsere bisherige Art „Zusage“ umfasst auch Zusagen Dritter; das WCS kennt nur „Zusage Verwaltung“. Wie wird die Zusage eines Hausmeisterdienstes geführt?
+- **O-ENT04-2 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Die WCS-Liste bekommt die Art „Zusage Dritter“. Mängel, Angebots- und Rechnungsfragen sind Fragen oder Aufgaben Beirat mit Thema. Die Eskalationsleiter gilt nur für Zusagen der Verwaltung.
 - **O-ENT04-3 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: eine Nummernfolge über alle Gemeinschaften, wie im WCS. Gleiche Fremdnummern aus einem Import (AT-B02) bleiben als Herkunftsnummer erhalten und bekommen eine neue Vorgangsnummer.
 - **O-ENT04-4:** Wie wird der Verlauf gespeichert: als Abschnitt im Body oder als eigene Notes mit `matter_id`? Eine Liste von Objekten ist im Eigenschaftenbereich von Obsidian nicht bearbeitbar (ADR 0007).
-- **O-ENT04-5:** `quelle` ist im WCS Pflicht. Unser Modell erlaubt eine sichtbare Quellenlücke. Gilt „unbekannt“ als zulässiger Wert?
+- **O-ENT04-5 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Die Quelle ist Pflicht, „unbekannt“ ist als sichtbare Lücke erlaubt, damit das Erfassen nie blockiert ([[DF-02 - Bearbeitung, Terminprüfung und Bewertung]]).
 - **O-ENT04-6:** Aufgabe Beirat und To-do: Doppelpflege vermeiden. Dieselbe Aufgabe wird entweder als Vorgang geführt oder als To-do mit Vorgangsbezug; es besteht keine Pflicht zu zwei Datensätzen.
 
 ## Herkunft und Anforderungen

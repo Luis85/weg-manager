@@ -122,12 +122,12 @@ Die Werte stehen in der jeweiligen Entity-Note. Geschlossene Listen ändern sich
 | Liste | Werte | Note |
 | --- | --- | --- |
 | Art der Gemeinschaft | frei, Vorschläge WEG, Tiefgarage, Viertel | [[ENT-01 - Gemeinschaft]] |
-| Vorgangsart | Zusage Verwaltung, Frist Beirat, Frist gesetzlich, Frage, Aufgabe Beirat | [[ENT-04 - Vorgang]] |
+| Vorgangsart | Zusage Verwaltung, Zusage Dritter, Frist Beirat, Frist gesetzlich, Frage, Aufgabe Beirat | [[ENT-04 - Vorgang]] |
 | Vorgangsstatus | offen, erledigt, ungeklärt, hinfällig („nicht eingehalten“ ist eine Bewertung) | [[ENT-04 - Vorgang]], [[ENT-16 - Beiratsbewertung]] |
 | Prüfvermerk | überfällig, Termin erfragen, leer (berechnet) | [[ENT-04 - Vorgang]] |
 | Eskalationsstufe | 1 Termin erfragen · 2 Frist +14 Tage · 3 förmliche Erinnerung, Frist +10 Tage · 4 Vormerkung für Bericht, Versammlung, Entlastung | [[ENT-13 - Eskalation]] |
 | Kartenstatus | offen, entschieden, vertagt, geparkt | [[ENT-09 - Entscheidungskarte]] |
-| To-do-Status | offen, erledigt | [[ENT-12 - To-do]] |
+| To-do-Status | offen, erledigt, entfallen | [[ENT-12 - To-do]] |
 | Ablauf der Übergabe | woche, lagecheck | [[ENT-14 - Übergabe]] |
 | Rolle | Beirat, Vertretung, Eigentümer, Verwaltung, Beirat anderer Gemeinschaft, Dritte, Agent (optional) | [[ENT-02 - Person und Rolle]] |
 | Umsetzungsstatus | umgesetzt, offen, überholt | [[ENT-25 - Beschluss]] |
@@ -211,6 +211,10 @@ Am 22.11.2026 hat der Produktverantwortliche diese Widersprüche zwischen WCS un
 - **„nicht eingehalten“:** Das ist eine getrennte Bewertung in der Bewertungsschicht, kein Vorgangsstatus ([[ENT-16 - Beiratsbewertung]], [[ENT-04 - Vorgang]]).
 - **Entscheidungskarten:** sieben reguläre Karten plus sichtbarer dringender Überlauf. Eine Karte darf mehrere Vorgänge derselben Gemeinschaft bündeln ([[K-05 - Sieben reguläre Entscheidungen mit sichtbarem Überlauf]], [[ENT-09 - Entscheidungskarte]]).
 - **Vorgangsnummer:** eine Nummernfolge über alle Gemeinschaften, wie im WCS ([[ENT-04 - Vorgang]]).
+- **To-do:** Status offen, erledigt und entfallen; jedes To-do gehört genau einer Gemeinschaft ([[ENT-12 - To-do]]).
+- **Pflichtfelder am Vorgang:** Das Thema ist Pflicht. Die Quelle ist Pflicht, „unbekannt“ ist als sichtbare Lücke erlaubt ([[ENT-04 - Vorgang]]).
+- **Vorgangsart:** die WCS-Liste plus „Zusage Dritter“. Die Eskalationsleiter gilt nur für Zusagen der Verwaltung ([[ENT-04 - Vorgang]]).
+- **Pause einer Eskalation:** mit Grund und frei wählbarem Ende, vorgeschlagen ist eine Woche ([[ENT-13 - Eskalation]]).
 
 
 ## Offene Punkte

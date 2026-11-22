@@ -70,7 +70,7 @@ Die Eskalation gehört zur Bewertungsschicht. Stufe, Seit-Datum und Vormerkungen
 ## Offene Punkte
 
 - **O-ENT13-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Es gilt [[DF-05 - Eskalationsleiter und Fristen]]. Die nächste Stufe wird erst vorgeschlagen, wenn die Frist des zuletzt tatsächlich gesendeten Schritts abgelaufen ist; der Wochenwechsel allein hebt keine Stufe (AT-B09). Abweichung vom WCS.
-- **O-ENT13-2:** Eine Pause gilt im WCS genau eine Woche. Unser Modell erlaubt ein frei gewähltes Ende. Welches gilt?
+- **O-ENT13-2 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Eine Pause hat einen Grund und ein frei wählbares Ende; vorgeschlagen wird eine Woche ([[DF-06 - Reaktion und Pause]]).
 - **O-ENT13-3:** Welche Teile aus Verlaufseinträgen berechnet und welche bewusst gespeichert werden, ist offen. Eigene Note, Felder am Vorgang oder Bewertungsschicht (O-ENT16-1)?
 
 ## Herkunft und Anforderungen

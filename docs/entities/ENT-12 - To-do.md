@@ -28,11 +28,11 @@ Ein konkret ausführbarer Arbeitsschritt des Beirats, getrennt von einer fremden
 | Status | `status` | Text | P | WCS `status` (siehe Wertelisten). |
 | Herkunft aus Karte | `decision_card_id` | Text | O | WCS `karteId`. |
 | Verantwortlich | `responsible` | Text | O | Unsere Ergänzung. Meist der Beirat. |
-| Grund | `reason` | Text | O | Unsere Ergänzung: Pflicht bei „wartet“ und „entfallen“. |
+| Grund | `reason` | Text | O | Unsere Ergänzung: Pflicht bei „entfallen“. |
 
 ## Wertelisten
 
-**Status (geschlossen):** Das WCS kennt offen (`open`) und erledigt (`done`). Unser Modell unterscheidet zusätzlich in Arbeit (`in_progress`), wartet (`waiting`) und entfallen (`dropped`). Siehe O-ENT12-2.
+**Status (geschlossen):** offen (`open`), erledigt (`done`) wie im WCS, dazu entfallen (`dropped`) für überholte To-dos. Entschieden am 22.11.2026.
 
 ## Beziehungen
 
@@ -45,7 +45,7 @@ Gehört genau einer Gemeinschaft und kann ohne Vorgangsbezug geführt werden. Ei
 - Die Erledigung eines Versand- oder Prüf-To-dos erfüllt keine fremde Zusage ([[DF-07 - Wahl, Entwurf und Versand]]).
 - Wiederholte Entscheidungsvorbereitung erzeugt kein doppeltes To-do.
 - Ein Entwurf am To-do wird nie automatisch gesendet.
-- Übergänge (Vorschlag): offen → in Arbeit → erledigt; offen oder in Arbeit → wartet (mit Grund) → offen; jeder Stand außer erledigt → entfallen (mit Grund).
+- Übergänge: offen → erledigt; offen → entfallen (mit Grund).
 
 ## Datenschutz
 
@@ -54,13 +54,13 @@ Titel und Entwurf enthalten keine Daten anderer Eigentümer. Ein To-do kann in �
 ## Abweichungen vom WCS
 
 - Gemeinschaft ist bei uns Pflicht, im WCS optional.
-- Zusätzliche Status in Arbeit, wartet und entfallen.
+- Zusätzlicher Status entfallen. Gemeinschaft ist Pflicht (im WCS optional).
 - Der Entwurf ist ein Verweis auf einen Nachrichtenentwurf statt einer URL zu einem Postfachentwurf oder eines Kopiertexts.
 
 ## Offene Punkte
 
-- **O-ENT12-1:** Das WCS erlaubt To-dos ohne Gemeinschaft. Unsere Gemeinschaftstrennung ([[DF-12 - Gemeinschaftstrennung]]) verlangt genau eine. Gibt es gemeinschaftsfreie To-dos, etwa „Vertretung einweisen“?
-- **O-ENT12-2:** Zwei Status (WCS) oder fünf (unser Modell)? Vorschlag: fünf, mit Abbildung in Arbeit und wartet → offen, entfallen → erledigt beim Abgleich mit WCS-Daten.
+- **O-ENT12-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Jedes To-do gehört genau einer Gemeinschaft ([[DF-12 - Gemeinschaftstrennung]]). Abweichung vom WCS.
+- **O-ENT12-2 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Status offen und erledigt wie im WCS, dazu entfallen. „in Arbeit“ und „wartet“ entfallen.
 - **O-ENT12-3:** Vorgang der Art „Aufgabe Beirat“ und To-do mit Vorgangsbezug müssen ohne Doppelpflege zusammenpassen; keine zweite Datenstruktur allein aus zwei Begriffen ableiten (siehe O-ENT04-6).
 
 ## Herkunft und Anforderungen

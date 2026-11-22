@@ -61,7 +61,7 @@ Nachrichten und Protokolle können Daten anderer Eigentümer enthalten. Solche Q
 
 - **O-ENT07-1:** Eigene Note mit Identität oder nur Felder am Vorgang und Verlaufseintrag (WCS-Form)? Die gemeinsame Nutzung einer Quelle durch mehrere Fachobjekte ist offen.
 - **O-ENT07-2:** Wird die Note mit [[ENT-08 - Dokument]] und [[ENT-32 - Unterlage]] zusammengeführt?
-- **O-ENT07-3:** Ist `source` Pflicht wie im WCS, oder ist eine sichtbare Lücke erlaubt (siehe O-ENT04-5)?
+- **O-ENT07-3 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: `source` ist Pflicht, „unbekannt“ ist als sichtbare Lücke erlaubt.
 
 ## Herkunft und Anforderungen
 

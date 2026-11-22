@@ -12,7 +12,7 @@ date: 2026-11-22
 
 ## Zweck
 
-Ein optionaler Zusammenhang mehrerer einzeln erledigbarer Vorgänge innerhalb einer Gemeinschaft, z. B. „Beleuchtung“. Das WCS führt das Thema nicht als eigenes Objekt, sondern als Feld `Vorgang.thema`.
+Ein Zusammenhang mehrerer einzeln erledigbarer Vorgänge innerhalb einer Gemeinschaft, z. B. „Beleuchtung“. Das WCS führt das Thema nicht als eigenes Objekt, sondern als Feld `Vorgang.thema`.
 
 ## Felder
 
@@ -51,7 +51,7 @@ Das WCS kennt kein Thema-Objekt. Die Note bleibt als unsere Ergänzung eigenstä
 ## Offene Punkte
 
 - **O-ENT03-1:** Eigene gespeicherte Identität oder nur ein Textfeld am Vorgang? Bis zur Entscheidung folgt das Modell dem WCS (Textfeld).
-- **O-ENT03-2:** Ist das Thema Pflicht wie im WCS, oder darf ein Vorgang ohne Thema bleiben, wie bisher bei uns?
+- **O-ENT03-2 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Das Thema ist Pflicht wie im WCS, als kurzer Text am Vorgang.
 - **O-ENT03-3:** Darf ein Vorgang mehreren Themen zugeordnet werden? Das WCS sieht genau eines vor; unser Konzept hatte es offen gelassen.
 - **O-ENT03-4:** Wird die Note mit [[ENT-04 - Vorgang]] zusammengeführt, wenn das Thema ein Textfeld bleibt?
 

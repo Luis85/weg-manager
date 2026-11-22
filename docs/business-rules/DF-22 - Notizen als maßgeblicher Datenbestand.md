@@ -9,7 +9,7 @@ scope: mvp
 
 ## Regel
 
-Gespeicherte fachliche Daten sind im Markdown-/Frontmatter-Notizbestand maßgeblich. Kein ausschließlich plugininterner Index, Cache, Obsidian-Workspacezustand oder externer Dienst darf die einzige Quelle einer fachlich notwendigen Information sein. Jeder Punkt besitzt einen lesbaren Kontext; Beziehungen und Anhänge sind anhand dokumentierter Dateiangaben beziehungsweise IDs ohne Obsidian rekonstruierbar.
+Gespeicherte fachliche Daten sind im Markdown-/Frontmatter-Notizbestand maßgeblich. Kein ausschließlich plugininterner Index, Cache, Obsidian-Workspacezustand oder externer Dienst darf die einzige Quelle einer fachlich notwendigen Information sein. Jeder Vorgang besitzt einen lesbaren Kontext; Beziehungen und Anhänge sind anhand dokumentierter Dateiangaben beziehungsweise IDs ohne Obsidian rekonstruierbar.
 
 Das Speichern bestätigter Bearbeitung aktualisiert den normalen Notizbestand, nicht erst einen späteren Export. Ein technischer Cache darf fehlen oder neu aufgebaut werden, ohne Fachinformationen zu verlieren. Noch ungespeicherte Eingaben bleiben als Entwurf unterscheidbar. Der Dateivertrag beschreibt sowohl lesbare Inhalte als auch zulässige Schreiboperationen und die dafür geltenden Fachregeln.
 

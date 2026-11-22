@@ -5,7 +5,7 @@ status: entwurf
 scope: mvp
 ---
 
-# DF-15 · Arbeitsentscheidung und Beschluss
+# DF-15 · Entscheidungskarte und Beschluss
 
 Persönliche Wahl, Empfehlung, Tagesordnungspunkt, Beschlussentwurf und dokumentierter Beschlussnachweis bleiben verschieden. Das MVP bietet Quellenbezug, keine vollständige Beschluss-Sammlung und keine automatische Wirksamkeitsprüfung.
 

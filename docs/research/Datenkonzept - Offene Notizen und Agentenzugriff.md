@@ -11,7 +11,7 @@ Verbindliche Produktgrundlage: [[K-14 - Markdown und Frontmatter als offene Date
 
 ## Maßgeblicher Bestand
 
-Markdown und dokumentiertes YAML-Frontmatter enthalten die gespeicherten fachlichen Daten. Jeder Punkt beziehungsweise Vorgang hat eine verständliche Notiz. Aufgaben, Termine, Ereignisse, Entscheidungen, Quellen und Dokumentbezüge sind entweder darin oder in eindeutig verknüpften Fachnotizen vollständig beschrieben. Binäre Originale bleiben separate unveränderte Dateien. Interne Indizes oder Darstellungszustände dürfen die Bedienung beschleunigen, sind aber keine exklusive Fachquelle und müssen aus dem Bestand rekonstruierbar sein.
+Markdown und dokumentiertes YAML-Frontmatter enthalten die gespeicherten fachlichen Daten. Jeder Vorgang hat eine verständliche Notiz. To-dos, Termine, Verlaufseinträge, Entscheidungskarten, Quellen und Dokumentbezüge sind entweder darin oder in eindeutig verknüpften Fachnotizen vollständig beschrieben. Binäre Originale bleiben separate unveränderte Dateien. Interne Indizes oder Darstellungszustände dürfen die Bedienung beschleunigen, sind aber keine exklusive Fachquelle und müssen aus dem Bestand rekonstruierbar sein.
 
 Der Ordner muss ohne Plugin, Obsidian und MCP verfügbar sein. Kein Exportlauf ist notwendig. Bei einem normalen Dateizugriff müssen Kontext und zulässige Bearbeitung aus den Dateien selbst verständlich werden; eine gerenderte Obsidian-Ansicht ist keine Voraussetzung. Eine View darf abgeleitete Informationen darstellen, aber keine nur dort existierende fachliche Aussage verbergen.
 
@@ -28,7 +28,7 @@ Der Ordner muss ohne Plugin, Obsidian und MCP verfügbar sein. Kein Exportlauf i
 | Versionen | Erkennbare Schemaversion, kompatible Änderungen, Verhalten bei neuerem unbekanntem Schema und nachvollziehbare Migration. |
 | Erhalt | Umgang mit unbekannten Properties, freiem Notiztext, fremden Inhalten, Historie und datensparsamen Korrektur-/Löschvermerken. |
 | Konflikte und Wiederaufnahme | Erkennen geänderter Ausgangsstände, Erhalt ungespeicherter Eingaben und Wiederholung ohne doppelte Fachobjekte. |
-| Provenienz | Ereignis- versus Erfassungszeit, angegebener Akteur/Agent, bekannte Quelle und unbekannte Urheberschaft; keine Authentifizierung allein durch Dateitext. |
+| Provenienz | Zeit des Geschehens versus Erfassungszeit, angegebener Akteur/Agent, bekannte Quelle und unbekannte Urheberschaft; keine Authentifizierung allein durch Dateitext. |
 
 Diese Angaben werden lokal zusammen mit dem freigegebenen Notizbestand beziehungsweise einer lokal verfügbaren Format-/Regelbeschreibung bereitgestellt. Der Agent darf nicht auf verborgenes Pluginwissen, eine Online-Dokumentation oder einen MCP-Endpunkt angewiesen sein. Konkrete Dateinamen und technische Datentypdefinitionen sind noch festzulegen; ihre Offenlegung ist keine optionale spätere Erweiterung.
 
@@ -44,14 +44,14 @@ Der genaue Erkennungs-/Speichermechanismus, Konsistenz über mehrere Dateien und
 
 ## Menschliche Handlungen und Vertraulichkeit
 
-Ein Agent kann fachliche Angaben und vorbereitete Arbeit im freigegebenen Umfang ändern. Eine persönliche Bestätigung, tatsächlich versandte Nachricht oder erfolgte Zahlung wird dadurch nicht erfunden. Solche Ereignisse können nur mit ihrer tatsächlich vorliegenden Grundlage dokumentiert werden; die bereits geltenden Fachregeln bleiben dieselben wie im Plugin.
+Ein Agent kann fachliche Angaben und vorbereitete Arbeit im freigegebenen Umfang ändern. Eine persönliche Bestätigung, tatsächlich versandte Nachricht oder erfolgte Zahlung wird dadurch nicht erfunden. Solche Verlaufseinträge können nur mit ihrer tatsächlich vorliegenden Grundlage dokumentiert werden; die bereits geltenden Fachregeln bleiben dieselben wie im Plugin.
 
 Interne Klassifikation, Exportfreigabe und tatsächliche Dateirechte sind verschiedene Dinge. Ein Agent mit vollständigem Lesezugriff kann auch intern bezeichnete Daten lesen; das Plugin verspricht keine Isolation durch Labels. Die Wahl eines externen Modelldienstes und dessen Datenübertragung liegt beim Nutzer/Agentenwerkzeug. Die Anforderung baut keinen automatischen Übertragungskanal des Plugins und keinen integrierten Agentenhost.
 
 ## Geplante Abnahmefälle
 
 1. Vollständigen synthetischen Vorgang mit Quelle, Original, Termin, Aufgabe und Verlauf im Plugin speichern. Plugin und Obsidian schließen; Kontext und Beziehungen ausschließlich mit Dateieditor und lokaler Beschreibung rekonstruieren.
-2. Ohne Plugin/MCP einen neuen Punkt und eine Folgeaufgabe anhand des Dateivertrags erstellen. Plugin öffnen; IDs, Beziehungen und Fachangaben korrekt übernehmen, ohne Export/Import-Rundreise.
+2. Ohne Plugin/MCP einen neuen Vorgang und ein To-do anhand des Dateivertrags erstellen. Plugin öffnen; IDs, Beziehungen und Fachangaben korrekt übernehmen, ohne Export/Import-Rundreise.
 3. Bei geöffnetem Formular extern den fachlichen Termin ändern. Das Plugin berücksichtigt den neuen Stand und erhält den eigenen Notizentwurf; eine Konfliktentscheidung überschreibt nicht unbemerkt erneut geänderte Daten.
 4. Ungültiges beziehungsweise unvollständiges YAML und ein neueres unbekanntes Schema einbringen. Verständlicher Fehler, kein stilles Löschen oder Ersetzen durch leere Werte; nach Korrektur fortsetzbar.
 5. Unbekannte Zusatzproperties und freie Notizabschnitte durch Plugin- und Agentenbearbeitung hindurch erhalten. Einen optionalen abgeleiteten Cache entfernen und aus den Fachnotizen rekonstruieren.

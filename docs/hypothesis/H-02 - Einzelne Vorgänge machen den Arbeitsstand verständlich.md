@@ -7,11 +7,11 @@ derivation: abgeleitet
 date: 2026-11-15
 ---
 
-# H-02 · Einzelne Punkte machen den Arbeitsstand verständlich
+# H-02 · Einzelne Vorgänge machen den Arbeitsstand verständlich
 
 ## Hypothese
 
-Die Trennung zwischen einem bündelnden Thema und einzeln erledigbaren Punkten hilft dem Beirat, Teilergebnisse und noch offene Arbeit korrekt zu erkennen.
+Die Trennung zwischen einem bündelnden Thema und einzeln erledigbaren Vorgängen hilft dem Beirat, Teilergebnisse und noch offene Arbeit korrekt zu erkennen.
 
 ## Herkunft und aktueller Evidenzstand
 

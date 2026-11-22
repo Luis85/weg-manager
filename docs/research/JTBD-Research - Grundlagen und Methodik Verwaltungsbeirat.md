@@ -96,7 +96,7 @@ Strategyn führt Executor, Core Job, Job Map, Related, Emotional und Consumption
 | Modify | bei Abweichung nachsteuern | J-B3, J-A3 |
 | Conclude | abschließen, bilanzieren, übergeben | J-A5, J-B4, J-H1 |
 
-Die Prüfung in Fassung 0.2 fand beim Schritt Conclude keinen Job für den Abschluss einzelner Punkte. Daraus ist der Kandidat J-A5 entstanden; er bleibt bis zu den Interviews ungeprüft (Abschnitt 4, Frage 1; im Leitfaden FF-9).
+Die Prüfung in Fassung 0.2 fand beim Schritt Conclude keinen Job für den Abschluss einzelner Vorgänge. Daraus ist der Kandidat J-A5 entstanden; er bleibt bis zu den Interviews ungeprüft (Abschnitt 4, Frage 1; im Leitfaden FF-9).
 
 ## 2. Fachliche Grundlagen je Job
 
@@ -242,7 +242,7 @@ Die Fassung v0.2 zählt diese Jobs nur. Die Recherche liefert Rahmen für ihre s
 
 Diese Fragen betreffen Katalog, Rechtslage und Pilot. Die Forschungsfragen für die Interviews (FF-1 bis FF-9) stehen im [[Interviewleitfaden - Beirats-Interviews]].
 
-1. **Abschluss eines Punkts:** Bestätigen die Interviews den Kandidaten J-A5 „Punkte nachweisbar abschließen“? Die Job-Map-Prüfung zeigt dort eine Lücke.
+1. **Abschluss eines Vorgangs:** Bestätigen die Interviews den Kandidaten J-A5 „Vorgänge nachweisbar abschließen“? Die Job-Map-Prüfung zeigt dort eine Lücke.
 2. **Hauptjob schärfen:** Gehört „ohne dass das Ehrenamt zum Zweitberuf wird“ in den Hauptjob oder nur zu J-EM6 und J-RB1?
 3. **Verbindlichkeit:** Die Einstufung Pflicht, Sorgfalt, Anliegen ist rechtlich gegenzulesen, besonders für J-C2 nach dem OLG-München-Beschluss.
 4. **Tiefgarage:** Ist sie im Pilot eine eigene Gemeinschaft oder eine Untergemeinschaft? Davon hängen J-C3, J-D5 und J-H2 ab.

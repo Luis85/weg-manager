@@ -29,7 +29,7 @@ Die für den ersten Einsatz benötigten Vertretungsaufgaben lassen sich mit der 
 
 ## Gegenbelege und Auswertungsgrenze
 
-Die Vertretung muss im ersten Einsatz selbst Punkte oder Entscheidungen im Produkt weiterbearbeiten und kann die Aufgabe mit bloßem Lesen nicht übernehmen.
+Die Vertretung muss im ersten Einsatz selbst Vorgänge oder Entscheidungen im Produkt weiterbearbeiten und kann die Aufgabe mit bloßem Lesen nicht übernehmen.
 
 ## Konsequenz für die Produktarbeit
 

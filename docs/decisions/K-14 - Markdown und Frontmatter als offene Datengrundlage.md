@@ -10,7 +10,7 @@ source: "Direkte Nutzerentscheidung: Notizen müssen auch ohne Plugin, Obsidian 
 
 ## Entscheidung
 
-Das Plugin speichert seine fachlichen Daten grundsätzlich als lesbare Markdown-Dateien mit dokumentiertem YAML-Frontmatter. Diese Notizen sind der maßgebliche Datenbestand, kein nachträglich erzeugter Export einer verborgenen Datenbank. Jeder Vorgang beziehungsweise atomare Punkt besitzt eine verständliche Notiz; zugehörige Fachinformationen, Beziehungen und Originalanhänge sind aus dem Ordner nachvollziehbar.
+Das Plugin speichert seine fachlichen Daten grundsätzlich als lesbare Markdown-Dateien mit dokumentiertem YAML-Frontmatter. Diese Notizen sind der maßgebliche Datenbestand, kein nachträglich erzeugter Export einer verborgenen Datenbank. Jeder Vorgang besitzt eine verständliche Notiz; zugehörige Fachinformationen, Beziehungen und Originalanhänge sind aus dem Ordner nachvollziehbar.
 
 Ein Nutzer kann dieselben Dateien im Plugin und über einen ausdrücklich zugelassenen AI-Agent oder einen gewöhnlichen Editor bearbeiten. Lesen und zulässige Änderungen benötigen weder das Plugin noch Obsidian, MCP, ein Herstellerkonto oder einen Exportlauf. Der Agent ist optional; das Produkt bleibt ohne KI nutzbar.
 

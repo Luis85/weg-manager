@@ -6,11 +6,11 @@ date: 2026-11-15
 source: "Intake-Abgleich im Git-Commit b3a1cc2, docs/03-Intake-Abgleich.md"
 ---
 
-# K-03 · Einzeln erledigbarer Punkt als Kerneinheit
+# K-03 · Einzeln erledigbarer Vorgang als Kerneinheit
 
 ## Entscheidung
 
-Thema bündelt; Punkt ist einzeln erledigbare Einheit.
+Thema bündelt; Vorgang ist einzeln erledigbare Einheit.
 
 ## Geltung
 
@@ -18,17 +18,17 @@ Thema bündelt; Punkt ist einzeln erledigbare Einheit.
 
 ## Kontext und Begründung
 
-Eine Zusage oder Frage ist kleiner als der frühere durchgehende Handwerkerfall. Sammelpunkte verbergen unabhängige Erledigungsstände.
+Eine Zusage oder Frage ist kleiner als der frühere durchgehende Handwerkerfall. Sammelvorgänge verbergen unabhängige Erledigungsstände.
 
 **Herkunft:** P FR-V1/V3 gegenüber altem FR-03.
 
 ## Abgrenzung und betrachtete Alternative
 
-Ein vollständiger Handwerkervorgang wird nicht für jede einzelne Rückfrage verlangt. Ein optionales Thema bündelt mehrere Punkte.
+Ein vollständiger Handwerkervorgang wird nicht für jede einzelne Rückfrage verlangt. Ein optionales Thema bündelt mehrere Vorgänge.
 
 ## Auswirkungen
 
-Jeder Punkt hat ein überprüfbares Ergebnis; Aufteilen, Zusammenführen und Abschluss erhalten Herkunft und übrige offene Arbeit.
+Jeder Vorgang hat ein überprüfbares Ergebnis; Aufteilen, Zusammenführen und Abschluss erhalten Herkunft und übrige offene Arbeit.
 
 ## Offene Punkte und Überprüfung
 

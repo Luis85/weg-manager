@@ -35,26 +35,26 @@ Beantwortet die offene Frage O-04 aus dem [[02-MVP-PRD]]: **Woher kommen in der 
 
 ## Grundsatz
 
-Vorbereitung ist **regelbasiert über bereits erfasste Fakten** (Termine, Ereignisse, Versand, Nachfassstand, Quellen, Punktart). Drei Bausteine:
+Vorbereitung ist **regelbasiert über bereits erfasste Fakten** (Termine, Verlauf, Versand, Eskalation, Quellen, Vorgangsart). Drei Bausteine:
 
 1. **Anlass-Regeln** wählen aus, was diese Woche entschieden werden muss, und begründen die Auswahl.
 2. **Entscheidungsarten** liefern je Anlass feste, fachlich sinnvolle Optionen mit Folgen und eine nachvollziehbare Vorschlagsregel.
-3. **Textbausteine** mit Platzhaltern erzeugen Entwürfe aus Wahl, Notiz und Punktdaten.
+3. **Textbausteine** mit Platzhaltern erzeugen Entwürfe aus Wahl, Notiz und Vorgangsdaten.
 
 Was nicht aus Daten ableitbar ist, wird **nicht erfunden**: Der Platzhalter bleibt sichtbar markiert (z. B. `[Termin fehlt]`), die Vorlage bleibt nutzbar (PBI-15 AK 3). Jede Regel ist deterministisch, testbar und in Akten nachvollziehbar.
 
 ## 1 · Anlass-Regeln (Wochenpaket)
 
-Beim Öffnen der Wochenarbeit (K-04) wird für jeden offenen Punkt geprüft, ob ein Anlass vorliegt. Ein Punkt erzeugt höchstens einen Anlass; mehrere Punkte desselben Themas und Empfängers dürfen zu einer Paketentscheidung zusammengefasst werden.
+Beim Öffnen der Wochenarbeit (K-04) wird für jeden offenen Vorgang geprüft, ob ein Anlass vorliegt. Ein Vorgang erzeugt höchstens einen Anlass; mehrere Vorgänge desselben Themas und Empfängers dürfen zu einer Paketentscheidung zusammengefasst werden.
 
 | ID | Anlass | Bedingung (Stichtag = Wochenarbeit) | Entscheidungsart | Dringend? |
 | --- | --- | --- | --- | --- |
-| A1 | Nächste Nachfassstufe fällig | Nachhalten-Antwort „Nachfassen“ in Schritt 2 **oder** Stufe 2 → 3 fällig nach DF-05 | E1 | wenn Fremdfrist vor nächster Wochenarbeit |
+| A1 | Nächste Eskalationsstufe fällig | Nachhalten-Antwort „Nachfassen“ in Schritt 2 **oder** Stufe 2 → 3 fällig nach DF-05 | E1 | wenn Fremdfrist vor nächster Wochenarbeit |
 | A2 | Neue Unterlage mit Entscheidungsbedarf | im Eingang als „Entscheidung nötig“ markiert (Unterlage, Angebot, Protokoll) | E2 / E3 | wenn Frist in Quelle vor nächster Wochenarbeit |
 | A3 | Termin fehlt zu lange | Zusage ohne Termin, älter als 14 Tage (DF-04) | E1 | nein |
-| A4 | Punkt ohne nächsten Schritt | offener Punkt ohne eigene Aufgabe, Wiedervorlage oder wartende Zusage | E5 | nein |
-| A5 | Akutes Problem | Punktart „Mangel“ mit Markierung „akut“ oder „drohende Kosten“ | E6 | **ja** |
-| A6 | Eigentümer betroffen | Termin oder Maßnahme mit Eigentümerbezug neu bestätigt (Merkmal am Punkt) | E4 | wenn Termin < 14 Tage |
+| A4 | Vorgang ohne nächsten Schritt | offener Vorgang ohne To-do, Wiedervorlage oder wartende Zusage | E5 | nein |
+| A5 | Akutes Problem | Vorgangsart „Mangel“ mit Markierung „akut“ oder „drohende Kosten“ | E6 | **ja** |
+| A6 | Eigentümer betroffen | Termin oder Maßnahme mit Eigentümerbezug neu bestätigt (Merkmal am Vorgang) | E4 | wenn Termin < 14 Tage |
 | A7 | Zurückgestellt oder vorgemerkt | in Vorwoche zurückgestellt oder im Lagecheck vorgemerkt | ursprüngliche Art | ursprünglich |
 
 **Budget (DF-09, K-05):** Dringende Anlässe stehen immer zusätzlich. Die übrigen werden in dieser Reihenfolge bis 7 aufgefüllt: A7 (älteste zuerst) → A1 → A2 → A6 → A3 → A4. Gleichstand: frühere Fremdfrist, dann ältester Anlass. Jeder Kandidat zeigt seinen Auswahlgrund als kurzen Datenchip (z. B. „Frist 10.11. verstrichen“, „vorgemerkt 12.11.“). Nicht gewählte Kandidaten bleiben als Rückstand mit Zahl sichtbar.
@@ -70,7 +70,7 @@ Jede Art hat feste Optionen. Es gibt keine künstlichen Alternativen (PBI-15 AK 
 | Termin erfragen (Stufe 1) | Entwurf an Verantwortlichen, neue Prüfung = Versand + 7 T | noch keine Anfrage dokumentiert |
 | Antwortfrist setzen (Stufe 2) | Entwurf mit Frist = heute + 14 T, Prüfung = Frist + 1 T | Stufe 1 versandt, keine Antwort |
 | Förmlich nachfassen (Stufe 3) | Entwurf förmlich, Frist = heute + 10 T | Stufe 2 versandt, Frist verstrichen |
-| Für Bericht/ETV vormerken (Stufe 4) | eigene Aufgabe „in Bericht aufnehmen“ | Stufe 3 versandt, Frist verstrichen |
+| Für Bericht/ETV vormerken (Stufe 4) | To-do „in Bericht aufnehmen“ | Stufe 3 versandt, Frist verstrichen |
 | Pausieren | Pause mit Grund und Ende, Prüfung = Ende | immer |
 
 **Vorschlag:** die nächste nach DF-05 fällige Stufe. Grundchip nennt das auslösende Datum. Kein Vorschlag, solange eine kommunizierte Frist läuft.
@@ -79,35 +79,35 @@ Jede Art hat feste Optionen. Es gibt keine künstlichen Alternativen (PBI-15 AK 
 
 | Option | Folgen | angeboten wenn |
 | --- | --- | --- |
-| Zur Kenntnis nehmen | Ereignis „geprüft“, kein Entwurf | immer |
+| Zur Kenntnis nehmen | Verlaufseintrag „geprüft“, kein Entwurf | immer |
 | Rückfrage an Verwaltung | Entwurf mit Frage-Platzhalter, Prüfung + 7 T | immer |
-| Empfehlung an Verwaltung | Entwurf „Der Beirat empfiehlt …“ mit gewählter Unterlage | ≥ 1 Unterlage dieser Art am Punkt |
-| Für Besprechung vormerken | eigene Aufgabe, kein Beschluss (DF-15) | immer |
+| Empfehlung an Verwaltung | Entwurf „Der Beirat empfiehlt …“ mit gewählter Unterlage | ≥ 1 Unterlage dieser Art am Vorgang |
+| Für Besprechung vormerken | To-do, kein Beschluss (DF-15) | immer |
 
-**Vorschlag:** „Rückfrage“, wenn am Punkt eine erfasste Erwartung nicht erfüllt ist (z. B. Feld „erwartete Anzahl Angebote“ > vorhandene); sonst „Zur Kenntnis nehmen“. Beträge werden nur angezeigt, wenn sie bei der Erfassung eingetragen wurden; es gibt keinen Angebotsvergleich (später F-16).
+**Vorschlag:** „Rückfrage“, wenn am Vorgang eine erfasste Erwartung nicht erfüllt ist (z. B. Feld „erwartete Anzahl Angebote“ > vorhandene); sonst „Zur Kenntnis nehmen“. Beträge werden nur angezeigt, wenn sie bei der Erfassung eingetragen wurden; es gibt keinen Angebotsvergleich (später F-16).
 
 ### E3 · Unstimmigkeit in Protokoll oder Unterlage
 
-Optionen: Korrektur anfordern (Entwurf, Prüfung + 14 T) · Für ETV vormerken (Aufgabe) · Hinfällig setzen (mit Grund). **Vorschlag:** Korrektur anfordern, wenn keine Anfrage dokumentiert ist.
+Optionen: Korrektur anfordern (Entwurf, Prüfung + 14 T) · Für ETV vormerken (To-do) · Hinfällig setzen (mit Grund). **Vorschlag:** Korrektur anfordern, wenn keine Anfrage dokumentiert ist.
 
 ### E4 · Eigentümer informieren
 
-Optionen: Information DE/EN vorbereiten (Entwurf an Verteiler, beide Sprachen prüfpflichtig) · Nicht informieren (Grund) · Später (Wiedervorlage). **Vorschlag:** informieren, wenn Termin < 14 T oder Mitwirkung der Eigentümer im Punkt markiert ist.
+Optionen: Information DE/EN vorbereiten (Entwurf an Verteiler, beide Sprachen prüfpflichtig) · Nicht informieren (Grund) · Später (Wiedervorlage). **Vorschlag:** informieren, wenn Termin < 14 T oder Mitwirkung der Eigentümer im Vorgang markiert ist.
 
-### E5 · Punkt ohne nächsten Schritt
+### E5 · Vorgang ohne nächsten Schritt
 
-Optionen: Nächsten eigenen Schritt festlegen (Aufgabe mit Datum) · Verantwortung klären (Rückfrage-Entwurf) · Aufteilen · Hinfällig setzen. **Vorschlag:** keiner – der Beirat wählt; der Grundchip nennt die Dauer ohne Schritt.
+Optionen: Nächsten eigenen Schritt festlegen (To-do mit Datum) · Verantwortung klären (Rückfrage-Entwurf) · Aufteilen · Hinfällig setzen. **Vorschlag:** keiner – der Beirat wählt; der Grundchip nennt die Dauer ohne Schritt.
 
 ### E6 · Akutes Problem
 
-Optionen: Behebung mit Frist anfordern (Entwurf, Frist = heute + 3 T, Wert änderbar) · Selbst prüfen/Begehung (Aufgabe) · Eigentümer warnen (E4-Entwurf). **Vorschlag:** Behebung anfordern.
+Optionen: Behebung mit Frist anfordern (Entwurf, Frist = heute + 3 T, Wert änderbar) · Selbst prüfen/Begehung (To-do) · Eigentümer warnen (E4-Entwurf). **Vorschlag:** Behebung anfordern.
 
 ## 3 · Textbausteine
 
 - Bausteine liegen als **lesbare Markdown-Notizen im Vault** (`WEG Manager/Vorlagen/…`), vom Nutzer bearbeitbar und versioniert (K-14). Das Plugin liefert einen Grundsatz in Deutsch und Englisch.
 - Je Baustein: Empfängerart (Verwaltung, Eigentümer, Dienstleister), Entscheidungsart + Option, Sprache, Tonlage (sachlich / förmlich für Stufe 3).
-- Platzhalter: `{anrede}`, `{empfaenger.name}`, `{gemeinschaft.name}`, `{punkt.ergebnis}`, `{zusage.datum}`, `{zusage.quelle}`, `{frist.neu}`, `{unterlage.titel}`, `{notiz}`, `{beirat.name}`. Fehlende Werte werden als `[Feld fehlt]` markiert eingesetzt und blockieren „geprüft“, bis sie ersetzt sind.
-- **Bündelung (PBI-18):** Entwürfe gleicher Gemeinschaft und gleichen Empfängers werden zu einer Nachricht zusammengeführt: Anrede + je Punkt ein Absatz + Schluss. Jeder Absatz behält seinen Punkt- und Entscheidungsbezug.
+- Platzhalter: `{anrede}`, `{empfaenger.name}`, `{gemeinschaft.name}`, `{punkt.ergebnis}`, `{zusage.datum}`, `{zusage.quelle}`, `{frist.neu}`, `{unterlage.titel}`, `{notiz}`, `{beirat.name}`. Der Platzhalter `{punkt.ergebnis}` behält vorerst seinen Namen und wird mit der Umsetzung auf den Vorgang nachgezogen. Fehlende Werte werden als `[Feld fehlt]` markiert eingesetzt und blockieren „geprüft“, bis sie ersetzt sind.
+- **Bündelung (PBI-18):** Entwürfe gleicher Gemeinschaft und gleichen Empfängers werden zu einer Nachricht zusammengeführt: Anrede + je Vorgang ein Absatz + Schluss. Jeder Absatz behält seinen Vorgangs- und Entscheidungsbezug.
 - **Idempotenz (DF-07):** Ein Entwurf ist eindeutig über (Entscheidung, Option, Empfänger, Sprache). Erneutes Bestätigen aktualisiert, ändert die Wahl → alte Fassung „überholt“.
 
 Beispiel E1/Stufe 2 an Verwaltung (DE):
@@ -141,6 +141,6 @@ Eine optionale KI darf dieselben Strukturen füllen (Formulierungsvorschlag, Erk
 
 ## Offene Punkte
 
-- Ob A6 „Eigentümer betroffen“ als Merkmal oder als Punktart modelliert wird (ENT-04).
+- Ob A6 „Eigentümer betroffen“ als Merkmal oder als Vorgangsart modelliert wird (ENT-04).
 - Defaultwert für E6-Frist (3 Tage) fachlich bestätigen.
 - Ablage und Versionierung der Vorlagen im Datenvertrag ([[Datenkonzept - Offene Notizen und Agentenzugriff]]).

@@ -28,7 +28,7 @@ Handwerker-MVP unverändert lassen oder beide Rollen vollständig parallel bedie
 
 ## Auswirkungen
 
-Beschaffung, Aufträge und Zahlungen werden verschoben; Fragen dazu bleiben als Punkte mit Quellen möglich.
+Beschaffung, Aufträge und Zahlungen werden verschoben; Fragen dazu bleiben als Vorgänge mit Quellen möglich.
 
 ## Offene Punkte und Überprüfung
 

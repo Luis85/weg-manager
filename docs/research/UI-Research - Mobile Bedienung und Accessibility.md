@@ -28,7 +28,7 @@ Alle folgenden URLs wurden am 15.11.2026 geöffnet. Normative Grundlage ist die 
 
 Diese Regeln folgen aus PRD/DF/F-21 und der obigen Recherche; sie sind vorgeschlagene Produktentscheidungen, keine empirisch bestätigten Ergebnisse.
 
-1. **Fristen zuerst:** Quellenstand und Gemeinschaft nennen, dann Handlungsbedarf vor nächster Wochenarbeit und 14-Tage-Fristen. Terminart, Datum, Herkunft und nächste Handlung je Punkt zeigen. Überfälligkeit bleibt Prüfhinweis, „Nicht eingehalten“ eine begründete menschliche Bewertung. Wiedervorlage verschiebt nicht den Fremdtermin.
+1. **Fristen zuerst:** Quellenstand und Gemeinschaft nennen, dann Handlungsbedarf vor nächster Wochenarbeit und 14-Tage-Fristen. Terminart, Datum, Herkunft und nächste Handlung je Vorgang zeigen. Überfälligkeit bleibt Prüfhinweis, „Nicht eingehalten“ eine begründete menschliche Bewertung. Wiedervorlage verschiebt nicht den Fremdtermin.
 2. **Sieben insgesamt:** Reguläres Wochenbudget gilt gemeinschaftsübergreifend. Auswahlgrund, Rückstand und zusätzliche dringliche Fälle bleiben erreichbar. Neun dringende Fälle dürfen trotz sieben regulärer Karten nicht verschwinden.
 3. **Lücken sichtbar:** „Keine Antwort bekannt“ statt „Keine Antwort erfolgt“, wenn Eingangslage unvollständig. Ungeprüfte Portalnachricht verhindert unqualifiziertes „Nichts Dringendes“. Aktualisierung beim Öffnen ist keine behauptete Hintergrundprüfung.
 4. **Mensch versendet:** Wahl, Entwurf, Kopieren, tatsächlicher Versand und Zustellung sind verschiedene Dinge. Erst ausdrücklich dokumentierter Versand mit Datum/Fassung verankert den nächsten Prüftermin. Ein Undo korrigiert gegebenenfalls den Eintrag, holt aber keine externe Nachricht zurück.
@@ -48,9 +48,9 @@ Mobile Abläufe müssen Lesen, Quellenprüfung, Wahl, Notizeingabe, Entwurfsprü
 | Gefahr | Konkreter Reviewfall |
 | --- | --- |
 | Wahl erscheint als Beschluss/Auftrag | „Verwaltung erinnern“ erzeugt Folgearbeit; kein Beschluss-, Zahlungs- oder Freigabestatus. |
-| Kartenbudget verschluckt Dringlichkeit | Neun dringende unabhängige Punkte bleiben mit eigener Frist auffindbar. |
+| Kartenbudget verschluckt Dringlichkeit | Neun dringende unabhängige Vorgänge bleiben mit eigener Frist auffindbar. |
 | Grüner Status behauptet Vollständigkeit | Alter Registerstand plus ungeprüfte Portalnachricht zeigt Lücke statt Entwarnung. |
-| Neuer Termin erledigt ganzen Punkt | Alte Zusage und Bewertung bleiben historisch, aktueller Punkt offen. |
+| Neuer Termin erledigt ganzen Vorgang | Alte Zusage und Bewertung bleiben historisch, aktueller Vorgang offen. |
 | Entwurf startet Frist | Versand 16.11., Antworttermin 30.11.: am 23.11. keine nächste Stufe nur wegen Wochenwechsel. |
 | Datumsgrenze falsch | Datum ohne Uhrzeit gilt bis Tagesende Europe/Berlin; erst Folgetag überfällig. |
 | Gemeinschaften vermischt | WEG-Ausgabe enthält keine Tiefgaragenanlage trotz gleichem Verwalter. |

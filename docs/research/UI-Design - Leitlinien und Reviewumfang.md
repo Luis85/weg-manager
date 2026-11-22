@@ -18,7 +18,7 @@ Neuentwurf des MVP-UI auf Basis von [[02-MVP-PRD]], PBI-01–33, DF-01–15 und 
 
 | Thema | Entscheidung | Begründung |
 | --- | --- | --- |
-| Struktur | 4 Ziele (Lage, Woche, Punkte, Postausgang) + Nebenbereiche Kontakte und Einstellungen; 8 Ansichten statt 17 Pages | weniger Suchaufwand, max. 2 Ebenen (NN/g) |
+| Struktur | 4 Ziele (Lage, Woche, Vorgänge, Postausgang) + Nebenbereiche Kontakte und Einstellungen; 8 Ansichten statt 17 Pages | weniger Suchaufwand, max. 2 Ebenen (NN/g) |
 | Wochenarbeit | geführter Ablauf in 5 Schritten mit Pause, Zeit, Stepper | Weekly-Review-Muster; klarer Anfang und Ende |
 | Nachhalten | vier Ein-Klick-Antworten je Zusage | „Warten auf“-Muster, DF-05/06 |
 | Status | Form + Farbe + Wort, große Zahlen; Fließtext nur in Akte und Entwürfen | Kritik „zu textlastig“; WCAG 1.4.1 |
@@ -104,7 +104,7 @@ DashboardSidebar (Desktop-Navigation) · DashboardPanel (Arbeitsfläche + Kontex
 | `v2-D16-Tour-Start.png`, `v2-D17-Tour-Schritt.png`, `v2-M12-Tour-Start.png`, `v2-M13-Tour-Schritt.png` | Einführungstour: Willkommen und Schritt, Desktop und Mobil |
 | `v2-P-D-01-Lage.png` … `v2-P-D-18-…`, `v2-P-M-01-…` … `v2-P-M-18-…` | Prototyp-Stand Pilot 15.11., Desktop und Mobil, 18 Bildschirme; gilt bei Abweichung vor den älteren Mockups, siehe [[Prototyp - Stand Pilot]] |
 | `v2-Z-Zustaende.png` | Leer, keine Treffer, Laden, Speicherfehler, Konflikt, Datenlücke, Woche pausiert, Toast |
-| `v2-*-dark.png` | Dunkel: Desktop Lage, Punktakte, Postausgang; Mobil Lage, Punktakte. Referenz für Farben und Kontraste; Inhalt vor dem Prototyp-Stand |
+| `v2-*-dark.png` | Dunkel: Desktop Lage, Vorgangsakte, Postausgang; Mobil Lage, Vorgangsakte. Referenz für Farben und Kontraste; Inhalt vor dem Prototyp-Stand |
 
 Alle Inhalte sind synthetisch (WEG Ahornweg 12, Tiefgarage). Betrachtungszeitpunkt So 15.11.2026, Wochenarbeit Mo 16.11.2026.
 
@@ -117,20 +117,20 @@ Alle 21 Artboards wurden gerendert, bei 1440 px und bei 390 px Breite auf horizo
 - Stepper in Wochenarbeit und Import liefen bei schmaler Breite über → umbrechend.
 - „Sachstand ausgeben“ lief bei 390 px über → Spalten-Mindestbreiten reduziert.
 - Sidebar-Bezeichnung „WEG Ahornweg 12“ brach um → „Ahornweg 12“ (Kürzel trägt den Typ).
-- Punktakte und Postausgang hatten keine Suche in der Sidebar → ergänzt, Navigation jetzt einheitlich.
+- Vorgangsakte und Postausgang hatten keine Suche in der Sidebar → ergänzt, Navigation jetzt einheitlich.
 - Mobile Lage: Feed lief unter Erfassen-Button und Host-Navigation → Kennzahlen als 4er-Reihe, Feed gekürzt.
 - Mobile Entscheiden: Notiz lag unter der Aktionsleiste → Lückenhinweis in Kachel integriert.
 - Dunkelmodus: invertierte helle Wochenkarte war zu grell und Chip-Kontrast zu gering → erhöhte dunkle Fläche, heller Primärbutton.
 - Emoji in Ausgabe-Chips entfernt (Konsistenz mit Symbolsprache).
 - Nach Review-Kommentaren: rund 25 Erklärtexte in D2–D9, M3–M5 entfernt (Untertitel, Infoboxen, Fußnoten, Zusätze wie „· bleibt Lücke“); verbleibende Texte zeigen nur Daten, Status oder Aktionen.
-- Eigene Aufgaben hatten in der Sitemap keinen Ort → Segment „Punkte | Aufgaben“.
+- To-dos hatten in der Sitemap keinen Ort → Segment „Vorgänge | To-dos“.
 
 **Offen für den fachlichen Review:**
 
 1. Noch nicht gezeichnet: Erststart Schritt 2 und 3, Sachstand ausgeben mobil, Einstellungen mobil.
 2. Dunkelmodus für fünf Kernansichten bebildert; Tokens decken alle ab.
 3. Desktop-Nachhalten zeigt die Bewertung als Checkbox, die Akte zeigt sie bereits gesetzt (zeitlich nacheinander zu lesen).
-4. Ob Kennzahl-Kacheln als Filter (Lage → gefilterte Punkte) oder als Sprung in den Wochenschritt dienen, ist festzulegen.
-5. Technisch: Geist lokal bündeln, Bases-View für die Punkte-Liste prüfen, Fokusführung im Stepper, Verhalten bei 200 % Zoom.
+4. Ob Kennzahl-Kacheln als Filter (Lage → gefilterte Vorgänge) oder als Sprung in den Wochenschritt dienen, ist festzulegen.
+5. Technisch: Geist lokal bündeln, Bases-View für die Vorgangsliste prüfen, Fokusführung im Stepper, Verhalten bei 200 % Zoom.
 
 Statische Mockups belegen keine Tastaturbedienung, Screenreader-Ansagen, Speicherung, Offlinefähigkeit oder Performance.

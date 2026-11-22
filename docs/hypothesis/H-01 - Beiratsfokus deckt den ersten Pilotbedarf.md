@@ -11,7 +11,7 @@ date: 2026-11-15
 
 ## Hypothese
 
-Der Beirat kann seine wesentlichen wiederkehrenden Anliegen mit dem vorgesehenen Punkteregister und Wochenablauf bearbeiten, ohne dafür bereits die vollständige eigene Handwerker- und Zahlungsverwaltung zu benötigen.
+Der Beirat kann seine wesentlichen wiederkehrenden Anliegen mit dem vorgesehenen Vorgangsregister und Wochenablauf bearbeiten, ohne dafür bereits die vollständige eigene Handwerker- und Zahlungsverwaltung zu benötigen.
 
 ## Herkunft und aktueller Evidenzstand
 
@@ -27,7 +27,7 @@ Vor Entwicklungsfreigabe typische Anliegen mit dem Piloten fachlich gegen den Sc
 
 ## Hinweise auf Unterstützung
 
-Die wesentlichen wiederkehrenden Fälle lassen sich als Punkte mit Quellen, Entscheidungen und Folgearbeit abschließen; verschobene operative Module blockieren den Kernablauf nicht.
+Die wesentlichen wiederkehrenden Fälle lassen sich als Vorgänge mit Quellen, Entscheidungen und Folgearbeit abschließen; verschobene operative Module blockieren den Kernablauf nicht.
 
 ## Gegenbelege und Auswertungsgrenze
 

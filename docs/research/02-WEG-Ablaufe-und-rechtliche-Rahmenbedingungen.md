@@ -17,7 +17,7 @@ Die verbindliche Reihenfolge lautet: **MVP entwickeln → interne technische und
 
 ## 1. Fachlicher Ablauf: vom Anliegen bis zur Nachverfolgung
 
-Der folgende Ablauf ist ein Produktmodell für typische Erhaltungsmaßnahmen. Dringlichkeit, Vertragsgestaltung und vorhandene Beschlüsse können Abweichungen erforderlich machen. Der MVP muss tatsächliche Ereignisse dokumentierbar halten, auch wenn Unterlagen fehlen.
+Der folgende Ablauf ist ein Produktmodell für typische Erhaltungsmaßnahmen. Dringlichkeit, Vertragsgestaltung und vorhandene Beschlüsse können Abweichungen erforderlich machen. Der MVP muss tatsächliche Geschehnisse als Verlaufseinträge dokumentierbar halten, auch wenn Unterlagen fehlen.
 
 | Schritt | Benötigte Information | Unterstützung im MVP |
 |---|---|---|

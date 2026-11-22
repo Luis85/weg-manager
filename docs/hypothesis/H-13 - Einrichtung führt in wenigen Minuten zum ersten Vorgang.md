@@ -7,11 +7,11 @@ derivation: abgeleitet
 date: 2026-11-22
 ---
 
-# H-13 · Einrichtung führt in wenigen Minuten zum ersten Punkt
+# H-13 · Einrichtung führt in wenigen Minuten zum ersten Vorgang
 
 ## Hypothese
 
-Ein Beirat ohne Vorwissen kommt nach dem Aktivieren des Plugins in höchstens fünf Minuten zu angelegten Gemeinschaften und in höchstens fünfzehn Minuten zu seinem ersten erfassten Punkt, ohne Doku außerhalb des Plugins zu lesen.
+Ein Beirat ohne Vorwissen kommt nach dem Aktivieren des Plugins in höchstens fünf Minuten zu angelegten Gemeinschaften und in höchstens fünfzehn Minuten zu seinem ersten erfassten Vorgang, ohne Doku außerhalb des Plugins zu lesen.
 
 ## Herkunft und aktueller Evidenzstand
 
@@ -21,11 +21,11 @@ Es gibt keine Beobachtung. Die Zielwerte sind gesetzt, nicht gemessen.
 
 ## Vorgeschlagene Prüfung
 
-Vor dem Pilot ein kleiner Usability-Test mit etwa fünf Personen, die laut denken, und im Pilot sowie in den Beirats-Interviews je eine Person bei der Installation in einem frischen Vault beobachten ([[Interviewleitfaden - Beirats-Interviews]]). Notiert werden die Zeit bis zur ersten Gemeinschaft und bis zum ersten Punkt, jede Stelle mit Zögern oder Rückfrage ob die Person die Karte „Erste Schritte“ nutzt und ob sie Hinweise im Kontext liest oder sofort schließt. Keine Messung im Plugin.
+Vor dem Pilot ein kleiner Usability-Test mit etwa fünf Personen, die laut denken, und im Pilot sowie in den Beirats-Interviews je eine Person bei der Installation in einem frischen Vault beobachten ([[Interviewleitfaden - Beirats-Interviews]]). Notiert werden die Zeit bis zur ersten Gemeinschaft und bis zum ersten Vorgang, jede Stelle mit Zögern oder Rückfrage ob die Person die Karte „Erste Schritte“ nutzt und ob sie Hinweise im Kontext liest oder sofort schließt. Keine Messung im Plugin.
 
 ## Hinweise auf Unterstützung
 
-Die Person legt ihre Gemeinschaften ohne Rückfrage an, versteht die Prüfseite und findet den ersten Punkt über die Karte „Erste Schritte“.
+Die Person legt ihre Gemeinschaften ohne Rückfrage an, versteht die Prüfseite und findet den ersten Vorgang über die Karte „Erste Schritte“.
 
 ## Gegenbelege und Auswertungsgrenze
 

@@ -7,7 +7,7 @@ scope: mvp
 
 # DF-06 · Reaktion und Pause
 
-Empfangsbestätigung, sachliche Antwort, neuer akzeptierter Termin, Teillieferung und Erfüllung sind verschiedene Ereignisse. Neuer Termin beendet aktuelles Terminnachfragen, nicht den Punkt. Pause hat Grund und Ende; danach erneute Prüfung, keine automatische Mehrfachhochsetzung.
+Empfangsbestätigung, sachliche Antwort, neuer akzeptierter Termin, Teillieferung und Erfüllung sind verschiedene Verlaufseinträge. Neuer Termin beendet aktuelles Terminnachfragen, nicht den Vorgang. Pause hat Grund und Ende; danach erneute Prüfung, keine automatische Mehrfachhochsetzung.
 
 **Abnahmeanker:** Wir kümmern uns ohne Datum ist kein verbindlicher Termin. Späterer Termin erhält Historie; seine Überschreitung erzeugt erneut Prüfbedarf.
 

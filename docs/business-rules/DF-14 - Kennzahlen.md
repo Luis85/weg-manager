@@ -7,11 +7,11 @@ scope: gemischt
 
 # DF-14 · Kennzahlen
 
-Anfrage bis definierte Antwort, Zusage bis Erfüllung und Angebot bis Beschluss sind verschiedene Zeiträume. Einheit, Ereignispaar und Quelle nennen; fehlende Werte bleiben unbekannt, offene Vorgänge werden nicht als abgeschlossene Fälle gemittelt. Ereignisse im MVP, vertiefte Auswertung später.
+Anfrage bis definierte Antwort, Zusage bis Erfüllung und Angebot bis Beschluss sind verschiedene Zeiträume. Einheit, das Paar der Verlaufseinträge und Quelle nennen; fehlende Werte bleiben unbekannt, offene Vorgänge werden nicht als abgeschlossene Fälle gemittelt. Verlaufseinträge im MVP, vertiefte Auswertung später.
 
-**MVP-Abnahmeanker:** Anfrage 01.11., Bestätigung 02.11. und sachliche Antwort 05.11. bleiben getrennte datierte Ereignisse; fehlende Datumswerte bleiben unbekannt. Eine berechnete Auswertung wird im MVP nicht verlangt.
+**MVP-Abnahmeanker:** Anfrage 01.11., Bestätigung 02.11. und sachliche Antwort 05.11. bleiben getrennte datierte Verlaufseinträge; fehlende Datumswerte bleiben unbekannt. Eine berechnete Auswertung wird im MVP nicht verlangt.
 
-**Späterer Abnahmeanker für PBI-36:** Dieselben Ereignisse ergeben einen Tag bis Bestätigung und vier Tage bis Antwort. 145 Tage Angebot bis Beschluss wird als Durchlaufzeit ausgewiesen.
+**Späterer Abnahmeanker für PBI-36:** Dieselben Verlaufseinträge ergeben einen Tag bis Bestätigung und vier Tage bis Antwort. 145 Tage Angebot bis Beschluss wird als Durchlaufzeit ausgewiesen.
 
 **PBIs:** [[PBI-12 - Verlauf nachvollziehen]], [[PBI-36 - Abgegrenzte Zeiträume auswerten]]
 

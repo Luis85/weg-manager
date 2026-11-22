@@ -7,7 +7,7 @@ scope: mvp
 
 # DF-01 · Beiratsarbeit und Befugnis
 
-Eine persönliche Arbeitsentscheidung erzeugt weder Auftrag, Zahlung noch rechtliche Freigabe. Rolle und dokumentierte Handlungsgrundlage bleiben verschieden.
+Eine persönliche Entscheidung auf einer Entscheidungskarte erzeugt weder Auftrag, Zahlung noch rechtliche Freigabe. Rolle und dokumentierte Handlungsgrundlage bleiben verschieden.
 
 **Abnahmeanker:** Wahl Verwaltung erinnern erzeugt einen eigenen nächsten Schritt, keinen freigegebenen Auftrag.
 

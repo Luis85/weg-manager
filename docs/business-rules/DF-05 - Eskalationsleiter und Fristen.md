@@ -5,7 +5,7 @@ status: entwurf
 scope: mvp
 ---
 
-# DF-05 · Nachfassfristen und Stufen
+# DF-05 · Eskalationsleiter und Fristen
 
 Wochenprüfung schlägt vor, sie vollzieht keine Eskalation. Maßgeblich ist ein dokumentierter tatsächlicher Schritt und der kommunizierte Termin. Interner Default: Kalendertage; Datum ohne Uhrzeit bis Tagesende Europe/Berlin, überfällig ab Folgetag. Terminanfrage ohne genannte Antwortfrist wird beim nächsten Wochencheck nach mindestens sieben Kalendertagen seit Versand erneut geprüft. Weitere Vorschlagstermine können 14 Tage (Stufe 2) bzw. zehn Tage (Stufe 3) betragen; der Mensch bestätigt das tatsächlich genannte Datum. Das sind Arbeitsdefaults, keine gesetzlichen Fristen oder Zugangsnachweise. Stufen: Termin erfragen → Antworttermin vorschlagen → förmlich nachfassen → für Bericht/ETV vormerken. Einstieg berücksichtigt vorhandene Historie.
 

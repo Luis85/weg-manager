@@ -25,7 +25,7 @@ actors:
 | FF-6 | Was gehört für Beiräte zum Amt und was nicht? | J-E4, J-F1–J-F4, J-G1–J-G2, J-EM6 |
 | FF-7 | Was macht das Amt übergabefähig oder abhängig von einer Person? | J-H1–J-H3 |
 | FF-8 | Welche Jobs hat ein Beirat bei gemeinsamen Vorhaben mit Nachbargemeinschaften? | Beirat im Viertel |
-| FF-9 | Gibt es einen eigenen Job, einen Punkt nachweisbar abzuschließen? | Lücke aus der Job-Map-Prüfung |
+| FF-9 | Gibt es einen eigenen Job, einen Vorgang nachweisbar abzuschließen? | Lücke aus der Job-Map-Prüfung |
 
 ## Teilnehmende
 
@@ -226,7 +226,7 @@ Am Ende bewertet die Person zehn Ergebnis-Sätze auf einer Karte. Die Sätze sin
 
 | Kennung | Ergebnis | Wichtig 1–5 | Zufrieden 1–5 |
 | --- | --- | --- | --- |
-| J-A1 | Erkennen, welche offenen Punkte diese Woche meine Entscheidung brauchen | | |
+| J-A1 | Erkennen, welche offenen Vorgänge diese Woche meine Entscheidung brauchen | | |
 | J-A2 | Nur bei echtem Handlungsbedarf zwischendurch gestört werden | | |
 | J-A3 | Nach einer Pause schnell wieder wissen, wo ich stand | | |
 | J-B1 | Keine Zusage der Verwaltung ohne Termin | | |

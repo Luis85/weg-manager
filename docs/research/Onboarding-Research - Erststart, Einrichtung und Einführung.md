@@ -136,7 +136,7 @@ Ausgewertet wurde der Quelltext am jeweiligen Commit (siehe Quellen).
 - [S] In der SaaS-Praxis heißt die Zeit bis zum ersten Nutzen „time to value“, das Erreichen eines festgelegten Meilensteins „Aktivierung“. Ein Anbieterblog nennt den Durchschnitt als Kennzahl unvollständig und empfiehlt Kohortenkurven ([ProductLed 2022/2024](https://productled.com/blog/activation-velocity)).
 - [A] WEG Manager darf im Client nicht messen (1.3). Darum gelten diese Größen nur im Pilot, beobachtet und von Hand protokolliert, passend zu [[H-08 - Der Pilot kann den Kernablauf selbstständig fortführen]]. Vorschlag für Messpunkte:
   - Zeit vom Aktivieren bis zur ersten gespeicherten Gemeinschaft,
-  - Zeit bis zum ersten erfassten Punkt,
+  - Zeit bis zum ersten erfassten Vorgang,
   - ob die Person die erste Wochenarbeit ohne Hilfe beginnt,
   - wie oft sie dabei Hilfe braucht.
 
@@ -170,7 +170,7 @@ Installiert ist `@nuxt/ui` 4.13.0 mit `reka-ui` 2.11.0 und `@vueuse/core` ^14.4.
 | [Popover](https://ui.nuxt.com/docs/components/popover) | Prop `reference` mit Element oder virtuellem Element, „can be changed reactively to re-anchor the popover (e.g. for a guided tour)“, dazu `modal`, `dismissible` [B]. Reka Popover: „Adheres to the Dialog WAI-ARIA design pattern“, Esc schließt ([Reka Popover](https://reka-ui.com/docs/components/popover)) [B]. | Tour-Karte. |
 | [useTour](https://ui.nuxt.com/docs/composables/use-tour) | „A composable to build guided tours by re-anchoring a single Popover across steps.“ Steps mit `target` (ID, Selektor, Element; `null` = mittig), Rückgabe `open`, `index`, `current`, `reference`, `total`, `start`, `next`, `prev`, `goTo`, `finish`; scrollt das Ziel ins Bild. Optional ein Spotlight per `clip-path`, Overlay mit `aria-hidden`. Tastatur und A11y nicht dokumentiert [B]. In 4.13.0 vorhanden, Export `@nuxt/ui/composables` (`dist/runtime/composables/useTour.d.ts`) [B]. | Tour ohne neue Abhängigkeit. Tastatur, Fokus, Live-Region und reduzierte Bewegung baut das Projekt selbst. |
 | Tour-Komponente | Keine. Der PR „feat(Tour): new component“ ([nuxt/ui#5781](https://github.com/nuxt/ui/pull/5781)) ist geschlossen, ohne Merge [B]. | Nicht abwarten, `useTour` + `UPopover` nutzen. |
-| [Empty](https://ui.nuxt.com/docs/components/empty) | „A component to display an empty state.“ `icon`, `title`, `description`, `actions` [B]. | Leerzustände von Lage, Punkten und Kontakten mit direkter Aktion. |
+| [Empty](https://ui.nuxt.com/docs/components/empty) | „A component to display an empty state.“ `icon`, `title`, `description`, `actions` [B]. | Leerzustände von Lage, Vorgängen und Kontakten mit direkter Aktion. |
 | Progress, [ProgressGroup](https://ui.nuxt.com/docs/components/progress-group) | Fortschrittsbalken; ProgressGroup teilt in Segmente. A11y-Rollen nicht dokumentiert [B]/[L]. | Höchstens für „2 von 4 erledigt“ in der Checkliste, immer mit Text dazu. |
 | Tooltip | Vorhanden in 4.13.0 [B]. | Nicht für Pflichtinformationen (1.4.13, Touch). |
 
@@ -201,7 +201,7 @@ DV-01 verlangt `name`, `short_code`, `color`, `kind` und `unit_label`. Für den 
 
 - [A] Optische Anpassung wie Farbe nicht in den Vordergrund (NN/g). Die Farbe steht nur als vorbelegte Zeile in der Prüfung.
 - [A] Kürzel als „Kürzel (2–5 Zeichen, später nicht änderbar)“ erklären. Das ist der einzige Wert, der danach fest ist.
-- [A] Laut [[VIEW-07 - Einstellungen und Einrichtung]] ist „Register übernehmen (optional)“ der dritte Schritt der Einrichtung. Er sollte in die Checkliste wandern: Er ist lang, braucht eine Datei und ist nicht für jeden nötig. „Kontakte“ gehört erst in die Einrichtung, wenn es den Notiztyp gibt. Im GLOSSARY ist Ansprechpartner noch „Not yet named“.
+- [A] Laut [[VIEW-07 - Einstellungen und Einrichtung]] ist „Register übernehmen (optional)“ der dritte Schritt der Einrichtung. Er sollte in die Checkliste wandern: Er ist lang, braucht eine Datei und ist nicht für jeden nötig. „Kontakte“ gehört erst in die Einrichtung, wenn es den Notiztyp gibt. Im GLOSSARY war die Person mit Rolle damals noch „Not yet named“.
 - [A] Nicht abfragen: Anschrift, Zahl der Einheiten, eigene Angaben (Name, Grußformel), Wochenrhythmus, Ablageordner. Dafür gibt es gute Standardwerte, und diese Angaben braucht erst eine spätere Aufgabe. Dann fragt das Plugin in dem Moment, in dem sie gebraucht werden.
 
 ### 6.3 Speichern, Abbrechen, Fortsetzen
@@ -213,7 +213,7 @@ DV-01 verlangt `name`, `short_code`, `color`, `kind` und `unit_label`. Für den 
 ### 6.4 Tour oder Checkliste
 
 - [A] **Hauptmittel ist eine Checkliste „Erste Schritte“** als Karte auf der Lage, je Punkt mit direkter Aktion:
-  - ersten Punkt erfassen,
+  - ersten Vorgang erfassen,
   - Register übernehmen (optional),
   - Verwaltung eintragen (optional),
   - erste Wochenarbeit starten.
@@ -250,7 +250,7 @@ DV-01 verlangt `name`, `short_code`, `color`, `kind` und `unit_label`. Für den 
 2. Prüft der Review oder der Scanner, ob ein Plugin Ansichten automatisch öffnet? Eine Regel fand sich nicht [L].
 3. Funktionieren mit `useTour` + `UPopover` im Obsidian-Fenster und im Pop-out Fokus, Portal-Ziel und z-Index richtig? Und wie verhalten sich Hotkeys von Obsidian, etwa Pfeiltasten und Esc, während der Tour?
 4. Seit welcher Nuxt-UI-Version gibt es `useTour`, und gilt es als stabil? Die Doku nennt keine Version.
-5. Kommt die Verwaltung schon in den Durchstich, oder erst mit dem Notiztyp Ansprechpartner?
+5. Kommt die Verwaltung schon in den Durchstich, oder erst mit dem Notiztyp Person und Rolle?
 6. Brauchen Laien Beispieldaten zum Ausprobieren? Und wie trennt man sie dann sicher von echten Daten?
 7. Soll der Tour-Zustand per Sync geteilt werden, oder ist er je Gerät gewollt?
 8. Messung im Pilot: Wer beobachtet, und welche Zeiten werden notiert? Abzustimmen mit dem [[Interviewleitfaden - Beirats-Interviews]].

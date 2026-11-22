@@ -92,7 +92,7 @@ Diese Annahmen sind weder neue freigegebene Anforderungen noch bereits bestätig
 
 | Vorhandener Baustein | Mögliche Wiederverwendung | Noch fehlender Verwalterzuschnitt |
 | --- | --- | --- |
-| Gemeinschaft, Kontakt, Punkt, Quelle und Verlauf | Zuständigkeiten und Nachweise bleiben anschlussfähig. | Nutzerrolle, Teamarbeit, operatives Verantwortungsmodell und tatsächlicher Bedarf an Portfolioübersicht. |
+| Gemeinschaft, Kontakt, Vorgang, Quelle und Verlauf | Zuständigkeiten und Nachweise bleiben anschlussfähig. | Nutzerrolle, Teamarbeit, operatives Verantwortungsmodell und tatsächlicher Bedarf an Portfolioübersicht. |
 | [[F-16 - Operative Handwerkersteuerung]] und [[PBI-38 - Angebote fachlich vergleichen]] | Angebotsfassung, Quelle, Vergleich und Auswahlbegründung. | Direkte Verwalterstory, Beauftragung, Nachträge und Ausführung; heutiges PBI ist aus Beiratsperspektive. |
 | [[F-17 - Rechnungen und Zahlungen führen]] und [[PBI-39 - Dokumentierten Rechnungsrest nachvollziehen]] | [[ENT-19 - Rechnung]] und [[ENT-20 - Zahlungseintrag]] als Ausbaukonzept. | Abgrenzung zu führender Buchhaltung, tatsächliche Zuständigkeit, Zahlungsfreigaben und Datenübernahme. Keine automatische Bankintegration ableiten. |
 | [[F-20 - Zusammenarbeit und Onlinedienst]] | Gezielte Zugänge und freigegebene Sachstände als späterer Bedarf. | Rechte, eigene Arbeitsbereiche, Vertretung, Datenverantwortung und Konflikte. |

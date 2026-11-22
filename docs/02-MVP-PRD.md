@@ -10,15 +10,15 @@ date: 2026-11-15
 
 **Version 1.1 · 15. November 2026 · Beirats-MVP, Konzeptentwurf zur fachlichen Prüfung**
 
-WEG Manager ist ein lokales Obsidian-Plugin für einen Beirat gegenüber einer externen Verwaltung. Der erste Umfang unterstützt mindestens zwei getrennte Gemeinschaften, nachvollziehbare Punkte, Wochenarbeit, Nachfassen, kontrollierte Kommunikation ohne verpflichtende KI. Die mobile Nutzung folgt nach dem MVP (Stand 21.11.2026, [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]).
+WEG Manager ist ein lokales Obsidian-Plugin für einen Beirat gegenüber einer externen Verwaltung. Der erste Umfang unterstützt mindestens zwei getrennte Gemeinschaften, nachvollziehbare Vorgänge, Wochenarbeit, Eskalation, kontrollierte Kommunikation ohne verpflichtende KI. Die mobile Nutzung folgt nach dem MVP (Stand 21.11.2026, [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]).
 
 ## Ziele und Nutzungskontext
 
 | Ziel | Gewünschtes Ergebnis | Nachweis |
 | --- | --- | --- |
 | B-G01 | Überschaubare Wochenarbeit mit klarer nächster Handlung. | Interner Gesamtfall; danach Wochenzeit einschließlich Vor-/Nachbereitung. |
-| B-G02 | Offene Zusagen ohne Termin bleiben sichtbar und werden nachgefasst. | Termin-, Versand- und Nachfassfälle; tatsächliche Antworten separat beobachten. |
-| B-G03 | Sachstände aus Quellen und datierten Ereignissen erklären. | Verlauf, Import und lesbare Übergabe. |
+| B-G02 | Offene Zusagen ohne Termin bleiben sichtbar und werden nachgefasst. | Termin-, Versand- und Eskalationsfälle; tatsächliche Antworten separat beobachten. |
+| B-G03 | Sachstände aus Quellen und datierten Verlaufseinträgen erklären. | Verlauf, Import und lesbare Übergabe. |
 | B-G04 | Menschlich kontrollierte Kommunikation und getrennte Gemeinschaften. | Vorschau, DE/EN, tatsächlicher Versand, Ausschluss ungeeigneter Inhalte. |
 | B-G05 | Selbstständige lokale Kernarbeit ohne KI. Die mobile Kernarbeit folgt nach dem MVP. | Offline-, Konflikt- und Wiederherstellungsprüfung; Mobile-Prüfung nach dem MVP. |
 | B-G06 | Öffentlich installierbares Produkt, anschließend belastbare Pilotbeobachtung. | Neuinstallation nach Veröffentlichung; dokumentierte Beobachtung. |
@@ -29,13 +29,13 @@ Ein menschlicher Bearbeiter arbeitet für WEG und Tiefgarage. Er kann zusätzlic
 
 | Im vorgeschlagenen MVP | Später / nicht zugesagt |
 | --- | --- |
-| Mindestens zwei Gemeinschaften, Kontakte und atomare Punkte; maßgebliche Markdown-/Frontmatter-Notizen mit offenem Dateizugriff. | Mehrbenutzerrollen, Verwaltungsportal, Eigentümer-Self-Service. |
+| Mindestens zwei Gemeinschaften, Kontakte und atomare Vorgänge; maßgebliche Markdown-/Frontmatter-Notizen mit offenem Dateizugriff. | Mehrbenutzerrollen, Verwaltungsportal, Eigentümer-Self-Service. |
 | Geprüfter Registerimport; manuelle Quellenübernahme. | Automatische vollständige Gmail-/Portal-/Postfachintegration. |
-| Quellenbezogene Wochenlage, vorbereitete bearbeitbare Entscheidungstexte, eigene Aufgaben. | Verpflichtende KI, MCP-Anbindung oder unbeaufsichtigter Cloud-Wochenlauf. |
-| Fristen, Wiedervorlage, Nachfassvorschläge und Lagecheck. | Eigener Pushdienst bei geschlossener App; Kalenderexport als Ausbau. |
+| Quellenbezogene Wochenlage, vorbereitete bearbeitbare Entscheidungstexte, To-dos. | Verpflichtende KI, MCP-Anbindung oder unbeaufsichtigter Cloud-Wochenlauf. |
+| Fristen, Wiedervorlage, Eskalationsvorschläge und Lagecheck. | Eigener Pushdienst bei geschlossener App; Kalenderexport als Ausbau. |
 | Menschliche Wahl und Notiz, Entwürfe je Gemeinschaft, DE/EN für Eigentümertexte. | Automatischer Versand, automatisch festgestellte Rechtsfolgen. |
 | Geprüfte Sachstandsausgabe, interne Übergabe, Sicherung und Wiederherstellung. | Ausgearbeitete Quartals-/ETV-Berichte, vollständige Beschluss-Sammlung. |
-| Mangel, Angebotsfrage, Rechnungsfrage oder Protokollkorrektur als Punkt mit Quelle. | Eigener RFQ-/Vergleichsprozess, Auftrag/Nachtrag, formelle Abnahme, Rechnungsrest und Zahlungsvorbereitung, Buchhaltung. |
+| Mangel, Angebotsfrage, Rechnungsfrage oder Protokollkorrektur als Vorgang mit Quelle. | Eigener RFQ-/Vergleichsprozess, Auftrag/Nachtrag, formelle Abnahme, Rechnungsrest und Zahlungsvorbereitung, Buchhaltung. |
 | Vollständige Wochenarbeit und Lagecheck auf dem Desktop. | Mobile Wochenarbeit und Lagecheck auf dem Handy (nach dem MVP, [[K-09 - Vollständige mobile Wochenarbeit unterstützen]]); eigener Synchronisationsdienst und gleichzeitiges Schreiben auf mehreren Geräten. |
 | Optionaler nativer AI-Chat über offizielle Claude-Code-Laufzeit und berechtigte Nutzer-Subscription; erster Nachweis auf Desktop. | Ungeprüfte mobile Chat-Runtime, eigener Credential-Proxy oder stiller API-Fallback. |
 
@@ -43,17 +43,17 @@ Der lokale Kern benötigt kein Konto, Netzwerk oder KI. Installation, gewählte 
 
 ## Kernreise und Ansichten
 
-1. Beide Gemeinschaften und Ansprechpartner einrichten; Altbestand mit Vorschau prüfen und übernehmen.
-2. Neue Zusage, Frage oder eigene Aufgabe mit überprüfbarem Ergebnis, Quelle und nächstem Schritt führen.
-3. Wochenarbeit öffnen: kurze Lage, Fristen für 14 Tage, eigene Aufgaben, letzte Übergabe und Datenlücken sehen.
+1. Beide Gemeinschaften sowie Personen mit Rollen einrichten; Altbestand mit Vorschau prüfen und übernehmen.
+2. Neue Zusage, Frage oder eigenes To-do mit überprüfbarem Ergebnis, Quelle und nächstem Schritt führen.
+3. Wochenarbeit öffnen: kurze Lage, Fristen für 14 Tage, To-dos, letzte Übergabe und Datenlücken sehen.
 4. Bis sieben reguläre Entscheidungen insgesamt mit Quellen, Optionen, Folgen und Empfehlungsentwurf prüfen; dringender Überlauf bleibt sichtbar.
-5. Wahl und Notiz bestätigen; passende Entwürfe und konkrete Folgeaufgaben erhalten.
+5. Wahl und Notiz bestätigen; passende Entwürfe und konkrete To-dos erhalten.
 6. Empfänger, Sprachfassungen und Anlagen prüfen, außerhalb des Plugins menschlich senden und tatsächlichen Versand erfassen.
-7. Reaktionen zuordnen, laufende Fristen respektieren, Nachfassvorschläge bestätigen oder begründet aussetzen.
+7. Reaktionen zuordnen, laufende Fristen respektieren, Eskalationsvorschläge bestätigen oder begründet aussetzen.
 8. Bis drei Schwerpunkte und Kontextnotiz hinterlassen; zwischendurch im Lagecheck Dringliches erkennen.
 9. Ausgewählten Sachstand beziehungsweise interne Übergabe ohne KI lesbar bereitstellen.
 
-**Wochenarbeit** bündelt die reguläre Bearbeitung. **Register mit Punktakte** erlaubt Suche, Filter, Einzelpflege und Quellenprüfung. **Lagecheck** zeigt neue Ereignisse und Handlungsbedarf vor dem nächsten geplanten Wochenzeitpunkt. Einrichtung, Quellenablage und Ausgabe sind ergänzende Abläufe. Das sind fachliche Ansichten, kein festgelegtes Layout. Bestehende Fälle dürfen ohne erfundene Vorgeschichte aufgenommen werden.
+**Wochenarbeit** bündelt die reguläre Bearbeitung. **Register mit Vorgangsakte** erlaubt Suche, Filter, Einzelpflege und Quellenprüfung. **Lagecheck** zeigt neue Verlaufseinträge und Handlungsbedarf vor dem nächsten geplanten Wochenzeitpunkt. Einrichtung, Quellenablage und Ausgabe sind ergänzende Abläufe. Das sind fachliche Ansichten, kein festgelegtes Layout. Bestehende Fälle dürfen ohne erfundene Vorgeschichte aufgenommen werden.
 
 ## Funktionale Anforderungen
 
@@ -61,15 +61,15 @@ Alle B-FR-01 bis B-FR-16 außer B-FR-13 sind MUSS im vorgeschlagenen MVP; B-FR-1
 
 | ID | Fachliche Verpflichtung | Backlog / geplante Abnahme |
 | --- | --- | --- |
-| B-FR-01 | Gemeinschaft und Ansprechpartner eindeutig führen; Kontext bei jeder Bearbeitung und Ausgabe sichtbar. | F-01, PBI-01–02; AT-B01 |
+| B-FR-01 | Gemeinschaft sowie Personen mit Rollen eindeutig führen; Kontext bei jeder Bearbeitung und Ausgabe sichtbar. | F-01, PBI-01–02; AT-B01 |
 | B-FR-02 | Die 15 Fachangaben des angebotenen Registers prüfbar zuordnen, übernehmen und erneut abgleichen; unklare Daten und Herkunft erhalten. | F-02, PBI-03–04; AT-B02 |
-| B-FR-03 | Atomare Punkte erfassen, finden, aufteilen, zusammenführen und bewusst abschließen; Bewertung getrennt halten. | F-03, PBI-05–08; AT-B03 |
-| B-FR-04 | Fremdtermin, gewünschte Frist, eigene Aufgabe und Wiedervorlage getrennt führen; fehlender Termin und nächster Schritt bleiben sichtbar. | F-04, PBI-09–10; AT-B04 |
-| B-FR-05 | Quellen, Originale, Fassungen und datierte Ereignisse zuordnen; unbekannte Angaben und fehlende Dateien zeigen. | F-05, PBI-11–12; AT-B05 |
-| B-FR-06 | Kurze aktuelle Lage, 14-Tage-Fristen, Aufgaben und maximal sieben reguläre Entscheidungen insgesamt vorbereiten; Quellenstand und Überlauf zeigen. | F-06, PBI-13–14; AT-B06 |
+| B-FR-03 | Atomare Vorgänge erfassen, finden, aufteilen, zusammenführen und bewusst abschließen; Bewertung getrennt halten. | F-03, PBI-05–08; AT-B03 |
+| B-FR-04 | Fremdtermin, gewünschte Frist, To-do und Wiedervorlage getrennt führen; fehlender Termin und nächster Schritt bleiben sichtbar. | F-04, PBI-09–10; AT-B04 |
+| B-FR-05 | Quellen, Originale, Fassungen und datierte Verlaufseinträge zuordnen; unbekannte Angaben und fehlende Dateien zeigen. | F-05, PBI-11–12; AT-B05 |
+| B-FR-06 | Kurze aktuelle Lage, 14-Tage-Fristen, To-dos und maximal sieben reguläre Entscheidungen insgesamt vorbereiten; Quellenstand und Überlauf zeigen. | F-06, PBI-13–14; AT-B06 |
 | B-FR-07 | Quellenbezogene Optionen, Folgen und Empfehlung mit Text vorbereiten; Wahl und Notiz erzeugen passende, wiederholbar verarbeitbare Folgearbeit. | F-07, PBI-15–17; AT-B07 |
 | B-FR-08 | Nachrichten je Gemeinschaft sinnvoll bündeln, Eigentümertexte DE/EN prüfbar halten und nur tatsächlichen menschlichen Versand dokumentieren. | F-08, PBI-18–20; AT-B08 |
-| B-FR-09 | Nachfassschritte anhand Versand, Frist und Reaktion vorschlagen; Pakete, Pausen und neue Termine erhalten Historie und offenen Bedarf. | F-09, PBI-21–23; AT-B09 |
+| B-FR-09 | Eskalationsschritte anhand Versand, Frist und Reaktion vorschlagen; Pakete, Pausen und neue Termine erhalten Historie und offenen Bedarf. | F-09, PBI-21–23; AT-B09 |
 | B-FR-10 | Lagecheck seit letzter Übergabe und bis nächster Wochenarbeit ermöglichen; bis drei Schwerpunkte für Wiedereinstieg erhalten. | F-10, PBI-24–25; AT-B10 |
 | B-FR-11 | Inhalte einstufen, kontrolliert berichtigen/entfernen und empfängerbezogen mit Vorschau lesbar übergeben. | F-11, PBI-26–29; AT-B11 |
 | B-FR-12 | Daten sichern/wiederherstellen, Konflikte behandeln und einen selbstständigen Einstieg ohne KI anbieten. | F-12, PBI-30–32; AT-B12 |
@@ -81,26 +81,26 @@ Die vorbereitete Wochenarbeit darf nicht auf leere Formulare reduziert werden. V
 
 ## Fachliches Modell und Zustände
 
-ENT-01 bis ENT-16 und [[ENT-22 - AI-Gespräch]] (nativer AI-Chat) beschreiben den MVP. Die ergänzten Entitäten [[ENT-17 - Produktfeedback]], [[ENT-18 - Angebot]], [[ENT-19 - Rechnung]] und [[ENT-20 - Zahlungseintrag]] gelten ausdrücklich nur für spätere Ausbaustufen. Die View [[Product Backlog.base#Business Rules]] zeigt die einzeln gepflegten fachlichen Regeln; deren Geltungsbereich trennt MVP und Ausbau.
+Das fachliche Modell liegt in `docs/entities`. Die Überblicksnote [[00 - Fachliches Domänenmodell]] ordnet es. Es umfasst ENT-01 bis ENT-37 und folgt dem WCS-Datenmodell ([[K-20 - WCS-Datenmodell als fachliche Grundlage]]). Die WCS-Begriffe sind die führende Fachsprache. ENT-01 bis ENT-16 und [[ENT-22 - AI-Gespräch]] (nativer AI-Chat) beschreiben den MVP. Die ergänzten Entitäten [[ENT-17 - Produktfeedback]], [[ENT-18 - Angebot]], [[ENT-19 - Rechnung]] und [[ENT-20 - Zahlungseintrag]] gelten ausdrücklich nur für spätere Ausbaustufen. Die neuen Entitäten ENT-23 bis ENT-37 (von Grundstück bis Kontobewegung) gehören zum späteren Ausbau, sofern nicht anders entschieden. Die View [[Product Backlog.base#Business Rules]] zeigt die einzeln gepflegten fachlichen Regeln; deren Geltungsbereich trennt MVP und Ausbau.
 
-Die [[Product Backlog.base#Design Foundations|Entitätsnotes]] beschreiben die folgenden Begriffe als einzelne Notes mit Angaben, Beziehungen, Regeln und offenen Modellierungsfragen. Sie konkretisieren die fachliche Bedeutung, ohne ein technisches Schema festzulegen.
+Die [[Product Backlog.base#Design Foundations|Entitätsnotes]] beschreiben die folgenden MVP-Begriffe als einzelne Notes mit Feldern, Wertelisten, Beziehungen, Regeln, Datenschutz, Abweichungen vom WCS und offenen Punkten. Sie konkretisieren die fachliche Bedeutung, ohne ein technisches Schema festzulegen.
 
 | Begriff | Bedeutung und Beziehung |
 | --- | --- |
 | Gemeinschaft | Fachlicher Kontext; mindestens zwei nutzbar. Eine gemeinsame Übersicht kennzeichnet jede Herkunft. |
-| Ansprechpartner | Kontakt mit gemeinschaftsbezogener Rolle; keine automatische Berechtigung. |
-| Thema | Optionaler Zusammenhang mehrerer Punkte innerhalb einer Gemeinschaft, kein gemeinsamer Erledigtstatus. |
-| Punkt | Beständige Referenz, genau eine Gemeinschaft, Art, überprüfbares Ergebnis, Verantwortlichkeit, Quellen, Bearbeitungsstand und nächster Schritt. |
+| Person und Rolle | Person mit gemeinschaftsbezogener Rolle; keine automatische Berechtigung. Der Bereich „Kontakte“ bleibt. |
+| Thema | Optionaler Zusammenhang mehrerer Vorgänge innerhalb einer Gemeinschaft, kein gemeinsamer Erledigtstatus. |
+| Vorgang | Beständige Referenz mit Vorgangsnummer, genau eine Gemeinschaft, Vorgangsart, überprüfbares Ergebnis, Verantwortlichkeit, Quellen, Bearbeitungsstand und nächster Schritt. |
 | Termin | Datum, Bedeutung, Herkunft und Prüfstand; Wiedervorlage separat. Ein neuer akzeptierter Termin erhält den alten Verlauf. |
-| Ereignis / Quelle | Ereignis- und Erfassungsdatum, dokumentierter Akteur, Erfasser, Art und Quelle; Original oder bloßer Link unterscheidbar. |
-| Arbeitsentscheidung | Anlass und Punktbezüge derselben Gemeinschaft, Optionen, Folgen, Empfehlung, Wahl, Notiz und Zeitpunkt. |
-| Entwurf / Versand | Versionierter Text mit Empfängern, Anlagen und Entscheidungsbezug; tatsächlicher Versand als gesondertes Ereignis. |
-| Eigene Aufgabe | Ausführbare Handlung mit Gemeinschaft, optionalem Punktbezug, Zustand, Fälligkeit/Wiedervorlage. Ihr Abschluss erfüllt keine fremde Zusage. |
-| Nachfassstand | Bekannte bisherige Schritte, Versand, geltender Termin, Vorschlag und begründete Pause; keine rechtliche Sanktion. |
+| Verlaufseintrag / Quelle | Datum des Geschehens und Erfassungsdatum, dokumentierter Akteur, Erfasser, Art und Quelle; Original oder bloßer Link unterscheidbar. |
+| Entscheidungskarte | Anlass und Vorgangsbezüge derselben Gemeinschaft, Optionen, Folgen, Empfehlung, Wahl, Notiz und Zeitpunkt. |
+| Entwurf / Versand | Versionierter Text mit Empfängern, Anlagen und Entscheidungsbezug; tatsächlicher Versand als gesonderter Verlaufseintrag. |
+| To-do | Ausführbare eigene Handlung mit Gemeinschaft, optionalem Vorgangsbezug, Zustand, Fälligkeit/Wiedervorlage. Sein Abschluss erfüllt keine fremde Zusage. |
+| Eskalation | Stufe der Eskalationsleiter mit bekannten bisherigen Schritten, Versand, geltendem Termin, Vorschlag und begründeter Pause; keine rechtliche Sanktion. |
 | Übergabe | Zeitpunkt, bis drei Schwerpunkte, Notiz und eindeutige Gemeinschaftsbezüge; Wochenüberblick darf beide Kontexte getrennt zeigen. |
 | Ausgabestand | Empfängerkontext, bewusst gewählte Inhalte und Anlagen, geprüfte Fassung und Standdatum. |
 
-Bearbeitung: offen / ungeklärt / erledigt / hinfällig. Aufgeteilt und zusammengeführt kennzeichnen Herkunft mit Zielverweisen. Überfällig und Termin erfragen sind Prüfmerkmale, „nicht eingehalten“ ist eine menschliche Bewertung. Eigene Aufgaben unterscheiden offen / in Arbeit / wartet / erledigt / entfallen. Entscheidung, Entwurf, Versand, Antwort und Erfüllung sind verschiedene Ereignisse. Unbekannte Werte sind weder null noch erledigt.
+Bearbeitung: offen / ungeklärt / erledigt / hinfällig. Aufgeteilt und zusammengeführt kennzeichnen Herkunft mit Zielverweisen. Überfällig und Termin erfragen sind Prüfvermerke, „nicht eingehalten“ ist eine menschliche Bewertung. To-dos unterscheiden offen / in Arbeit / wartet / erledigt / entfallen. Entscheidung, Entwurf, Versand, Antwort und Erfüllung sind verschiedene Verlaufseinträge. Unbekannte Werte sind weder null noch erledigt.
 
 Stabile Identitäten und Beziehungen müssen Umbenennung, Import und Wiederherstellung überstehen. Dies spezifiziert keine Programmiersprache, Klassen, Datenbank oder Dateiaufteilung. Markdown mit dokumentiertem YAML-Frontmatter ist die maßgebliche fachliche Datenquelle; normale Dateien und Originalanhänge bleiben auch ohne Obsidian zugänglich und vertragskonform bearbeitbar. Ein Index darf nur rekonstruierbare Ableitung sein. Der lokal verfügbare Dateivertrag muss Felder, IDs, Beziehungen, Zustände und zulässige Schreiboperationen erklären. Konkrete Schemas und Erkennungsmechanismen folgen in der technischen Konzeption; offene Nutzbarkeit und dokumentierte Bearbeitung sind bereits verbindlich ([[K-14 - Markdown und Frontmatter als offene Datengrundlage]]).
 
@@ -114,15 +114,15 @@ Alle B-NFR bleiben geplante **MVP-Releasekriterien** für die jeweils betroffene
 
 | ID | Synthetischer Fall | Erwartung |
 | --- | --- | --- |
-| AT-B01 | WEG und Tiefgarage mit gleichem Thema und Kontakt anlegen. | Eindeutiger Kontext bei Punkt, Karte und Ausgabe; keine Vermischung. |
+| AT-B01 | WEG und Tiefgarage mit gleichem Thema und Kontakt anlegen. | Eindeutiger Kontext bei Vorgang, Karte und Ausgabe; keine Vermischung. |
 | AT-B02 | Register mit 15 Angaben, gleichen Nummern in zwei Gemeinschaften, unbekanntem Status und fehlendem Datum importieren; wiederholen und unterbrechen. | Vorschau, Klärungsfälle, Ursprung und stabile Zuordnung; keine stillen Dubletten. |
-| AT-B03 | Sammelpunkt teilen, Dublette verbinden, einen Teil erledigen, Bewertung setzen und wieder öffnen. | Herkunft erhalten, übrige Arbeit offen, Bewertung keine Erledigung. |
+| AT-B03 | Sammelvorgang teilen, Dublette verbinden, einen Teil erledigen, Bewertung setzen und wieder öffnen. | Herkunft erhalten, übrige Arbeit offen, Bewertung keine Erledigung. |
 | AT-B04 | Fremdtermin 30.11., Wiedervorlage 23.11., terminlose Zusage älter als 14 Tage. | Eigene Wiedervorlage ändert keine Fremdfrist; fehlender Termin und nächste Handlung bleiben sichtbar. |
-| AT-B05 | Bestätigung, sachliche Antwort, neue Zusage, Teillieferung und korrigierte Quelle erfassen. | Getrennte Ereignisse und Zeitpunkte, Originalfassungen erhalten, unbekannt bleibt unbekannt. |
+| AT-B05 | Bestätigung, sachliche Antwort, neue Zusage, Teillieferung und korrigierte Quelle erfassen. | Getrennte Verlaufseinträge und Zeitpunkte, Originalfassungen erhalten, unbekannt bleibt unbekannt. |
 | AT-B06 | Wochenpaket mit neun dringenden Fällen und ungeprüfter Portalnachricht öffnen. | Maximal sieben reguläre Entscheidungen; alle neun Risiken und Datenlücke sichtbar. |
-| AT-B07 | Wahl plus Notiz bestätigen, wiederholt verarbeiten, anschließend ändern. | Passende Texte/Aufgaben, keine Dubletten, alte Fassung überholt, kein Versand. |
+| AT-B07 | Wahl plus Notiz bestätigen, wiederholt verarbeiten, anschließend ändern. | Passende Texte/To-dos, keine Dubletten, alte Fassung überholt, kein Versand. |
 | AT-B08 | Drei Entwürfe für beide Gemeinschaften; Eigentümertext DE/EN ändern; eine Nachricht tatsächlich senden. | Sprachprüfung erneut erforderlich; genau ein Versand mit Fassung, keine Zustellungsbehauptung. |
-| AT-B09 | Versand 16.11., Antworttermin 30.11., Prüfung 23.11.; dann Pause, bloße Antwort und neuer Termin. | Kein verfrühter Stufenwechsel; Pause endet sichtbar; neuer Termin erledigt nicht den Punkt. |
+| AT-B09 | Versand 16.11., Antworttermin 30.11., Prüfung 23.11.; dann Pause, bloße Antwort und neuer Termin. | Kein verfrühter Stufenwechsel; Pause endet sichtbar; neuer Termin erledigt nicht den Vorgang. |
 | AT-B10 | Übergabe mit drei Schwerpunkten; später akutes Problem vor dem nächsten Wochenzeitpunkt. | Wiedereinstieg zeigt Übergabe und neue Dringlichkeit; Rückstand bleibt erhalten. |
 | AT-B11 | Interne Bewertung, privates Original, ungeprüfte Anlage und ausgewählter Sachstand; danach kontrollierte Entfernung. | Vorschau/Ausgabe nur geeignete Auswahl; keine transitive Mitnahme; Entfernung ohne Wiederholung privater Inhalte. |
 | AT-B12 | Kernreise offline, externe Dateiänderung, doppelte ID, Speichern abbrechen, sichern/wiederherstellen und Plugin deaktivieren. | Kein stiller Verlust, verständliche Fehler, Akten weiter lesbar und Beziehungen erhalten. |
@@ -146,7 +146,7 @@ Nach Veröffentlichung installiert der vorhandene Pilot öffentlich. Für zunäc
 | --- | --- |
 | Wochenzeit | Ziel ≤ 60 Minuten in vier von fünf Normalwochen; Erfassen, Vorbereiten, Prüfen, Senden, Nachhalten und Doppelpflege mitzählen. |
 | Vergleichbarkeit | Vor Auswertung Normalbetrieb und Ausnahmen festlegen; außergewöhnliche Wochen mit Grund protokollieren, nicht still entfernen. Aktive Zeit und Wartezeit trennen. |
-| Terminklarheit | Kein offener Punkt verschwindet ohne Termin/Klärungsstand und nächste eigene Handlung. Tatsächlich erhaltene Verwaltungstermine sind separate externe Wirkung. |
+| Terminklarheit | Kein offener Vorgang verschwindet ohne Termin/Klärungsstand und nächste eigene Handlung. Tatsächlich erhaltene Verwaltungstermine sind separate externe Wirkung. |
 | Selbstständigkeit | Wochenarbeit und Lagecheck ohne regelmäßige Übernahme durch Entwickler; Hilfestellung und Übernahme getrennt erfassen. |
 | Wiederverwendung | Erneute Nutzung bei tatsächlichen Verwaltungsanlässen; anlasslose Wochen sind kein Abbruch. |
 | Übergabe | Bewusst einbezogene zweite Person kann Sachstand, Quellen und nächsten Schritt aus der Ausgabe erklären. |

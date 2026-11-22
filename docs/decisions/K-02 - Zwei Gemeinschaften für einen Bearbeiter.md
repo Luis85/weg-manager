@@ -28,7 +28,7 @@ Die alte Begrenzung auf eine aktive WEG wird im Entwurf aufgehoben. Daraus folgt
 
 ## Auswirkungen
 
-Punkte, Entscheidungen, Nachrichten und Ausgaben besitzen eindeutige Gemeinschaftsbezüge; eine Gesamtlage kennzeichnet beide Kontexte.
+Vorgänge, Entscheidungen, Nachrichten und Ausgaben besitzen eindeutige Gemeinschaftsbezüge; eine Gesamtlage kennzeichnet beide Kontexte.
 
 ## Offene Punkte und Überprüfung
 

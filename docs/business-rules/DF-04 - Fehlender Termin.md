@@ -7,7 +7,7 @@ scope: mvp
 
 # DF-04 · Fehlender Termin
 
-Offener Punkt hat einen Termin oder sichtbaren Klärungsstand mit zuständiger Person, nächster Handlung und Wiedervorlage. Entwurf ist keine gestellte Nachfrage. Das Alter einer terminlosen Zusage beginnt beim ursprünglichen bekannten Zusageereignis; unbekannt bleibt unbekannt.
+Ein offener Vorgang hat einen Termin oder sichtbaren Klärungsstand mit zuständiger Person, nächster Handlung und Wiedervorlage. Entwurf ist keine gestellte Nachfrage. Das Alter einer terminlosen Zusage beginnt beim ursprünglichen bekannten Verlaufseintrag der Zusage; unbekannt bleibt unbekannt.
 
 **Abnahmeanker:** Nach 15 Tagen ohne Fremdtermin bleibt die Zusage trotz zweier versandter Nachfragen terminlos sichtbar. Import setzt ihr Alter nicht zurück.
 

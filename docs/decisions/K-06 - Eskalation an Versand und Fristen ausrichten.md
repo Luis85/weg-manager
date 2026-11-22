@@ -6,11 +6,11 @@ date: 2026-11-15
 source: "Intake-Abgleich im Git-Commit b3a1cc2, docs/03-Intake-Abgleich.md"
 ---
 
-# K-06 · Nachfassen an Versand und Fristen ausrichten
+# K-06 · Eskalation an Versand und Fristen ausrichten
 
 ## Entscheidung
 
-Nachfassvorschläge nach tatsächlichem Versand und abgelaufener Frist.
+Eskalationsvorschläge nach tatsächlichem Versand und abgelaufener Frist.
 
 ## Geltung
 

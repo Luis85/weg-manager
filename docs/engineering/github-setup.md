@@ -6,11 +6,13 @@ The repository's CI runs on GitHub Actions (decided 2026-11-21, replacing the Az
 
 | File | Trigger | What it does |
 | --- | --- | --- |
-| `.github/workflows/ci.yml` | push to `main`, every pull request | job `verify`: `npm ci`, `npm run verify`; uploads `reports` (JUnit, Cobertura) even on failure and `plugin` (`dist/`) on success. Job `e2e`: `npm run test:e2e` in the latest real Obsidian under Xvfb, with Obsidian kept in the Actions cache. Job `scanner-lint`: `npm run lint:scanner`, informational, never fails the workflow (see [testing.md](testing.md#scanner-equivalent-lint)). Job `skills`: the Python tests in `skills/tests/` and `python3 skills/package_claude_skills.py`; uploads `claude-skills` (the skill ZIP) |
-| `.github/workflows/nightly-mutation.yml` | nightly 02:17 UTC on the default branch, or by hand | `npm run test:mutation:full`; uploads `reports/mutation/` |
-| `.github/workflows/release.yml` | a pushed tag `x.y.z` (no `v`) | `npm run verify`, `npm run release:package -- --tag x.y.z`, a build-provenance attestation of the three assets (`actions/attest`), then a GitHub release with `main.js`, `manifest.json` and `styles.css` |
+| `.github/workflows/ci.yml` | push to `main`, every pull request (a newer push cancels an older run of the same pull request only, never one on `main`) | job `verify`: `npm ci`, `npm run verify`; uploads `reports` (JUnit, Cobertura) even on failure and `plugin` (`dist/`) on success. Job `e2e`: `npm run test:e2e` in the latest real Obsidian under Xvfb, with Obsidian kept in the Actions cache. Job `scanner-lint`: `npm run lint:scanner`, informational, never fails the workflow (see [testing.md](testing.md#scanner-equivalent-lint)). Job `skills`: the Python tests in `skills/tests/` and `python3 skills/package_claude_skills.py`; uploads `claude-skills` (the skill ZIP) |
+| `.github/workflows/nightly-mutation.yml` | nightly 02:17 UTC on the default branch, or by hand (input `full`) | `npm run test:mutation` (incremental; `test:mutation:full` when `full` is set), with `reports/stryker-incremental.json` restored and saved through `actions/cache` (key: Stryker config + lockfile + run id, restore-keys: the same without the run id); uploads `reports/mutation/`. Job `report-failure` (`issues: write` only) opens the issue "Nightly mutation run failed" or comments on the open one, with a link to the run |
+| `.github/workflows/release.yml` | a pushed tag `x.y.z` (no `v`) | job `build` (read-only): the tagged commit must be on `main`, `npm run verify`, the e2e suite, `npm run release:package -- --tag x.y.z`, upload of the three files. Job `release` (write permissions, no checkout, no `npm`): download, build-provenance attestation (`actions/attest`), GitHub release with `main.js`, `manifest.json` and `styles.css`, as a pre-release while the major version is 0. See [releasing.md](releasing.md) |
 
-All logic lives in npm scripts. The YAML only installs Node from `.nvmrc` and calls them, so a local `npm run verify` and CI run the same gate.
+All logic lives in npm scripts. The YAML only installs Node from `.nvmrc` and calls them, so a local `npm run verify` and CI run the same gate. The exceptions are the release job's steps, which cannot call a script because that job has no checkout (the tag-on-main check, the pre-release flag), and the failure issue of the nightly run.
+
+`release.yml` and `nightly-mutation.yml` have never run, and the Actions runner is the only place they can. Both were checked with `actionlint` only. Expect to fix details on the first run; the first tag is the test.
 
 ## Dependency and action updates
 
@@ -18,7 +20,8 @@ Every action in `.github/workflows/` is pinned by its full commit SHA, with the 
 
 `.github/dependabot.yml` runs weekly and keeps both the pins and `package.json` current:
 
-- **npm:** one pull request for dev tooling (minor and patch), one for runtime dependencies (minor and patch). Each major comes as its own pull request. Commits start with `build:`.
+- **npm:** one pull request for the `@wdio/*` packages (every update type, a major too, because they are released together), one for the other dev tooling (minor and patch), one for runtime dependencies (minor and patch). Each other major comes as its own pull request. Commits start with `build:`.
+- **Cooldown:** both ecosystems wait seven days after a release before proposing it (`cooldown.default-days: 7`; the semver-specific keys exist for npm only). Security updates ignore it.
 - **github-actions:** one pull request for minor and patch updates. Each major comes on its own. Commits start with `ci:`. Dependabot rewrites the SHA and the tag comment together.
 - At most three npm and two action pull requests are open at a time.
 

@@ -15,6 +15,7 @@ The plugin shell pins every dependency exactly. "Latest" means the newest stable
 | --- | --- | --- |
 | `vue` | 3.5.46 | runtime |
 | `@nuxt/ui` | 4.13.0 | runtime |
+| `@iconify/vue` | 5.0.5 | runtime (already bundled through `@nuxt/ui`; named because the plugin configures it) |
 | `tailwindcss` | 4.3.5 | runtime |
 | `effect` | 4.1.5 | runtime |
 | `@tanstack/vue-form` | 1.33.5 | runtime |
@@ -92,6 +93,7 @@ The Obsidian developer docs' self-critique checklist says "less is safer": every
 | --- | --- |
 | `vue` | Reactive views for the planned screens (Lage, Wochenarbeit, Punktakte), which hand-built DOM would make hard to test and keep pop-out safe. |
 | `@nuxt/ui` (pulls `reka-ui`, `@vueuse/core`, `tailwind-merge`, Iconify) | Accessible components (dialogs, forms, focus handling) instead of writing our own; the design handoff is specified in Nuxt UI terms. |
+| `@iconify/vue` | Not an addition: Nuxt UI draws its icons with it, so it is in `main.js` already. `src/presentation/shell/icons-offline.ts` configures it so that an icon missing from the bundle is never requested from Iconify's API (no network at runtime), which is why it is a direct dependency. |
 | `tailwindcss` | Build-time only: it generates the scoped `styles.css` and adds no runtime code. |
 | `effect` | Typed errors, services and resource scopes for the application layer (see `docs/engineering/architecture.md` and `error-handling.md`). |
 | `@tanstack/vue-form` | One form engine whose validators call the domain rules (`AGENTS.md`, Forms). |

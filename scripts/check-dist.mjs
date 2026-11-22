@@ -7,6 +7,9 @@ import { parse } from "postcss";
 
 export const EXPECTED_FILES = ["main.js", "manifest.json", "styles.css"];
 
+/** The prefix of every keyframe and custom property the plugin's CSS defines. */
+export const CSS_PREFIX = "wm";
+
 /** Size budgets in bytes; raising one needs an ADR. */
 export const BUDGETS = { "main.js": 1.5 * 1024 * 1024, "styles.css": 250 * 1024 };
 
@@ -119,7 +122,7 @@ const isCli =
   process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isCli) {
   const manifest = JSON.parse(readFileSync("manifest.json", "utf8"));
-  const found = checkDist("dist", manifest, { id: manifest.id, prefix: "wm" });
+  const found = checkDist("dist", manifest, { id: manifest.id, prefix: CSS_PREFIX });
   for (const violation of found) console.error(`check:dist ✗ ${violation}`);
   if (found.length === 0) console.log("check:dist ✓ dist/ matches every invariant");
   process.exitCode = found.length === 0 ? 0 : 1;

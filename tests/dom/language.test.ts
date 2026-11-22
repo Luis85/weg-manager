@@ -25,7 +25,8 @@ const commandNames = (registry: ReturnType<typeof createTestPlugin>["registry"])
   Object.fromEntries([...registry.commands.values()].map(({ id, name }) => [id, name]));
 
 const openTab = async (registry: ReturnType<typeof createTestPlugin>["registry"]) => {
-  const tab = registry.settingTabs[0]!;
+  const [tab] = registry.settingTabs;
+  if (tab === undefined) throw new Error("no settings tab registered");
   tab.display();
   await vi.waitFor(() => expect(settingsIn(tab.containerEl).length).toBeGreaterThanOrEqual(1));
   const rows = settingsIn(tab.containerEl);
@@ -121,7 +122,8 @@ describe("UI language follows Obsidian", () => {
     const leaf = app.workspace.getLeaf(true);
     await leaf.setViewState({ type: SHELL_VIEW_TYPE });
     await settle();
-    const root = document.querySelector(".weg-manager-root")!;
+    const root = document.querySelector(".weg-manager-root");
+    if (root === null) throw new Error("no plugin root");
     await vi.waitFor(() =>
       expect(root.querySelector("[data-testid=communities-screen]")).not.toBeNull(),
     );

@@ -31,15 +31,11 @@ const isMarkdownPath = (path: string): boolean => path.endsWith(".md");
  * nothing. A rename reads both paths: the old one is gone, the new one may be a note.
  */
 const pathsToRead = (event: AppEvent): readonly string[] => {
-  switch (event._tag) {
-    case "MetadataChanged":
-    case "FileDeleted":
-      return event.extension === "md" ? [event.path] : [];
-    case "FileRenamed":
-      return [event.path, event.oldPath].filter(isMarkdownPath);
-    default:
-      return [];
+  if (event._tag === "MetadataChanged" || event._tag === "FileDeleted") {
+    return event.extension === "md" ? [event.path] : [];
   }
+  if (event._tag === "FileRenamed") return [event.path, event.oldPath].filter(isMarkdownPath);
+  return [];
 };
 
 /** Puts what `event` asks of the index into its queue: `VaultReady`, or paths to read. */

@@ -98,7 +98,8 @@ const seedFor = (scenario: Scenario, notes: Memory) => {
       seed("Ahornweg 12", AHORNWEG);
       seed("Aus der Zukunft", { ...TIEFGARAGE, schema: "weg-manager.community/v2" });
       return;
-    default:
+    case "failure":
+    case "loaded":
       seed("Ahornweg 12", AHORNWEG);
       seed("Tiefgarage Ahornweg", TIEFGARAGE);
   }

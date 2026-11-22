@@ -7,6 +7,7 @@ import {
   type FrontmatterChange,
   type Note,
 } from "../../../src/application/notes";
+import { eventually } from "../wait";
 import { COMMUNITY, interruptWhileHeld, promise, run, type NoteStoreFixture } from "./fixture";
 
 const seedForUpdate = async (fixture: NoteStoreFixture) => {
@@ -191,7 +192,7 @@ export const writeContract = (make: () => NoteStoreFixture) => {
           run(fixture, (store) => store.update("F/A.md", () => Result.succeed({ set: { a: 1 } }))),
         );
         yield* promise(() =>
-          vi.waitFor(() => {
+          eventually(() => {
             if (fixture.heldWrites() !== 1) throw new Error("the write is not waiting yet");
           }),
         );

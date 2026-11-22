@@ -1,8 +1,9 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import type { AppRuntime } from "../../../../src/application/app-services";
 import { SettingsService } from "../../../../src/application/shell";
 import { mirrorSettings } from "../../../../src/infrastructure/obsidian/shell/settings-mirror";
 import { testRuntime } from "../../../support/runtime";
+import { eventually } from "../../../support/wait";
 
 const runtimes: AppRuntime[] = [];
 const make = (initial?: unknown) => {
@@ -36,7 +37,7 @@ describe("mirrorSettings", () => {
     const status = mirror.status();
     await subscribed();
     await update({ rootFolder: "Beirat" });
-    await vi.waitFor(() => expect(mirror.settings().rootFolder).toBe("Beirat"));
+    await eventually(() => expect(mirror.settings().rootFolder).toBe("Beirat"));
     expect(mirror.status()).toEqual(status);
     await mirror.stop();
   });
@@ -48,7 +49,7 @@ describe("mirrorSettings", () => {
     await subscribed();
     store.writeExternally({ schemaVersion: 2 });
     await reload();
-    await vi.waitFor(() => expect(mirror.status().writable).toBe(false));
+    await eventually(() => expect(mirror.status().writable).toBe(false));
     expect(mirror.status().readOnlyReason).toBeDefined();
     expect(mirror.settings()).toEqual(settings);
     await mirror.stop();
@@ -71,10 +72,10 @@ describe("mirrorSettings", () => {
     await subscribed();
     await stopped.stop();
     await update({ rootFolder: "Später" });
-    await vi.waitFor(() => expect(following.settings().rootFolder).toBe("Später"));
+    await eventually(() => expect(following.settings().rootFolder).toBe("Später"));
     store.writeExternally({ schemaVersion: 2 });
     await reload();
-    await vi.waitFor(() => expect(following.status().writable).toBe(false));
+    await eventually(() => expect(following.status().writable).toBe(false));
     expect(stopped.settings().rootFolder).not.toBe("Später");
     expect(stopped.status().writable).toBe(true);
     await following.stop();

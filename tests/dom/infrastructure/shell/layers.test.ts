@@ -156,6 +156,17 @@ const PLATFORMS: readonly (readonly [
   ["Linux", { isLinux: true }, "desktop-linux"],
   ["an iOS app", { isMobile: true, isIosApp: true }, "mobile-ios"],
   ["an Android app", { isMobile: true, isAndroidApp: true }, "mobile-android"],
+  // Obsidian sets `isMacOS` on iPhones and iPads too ("a device that pretends to be one").
+  [
+    "an iOS app that also says macOS",
+    { isMobile: true, isMacOS: true, isIosApp: true },
+    "mobile-ios",
+  ],
+  [
+    "an Android app that also says Linux",
+    { isMobile: true, isLinux: true, isAndroidApp: true },
+    "mobile-android",
+  ],
   ["a desktop that no flag names", {}, "desktop"],
   ["a mobile device that no flag names", { isMobile: true }, "mobile"],
 ];

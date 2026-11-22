@@ -17,6 +17,7 @@ import {
   pathsInFolder,
   recordNotes,
   planRename,
+  trashCommand,
   writeCommand,
 } from "../../../application/notes/adapter";
 import { EventBus, VaultReadError } from "../../../application/shell";
@@ -162,10 +163,10 @@ export const memoryNoteStore = () => {
 
   const trash = (path: string) =>
     Effect.flatMap(find(path), (found) =>
-      write(() => {
+      trashCommand(async () => {
+        await disk();
         notes.delete(found.path);
         publish(AppEvent.FileDeleted(file(found.path)));
-        return Result.succeed(undefined);
       }),
     );
 

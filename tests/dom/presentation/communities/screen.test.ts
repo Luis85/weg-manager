@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { de } from "../../../../src/application/messages";
 import {
   FOLDER,
   closeAll,
@@ -52,7 +53,7 @@ describe("the community settings", () => {
   it("shows the index's failure with a retry that reads the vault again", async () => {
     const screen = await openCommunities({ seed: (notes) => notes.setFailReads(true) });
     expect(screen.root.querySelector("[role=alert]")?.textContent).toContain(
-      "Notizen nicht aktuell",
+      de.notes.errors.indexRead.title,
     );
     expect(screen.q("communities-loading")).toBeUndefined();
     screen.notes.setFailReads(false);
@@ -113,7 +114,7 @@ describe("the community settings", () => {
     expect(screen.names()).toEqual(["Neu"]);
     expect(screen.text("community-read-only")).toBe("Schreibgeschützt");
     expect(screen.text("community-issues")).toBe(
-      "Die Notiz stammt aus einer neueren Plugin-Version (Schemaversion 2), deshalb ist sie schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.",
+      de.notes.recordIssues["schema.newer"]({ code: "schema.newer", version: 2 }),
     );
     expect(screen.q("community-edit")).toBeUndefined();
     expect(screen.q("community-remove")).toBeUndefined();
@@ -143,9 +144,14 @@ describe("the community settings", () => {
       .map((row) => row.querySelector("[data-testid=community-issues]")?.textContent.trim());
     const duplicateCode =
       "Eine andere Gemeinschaft hat dasselbe Kürzel. Gib einer der beiden ein anderes.";
-    const duplicateId =
-      "Eine andere Notiz hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.";
-    expect(issues).toEqual([duplicateCode, duplicateCode, duplicateId, duplicateId]);
+    const duplicateId = (other: string) =>
+      de.notes.recordIssues["id.duplicate"]({ code: "id.duplicate", other: `${FOLDER}/${other}` });
+    expect(issues).toEqual([
+      duplicateCode,
+      duplicateCode,
+      duplicateId("D.md"),
+      duplicateId("C.md"),
+    ]);
     expect(screen.all("community-read-only")).toHaveLength(2);
   });
 
@@ -166,8 +172,8 @@ describe("the community settings", () => {
         [...item.querySelectorAll("span")].map((part) => part.textContent.trim()).join(" | "),
       ),
     ).toEqual([
-      "Irgendwo/Fremd.md | Die Eigenschaft „schema“ ist nicht lesbar, deshalb kann WEG Manager die Notiz keinem Typ zuordnen. Korrigiere sie in Obsidian nach dem Dateivertrag.",
-      "WEG Manager/Gemeinschaften/Kaputt.md | Die Eigenschaften der Notiz sind kein gültiges YAML, deshalb kann WEG Manager sie nicht lesen. Korrigiere sie in Obsidian.",
+      `Irgendwo/Fremd.md | ${de.notes.unindexedIssues["schema.malformed"]({ code: "schema.malformed" })}`,
+      `WEG Manager/Gemeinschaften/Kaputt.md | ${de.notes.unindexedIssues["frontmatter.unreadable"]({ code: "frontmatter.unreadable" })}`,
     ]);
   });
 

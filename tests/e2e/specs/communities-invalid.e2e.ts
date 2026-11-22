@@ -42,8 +42,8 @@ const issuesOf = (name: string) =>
 
 const DUPLICATE_CODE =
   "Eine andere Gemeinschaft hat dasselbe Kürzel. Gib einer der beiden ein anderes.";
-const DUPLICATE_ID =
-  "Eine andere Notiz hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.";
+const duplicateId = (other: string) =>
+  `Die Notiz „${FOLDER}/${other}“ hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.`;
 
 /** DF-23: broken notes are shown with their issues and never disturb the others. */
 describe("communities: notes that break the file contract", function () {
@@ -58,14 +58,14 @@ describe("communities: notes that break the file contract", function () {
     ]);
     expect(await issuesOf("Kürzel A")).toEqual([DUPLICATE_CODE]);
     expect(await issuesOf("Kürzel B")).toEqual([DUPLICATE_CODE]);
-    expect(await issuesOf("Kopie A")).toEqual([DUPLICATE_ID]);
-    expect(await issuesOf("Kopie B")).toEqual([DUPLICATE_ID]);
+    expect(await issuesOf("Kopie A")).toEqual([duplicateId("Kopie B.md")]);
+    expect(await issuesOf("Kopie B")).toEqual([duplicateId("Kopie A.md")]);
     await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).toHaveText(
       expect.stringContaining(`${FOLDER}/Kaputt.md`),
     );
     await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).toHaveText(
       expect.stringContaining(
-        "Die Eigenschaften der Notiz sind kein gültiges YAML, deshalb kann WEG Manager sie nicht lesen. Korrigiere sie in Obsidian.",
+        "Die Eigenschaften oben in der Notiz sind fehlerhaft geschrieben, deshalb kann WEG Manager sie nicht lesen. Öffne die Notiz und korrigiere die Eigenschaften.",
       ),
     );
   });

@@ -30,7 +30,7 @@ describe("communities: a note of a newer schema version", function () {
     const row = browser.$(ROOT).$("[data-testid=community]");
     await expect(row.$("[data-testid=community-read-only]")).toHaveText("Schreibgeschützt");
     await expect(row.$("[data-testid=community-issues]")).toHaveText(
-      "Die Notiz stammt aus einer neueren Plugin-Version (Schemaversion 2), deshalb ist sie schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.",
+      "Die Notiz wurde mit einer neueren Version von WEG Manager gespeichert, etwa auf einem anderen Gerät, deshalb ist sie hier schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.",
     );
     await expect(row.$("[data-testid=community-edit]")).not.toExist();
     await expect(row.$("[data-testid=community-remove]")).not.toExist();

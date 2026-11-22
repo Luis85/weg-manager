@@ -5,6 +5,7 @@ import type {
   InvalidNoteNameError,
   NoteNotFoundError,
   NotePathTakenError,
+  NoteTrashError,
   NoteUnreadableError,
   NoteWriteError,
   NoteWriteRefusedError,
@@ -79,7 +80,7 @@ export class NoteStore extends Context.Service<
       E | NoteNotFoundError | NoteUnreadableError | NoteWriteRefusedError | NoteWriteError
     >;
     /** Moves the note to the trash the user chose in Obsidian. */
-    trash(path: string): Effect.Effect<void, NoteNotFoundError | NoteWriteError>;
+    trash(path: string): Effect.Effect<void, NoteNotFoundError | NoteTrashError>;
     /** Renames the note in its folder; Obsidian updates the links to it. */
     rename(
       path: string,

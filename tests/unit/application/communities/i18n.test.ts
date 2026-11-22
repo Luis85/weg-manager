@@ -251,7 +251,7 @@ describe("describeCommunityIssue", () => {
     { key: "short_code", code: "short-code.taken" },
     { key: "unit_label", code: "unit-label.invalid" },
     { code: "schema.newer", version: 2 },
-    { code: "id.duplicate" },
+    { code: "id.duplicate", other: "Gemeinschaften/Kopie.md" },
   ];
 
   it("words record issues, field.missing and this module's codes with the field's label", () => {
@@ -259,8 +259,8 @@ describe("describeCommunityIssue", () => {
       "„Name“ fehlt. Gib einen Wert ein.",
       "Eine andere Gemeinschaft hat dieses Kürzel schon. Wähle ein anderes.",
       "„Einheitenbezeichnung“ ist leer, länger als 50 Zeichen oder mehrzeilig. Gib eine Zeile mit höchstens 50 Zeichen ein.",
-      "Die Notiz stammt aus einer neueren Plugin-Version (Schemaversion 2), deshalb ist sie schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.",
-      "Eine andere Notiz hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.",
+      "Die Notiz wurde mit einer neueren Version von WEG Manager gespeichert, etwa auf einem anderen Gerät, deshalb ist sie hier schreibgeschützt. Aktualisiere WEG Manager, um sie zu bearbeiten.",
+      "Die Notiz „Gemeinschaften/Kopie.md“ hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.",
     ]);
     expect(describeCommunityIssue({ key: "short_code", code: "short-code.invalid" }, en)).toBe(
       "“Short code” isn't 2 to 5 characters from A–Z and 0–9. Enter such a short code.",

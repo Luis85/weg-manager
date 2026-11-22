@@ -62,7 +62,8 @@ export type RecordIssue =
   | { readonly code: "schema.newer"; readonly version: number }
   | { readonly code: "migration.failed"; readonly from: number }
   | IdIssue
-  | { readonly code: "id.duplicate" };
+  /** `other` is the path of another note with the same id; the UI shows it, logs never do. */
+  | { readonly code: "id.duplicate"; readonly other: string };
 
 /**
  * Why a note that must be shown belongs to no note type the plugin knows (ADR 0007): its `schema`

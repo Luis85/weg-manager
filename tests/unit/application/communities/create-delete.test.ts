@@ -169,7 +169,7 @@ describe("deleteCommunity", () => {
       fixture.memory.seed(`${FOLDER}/Gemeinschaft 1 (Kopie).md`, communityNote(1));
       yield* indexed;
       const error = yield* Effect.flip(deleteCommunity(first));
-      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "identity" }));
+      assert.deepStrictEqual(error, new NoteWriteRefusedError({ reason: "duplicate-id" }));
       assert.deepStrictEqual(
         (yield* listed).map((note) => note.path),
         [`${FOLDER}/Gemeinschaft 1 (Kopie).md`, `${FOLDER}/Gemeinschaft 1.md`],

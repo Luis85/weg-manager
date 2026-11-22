@@ -76,7 +76,7 @@ export const createCommunity = (input: CommunityInput) =>
 /**
  * Where the community lives now: a note renamed meanwhile is found by its id (ADR 0007). An id
  * that another note carries too (a copy made meanwhile) is read-only on every note that has it,
- * so the write is refused rather than guessing which note the form loaded.
+ * so the write is refused (`duplicate-id`) rather than guessing which note the form loaded.
  */
 const pathOf = (community: Community) =>
   Effect.flatMap(communityList, ({ communities }) => {
@@ -87,7 +87,7 @@ const pathOf = (community: Community) =>
       candidate.issues.some((issue) => issue.code === "id.duplicate"),
     );
     return duplicated
-      ? Effect.fail(new NoteWriteRefusedError({ reason: "identity" }))
+      ? Effect.fail(new NoteWriteRefusedError({ reason: "duplicate-id" }))
       : Effect.succeed(found[0]?.path ?? community.path);
   });
 

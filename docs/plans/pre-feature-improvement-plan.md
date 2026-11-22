@@ -266,7 +266,7 @@ As the notes under `docs/requirements/` say it (2026-11-22).
 | PBI-61 | Finished (PR #55): references, lookup by id and `Today` are built; no feature uses them yet. |
 | PBI-62 | Open, `ready-for-agent`. Criterion 3 is done (PR #41); criteria 1 and 2, one index snapshot across types, wait for the second note type. |
 | PBI-63 | Finished (PRs #54, #57). |
-| PBI-64 | Open, `ready-for-agent`. Criteria 1, 2, 4 and 5 are done (PR #52); criterion 3 counts as met once the e2e job without a window manager (PR #56) has passed several runs; criterion 6, the measured times of gate and CI before and after in the pull request, is open. |
+| PBI-64 | Finished (PRs #52, #56). The e2e job has passed four runs in a row without a window manager; the measured times of gate and CI are in the note. |
 | PBI-65 | Finished (PRs #46, #53). |
 | PBI-66 | Open, `ready-for-human`: the manual checks (the owner checks theme and zoom with 0.2.0 on Windows; keyboard only, screen reader and other plugins have no tester), the focus ring on inputs, hyphenation, three small points from the UX step. |
 | PBI-67 | Open, `ready-for-human`. Criterion 1 (0.2.0 through the release workflow) and criterion 4 (third-party notices) are met; criterion 2 is partly met (a scheduled run passed; a second run that uses the first one's results and the failure issue are not shown yet); criterion 3 (the first Dependabot run) is open; criterion 5 (`CI / e2e` required) is postponed. |

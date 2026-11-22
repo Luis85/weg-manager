@@ -246,7 +246,7 @@ DV-01 verlangt `name`, `short_code`, `color`, `kind` und `unit_label`. Für den 
 
 ## 7 Offene Fragen
 
-1. Wann genau ruft Obsidian `onUserEnable()` auf? Nur beim ersten Aktivieren nach der Installation, oder bei jedem Aus- und Einschalten? Auch, wenn ein synchronisiertes Gerät das Plugin übernimmt? Zu prüfen mit `obsidianPage.enablePlugin` im e2e-Lauf.
+1. Wann genau ruft Obsidian `onUserEnable()` auf? Nur beim ersten Aktivieren nach der Installation, oder bei jedem Aus- und Einschalten? Auch, wenn ein synchronisiertes Gerät das Plugin übernimmt? Zu prüfen mit `obsidianPage.enablePlugin` im e2e-Lauf. **Geklärt am 22.11.2026** per Spike: bei jedem Aktivieren durch den Nutzer und bei jedem Update, nie beim Start und nie über Sync (Ergebnis in [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]], O-19d).
 2. Prüft der Review oder der Scanner, ob ein Plugin Ansichten automatisch öffnet? Eine Regel fand sich nicht [L].
 3. Funktionieren mit `useTour` + `UPopover` im Obsidian-Fenster und im Pop-out Fokus, Portal-Ziel und z-Index richtig? Und wie verhalten sich Hotkeys von Obsidian, etwa Pfeiltasten und Esc, während der Tour?
 4. Seit welcher Nuxt-UI-Version gibt es `useTour`, und gilt es als stabil? Die Doku nennt keine Version.

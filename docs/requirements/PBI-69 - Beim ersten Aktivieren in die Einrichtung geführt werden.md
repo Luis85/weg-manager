@@ -52,8 +52,8 @@ Heute öffnet sich die Plugin-Ansicht nur über das Symbol in der Seitenleiste o
 2. „Einrichtung nötig“ wird nur aus dem Vault abgeleitet: Es gibt keine gültige Gemeinschaftsnotiz. Ein Vault mit Gemeinschaften, etwa auf einem zweiten Gerät über Sync oder von Hand angelegt, öffnet keine Einrichtung.
 3. Bei späteren Starts von Obsidian öffnet das Plugin keine Ansicht, kein Modal und keine Meldung von selbst.
 4. Öffnet der Nutzer die Ansicht über Seitenleiste oder Befehl, solange keine Gemeinschaft existiert, zeigt sie die Einrichtung. Gibt es Gemeinschaften, zeigt sie die Startroute.
-5. Das Öffnen beim Aktivieren wartet, bis der Arbeitsbereich bereit ist, und bricht nicht ab, wenn der Notizindex noch lädt. Bis der Index bereit ist, zeigt die Einrichtung einen Ladezustand statt einer falschen Entscheidung.
-6. Erneutes Aktivieren nach Deaktivieren verhält sich wie Kriterium 1 und 2: Einrichtung nur ohne Gemeinschaft. Ein e2e-Test im echten Obsidian prüft Aktivieren, Neustart und erneutes Aktivieren.
+5. Das Öffnen beim Aktivieren wartet, bis der Arbeitsbereich bereit ist (beim Aktivieren ist er es laut Spike schon), und bricht nicht ab, wenn der Notizindex noch lädt. Bis der Index bereit ist, zeigt die Einrichtung einen Ladezustand statt einer falschen Entscheidung.
+6. Obsidian ruft `onUserEnable` auch beim erneuten Aktivieren und nach jedem Update des Plugins auf (Spike vom 22.11.2026, K-19 O-19d). Beides verhält sich wie Kriterium 1 und 2: Die Einrichtung öffnet sich nur ohne Gemeinschaft, mit Gemeinschaft öffnet sich nichts. Ein e2e-Test im echten Obsidian prüft Aktivieren, Neustart, erneutes Aktivieren und den Update-Weg (`disablePlugin`, dann `enablePlugin(id, true)`), jeweils mit und ohne Gemeinschaft.
 7. Beim Aktivieren entstehen weder Ordner noch Notizen.
 
 ## Herkunft und Bezüge

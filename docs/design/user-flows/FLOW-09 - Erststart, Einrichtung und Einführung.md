@@ -63,7 +63,8 @@ flowchart TD
   G[Plugin deaktiviert und wieder aktiviert] --> H{Gemeinschaft vorhanden?}
   H -- ja --> I[Keine Einrichtung]
   H -- nein --> J[Einrichtung wie beim ersten Mal]
-  K[Zweites Gerät mit demselben Vault] --> I
+  K[Zweites Gerät mit demselben Vault: Plugin kommt über Sync] --> I2[Kein Aufruf von onUserEnable: nichts öffnet sich von selbst]
+  U[Update des Plugins] --> H
 ```
 
 ## Hinweise und Erste Schritte zurückholen

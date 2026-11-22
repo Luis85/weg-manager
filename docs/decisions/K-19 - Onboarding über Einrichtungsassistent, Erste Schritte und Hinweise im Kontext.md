@@ -74,7 +74,11 @@ Der Produktverantwortliche hat am 22.11.2026 entschieden:
 
 ## Offene Punkte und Überprüfung
 
-- O-19d: Das Verhalten von `onUserEnable` bei erneutem Aktivieren und über Sync ist mit einem e2e-Lauf zu prüfen.
+- O-19d, geklärt am 22.11.2026 durch einen Spike im echten Obsidian 1.15.1 (Quelltext der App und e2e-Lauf mit einem Protokoll-Plugin):
+  - **Ruft `onUserEnable` auf:** Einschalten in Einstellungen › Community-Plugins, „Aktivieren“ im Community-Verzeichnis, die Obsidian-CLI (`plugin:enable`, `plugin:install` mit Aktivieren) und **jedes Update eines aktivierten Plugins**. Obsidian lädt das Plugin nach einem Update neu und übergibt dabei das Benutzer-Flag. Auch Aus- und wieder Einschalten löst den Aufruf jedes Mal aus.
+  - **Ruft ihn nicht auf:** Start und Neustart von Obsidian, Neuladen des Fensters, das Ausschalten des eingeschränkten Modus und ein Plugin, das über Sync auf einem zweiten Gerät aktiviert ankommt. Eine über Sync geänderte Liste der aktivierten Plugins wirkt erst beim nächsten Start, und dann ohne Benutzer-Flag.
+  - **Zeitpunkt:** `onUserEnable` läuft direkt nach `onload`, wenn der Arbeitsbereich schon bereit ist; der Notizindex kann dann noch laden.
+  - **Folge:** Die Regel „Einrichtung nur ohne gültige Gemeinschaft“ ist nötig, nicht nur Vorsicht. Ohne sie öffnete jedes Update die Ansicht. Ein zweites Gerät öffnet die Einrichtung nie von selbst. Ein Update in einem Vault ohne Gemeinschaft öffnet die Einrichtung erneut; das ist gewollt. PBI-69 enthält die Fälle als e2e-Kriterien.
 - Überprüfung im Pilot und in einem kleinen Usability-Test mit etwa fünf Personen, die laut denken: Zeit vom Aktivieren bis zur ersten angelegten Gemeinschaft und bis zum ersten Punkt, beobachtet, nicht gemessen im Plugin ([[H-13 - Einrichtung führt in wenigen Minuten zum ersten Punkt]]).
 
 ## Verknüpfungen

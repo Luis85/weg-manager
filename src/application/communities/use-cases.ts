@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Result } from "effect";
 import {
   communityType,
   communityValues,
@@ -6,7 +6,7 @@ import {
   type CommunityInput,
   type CommunityValues,
 } from "../../domain/communities";
-import { editedValues } from "../../domain/notes";
+import { editedValues, type FormDraft } from "../../domain/notes";
 import { InvalidCommunityError } from "./errors";
 import { canChangeShortCode, communityRecords, shownName, type Community } from "./list";
 
@@ -23,15 +23,22 @@ export const communityListChanges = communityRecords.changes;
 const valuesOf = (communities: readonly Community[]) =>
   communities.map((c) => ({ ...c.values, name: shownName(c) }));
 
-/** The values to save, or the issues why not. Every field is set once the rules pass. */
+/**
+ * The values to save (`draft`, by default what the form holds), or the issues why not. Once the
+ * rules pass, the community type reads every field (`parse`); a value the rules let through and
+ * the type rejects would be a bug in the rules, so it is a defect, not the user's failure.
+ */
 const checked = (
   input: CommunityInput,
   context: Parameters<typeof validateCommunity>[1],
+  draft: FormDraft<typeof communityType.fields> = communityValues(input),
 ): Effect.Effect<CommunityValues, InvalidCommunityError> => {
   const issues = validateCommunity(input, context);
-  return issues.length > 0
-    ? Effect.fail(new InvalidCommunityError({ issues }))
-    : Effect.succeed(communityValues(input) as CommunityValues);
+  if (issues.length > 0) return Effect.fail(new InvalidCommunityError({ issues }));
+  const values = communityType.parse(draft);
+  return Result.isSuccess(values)
+    ? Effect.succeed(values.success)
+    : Effect.die(new Error("validateCommunity passed values the community type rejects."));
 };
 
 /**
@@ -60,10 +67,14 @@ export const updateCommunity = (community: Community, input: CommunityInput) =>
     const fixed = canChangeShortCode(community)
       ? input
       : { ...input, short_code: loaded.short_code ?? input.short_code };
-    yield* checked(fixed, { others: valuesOf(records), loaded });
-    const draft = communityValues(fixed);
-    const values = editedValues(communityType, fixed, draft, community.frontmatter);
-    return yield* communityRecords.update(community, values as CommunityValues);
+    const edited = editedValues(
+      communityType,
+      fixed,
+      communityValues(fixed),
+      community.frontmatter,
+    );
+    const values = yield* checked(fixed, { others: valuesOf(records), loaded }, edited);
+    return yield* communityRecords.update(community, values);
   });
 
 /** Moves the community's note to Obsidian's trash; one renamed meanwhile is found by its id. */

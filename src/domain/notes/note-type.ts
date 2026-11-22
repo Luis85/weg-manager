@@ -44,7 +44,8 @@ export type NoteTypeSpec<F extends NoteFields> = {
   readonly migrations: Migrations;
 };
 
-type ValueOf<D> = D extends FieldDeclaration<infer A> ? A : never;
+/** The value type a field declaration reads. */
+export type FieldValueOf<D> = D extends FieldDeclaration<infer A> ? A : never;
 
 type RequiredKey<F extends NoteFields> = {
   [K in keyof F]: F[K]["required"] extends true ? K : never;
@@ -52,14 +53,14 @@ type RequiredKey<F extends NoteFields> = {
 
 /** A record's values as a form saves them: every required field, the others when set. */
 export type RecordValues<F extends NoteFields> = {
-  readonly [K in RequiredKey<F>]: ValueOf<F[K]>;
+  readonly [K in RequiredKey<F>]: FieldValueOf<F[K]>;
 } & {
-  readonly [K in Exclude<keyof F, RequiredKey<F>>]?: ValueOf<F[K]> | undefined;
+  readonly [K in Exclude<keyof F, RequiredKey<F>>]?: FieldValueOf<F[K]> | undefined;
 };
 
 /** The values a note holds: the fields that are set and valid. */
 export type PartialValues<F extends NoteFields> = {
-  readonly [K in keyof F]?: ValueOf<F[K]>;
+  readonly [K in keyof F]?: FieldValueOf<F[K]>;
 };
 
 /** The issue codes the fields of `F` report for a bad value. */

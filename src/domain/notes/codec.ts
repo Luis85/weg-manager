@@ -1,5 +1,5 @@
 import type { Result } from "effect";
-import { decodeNote, readFields } from "./decode";
+import { decodeNote, parseValues, readFields } from "./decode";
 import type {
   DecodedNote,
   FieldIssue,
@@ -33,6 +33,14 @@ export const defineNoteType = <const F extends NoteFields>(spec: NoteTypeSpec<F>
    */
   check: (values: Readonly<Record<string, unknown>>): readonly FieldIssue<FieldIssueCode<F>>[] =>
     readFields(spec.fields, values).issues,
+  /**
+   * A form's values as the type's values once `check` finds nothing, else its issues: what a use
+   * case hands to the record kit after its rules passed, without a cast.
+   */
+  parse: (
+    values: Readonly<Record<string, unknown>>,
+  ): Result.Result<RecordValues<F>, readonly FieldIssue<FieldIssueCode<F>>[]> =>
+    parseValues<F>(spec.fields, values),
   /** The frontmatter of a new note with `id` (from `IdGenerator`) and `values`. */
   newFrontmatter: (id: string, values: RecordValues<F>): Frontmatter =>
     newNoteFrontmatter(spec, id, values),

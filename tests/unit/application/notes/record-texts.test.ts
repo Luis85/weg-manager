@@ -98,6 +98,8 @@ describe("the notes catalog's record texts", () => {
         theirs: "Jetzt in der Notiz: Tiefgarage",
         apply: "Auswahl speichern",
         empty: "(leer)",
+        checked: "Ja",
+        unchecked: "Nein",
       },
       deletion: {
         detail:
@@ -134,6 +136,8 @@ describe("the notes catalog's record texts", () => {
         theirs: "Now in the note: Tiefgarage",
         apply: "Save choice",
         empty: "(empty)",
+        checked: "Yes",
+        unchecked: "No",
       },
       deletion: {
         detail: "“Ahornweg 12” will be moved to Obsidian's trash, where you can restore it.",

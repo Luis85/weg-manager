@@ -78,6 +78,8 @@ export const notesEn: NotesCatalog = {
     theirs: (value) => `Now in the note: ${value}`,
     apply: "Save choice",
     empty: "(empty)",
+    checked: "Yes",
+    unchecked: "No",
   },
   deletion: {
     detail: (name) => `“${name}” will be moved to Obsidian's trash, where you can restore it.`,

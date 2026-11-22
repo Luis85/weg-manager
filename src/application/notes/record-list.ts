@@ -1,4 +1,4 @@
-import { Array as Arr, Order } from "effect";
+import { Array as Arr, Order, type Effect, type Stream } from "effect";
 import type {
   Frontmatter,
   NoteFields,
@@ -29,6 +29,27 @@ export type RecordRow<F extends NoteFields, Issue extends KeyedIssue = RecordFie
 
 /** The records of one type with the index's status, sorted as people read their titles. */
 export type RecordList<Row> = IndexStatus & { readonly records: readonly Row[] };
+
+/**
+ * The shown name of the record with an id, for a reference to it (PBI-71): its title, else its
+ * file name; `undefined` while no indexed record carries the id.
+ */
+export type ReferenceNames = (id: string) => string | undefined;
+
+/**
+ * The shown names of the records a reference field names, now and as they change: the target
+ * type's record kit (`defineRecords`'s `names` and `nameChanges`), which a view follows.
+ */
+export type ReferenceSource<R> = {
+  readonly names: Effect.Effect<ReferenceNames, never, R>;
+  readonly nameChanges: Stream.Stream<ReferenceNames, never, R>;
+};
+
+/**
+ * What a reference to `id` shows: the target's shown name, or the id itself while no record carries
+ * it, the only name left of a record that is gone (the `reference.missing` sentence names it so).
+ */
+export const shownReference = (names: ReferenceNames, id: string): string => names(id) ?? id;
 
 /** The file name of a note's path, without folder and `.md`. */
 export const fileNameOf = (path: string): string =>
@@ -91,5 +112,12 @@ export const recordRows = <F extends NoteFields, Issue extends KeyedIssue>(
       records: rules.between === undefined ? rows : rules.between(rows, shownName),
     };
   };
-  return { shownName, toList };
+  /** The shown names by id, through the snapshot's `byId`: no scan of the notes. */
+  const namesOf =
+    (snapshot: Pick<NoteSnapshot<F>, "byId">): ReferenceNames =>
+    (id) => {
+      const note = snapshot.byId.get(id);
+      return note === undefined ? undefined : shownName(rowOf(note));
+    };
+  return { shownName, toList, namesOf };
 };

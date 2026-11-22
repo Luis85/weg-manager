@@ -96,8 +96,11 @@ export type NotesCatalog = {
     mine(value: string): string;
     theirs(value: string): string;
     readonly apply: string;
-    /** How an unset value is shown. */
+    /** How an unset value (and an empty list) is shown. */
     readonly empty: string;
+    /** How a checkbox's value is shown: ticked, not ticked. */
+    readonly checked: string;
+    readonly unchecked: string;
   };
   /** The dialog that asks before a record goes to the trash; its title is the feature's. */
   readonly deletion: {

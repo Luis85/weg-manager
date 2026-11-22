@@ -38,6 +38,7 @@ const {
   submit,
   resolve,
   label,
+  show,
   pending,
   blocked,
   summary,
@@ -183,6 +184,7 @@ const suggestionsId = useId();
         :conflicts="conflicts"
         :disabled="pending"
         :label="label"
+        :show="show"
         @apply="resolve"
       />
       <ErrorNotice v-if="notice" :message="notice" />

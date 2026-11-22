@@ -12,10 +12,21 @@ export {
   required,
   text,
   type FieldDeclaration,
+  type FieldKind,
   type KindIssueCode,
 } from "./fields";
 export { MAX_FILE_NAME_BYTES, fitsFileName, followsTitle, recordFileName } from "./file-name";
-export { editedValues, trimmedValues, type FormDraft, type FormInput } from "./form";
+export {
+  draftValues,
+  editedValues,
+  formInput,
+  fromInput,
+  toInput,
+  trimmedValues,
+  type FormDraft,
+  type FormInput,
+  type FormValue,
+} from "./form";
 export type {
   DecodedNote,
   EditableRecord,

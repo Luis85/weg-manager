@@ -1,7 +1,6 @@
 // @ts-check
 import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { isCli } from "./is-cli.mjs";
 
 /** @typedef {{ version: string; minAppVersion: string } & Record<string, unknown>} Manifest */
 
@@ -43,9 +42,7 @@ export const bumpVersion = (pkgVersion, manifest, versions) => {
 
 const read = (/** @type {string} */ file) => JSON.parse(readFileSync(file, "utf8"));
 
-const isCli =
-  process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isCli) {
+if (isCli(import.meta.url)) {
   const next = bumpVersion(
     read("package.json").version,
     read("manifest.json"),

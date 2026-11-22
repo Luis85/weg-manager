@@ -1,5 +1,6 @@
 // @ts-check
 import { execFileSync } from "node:child_process";
+import { isCli } from "./is-cli.mjs";
 
 /**
  * `prepare`: points git at .githooks so pre-push runs the gate. Does nothing in CI or outside a
@@ -22,6 +23,6 @@ export const installHooks = (env, git) => {
 const runGit = (/** @type {string[]} */ args) =>
   execFileSync("git", args, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
 
-if (process.argv[1]?.endsWith("install-hooks.mjs")) {
+if (isCli(import.meta.url)) {
   console.log(`install-hooks: ${installHooks(process.env, runGit)}`);
 }

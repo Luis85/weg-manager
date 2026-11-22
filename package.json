@@ -21,6 +21,7 @@
     "analyze": "node scripts/fallow-config.mjs --check && fallow -c configs/fallow.json && fallow architecture -c configs/fallow.json",
     "fallow:config": "node scripts/fallow-config.mjs",
     "build": "vite build --config configs/vite.config.ts",
+    "check:versions": "node scripts/check-versions.mjs",
     "check:dist": "node scripts/check-dist.mjs",
     "notices": "npm run build && node scripts/third-party-notices.mjs",
     "check:notices": "node scripts/third-party-notices.mjs --check",

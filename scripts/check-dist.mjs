@@ -1,9 +1,9 @@
 // @ts-check
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { builtinModules } from "node:module";
-import { join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { parse } from "postcss";
+import { isCli } from "./is-cli.mjs";
 
 export const EXPECTED_FILES = ["main.js", "manifest.json", "styles.css"];
 
@@ -118,9 +118,7 @@ export const checkDist = (dir, rootManifest, options) => {
   ];
 };
 
-const isCli =
-  process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isCli) {
+if (isCli(import.meta.url)) {
   const manifest = JSON.parse(readFileSync("manifest.json", "utf8"));
   const found = checkDist("dist", manifest, { id: manifest.id, prefix: CSS_PREFIX });
   for (const violation of found) console.error(`check:dist ✗ ${violation}`);

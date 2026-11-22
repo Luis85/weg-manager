@@ -1,10 +1,10 @@
 // @ts-check
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { format, resolveConfig } from "prettier";
 import { fallowConfig } from "../configs/fallow.config.mjs";
 import { readModules } from "./modules.mjs";
+import { isCli } from "./is-cli.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 
@@ -46,9 +46,7 @@ export const syncFallowJson = async ({ check, path = FALLOW_JSON, expected }) =>
   return actual === text ? undefined : STALE;
 };
 
-const isCli =
-  process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isCli) {
+if (isCli(import.meta.url)) {
   const message = await syncFallowJson({ check: process.argv.includes("--check") });
   if (message !== undefined) {
     console.error(message);

@@ -28,22 +28,26 @@ describe("a note deleted while Obsidian still lists it", function () {
       const api = (plugins as unknown as { noteStoreProbe?: { api?: unknown } }).noteStoreProbe
         ?.api as Probe["api"];
       if (api === undefined) throw new Error("the probe plugin is not loaded");
-      // Created and indexed first, so the delete does not race the metadata cache's read.
-      const file = await new Promise<TFile>((done, fail) => {
-        const ref = app.metadataCache.on("changed", (changed) => {
-          if (changed.path !== path) return;
-          app.metadataCache.offref(ref);
-          done(changed);
-        });
-        app.vault.create(path, "---\na: 1\n---\n").catch(fail);
-      });
       type NodeRequire = (name: string) => {
+        writeFileSync(path: string, text: string): void;
         unlinkSync(path: string): void;
         join(...parts: string[]): string;
       };
       const nodeRequire = (window as unknown as { require: NodeRequire }).require;
       const basePath = (app.vault.adapter as unknown as { basePath: string }).basePath;
-      nodeRequire("fs").unlinkSync(nodeRequire("path").join(basePath, path));
+      const onDisk = nodeRequire("path").join(basePath, path);
+      // Written from outside and indexed first, so Obsidian's watcher has done with the file
+      // (a note created through the vault and deleted at once can still be read by it, which
+      // rejects with ENOENT, unhandled).
+      const file = await new Promise<TFile>((done) => {
+        const ref = app.metadataCache.on("changed", (changed) => {
+          if (changed.path !== path) return;
+          app.metadataCache.offref(ref);
+          done(changed);
+        });
+        nodeRequire("fs").writeFileSync(onDisk, "---\na: 1\n---\n");
+      });
+      nodeRequire("fs").unlinkSync(onDisk);
       const listed = app.vault.getFileByPath.bind(app.vault);
       app.vault.getFileByPath = (wanted) => (wanted === path ? file : listed(wanted));
       try {

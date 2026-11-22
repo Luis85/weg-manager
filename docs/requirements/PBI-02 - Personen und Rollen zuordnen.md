@@ -38,7 +38,7 @@ user-flows:
   - "[[docs/design/user-flows/FLOW-06 - Einrichten, Import und Datenerhalt]]"
 ---
 
-# PBI-02 · Ansprechpartner zuordnen
+# PBI-02 · Personen und Rollen zuordnen
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP
 
@@ -48,13 +48,13 @@ Als Beirat möchte ich Kontakte mit ihrer Rolle je Gemeinschaft führen, damit i
 
 ## Akzeptanzkriterien
 
-1. Name, Rolle und benötigte Kontaktdaten sind erfassbar und einem Punkt zuordenbar.
+1. Name, Rolle und benötigte Kontaktdaten sind erfassbar und einem Vorgang zuordenbar.
 2. Eine Kontaktänderung verändert keine historische Nachricht; eine Rolle verleiht keine Befugnis.
 3. Ein nicht mehr genutzter Kontakt bleibt in vorhandenen Quellen nachvollziehbar.
 4. Ein Kontakt ist eine Person oder eine Firma. Eine Person kann einer Firma zugeordnet sein; die Firma zeigt ihre Personen. Eine beim Anlegen genannte, noch unbekannte Firma wird mit angelegt.
 5. Ein Kontakt kann für mehrere Gemeinschaften zuständig sein; Name und mindestens eine Zuständigkeit sind Pflicht. Ein gleichnamiger vorhandener Kontakt wird vor dem Speichern angezeigt.
 6. Eigentümer werden je Gemeinschaft als Verteiler mit Anzahl, Sprachaufteilung, Quelle und Stand geführt und sind als Empfänger wählbar.
-7. Die Kontaktansicht zeigt verantwortete Punkte und Nachrichten. E-Mail-Adresse und Telefonnummer lassen sich kopieren oder an die Mail- bzw. Telefon-App übergeben; das setzt keinen Versand- oder Gesprächsstatus.
+7. Die Kontaktansicht zeigt verantwortete Vorgänge und Nachrichten. E-Mail-Adresse und Telefonnummer lassen sich kopieren oder an die Mail- bzw. Telefon-App übergeben; das setzt keinen Versand- oder Gesprächsstatus.
 
 ## Herkunft und Regeln
 

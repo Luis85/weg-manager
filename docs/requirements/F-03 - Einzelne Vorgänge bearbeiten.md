@@ -15,13 +15,13 @@ assignee: ""
 iteration: ""
 ---
 
-# F-03 · Einzelne Punkte bearbeiten
+# F-03 · Einzelne Vorgänge bearbeiten
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP
 
 ## Fähigkeit und Ergebnis
 
-Ein Punkt hat genau ein überprüfbares Ergebnis; Aufteilung, Zusammenführung und Abschluss bleiben nachvollziehbar.
+Ein Vorgang hat genau ein überprüfbares Ergebnis; Aufteilung, Zusammenführung und Abschluss bleiben nachvollziehbar.
 
 ## User Stories
 

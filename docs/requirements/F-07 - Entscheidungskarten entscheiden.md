@@ -15,7 +15,7 @@ assignee: ""
 iteration: ""
 ---
 
-# F-07 · Arbeitsentscheidungen treffen
+# F-07 · Entscheidungskarten entscheiden
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP
 

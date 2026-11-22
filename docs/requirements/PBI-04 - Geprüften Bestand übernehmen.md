@@ -58,7 +58,7 @@ Als Beirat möchte ich geprüfte Registerdaten übernehmen und denselben Export 
 1. Nur bestätigte Zuordnungen werden übernommen; unklare Zeilen bleiben zur Klärung sichtbar.
 2. Alte Nummer und Herkunft bleiben erhalten; gleiche Nummern verschiedener Gemeinschaften kollidieren nicht.
 3. Erneute Übernahme desselben Bestands erzeugt keine stillen Dubletten; geänderte Zeilen erfordern prüfbare Behandlung.
-4. Ein Abbruch erlaubt nachvollziehbare Fortsetzung ohne doppelte Punkte.
+4. Ein Abbruch erlaubt nachvollziehbare Fortsetzung ohne doppelte Vorgänge.
 
 ## Herkunft und Regeln
 

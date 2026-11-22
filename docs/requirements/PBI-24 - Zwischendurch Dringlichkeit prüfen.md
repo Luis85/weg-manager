@@ -50,14 +50,14 @@ user-flows:
 
 ## User Story
 
-Als Beirat möchte ich seit der letzten Übergabe neue Ereignisse und zeitkritische Punkte sehen, damit ich gezielt vor der nächsten Wochenarbeit eingreife.
+Als Beirat möchte ich seit der letzten Übergabe neue Verlaufseinträge und zeitkritische Vorgänge sehen, damit ich gezielt vor der nächsten Wochenarbeit eingreife.
 
 ## Akzeptanzkriterien
 
-1. Letzte Übergabe, neue Ereignisse und nächster geplanter Wochenzeitpunkt sind erkennbar.
+1. Letzte Übergabe, neue Verlaufseinträge und nächster geplanter Wochenzeitpunkt sind erkennbar.
 2. Fristen vor diesem Zeitpunkt, nötige Unterschriften, akute Gebäudeprobleme und drohende Kosten können hervorgehoben und menschlich korrigiert werden.
 3. Ungeprüfte Portalnachricht erscheint als Lücke; daraus folgt weder keine Antwort noch alles kann warten.
-4. Nicht dringliche Punkte bleiben in der Wochenarbeit erhalten.
+4. Nicht dringliche Vorgänge bleiben in der Wochenarbeit erhalten.
 
 ## Herkunft und Regeln
 

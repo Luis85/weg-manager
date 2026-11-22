@@ -61,7 +61,7 @@ Seit dem Review hat sich die Lage geändert:
 
 ## Offene Entscheidung
 
-Manifest ja oder nein. Sinnvoller Zeitpunkt: wenn das zweite Fachmodul (Ansprechpartner oder Punkte) eingetragen wird und der Aufwand der Stellen an einem echten Fall sichtbar ist.
+Manifest ja oder nein. Sinnvoller Zeitpunkt: wenn das zweite Fachmodul (Personen oder Vorgänge) eingetragen wird und der Aufwand der Stellen an einem echten Fall sichtbar ist.
 
 ## Herkunft und Bezüge
 

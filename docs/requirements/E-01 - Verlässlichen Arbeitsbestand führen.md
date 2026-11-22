@@ -21,7 +21,7 @@ iteration: ""
 
 ## Nutzerziel
 
-Als Beirat kann ich beide Gemeinschaften mit ihren offenen Punkten und Quellen nachvollziehbar führen.
+Als Beirat kann ich beide Gemeinschaften mit ihren offenen Vorgängen und Quellen nachvollziehbar führen.
 
 ## Enthaltene Fähigkeiten
 

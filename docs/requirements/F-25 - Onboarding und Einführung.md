@@ -47,7 +47,7 @@ Der vollständige Ablauf mit Abbrüchen und Sonderfällen steht in [[FLOW-09 - E
 - Gilt als erreicht, wenn eine Person ohne Vorwissen in einem frischen Vault mit dem veröffentlichten Plugin bis zur Lage kommt und ihre erste Gemeinschaft angelegt hat, ohne Doku außerhalb des Plugins zu lesen (Abnahme AT-B14 im [[02-MVP-PRD]]).
 - Kein Konto, keine KI, kein Netzwerk außer für die Installation selbst ([[K-11 - Lokalen Obsidian-Kern ohne Konto und KI-Pflicht anbieten]]).
 - Keine Beispielakten, keine Telemetrie. Ob das Onboarding wirkt, zeigt die Beobachtung im Pilot ([[H-13 - Einrichtung führt in wenigen Minuten zum ersten Vorgang]]).
-- Kontakte und Registerimport sind nicht Teil des Assistenten. Sie erscheinen als Punkte der Checkliste, sobald es sie gibt ([[F-01 - Gemeinschaften, Personen und Rollen]], [[F-02 - Registerbestand übernehmen]]).
+- Kontakte und Registerimport sind nicht Teil des Assistenten. Sie erscheinen als Einträge der Checkliste, sobald es sie gibt ([[F-01 - Gemeinschaften, Personen und Rollen]], [[F-02 - Registerbestand übernehmen]]).
 - Keine Tour, auch nicht als Befehl (K-19).
 - Mobile Einrichtung und Hinweise folgen nach dem MVP ([[K-09 - Vollständige mobile Wochenarbeit unterstützen]]).
 - Hilfe, Diagnose und die Hinweise in der Wochenarbeit bleiben in [[PBI-32 - Ohne KI selbstständig beginnen]]. Dieses Feature konkretisiert dessen Kriterien 1 und 5.

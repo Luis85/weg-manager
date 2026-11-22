@@ -51,8 +51,8 @@ Als Nutzer möchte ich einem AI-Agent Zugriff auf meinen Vault oder Ordner geben
 
 ## Akzeptanzkriterien
 
-1. Ein Agent mit vom Nutzer eingeräumtem Dateizugriff kann anhand der normalen Markdown-/Frontmatter-Dateien und des lokal verfügbaren Dateivertrags Gemeinschaften, Punkte, Beziehungen, Quellen, Zustände und nächste Schritte nachvollziehen; kein MCP-Aufruf oder laufender Obsidian-Prozess ist erforderlich.
-2. Im freigegebenen Umfang kann der Agent Punkte, Aufgaben, Quellenbezüge oder vorbereitete Texte anlegen beziehungsweise ändern. IDs, Referenzen und Fachregeln werden anhand des dokumentierten Schreibvertrags erhalten; unbekannte Zusatzfelder und nicht betroffene Texte bleiben bestehen.
+1. Ein Agent mit vom Nutzer eingeräumtem Dateizugriff kann anhand der normalen Markdown-/Frontmatter-Dateien und des lokal verfügbaren Dateivertrags Gemeinschaften, Vorgänge, Beziehungen, Quellen, Zustände und nächste Schritte nachvollziehen; kein MCP-Aufruf oder laufender Obsidian-Prozess ist erforderlich.
+2. Im freigegebenen Umfang kann der Agent Vorgänge, To-dos, Quellenbezüge oder vorbereitete Texte anlegen beziehungsweise ändern. IDs, Referenzen und Fachregeln werden anhand des dokumentierten Schreibvertrags erhalten; unbekannte Zusatzfelder und nicht betroffene Texte bleiben bestehen.
 3. Bei geöffnetem Plugin werden externe Änderungen erkannt und in betroffenen Ansichten berücksichtigt. Bei konkurrierender eigener Bearbeitung werden beide Stände beziehungsweise die eigenen Eingaben erhalten und ein Konflikt sichtbar; kein stilles last-write-wins.
 4. Ungültiges oder vorübergehend unvollständiges Frontmatter, doppelte IDs, beschädigte Beziehungen und neuere unbekannte Schemata werden erkennbar behandelt. Wiederaufnahme nach Korrektur erzeugt keine Dubletten.
 5. Geänderte Entscheidung, Frist oder Textfassung macht betroffene bestehende Prüfstände erneut prüfbedürftig. Agentenschreiben erzeugt keinen erfundenen menschlichen Versand, Beschluss, Zahlungsnachweis oder eine tatsächlich nicht erfolgte Bestätigung.

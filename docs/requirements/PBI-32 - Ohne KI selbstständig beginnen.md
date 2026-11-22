@@ -75,7 +75,7 @@ Als Beirat möchte ich mit verständlicher Hilfe ohne KI meinen ersten Wochenabl
 
 ## Akzeptanzkriterien
 
-1. Einführung führt von Gemeinschaft und optionalem Registerimport zum ersten Punkt und nächsten Schritt; keine echten Daten imitierenden Beispielakten werden automatisch angelegt.
+1. Einführung führt von Gemeinschaft und optionalem Registerimport zum ersten Vorgang und nächsten Schritt; keine echten Daten imitierenden Beispielakten werden automatisch angelegt.
 2. Lokale Hilfe erklärt Kernreise, externen Versand, Datenlücken, Sicherung und Wiederherstellung.
 3. Gesamter lokaler Ablauf funktioniert ohne Netzwerk, eigenes Konto und KI; externe Mailzustellung ist gesondert.
 4. Diagnosebericht ist lokal prüfbar und standardmäßig ohne Akteninhalte; es wird nichts automatisch übertragen.
@@ -98,5 +98,5 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 
 ## Kommentare
 
-- 22.11.2026: Kriterium 1 (Einführung zum ersten Punkt) und Kriterium 5 (Einführungstour) werden durch [[F-25 - Onboarding und Einführung]] konkretisiert, vor allem [[PBI-70 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]] und [[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]. Hilfe, Offline-Betrieb, Diagnose und die Hinweise in der Wochenarbeit bleiben hier. Siehe [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]].
+- 22.11.2026: Kriterium 1 (Einführung zum ersten Vorgang) und Kriterium 5 (Einführungstour) werden durch [[F-25 - Onboarding und Einführung]] konkretisiert, vor allem [[PBI-70 - Gemeinschaften im Einrichtungsassistenten anlegen]], [[PBI-71 - Nach der Einrichtung auf der Lage mit Ersten Schritten ankommen]] und [[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]. Hilfe, Offline-Betrieb, Diagnose und die Hinweise in der Wochenarbeit bleiben hier. Siehe [[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]].
 - 22.11.2026: Kriterium 5 wird ohne Tour erfüllt. Statt einer Einführungstour erklären einzelne Hinweise beim ersten Benutzen die Bereiche; „Hinweise erneut zeigen“ ersetzt den Neustart der Tour ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]).

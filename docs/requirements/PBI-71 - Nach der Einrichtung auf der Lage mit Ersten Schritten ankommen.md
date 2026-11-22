@@ -50,10 +50,10 @@ Die Lage ([[VIEW-01 - Lage]]) ist das Dashboard des Plugins; sie entsteht mit [[
 ## Akzeptanzkriterien
 
 1. Nach dem Anlegen in der Einrichtung wechselt die Ansicht auf die Lage. Die erste angelegte Gemeinschaft ist ausgewählt; der Gemeinschaftswechsel zeigt alle.
-2. Die Lage zeigt oben die Karte „Erste Schritte“ mit höchstens vier echten Aufgaben, etwa: Gemeinschaften angelegt (erledigt), ersten Punkt erfassen, Verwaltung als Kontakt anlegen, Register übernehmen. „Ersten Punkt erfassen“ ist hervorgehoben, solange es offen ist. Einträge zu Funktionen, die es noch nicht gibt, fehlen. Es gibt keinen Eintrag für eine Tour.
-3. Jeder Eintrag führt mit einem Klick an die passende Stelle, mit einem Knopf, der die Aktion nennt. Ob er erledigt ist, ergibt sich aus dem Vault (etwa: Es gibt einen Punkt), nicht aus einem Haken des Nutzers.
+2. Die Lage zeigt oben die Karte „Erste Schritte“ mit höchstens vier echten Aufgaben, etwa: Gemeinschaften angelegt (erledigt), ersten Vorgang erfassen, Verwaltung als Kontakt anlegen, Register übernehmen. „Ersten Vorgang erfassen“ ist hervorgehoben, solange es offen ist. Einträge zu Funktionen, die es noch nicht gibt, fehlen. Es gibt keinen Eintrag für eine Tour.
+3. Jeder Eintrag führt mit einem Klick an die passende Stelle, mit einem Knopf, der die Aktion nennt. Ob er erledigt ist, ergibt sich aus dem Vault (etwa: Es gibt einen Vorgang), nicht aus einem Haken des Nutzers.
 4. Sind alle Einträge erledigt, wird die Karte zu einer kurzen Bestätigung und lässt sich schließen. Der Nutzer kann sie auch vorher ausblenden; das merkt sich das Plugin je Gerät. Der Befehl „Erste Schritte wieder einblenden“ (ohne Tastenkürzel) holt sie zurück.
-5. Jeder leere Bereich der Lage tut drei Dinge: Er sagt, dass er leer ist und kein Fehler vorliegt, erklärt in einem Satz, wie er sich füllt, und bietet die passende Aktion an. Beispiel: „Diese Woche ist noch nichts offen. Hier erscheinen Punkte, die du erfasst oder die fällig werden.“ mit „Punkt erfassen“.
+5. Jeder leere Bereich der Lage tut drei Dinge: Er sagt, dass er leer ist und kein Fehler vorliegt, erklärt in einem Satz, wie er sich füllt, und bietet die passende Aktion an. Beispiel: „Diese Woche ist noch nichts offen. Hier erscheinen Vorgänge, die du erfasst oder die fällig werden.“ mit „Vorgang erfassen“.
 6. Beim Ankommen öffnet die Lage kein Modal, keine Tour und kein Angebot.
 
 ## Herkunft und Bezüge

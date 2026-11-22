@@ -55,7 +55,7 @@ Als Beirat möchte ich einen ausgewählten Stand mit Quellen lesbar übergeben, 
 
 ## Akzeptanzkriterien
 
-1. Ausgabe nennt Gemeinschaft, Standdatum, offene Punkte, nächste Schritte und bewusst ausgewählte Quellen.
+1. Ausgabe nennt Gemeinschaft, Standdatum, offene Vorgänge, nächste Schritte und bewusst ausgewählte Quellen.
 2. Fehlende Anlagen sind erkennbar; Lesen erfordert weder KI noch das Plugin.
 3. Interne Vertretungsübergabe ist ausdrücklich von externer Sachstandsausgabe und vollständiger Sicherung unterschieden.
 4. Es entsteht kein paralleler Bearbeitungszugang und kein behaupteter Zugriffsschutz für andere Vault-Nutzer.

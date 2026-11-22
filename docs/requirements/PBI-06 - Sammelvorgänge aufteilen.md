@@ -38,17 +38,17 @@ user-flows:
   - "[[docs/design/user-flows/FLOW-01 - Gesamtfluss des Beirats-MVP]]"
 ---
 
-# PBI-06 · Sammelpunkte aufteilen
+# PBI-06 · Sammelvorgänge aufteilen
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP
 
 ## User Story
 
-Als Beirat möchte ich einen Sammelpunkt in einzeln erledigbare Punkte aufteilen, damit Teilergebnisse den übrigen Bedarf nicht verdecken.
+Als Beirat möchte ich einen Sammelvorgang in einzeln erledigbare Vorgänge aufteilen, damit Teilergebnisse den übrigen Bedarf nicht verdecken.
 
 ## Akzeptanzkriterien
 
-1. Aufteilung hält Ursprung und Zielreferenzen fest; der alte Punkt ist als aufgeteilt erkennbar.
+1. Aufteilung hält Ursprung und Zielreferenzen fest; der alte Vorgang ist als aufgeteilt erkennbar.
 2. Jeder Teil erhält eigenes Ergebnis, Termin beziehungsweise Klärungsstand und Verantwortlichen.
 3. Abschluss eines Teils erledigt keinen anderen Teil; Kennungen werden nicht neu vergeben.
 

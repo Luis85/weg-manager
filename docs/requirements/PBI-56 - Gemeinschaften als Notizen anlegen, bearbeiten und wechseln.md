@@ -63,7 +63,7 @@ Das Plugin hat die technischen Grundlagen (Notizspeicher, Codec, Index, Navigati
 
 ## Herkunft und Bezüge
 
-[[PBI-01 - Gemeinschaftskontext wählen]]; Plan `docs/plans/pre-feature-improvement-plan.md`, Schritt 3.6. Entscheidungen des Produktverantwortlichen vom 21.11.2026: Gemeinschaft ist die erste Entität; Kontakte, Punkte, Anschrift, Sprachen der Eigentümer und Einrichtungsassistent bleiben draußen, Kriterien 2 und 3 von PBI-01 bleiben offen (sie brauchen Punkte). Mobile folgt nach dem MVP. Fachlich: [[ENT-01 - Gemeinschaft]], [[DF-12 - Gemeinschaftstrennung]], [[K-02 - Zwei Gemeinschaften für einen Bearbeiter]].
+[[PBI-01 - Gemeinschaftskontext wählen]]; Plan `docs/plans/pre-feature-improvement-plan.md`, Schritt 3.6. Entscheidungen des Produktverantwortlichen vom 21.11.2026: Gemeinschaft ist die erste Entität; Kontakte, Vorgänge, Anschrift, Sprachen der Eigentümer und Einrichtungsassistent bleiben draußen, Kriterien 2 und 3 von PBI-01 bleiben offen (sie brauchen Vorgänge). Mobile folgt nach dem MVP. Fachlich: [[ENT-01 - Gemeinschaft]], [[DF-12 - Gemeinschaftstrennung]], [[K-02 - Zwei Gemeinschaften für einen Bearbeiter]].
 
 ## Kommentare
 
@@ -84,7 +84,7 @@ Das Plugin hat die technischen Grundlagen (Notizspeicher, Codec, Index, Navigati
   - **Offen:** Tastatur- und Screenreader-Bedienung hat noch kein Mensch geprüft; das gehört zur manuellen Prüfung mit der Vorabversion.
 - 22.11.2026: Entscheidung des Produktverantwortlichen nach dem UX-Review in Obsidian: Nur Gemeinschaften ohne Problem sind auswählbar. Eine schreibgeschützte Gemeinschaft oder eine mit einer ungültigen Angabe (unbekannte Farbe, doppeltes Kürzel) steht mit ihrem Hinweis in der Liste, der Gemeinschaftswechsel bietet sie aber nicht an. Eine gespeicherte Auswahl, deren Gemeinschaft gerade ein Problem hat, bleibt gespeichert und zählt wieder, sobald die Notiz repariert ist. Festgehalten in ADR 0008 (Nachtrag vom 22.11.2026).
 - 22.11.2026: Weitere Entscheidungen des Produktverantwortlichen aus der Review-Runde nach dem Durchstich (umgesetzt mit PR #31 und PR #34):
-  - **Kürzel:** Es bleibt nach dem Anlegen fest. Das Formular sagt das deutlich am Feld („Lässt sich nach dem Anlegen nicht mehr ändern“). Ein Tippfehler lässt sich weiter nur durch Löschen und neues Anlegen beheben; das wird neu bewertet, wenn Punkte das Kürzel tragen.
+  - **Kürzel:** Es bleibt nach dem Anlegen fest. Das Formular sagt das deutlich am Feld („Lässt sich nach dem Anlegen nicht mehr ändern“). Ein Tippfehler lässt sich weiter nur durch Löschen und neues Anlegen beheben; das wird neu bewertet, wenn Vorgänge das Kürzel tragen.
   - **Vorschläge für Art und Einheitenbezeichnung:** Sie folgen weiter der Sprache der Oberfläche. Der gewählte Text steht in der Notiz; gemischte Sprachen im Vault werden hingenommen, weil beide Felder freier Text sind.
   - **Primärfarbe:** Schaltflächen, aktiver Navigationseintrag und Fokus nutzen Obsidians Akzentfarbe, für den Kontrast abgedunkelt. Die neutrale Primärfarbe des Design-Handoffs (`docs/design/handoff/01 - Design Tokens.md`) gilt damit nicht mehr; die Handoff-Notes werden mit [[PBI-66 - Erscheinungsbild und Barrierefreiheit in Obsidian abschließen]] nachgezogen.
   - **Wortwahl:** Die deutschen Texte sagen weiter „Vault“, nicht „Tresor“.

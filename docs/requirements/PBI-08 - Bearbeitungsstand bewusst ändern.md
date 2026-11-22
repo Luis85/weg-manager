@@ -53,9 +53,9 @@ Als Beirat möchte ich Erledigung, Klärungsbedarf und meine Bewertung getrennt 
 ## Akzeptanzkriterien
 
 1. Offen, ungeklärt, erledigt und hinfällig sind unterscheidbar; Erledigung oder Hinfälligkeit erhält Anlass und vorhandene Quelle.
-2. Nicht eingehalten wird nur bewusst mit Begründung und Bezug zur Zusageversion gesetzt; es erledigt den Punkt nicht.
-3. Ein neuer Termin und eine Teillieferung erledigen den Punkt nicht automatisch; begründete Wiederöffnung ist möglich.
-4. Eine Arbeitsentscheidung erzeugt keinen Gemeinschaftsbeschluss, Auftrag oder Zahlungseintrag.
+2. Nicht eingehalten wird nur bewusst mit Begründung und Bezug zur Zusageversion gesetzt; es erledigt den Vorgang nicht.
+3. Ein neuer Termin und eine Teillieferung erledigen den Vorgang nicht automatisch; begründete Wiederöffnung ist möglich.
+4. Eine Entscheidung auf einer Entscheidungskarte erzeugt keinen Gemeinschaftsbeschluss, Auftrag oder Zahlungseintrag.
 
 ## Herkunft und Regeln
 

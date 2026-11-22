@@ -15,13 +15,13 @@ assignee: ""
 iteration: ""
 ---
 
-# F-01 · Gemeinschaften und Ansprechpartner
+# F-01 · Gemeinschaften, Personen und Rollen
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP
 
 ## Fähigkeit und Ergebnis
 
-Gemeinschaftskontext und relevante Ansprechpartner sind bei jeder Bearbeitung eindeutig.
+Gemeinschaftskontext und relevante Personen mit ihren Rollen sind bei jeder Bearbeitung eindeutig.
 
 ## User Stories
 

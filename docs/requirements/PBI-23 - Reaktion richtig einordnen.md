@@ -55,7 +55,7 @@ Als Beirat möchte ich eine Antwort oder einen akzeptierten neuen Termin einordn
 ## Akzeptanzkriterien
 
 1. Wir kümmern uns ohne Datum erzeugt weder verbindlichen Termin noch Erledigung.
-2. Ein menschlich akzeptierter neuer Termin beendet aktuelles Terminnachfragen, erhält aber den offenen Punkt und den bisherigen Verlauf.
+2. Ein menschlich akzeptierter neuer Termin beendet aktuelles Terminnachfragen, erhält aber den offenen Vorgang und den bisherigen Verlauf.
 3. Bei erneuter Überschreitung wird ein begründeter neuer Vorschlag sichtbar; Teillieferung erledigt nur belegte Teile.
 4. Erfüllung wird anhand des erwarteten Ergebnisses bewusst bestätigt.
 

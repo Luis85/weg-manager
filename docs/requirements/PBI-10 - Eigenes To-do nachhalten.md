@@ -44,7 +44,7 @@ user-flows:
   - "[[docs/design/user-flows/FLOW-04 - Schnell erfassen und Eingang sichten]]"
 ---
 
-# PBI-10 · Eigene Folgeaufgabe nachhalten
+# PBI-10 · Eigenes To-do nachhalten
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP
 
@@ -54,10 +54,10 @@ Als Beirat möchte ich meinen nächsten Arbeitsschritt getrennt von der fremden 
 
 ## Akzeptanzkriterien
 
-1. Aufgabe kennt Gemeinschaft, optionalen Punktbezug, Verantwortlichen, Zustand und Fälligkeit beziehungsweise Wiedervorlage.
+1. Das To-do kennt Gemeinschaft, optionalen Vorgangsbezug, Verantwortlichen, Zustand und Fälligkeit beziehungsweise Wiedervorlage.
 2. Offen, in Arbeit, wartend, erledigt und entfallen sind unterscheidbar; Warten braucht Grund und Wiedervorlage, Entfallen einen Grund.
-3. Erledigen der eigenen Versand- oder Prüfaufgabe bestätigt keine Erfüllung der Verwaltungszusage.
-4. Offene Punkte ohne nächsten Schritt erscheinen in einer Klärungsliste.
+3. Erledigen eines To-dos zu Versand oder Prüfung bestätigt keine Erfüllung der Verwaltungszusage.
+4. Offene Vorgänge ohne nächsten Schritt erscheinen in einer Klärungsliste.
 
 ## Herkunft und Regeln
 

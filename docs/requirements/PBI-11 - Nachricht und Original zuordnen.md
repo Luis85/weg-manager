@@ -50,7 +50,7 @@ user-flows:
 
 ## User Story
 
-Als Beirat möchte ich relevante Nachrichten und Unterlagen einem Punkt zuordnen, damit ich Aussagen später belegen kann.
+Als Beirat möchte ich relevante Nachrichten und Unterlagen einem Vorgang zuordnen, damit ich Aussagen später belegen kann.
 
 ## Akzeptanzkriterien
 
@@ -59,7 +59,7 @@ Als Beirat möchte ich relevante Nachrichten und Unterlagen einem Punkt zuordnen
 3. Umbenennen erhält Beziehungen oder meldet Reparaturbedarf; Dateiinhalte werden nicht still verändert.
 4. Der Erfassungsweg verlangt keinen Mail-Connector und behauptet keinen vollständigen Postfacheingang.
 5. Dateien außerhalb des Vaults können gewählt werden; sie werden nach Wahl in den Quellenordner verschoben oder kopiert, der Zielpfad ist vor dem Speichern sichtbar. Mehrere Dateien je Erfassung sind möglich.
-6. Quellen sind aus der Punktakte mit Vorschau, Vault-Pfad und Öffnen in Obsidian einsehbar.
+6. Quellen sind aus der Vorgangsakte mit Vorschau, Vault-Pfad und Öffnen in Obsidian einsehbar.
 
 ## Herkunft und Regeln
 

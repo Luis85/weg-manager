@@ -49,7 +49,7 @@ Als Beirat möchte ich bis zu drei Schwerpunkte und eine Kontextnotiz hinterlass
 
 ## Akzeptanzkriterien
 
-1. Bestätigte Übergabe nennt Datum, betroffene Gemeinschaften und bis drei Schwerpunkte mit Punktbezug oder konkretem neuem Bedarf.
+1. Bestätigte Übergabe nennt Datum, betroffene Gemeinschaften und bis drei Schwerpunkte mit Vorgangsbezug oder konkretem neuem Bedarf.
 2. Die nächste Wochenansicht und der Lagecheck zeigen die letzte bestätigte Übergabe.
 3. Übergabe verändert keine fachlichen Fristen oder Zustände; neue dringende Arbeit bleibt vorrangig sichtbar.
 

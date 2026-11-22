@@ -21,7 +21,7 @@ iteration: ""
 
 ## Fähigkeit und Ergebnis
 
-Der aktuelle Sachstand lässt sich aus datierten Ereignissen und erhaltenen Originalen erklären.
+Der aktuelle Sachstand lässt sich aus datierten Verlaufseinträgen und erhaltenen Originalen erklären.
 
 ## User Stories
 

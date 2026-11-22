@@ -36,7 +36,7 @@ triage: ""
 
 ## User Story
 
-Als Beirat möchte ich, dass Punkte, Fristen und Wochenarbeit stets den aktuellen Dateistand zeigen und trotzdem schnell erscheinen, damit ich weder auf ein Neuladen warten noch veraltete Listen prüfen muss.
+Als Beirat möchte ich, dass Vorgänge, Fristen und Wochenarbeit stets den aktuellen Dateistand zeigen und trotzdem schnell erscheinen, damit ich weder auf ein Neuladen warten noch veraltete Listen prüfen muss.
 
 ## Ausgangslage
 
@@ -49,7 +49,7 @@ Das Plugin kennt Dateiereignisse (`EventBus`, `AppEvent`, siehe [[PBI-50 - Grund
 3. Der Index folgt Datei- und Metadatenereignissen (`FileCreated`, `FileModified`, `FileDeleted`, `FileRenamed`, `MetadataChanged`) schrittweise und entprellt.
 4. Der Index lässt sich jederzeit auf Anforderung vollständig neu aufbauen und hat keinen eigenen Datenbestand: Er entsteht ausschließlich aus den Notizen. Notizen mit Problemcodes aus [[PBI-53 - Notizformat mit Schemaversion lesen und schreiben]] erscheinen als Probleme, nicht als Fehler des Index.
 5. Der Index bietet Abfragen und einen Änderungsstrom, den `useQuery` und `useStream` später nutzen.
-6. Ein Generator erzeugt einen Referenz-Vault (2.000 Notizen, davon 200 Punkte). Ein Zeitmess-Test prüft die Ziele aus B-NFR-04 und schlägt fehl, wenn das Budget überschritten wird.
+6. Ein Generator erzeugt einen Referenz-Vault (2.000 Notizen, davon 200 Vorgänge). Ein Zeitmess-Test prüft die Ziele aus B-NFR-04 und schlägt fehl, wenn das Budget überschritten wird.
 7. Unit-Tests am Obsidian-Double decken Aufbau, Ereignisfolge, Neuaufbau und Dispose ab; nach dem Deaktivieren des Plugins läuft keine Indexarbeit mehr.
 
 ## Herkunft und Bezüge
@@ -61,7 +61,7 @@ Plan `docs/plans/pre-feature-improvement-plan.md`, Abschnitt 3 (Lücken B5 und B
 - 21.11.2026: Angelegt als offener Schritt des Plans `docs/plans/pre-feature-improvement-plan.md`. Bereit zur Umsetzung; die Reihenfolge steht in `dependsOn`.
 - 21.11.2026: Erster Teil ausgeliefert: das Ereignis `VaultReady` und der Referenz-Vault.
   - **Kriterium 1 präzisiert:** Obsidians Ereignis `resolved` taugt allein nicht als Signal. Gemessen in Obsidian 1.15.1 am Referenz-Vault: Beim Kaltstart ist das Layout bereit, wenn erst 1 von 2.200 Notizen im Cache steht, und `resolved` feuert je indexierter Notiz, zum ersten Mal vor dem Layout. Beim Warmstart und in der laufenden App ist der Cache sofort vollständig, `resolved` kommt einmal oder gar nicht. `VaultReady` wird deshalb veröffentlicht, sobald das Layout bereit ist und jede Markdown-Datei einen Eintrag im Metadaten-Cache hat; ein e2e-Spec belegt das für Kaltstart und Wiedereinschalten des Plugins.
-  - **Referenz-Vault:** `npm run vault:reference` erzeugt ihn deterministisch nach `tests/e2e/vaults/reference/` (nicht eingecheckt): zwei Gemeinschaften, 200 Punkte, 2.000 Notizen mit Frontmatter, 200 ohne.
+  - **Referenz-Vault:** `npm run vault:reference` erzeugt ihn deterministisch nach `tests/e2e/vaults/reference/` (nicht eingecheckt): zwei Gemeinschaften, 200 Vorgänge, 2.000 Notizen mit Frontmatter, 200 ohne.
   - **Messwerte in diesem Container** (nicht die Referenzmaschine, noch keine Schwelle): `VaultReady` beim Kaltstart nach 2,4 bis 3,3 s, beim Warmstart nach rund 0,25 s; `NoteStore.list` danach 9 bis 20 ms für 2.000 Datensätze.
   - **Offen:** der Index selbst mit Zeitprüfung gegen B-NFR-04.
 - 21.11.2026: Abgeschlossen. Stand der Umsetzung des Index:

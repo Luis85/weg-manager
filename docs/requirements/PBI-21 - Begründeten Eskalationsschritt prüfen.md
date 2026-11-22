@@ -45,13 +45,13 @@ user-flows:
   - "[[docs/design/user-flows/FLOW-05 - Senden, dokumentieren und nachhalten]]"
 ---
 
-# PBI-21 · Begründeten Nachfassschritt prüfen
+# PBI-21 · Begründeten Eskalationsschritt prüfen
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP
 
 ## User Story
 
-Als Beirat möchte ich für offene Verwaltungszusagen einen begründeten Nachfassvorschlag sehen, damit ausbleibende Reaktionen nicht unsichtbar werden.
+Als Beirat möchte ich für offene Verwaltungszusagen einen begründeten Eskalationsvorschlag sehen, damit ausbleibende Reaktionen nicht unsichtbar werden.
 
 ## Akzeptanzkriterien
 

@@ -45,20 +45,20 @@ user-flows:
   - "[[docs/design/user-flows/FLOW-05 - Senden, dokumentieren und nachhalten]]"
 ---
 
-# PBI-22 · Nachfasspaket begrenzen oder pausieren
+# PBI-22 · Eskalationen begrenzen oder aussetzen
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP
 
 ## User Story
 
-Als Beirat möchte ich Nachfassvorschläge je Gemeinschaft mit Einzelausnahmen prüfen, damit ich angemessen reagieren kann.
+Als Beirat möchte ich die Eskalationen der Woche je Gemeinschaft mit Einzelausnahmen prüfen, damit ich angemessen reagieren kann.
 
 ## Akzeptanzkriterien
 
-1. Paketentscheidung bleibt je betroffenem Punkt nachvollziehbar; ein akuter Einzelfall kann abweichen.
+1. Die Entscheidung über die Eskalationen der Woche bleibt je betroffenem Vorgang nachvollziehbar; ein akuter Einzelfall kann abweichen.
 2. Pause enthält Grund und Wiederaufnahmedatum; kritische Fristen bleiben sichtbar.
 3. Nach Ablauf wird neu geprüft, ohne mehrere Stufen automatisch zu überspringen.
-4. Freigabe eines Pakets ist weder Versand noch vollzogene rechtliche Maßnahme.
+4. Die Freigabe der Eskalationen der Woche ist weder Versand noch vollzogene rechtliche Maßnahme.
 
 ## Herkunft und Regeln
 

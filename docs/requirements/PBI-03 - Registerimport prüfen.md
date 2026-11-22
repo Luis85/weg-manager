@@ -59,8 +59,8 @@ Als Beirat möchte ich die Zuordnung meines Registerexports vor Übernahme prüf
 
 1. Die 15 Quellangaben Nr, Art, Thema, Zusage, Wer, Zugesagt am, Bis wann, Status, Erledigt am, Quelle, Nächster Schritt, Prüfung, Mail-Referenz, Link und Gemeinschaft sind zuordenbar.
 2. Vorschau unterscheidet gültige, unklare und abgewiesene Zeilen; unbekannte Statuswerte werden nicht still umgedeutet.
-3. Fehlende Ereignisdaten bleiben unbekannt; Importdatum ersetzt weder Zusage noch Erledigungsdatum.
-4. 97 Punkte sind ein Prüfbeispiel und keine feste Importgrenze.
+3. Fehlende Daten im Verlauf bleiben unbekannt; Importdatum ersetzt weder Zusage noch Erledigungsdatum.
+4. 97 Vorgänge sind ein Prüfbeispiel und keine feste Importgrenze.
 
 ## Herkunft und Regeln
 

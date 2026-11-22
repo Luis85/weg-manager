@@ -43,12 +43,12 @@ user-flows:
 
 ## User Story
 
-Als Beirat möchte ich passende Texte und Aufgaben aus bestätigten Entscheidungen erhalten, damit ich nicht dieselbe Entscheidung mehrfach übertragen muss.
+Als Beirat möchte ich passende Texte und To-dos aus bestätigten Entscheidungen erhalten, damit ich nicht dieselbe Entscheidung mehrfach übertragen muss.
 
 ## Akzeptanzkriterien
 
-1. Texte und konkrete Aufgaben berücksichtigen tatsächliche Wahl und Notiz; ihr Entscheidungsbezug ist sichtbar.
-2. Wiederholung erzeugt keine doppelten Aufgaben oder Entwürfe.
+1. Texte und konkrete To-dos berücksichtigen tatsächliche Wahl und Notiz; ihr Entscheidungsbezug ist sichtbar.
+2. Wiederholung erzeugt keine doppelten To-dos oder Entwürfe.
 3. Geänderte oder zurückgenommene Entscheidungen markieren frühere Folgefassungen als überholt und erneut prüfbedürftig.
 4. Bereits dokumentierter tatsächlicher Versand wird durch eine neue Entscheidung nicht rückwirkend geändert.
 

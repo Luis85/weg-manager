@@ -55,11 +55,11 @@ user-flows:
 
 ## User Story
 
-Als Beirat möchte ich eine vorbereitete kurze Lage mit Fristen und Aufgaben öffnen, damit ich ohne verstreute Listen beginnen kann.
+Als Beirat möchte ich eine vorbereitete kurze Lage mit Fristen und To-dos öffnen, damit ich ohne verstreute Listen beginnen kann.
 
 ## Akzeptanzkriterien
 
-1. Lage bis sieben Sätze, Fristen der nächsten 14 Tage und eigene Aufgaben sind quellenbezogen verfügbar.
+1. Lage bis sieben Sätze, Fristen der nächsten 14 Tage und eigene To-dos sind quellenbezogen verfügbar.
 2. Zeitpunkt, berücksichtigte Quellen, ungeprüfte Unterlagen und bekannte Lücken sind sichtbar.
 3. Einstieg aktualisiert fällige Arbeit; ein geschlossener Client wird nicht als gelaufener Hintergrunddienst ausgegeben.
 4. Die Vorbereitung verwendet vorhandene Daten und bearbeitbare Texte; notwendige manuelle Ergänzung zählt zur späteren Wochenzeit.

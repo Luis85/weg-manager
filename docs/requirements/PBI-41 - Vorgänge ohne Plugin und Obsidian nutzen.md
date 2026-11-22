@@ -47,7 +47,7 @@ Als Nutzer möchte ich meine Vorgänge direkt aus den gespeicherten Notizen ohne
 
 ## Akzeptanzkriterien
 
-1. Jeder gespeicherte Vorgang beziehungsweise Punkt ist als verständliche Markdown-Notiz mit YAML-Frontmatter verfügbar. Ergebnis, Gemeinschaft, Zustand, nächste Handlung und zugehörige Quellen sind ohne App-Kontext nachvollziehbar.
+1. Jeder gespeicherte Vorgang ist als verständliche Markdown-Notiz mit YAML-Frontmatter verfügbar. Ergebnis, Gemeinschaft, Zustand, nächste Handlung und zugehörige Quellen sind ohne App-Kontext nachvollziehbar.
 2. Erforderliche fachliche Daten und Beziehungen stehen in normalen Dateien. Eine nur interne Datenbank, ein Index oder ein Obsidian-spezifischer Laufzeitzustand ist keine exklusive fachliche Quelle.
 3. Der Ordner ist ohne vorherigen Export zugänglich. Geschlossenes Plugin, geschlossenes oder nicht installiertes Obsidian und fehlender MCP Server verhindern Lesen oder vertragskonforme Bearbeitung mit einem gewöhnlichen Dateieditor nicht.
 4. Originalanhänge bleiben als Dateien vorhanden. Referenzen lassen sich anhand dokumentierter IDs und Dateibeziehungen ohne Obsidian auflösen; reine dynamische Views enthalten keine ausschließlich dort vorhandenen Fachinformationen.

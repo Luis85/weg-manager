@@ -45,7 +45,7 @@ user-flows:
   - "[[docs/design/user-flows/FLOW-03 - Lagecheck unterwegs]]"
 ---
 
-# PBI-12 · Ereignisse nachvollziehen
+# PBI-12 · Verlauf nachvollziehen
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP
 
@@ -56,7 +56,7 @@ Als Beirat möchte ich Anfrage, Antwort, Zusage und Erfüllung getrennt im Verla
 ## Akzeptanzkriterien
 
 1. Ereignisdatum, Erfassungsdatum, dokumentierter Akteur, Erfasser und Quelle bleiben unterscheidbar.
-2. Empfangsbestätigung, inhaltliche Antwort, neuer Termin, Teillieferung und Erfüllung sind verschiedene Ereignisse.
+2. Empfangsbestätigung, inhaltliche Antwort, neuer Termin, Teillieferung und Erfüllung sind verschiedene Verlaufseinträge.
 3. Korrekturen sind erkennbar; fehlende Zeitangaben bleiben unbekannt statt zu erfundenen Dauern zu führen.
 4. Die lokale Historie behauptet keine Manipulationssicherheit.
 

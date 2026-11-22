@@ -32,26 +32,26 @@ triage: needs-triage
 
 ## User Story
 
-Als Beirat möchte ich, dass Punkte und Ansprechpartner zuverlässig zu ihrer Gemeinschaft gehören und Fristen richtig als überfällig erkannt werden, damit ich mich auf Listen und Hinweise verlassen kann.
+Als Beirat möchte ich, dass Vorgänge und Personen zuverlässig zu ihrer Gemeinschaft gehören und Fristen richtig als überfällig erkannt werden, damit ich mich auf Listen und Hinweise verlassen kann.
 
 ## Ausgangslage
 
 Befund des Architektur-Reviews (C2), geprüft am Code des Durchstichs:
 
 - **Kein Verweis-Feld.** Der Codec (`defineNoteType`) kennt keine Feldart für einen Verweis auf einen anderen Datensatz. `community_id` wäre heute einfacher Text. Dass das Ziel fehlt, müsste jede Funktion als eigene Regel über mehrere Datensätze schreiben, so wie `duplicateShortCodes` heute.
-- **Keine Suche nach `id`.** Ein Stand des Index hält die Notizen eines Typs als Liste. Die Route `punkt/<id>` und jede Verknüpfung müssten die Liste durchsuchen.
+- **Keine Suche nach `id`.** Ein Stand des Index hält die Notizen eines Typs als Liste. Die Route `punkt/<id>` (wird auf Vorgang umbenannt) und jede Verknüpfung müssten die Liste durchsuchen.
 - **Kein „heute“.** Abgeleitete Werte wie „überfällig“ haben keine Quelle für das aktuelle Datum, die zur lokalen Mitternacht weiterschaltet.
 - **Flache Schlüssel.** ADR 0007 erlaubt nur flache Schlüssel aus fünf Arten. Die Rolle eines Ansprechpartners je Gemeinschaft ([[docs/entities/ENT-02 - Person und Rolle]], offener Punkt O-D10 in `docs/design/handoff/09 - Offene Punkte vor Implementierung.md`) ist eine Liste von Paaren und passt so nicht hinein.
 
-## Offene Entscheidung (vor dem Dateivertrag der Ansprechpartner)
+## Offene Entscheidung (vor dem Dateivertrag der Personen)
 
 Wie wird die Rolle je Gemeinschaft gespeichert? Zur Wahl stehen:
 
-1. ein eigener Notiztyp für die Zuordnung (ein Datensatz je Ansprechpartner und Gemeinschaft),
-2. parallele Listen in der Notiz des Ansprechpartners,
+1. ein eigener Notiztyp für die Zuordnung (ein Datensatz je Person und Gemeinschaft),
+2. parallele Listen in der Notiz der Person,
 3. kodierte Texte in einer Liste (zum Beispiel `gemeinschaft:rolle`).
 
-Die Entscheidung gehört dem Produktverantwortlichen und wird als Nachtrag zu ADR 0007 festgehalten, bevor ein Dateivertrag unter `docs/contracts/` für Ansprechpartner entsteht.
+Die Entscheidung gehört dem Produktverantwortlichen und wird als Nachtrag zu ADR 0007 festgehalten, bevor ein Dateivertrag unter `docs/contracts/` für Personen entsteht.
 
 ## Akzeptanzkriterien
 

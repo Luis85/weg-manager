@@ -55,7 +55,7 @@ Als Beirat möchte ich fachliche Termine mit Herkunft und eine eigene Wiedervorl
 
 1. Zugesagter, vertraglicher, als formell angegebener und gewünschter Termin sowie Wiedervorlage sind unterscheidbar.
 2. Bei fehlendem Fremdtermin sind Klärungsstand, Verantwortlicher und eigene nächste Handlung mit Wiedervorlage sichtbar.
-3. Überfälligkeit eines Datums ohne Uhrzeit erscheint ab dem Folgetag in Europe/Berlin; geschlossene Punkte werden nicht als aktuell offen behandelt.
+3. Überfälligkeit eines Datums ohne Uhrzeit erscheint ab dem Folgetag in Europe/Berlin; geschlossene Vorgänge werden nicht als aktuell offen behandelt.
 4. Eine unbekannte Zusagezeit wird nicht als Alter null berechnet; Import setzt das Alter nicht zurück.
 
 ## Herkunft und Regeln

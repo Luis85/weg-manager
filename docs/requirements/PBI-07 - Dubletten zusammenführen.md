@@ -44,13 +44,13 @@ user-flows:
 
 ## User Story
 
-Als Beirat möchte ich doppelte Punkte innerhalb einer Gemeinschaft zusammenführen, damit ich einen Sachverhalt nur einmal nachhalte.
+Als Beirat möchte ich doppelte Vorgänge innerhalb einer Gemeinschaft zusammenführen, damit ich einen Sachverhalt nur einmal nachhalte.
 
 ## Akzeptanzkriterien
 
-1. Ein prüfbarer Zielpunkt erhält Verweise auf die Ursprünge; widersprüchliche Angaben werden zur Auswahl gezeigt.
+1. Ein prüfbarer Zielvorgang erhält Verweise auf die Ursprünge; widersprüchliche Angaben werden zur Auswahl gezeigt.
 2. Alte Referenzen bleiben auflösbar und als zusammengeführt erkennbar.
-3. Gleichnamige Punkte verschiedener Gemeinschaften werden nicht zusammengeführt.
+3. Gleichnamige Vorgänge verschiedener Gemeinschaften werden nicht zusammengeführt.
 
 ## Herkunft und Regeln
 

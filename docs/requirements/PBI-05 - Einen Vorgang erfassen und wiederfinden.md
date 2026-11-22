@@ -44,21 +44,21 @@ user-flows:
   - "[[docs/design/user-flows/FLOW-04 - Schnell erfassen und Eingang sichten]]"
 ---
 
-# PBI-05 · Einen Punkt erfassen und wiederfinden
+# PBI-05 · Einen Vorgang erfassen und wiederfinden
 
 **Planungsstand:** Konzeptentwurf · **Umfang:** MVP
 
 ## User Story
 
-Als Beirat möchte ich eine Zusage, Frage oder eigene Aufgabe als einzeln erledigbaren Punkt erfassen, damit der nächste Schritt zu einem konkreten Ergebnis führt.
+Als Beirat möchte ich eine Zusage, eine Frage oder ein To-do als einzeln erledigbaren Vorgang erfassen, damit der nächste Schritt zu einem konkreten Ergebnis führt.
 
 ## Akzeptanzkriterien
 
 1. Referenz, Gemeinschaft, Art, Thema, erwartetes Ergebnis, Verantwortlicher, Quelle oder Quellenlücke und nächster Schritt sind erfassbar.
-2. Ein Thema kann mehrere unabhängige Punkte bündeln, ohne deren Status zu verbinden.
-3. Suche und Filter nach Thema, Bearbeitungsstand, Gemeinschaft und Verantwortlichem öffnen den richtigen Punkt.
+2. Ein Thema kann mehrere unabhängige Vorgänge bündeln, ohne deren Status zu verbinden.
+3. Suche und Filter nach Thema, Bearbeitungsstand, Gemeinschaft und Verantwortlichem öffnen den richtigen Vorgang.
 4. Ein vorhandener Altfall benötigt keine erfundenen vorherigen Prozessschritte.
-5. Eine eigene Notiz ohne Quelle kann einem Punkt hinzugefügt werden; sie erscheint im Verlauf als Notiz und gilt nicht als Quelle.
+5. Eine eigene Notiz ohne Quelle kann einem Vorgang hinzugefügt werden; sie erscheint im Verlauf als Notiz und gilt nicht als Quelle.
 
 ## Herkunft und Regeln
 

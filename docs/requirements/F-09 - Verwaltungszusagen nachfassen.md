@@ -21,7 +21,7 @@ iteration: ""
 
 ## Fähigkeit und Ergebnis
 
-Nachfassvorschläge respektieren bekannte Reaktionen, tatsächlich kommunizierte Fristen und bewusste Ausnahmen.
+Eskalationsvorschläge respektieren bekannte Reaktionen, tatsächlich kommunizierte Fristen und bewusste Ausnahmen.
 
 ## User Stories
 

@@ -34,11 +34,11 @@ triage: ""
 
 ## User Story
 
-Als Beirat möchte ich, dass das Plugin Änderungen an meinen Notizen laufend mitbekommt, ohne Obsidian beim Start zu bremsen oder nach dem Deaktivieren weiterzulaufen, damit Punkte, Fristen und Wochenarbeit stets den aktuellen Dateistand zeigen.
+Als Beirat möchte ich, dass das Plugin Änderungen an meinen Notizen laufend mitbekommt, ohne Obsidian beim Start zu bremsen oder nach dem Deaktivieren weiterzulaufen, damit Vorgänge, Fristen und Wochenarbeit stets den aktuellen Dateistand zeigen.
 
 ## Ausgangslage
 
-Es gibt nur das einmalige `markdownFileCount` (`src/application/ports.ts`, `VaultReader`; `src/infrastructure/obsidian/layers.ts`). Die Ansicht zählt einmal beim Einhängen. Fachfunktionen wie Punkte, Fristen und Wochenarbeit brauchen Dateiereignisse.
+Es gibt nur das einmalige `markdownFileCount` (`src/application/ports.ts`, `VaultReader`; `src/infrastructure/obsidian/layers.ts`). Die Ansicht zählt einmal beim Einhängen. Fachfunktionen wie Vorgänge, Fristen und Wochenarbeit brauchen Dateiereignisse.
 
 ## Akzeptanzkriterien
 

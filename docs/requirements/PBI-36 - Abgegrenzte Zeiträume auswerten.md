@@ -45,7 +45,7 @@ Als Beirat möchte ich Antwort- und Erfüllungsdauer getrennt auswerten, damit i
 
 1. Anfrage 01.11., Bestätigung 02.11. und sachliche Antwort 05.11. ergeben getrennt einen und vier Kalendertage.
 2. Offene Fälle werden als offen und mit bekanntem Alter gezeigt, nicht als null Tage gemittelt.
-3. Zeitraum Angebot bis Beschluss wird Durchlaufzeit genannt; Einheit, Ereignispaare, Zeitraum und Quelle sind sichtbar.
+3. Zeitraum Angebot bis Beschluss wird Durchlaufzeit genannt; Einheit, Paare von Verlaufseinträgen, Zeitraum und Quelle sind sichtbar.
 
 ## Herkunft und Regeln
 

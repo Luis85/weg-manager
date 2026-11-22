@@ -45,7 +45,7 @@ Der Designstand v2 sah eine Tour mit sieben blockierenden Schritten vor ([[VIEW-
 
 ## Akzeptanzkriterien
 
-1. **Auslöser:** Ein Hinweis erscheint, wenn der Nutzer einen Bereich zum ersten Mal benutzt, nicht beim Start und nicht auf einen Zeitgeber hin. Erste Hinweise: Wochenarbeit, Erfassen und Punktakte, jeweils beim ersten Öffnen. Direkt nach der Einrichtung erscheint kein Hinweis. Weitere Hinweise kommen nur mit eigener Begründung dazu.
+1. **Auslöser:** Ein Hinweis erscheint, wenn der Nutzer einen Bereich zum ersten Mal benutzt, nicht beim Start und nicht auf einen Zeitgeber hin. Erste Hinweise: Wochenarbeit, Erfassen und Vorgangsakte, jeweils beim ersten Öffnen. Direkt nach der Einrichtung erscheint kein Hinweis. Weitere Hinweise kommen nur mit eigener Begründung dazu.
 2. **Einzeln:** Es ist höchstens ein Hinweis zugleich sichtbar. Hinweise bilden keine Kette und haben keine Zählung „n von m“.
 3. **Inhalt:** Titel und ein Satz zur Funktion, kein Werbetext. Der Hinweis steht neben dem Element und verdeckt weder das Element noch die Hauptaktion des Bereichs.
 4. **Nichtmodal:** Der Hinweis dunkelt nichts ab und sperrt nichts. Der Nutzer kann weiterarbeiten; der Hinweis bleibt, bis er ihn schließt oder das Element benutzt.

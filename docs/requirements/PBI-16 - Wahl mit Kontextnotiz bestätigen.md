@@ -50,9 +50,9 @@ Als Beirat möchte ich meine Wahl mit einer ergänzenden Notiz bestätigen, dami
 
 ## Akzeptanzkriterien
 
-1. Wahl, Notiz, Zeitpunkt, Gemeinschaft und betroffene Punkte werden gemeinsam festgehalten.
+1. Wahl, Notiz, Zeitpunkt, Gemeinschaft und betroffene Vorgänge werden gemeinsam festgehalten.
 2. Mehrere Entscheidungen können intern übernommen werden; die Aktion versendet nichts.
-3. Vertagen bewahrt offenen Bedarf und nächsten Prüfzeitpunkt; kein Punkt wird dadurch erledigt.
+3. Vertagen bewahrt offenen Bedarf und nächsten Prüfzeitpunkt; kein Vorgang wird dadurch erledigt.
 
 ## Herkunft und Regeln
 

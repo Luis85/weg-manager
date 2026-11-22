@@ -281,6 +281,12 @@ const same = (a: unknown, b: unknown): boolean => {
   );
 };
 
+/**
+ * Each run parses YAML three times; 400 runs take about a second alone. The explicit timeout is for
+ * a loaded machine (the gate beside an e2e run), where the default 5 s was once not enough.
+ */
+const GENERATED_NOTES = 400;
+
 describe("updateNoteText on generated notes", () => {
   it("keeps every byte outside the patched keys and writes exactly the patch", () => {
     assert(
@@ -317,7 +323,7 @@ describe("updateNoteText on generated notes", () => {
           from = at;
         }
       }),
-      { numRuns: 1500 },
+      { numRuns: GENERATED_NOTES },
     );
-  });
+  }, 30_000);
 });

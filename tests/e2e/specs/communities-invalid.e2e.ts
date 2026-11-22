@@ -40,8 +40,8 @@ const issuesOf = (name: string) =>
     name,
   );
 
-const DUPLICATE_CODE =
-  "Eine andere Gemeinschaft hat dasselbe Kürzel. Gib einer der beiden ein anderes.";
+const duplicateCode = (other: string) =>
+  `„${other}“ hat dasselbe Kürzel KZ. Gib einer der beiden ein anderes Kürzel.`;
 const duplicateId = (other: string) =>
   `Die Notiz „${FOLDER}/${other}“ hat dieselbe „id“, deshalb sind beide schreibgeschützt. Lösche die doppelte Notiz in Obsidian.`;
 
@@ -54,10 +54,10 @@ describe("communities: notes that break the file contract", function () {
     await expectListed(["Farbe", "Gut", "Kopie A", "Kopie B", "Kürzel A", "Kürzel B"]);
     expect(await issuesOf("Gut")).toEqual([]);
     expect(await issuesOf("Farbe")).toEqual([
-      "„Farbe“ ist keine Farbe der Palette. Wähle eine Farbe aus.",
+      "Die gespeicherte Farbe „amber“ gibt es nicht. Wähle eine Farbe.",
     ]);
-    expect(await issuesOf("Kürzel A")).toEqual([DUPLICATE_CODE]);
-    expect(await issuesOf("Kürzel B")).toEqual([DUPLICATE_CODE]);
+    expect(await issuesOf("Kürzel A")).toEqual([duplicateCode("Kürzel B")]);
+    expect(await issuesOf("Kürzel B")).toEqual([duplicateCode("Kürzel A")]);
     expect(await issuesOf("Kopie A")).toEqual([duplicateId("Kopie B.md")]);
     expect(await issuesOf("Kopie B")).toEqual([duplicateId("Kopie A.md")]);
     await expect(browser.$(ROOT).$("[data-testid=unindexed-notes]")).toHaveText(

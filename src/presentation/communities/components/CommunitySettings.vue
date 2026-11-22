@@ -86,7 +86,7 @@ const saved = (id: string) => {
   editing.value = undefined;
 };
 const remove = (community: Community) => {
-  focus.opened({ card: cardKey(community) });
+  focus.opened({ card: cardKey(community), control: "community-remove" });
   deleting.value = community;
 };
 const removed = () => {

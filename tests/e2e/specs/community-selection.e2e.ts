@@ -13,7 +13,7 @@ const BA = communityText(community(3, { name: "Birkenallee", short_code: "BA", c
 const selectedInViews = () =>
   browser.executeObsidian((_, selector) => {
     return [...document.querySelectorAll(selector)].map((root) => {
-      const pressed = root.querySelector("[data-testid=community-option][aria-pressed=true]");
+      const pressed = root.querySelector("[data-testid=community-option][aria-checked=true]");
       if (pressed === null) return "";
       const code = pressed.querySelector("[data-testid=community-badge]")?.textContent?.trim();
       const name = pressed.querySelector("[data-testid=community-option-name]")?.textContent;

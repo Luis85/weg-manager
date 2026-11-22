@@ -87,6 +87,14 @@ describe("the focus after a sheet or dialog", () => {
     expect(cardOf(screen, "Ahornweg 14")).toBe(card);
   });
 
+  it("goes back to the card's delete button when the dialog is cancelled", async () => {
+    const screen = await openCommunities({ seed: (notes) => notes.seed(`${FOLDER}/A.md`, AW) });
+    await screen.click(screen.button(t.screen.removeLabel("Ahornweg 12")));
+    await screen.click(screen.button(t.deletion.cancel));
+    await focusOn(screen, () => screen.button(t.screen.removeLabel("Ahornweg 12")));
+    expect(screen.q("delete-dialog")).toBeUndefined();
+  });
+
   it("goes to the create action after a delete, also when the list is empty then", async () => {
     const screen = await openCommunities({ seed: (notes) => notes.seed(`${FOLDER}/A.md`, AW) });
     await screen.click(screen.button(t.screen.removeLabel("Ahornweg 12")));

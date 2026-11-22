@@ -149,16 +149,14 @@ describe("appearance in Obsidian's default theme", function () {
 
   it("gives ghost buttons only what their variant says, not Obsidian's button chrome", async function () {
     await parkPointer();
+    // The frame shows no history controls until there is a step; the switch offers the two
+    // communities without issues (Ahornweg 12 and Doppelt share a short code, one is newer).
+    await expect(browser.$(ROOT).$("[data-testid=frame-history]")).not.toExist();
     const ghosts = [
-      ...(await stylesOf("[data-testid=frame-history] button", [
-        "background-color",
-        "box-shadow",
-        "height",
-      ])),
       ...(await stylesOf("[data-testid=community-option]", ["background-color", "box-shadow"])),
       ...(await stylesOf("[data-testid=community-remove]", ["background-color", "box-shadow"])),
     ];
-    expect(ghosts.length).toBe(2 + 5 + 4);
+    expect(ghosts.length).toBe(2 + 4);
     for (const ghost of ghosts) {
       expect(ghost).toMatchObject({ "background-color": "rgba(0, 0, 0, 0)", "box-shadow": "none" });
     }
@@ -179,20 +177,23 @@ describe("appearance in Obsidian's default theme", function () {
   });
 
   it("marks the selected community and the current page beyond colour, at 4.5:1", async function () {
-    await option("Ahornweg 12").click();
-    await expect(option("Ahornweg 12")).toHaveAttribute("aria-pressed", "true");
+    await option("Tiefgarage Ahornweg").click();
+    await expect(option("Tiefgarage Ahornweg")).toHaveAttribute("aria-checked", "true");
     const texts = await textsInBothSchemes("selected");
     expect(failing(texts)).toEqual([]);
     expect(
       kindsIn(texts, {
         selected: (text) =>
-          text.testid === "community-option-name" && text.text.endsWith("Ahornweg 12"),
+          text.testid === "community-option-name" && text.text.endsWith("Tiefgarage Ahornweg"),
+        marker: testid("community-selected"),
         page: (text) => text.testid === "app-frame" && text.text.endsWith("Gemeinschaften"),
       }),
-    ).toEqual(["selected", "page"]);
-    // Not by colour alone: a check mark on the selected option, a bar on the current page.
-    await expect(option("Ahornweg 12").$("[data-testid=community-option-check]")).toExist();
-    await expect(option("Doppelt").$("[data-testid=community-option-check]")).not.toExist();
+    ).toEqual(["selected", "marker", "page"]);
+    // Not by colour alone: a check mark on the selected option, "Aktuell" on its card, a bar on
+    // the current page.
+    await expect(option("Tiefgarage Ahornweg").$("[data-testid=community-option-check]")).toExist();
+    await expect(option(LONG_NAME).$("[data-testid=community-option-check]")).not.toExist();
+    await expect(browser.$(ROOT).$("[data-testid=community-selected]")).toHaveText("Aktuell");
     const [current] = await stylesOf("nav button[aria-current=page]", ["box-shadow"]);
     expect(current?.["box-shadow"]).not.toBe("none");
   });
@@ -237,23 +238,34 @@ describe("appearance in Obsidian's default theme", function () {
   it("keeps the create sheet's errors at 4.5:1 and its fields at 3:1, the colour fieldset unindented", async function () {
     await browser.$(ROOT).$("[data-testid=community-add]").click();
     await expect(browser.$(ROOT).$("[data-testid=community-form]")).toBeDisplayed();
+    // The sheet opens with the focus on Name. Measure the fields at rest: a focused one shows its
+    // focus by Obsidian's 3 px outline in the accent colour, not by this boundary.
+    await browser.execute(() => {
+      (document.activeElement as HTMLElement | null)?.blur();
+    });
     await fieldsInBothSchemes("fields");
     await browser.$(ROOT).$("[data-testid=community-save]").click();
     const sheet = `${ROOT} [role=dialog]`;
     await browser.waitUntil(
-      async () => (await measureTexts(sheet)).some((text) => text.text.includes("fehlt")),
+      async () =>
+        (await measureTexts(sheet)).some((text) => text.text.includes("Gib einen Namen ein.")),
       { timeoutMsg: "the sheet never showed the missing fields" },
     );
     const texts = await textsInBothSchemes("sheet", sheet);
     expect(failing(texts)).toEqual([]);
     expect(
       kindsIn(texts, {
-        error: (text) => text.text.includes("fehlt"),
+        error: (text) => text.text.includes("Gib einen Namen ein."),
+        summary: testid("form-summary"),
         save: testid("community-save"),
       }),
-    ).toEqual(["error", "save"]);
+    ).toEqual(["error", "summary", "save"]);
 
     // An invalid field draws its boundary in the error colour, which has to reach 3:1 as well.
+    // The failed submit put the focus on the first invalid field: measure them at rest again.
+    await browser.execute(() => {
+      (document.activeElement as HTMLElement | null)?.blur();
+    });
     await fieldsInBothSchemes("fields-invalid");
 
     const [fieldset] = await stylesOf("fieldset", [

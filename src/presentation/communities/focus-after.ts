@@ -2,11 +2,13 @@ import { onScopeDispose, shallowRef, watch } from "vue";
 import type { Community } from "../../application/communities";
 
 /**
- * Where the focus goes once a sheet or dialog has closed: a community's card (its edit button,
- * else its name), or the create action, once the card `gone` has left the list.
+ * Where the focus goes once a sheet or dialog has closed: a community's card (its `control`, by
+ * default its edit button, else its name), or the create action, once the card `gone` has left
+ * the list.
  */
 export type FocusTarget =
-  { readonly card: string } | { readonly add: true; readonly gone?: string | undefined };
+  | { readonly card: string; readonly control?: string | undefined }
+  | { readonly add: true; readonly gone?: string | undefined };
 
 /** How long a focus target waits for the list to show it; the index follows a write in ~0.1 s. */
 const FOCUS_WAIT_MS = 3000;
@@ -41,7 +43,7 @@ export const useFocusAfter = (
     if ("card" in target) {
       const card = cards.find((candidate) => candidate.dataset["cardKey"] === target.card);
       return (
-        card?.querySelector<HTMLElement>("[data-testid=community-edit]") ??
+        card?.querySelector<HTMLElement>(`[data-testid=${target.control ?? "community-edit"}]`) ??
         card?.querySelector<HTMLElement>("[data-testid=community-name]") ??
         undefined
       );

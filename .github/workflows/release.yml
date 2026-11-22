@@ -105,11 +105,16 @@ jobs:
           node tests/e2e/wdio.conf.mts | grep 'obsidian-cache-key:' > obsidian-versions-lock.txt
           cat obsidian-versions-lock.txt
           rm -rf .obsidian-cache
-      - name: Cache Obsidian
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      # The download is restored here and saved after the run (below), so that a run whose tests
+      # fail still keeps it for the retry. A cache entry never changes, so a hit is not saved again.
+      - name: Restore Obsidian
+        id: obsidian-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .obsidian-cache
           key: obsidian-cache-${{ runner.os }}-${{ hashFiles('obsidian-versions-lock.txt') }}
+      # The window manager stays for now: a first run without it read colours before a theme change
+      # had been drawn (docs/engineering/github-setup.md, "The e2e display and the Obsidian cache").
       - name: Start a virtual display and window manager
         run: |
           sudo apt-get update -q
@@ -122,6 +127,26 @@ jobs:
       - run: npm run test:e2e
         env:
           WDIO_MAX_INSTANCES: 2
+      # Obsidian is downloaded as app, installer and chromedriver, each into its own folder once
+      # complete. Save only when all three are there, because an entry that lacks one would be
+      # restored by every later run, and could not be replaced.
+      - name: Check that the Obsidian download is complete
+        id: obsidian-download
+        if: ${{ always() && steps.obsidian-cache.outputs.cache-hit != 'true' }}
+        run: |
+          if compgen -G ".obsidian-cache/obsidian-app/*.asar" > /dev/null \
+            && compgen -G ".obsidian-cache/obsidian-installer/*/Obsidian-*" > /dev/null \
+            && compgen -G ".obsidian-cache/electron-chromedriver/*/*" > /dev/null; then
+            echo "complete=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning title=Obsidian download::.obsidian-cache is incomplete, so it is not saved."
+          fi
+      - name: Save Obsidian
+        if: ${{ always() && steps.obsidian-cache.outputs.cache-hit != 'true' && steps.obsidian-download.outputs.complete == 'true' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .obsidian-cache
+          key: ${{ steps.obsidian-cache.outputs.cache-primary-key }}
       # Fails unless the version equals the one in manifest.json.
       - name: Stage the release files
         env:

@@ -48,6 +48,14 @@ _Avoid_: schema (the version marker inside a note), format, data model
 A named reason why a note or a value breaks its file contract or a rule. An issue is shown to the user and never repaired silently.
 _Avoid_: error, warning, violation, problem
 
+**Reference** (German: Verweis):
+A field of a record that names another record by its `id`, such as a contact's communities. A reference whose target no note carries is shown with an issue and kept as it is.
+_Avoid_: link, relation, foreign key, wikilink (a link in a note's text)
+
+**Today** (German: heute):
+The user's local calendar day, from the clock of the machine the plugin runs on, which changes at local midnight. Values such as "overdue" are derived from it.
+_Avoid_: now, date, current date, timestamp
+
 **Read-only** (German: schreibgeschützt):
 A note the plugin shows but never writes, because a write could damage it: it comes from a newer version, or its identity is missing, broken or shared.
 _Avoid_: locked, disabled, invalid

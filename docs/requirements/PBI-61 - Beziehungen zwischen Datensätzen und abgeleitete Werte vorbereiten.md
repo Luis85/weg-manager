@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-22
 horizon: ""
 start: ""
 due: ""
@@ -23,7 +23,7 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: ready-for-agent
+triage: ""
 ---
 
 # PBI-61 · Beziehungen zwischen Datensätzen und abgeleitete Werte vorbereiten
@@ -65,3 +65,4 @@ Architektur-Review vom 22.11.2026, Option C2. ADR `docs/adr/0007-vault-data-acce
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Durchstich (vier unabhängige Reviews am Stand `0cb8292`). Die Befunde stammen aus den Review-Berichten und den Berichten der Umsetzer; nichts davon ist bisher umgesetzt, soweit die Note es nicht anders sagt.
 - 22.11.2026 (Interview nach der Review-Runde): Entscheidung „eine Rolle je Ansprechpartner“ eingetragen, O-D10 geschlossen, Nachtrag in ADR 0007; `triage` auf `ready-for-agent`. Die Kriterien 2 bis 5 werden nach dem Tag 0.2.0 umgesetzt, während der Produktverantwortliche die Vorabversion prüft.
+- 22.11.2026 (Umsetzung): Kriterien 2 bis 5 erfüllt, damit alle fünf. Feldarten `reference("<typ>")` und `references("<typ>")`, fehlendes Ziel als `reference.missing` aus dem Index (`markMissingReferences`); Suche nach `id` über `byId` je Stand des Index; Dienst `Today` mit Adapter für Obsidian und Adapter im Speicher; `npm run verify` mit Exit 0, e2e grün, Mutationstest der geänderten Dateien ohne Überlebende. Nachträge in ADR 0002 und ADR 0007.

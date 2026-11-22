@@ -4,6 +4,7 @@ import {
   NoteIndex,
   NoteStore,
   noteIndexLayer,
+  type IndexStatus,
   type IndexedNote,
   type IndexedType,
   type NoteSnapshot,
@@ -182,6 +183,7 @@ export const countingType = () => {
   let decodes = 0;
   const type: IndexedType = {
     type: testItem.type,
+    fields: testItem.fields,
     decode: (note) => {
       decodes += 1;
       return testItem.decode(note);
@@ -193,6 +195,7 @@ export const countingType = () => {
 /** A test-only type whose decode throws for a note titled `Bug`: a defect in the index. */
 export const throwingType: IndexedType = {
   type: testItem.type,
+  fields: testItem.fields,
   decode: (note) => {
     if (note.frontmatter["title"] === "Bug") throw new Error("decode bug");
     return testItem.decode(note);
@@ -202,6 +205,16 @@ export const throwingType: IndexedType = {
 /** A test item as the index holds it, decoded by the test type itself. */
 export const decoded = (path: string, frontmatter: Record<string, unknown>) =>
   testItem.decode({ path, frontmatter }) as IndexedNote<typeof testItem.fields>;
+
+/** A snapshot as the index publishes it: the status, the notes, and their lookup by id. */
+export const expectedSnapshot = <F extends NoteFields>(
+  status: IndexStatus,
+  notes: readonly IndexedNote<F>[] = [],
+): NoteSnapshot<F> => ({
+  ...status,
+  notes,
+  byId: new Map(notes.flatMap((note) => (note.id === undefined ? [] : [[note.id, note] as const]))),
+});
 
 export const paths = (snapshot: { readonly notes: readonly { readonly path: string }[] }) =>
   snapshot.notes.map((note) => note.path);

@@ -15,7 +15,8 @@ import {
   unindexedSnapshot,
 } from "../../src/application/notes";
 import { INDEX_BATCH_QUIET } from "../../src/application/notes/index-batches";
-import { Clipboard } from "../../src/application/shell";
+import { Clipboard, today } from "../../src/application/shell";
+import { localDay } from "../../src/domain/shell";
 import { harnessLayer, parseScenario } from "../../harness/layers";
 
 /** The communities once the index's first build is published, or its failure. */
@@ -144,6 +145,17 @@ describe("harnessLayer", () => {
       });
       yield* Clipboard.use((clipboard) => clipboard.write("y")).pipe(Effect.provide(ok));
       assert.deepStrictEqual(writes, ["y"]);
+    }),
+  );
+});
+
+describe("harnessLayer today", () => {
+  it.effect("is the browser's local day", () =>
+    Effect.gen(function* () {
+      const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const before = localDay(new Date(), zone);
+      const day = yield* today.pipe(Effect.provide(harnessLayer("empty")));
+      assert.include([before, localDay(new Date(), zone)], day);
     }),
   );
 });

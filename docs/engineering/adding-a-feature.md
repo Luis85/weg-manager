@@ -61,8 +61,20 @@ Folder `src/domain/communities/`. Pure functions and Effect Schema; no services,
    ```
 
    The key union is `(typeof communityType.keys)[number]`; no hand-written copy of the keys. First test: `tests/unit/domain/communities/community-type.test.ts`, with the exact outcome of a valid note, a missing field, each broken field and a newer version.
+
+   **A reference to another record** is a field of kind `reference` (one id) or `references` (a list of ids), named after the target type, `<type>_id` or `<type>_ids` (ADR 0007, amendment 2026-11-22):
+
+   ```ts
+   fields: {
+     community_ids: required(references("community")),
+     // …
+   },
+   ```
+
+   That is all the feature writes. A value that is no id of that type is the field's issue (`field.reference`, `field.references`); a well-formed id that no record carries is `reference.missing`, which the index adds and the notes catalog words; its rows and its form get both like any field issue, the record stays editable. The target type must be registered by a module, or the index dies at build. To show a target (its name beside the reference), look it up in the target type's snapshot: `noteSnapshot(communityType)` and its `byId.get(id)`, no scan. Write the reference into the contract page as `docs/README_DOCS.md` describes. Tests: the kit's references in `tests/unit/application/notes/note-index-references.test.ts`, on the test-only `testLink` (`tests/support/notes/test-link-type.ts`).
+3. **A value derived from the date** ("overdue") is a pure rule that takes the day as a value, `CalendarDay` (`YYYY-MM-DD`, from `src/domain/shell`), never a clock: overdue is `due < today`, compared as text. The application reads the day from the shell's `Today` (`today`, `todayChanges`; [architecture.md](architecture.md#today)), whose stream publishes the new day at local midnight, so a view that follows it with `useStream` stays right overnight. Tests set the day with `testAdapters({ today })` and `today.set(day)`.
 2. **The rules** (`rules.ts`, `kinds.ts`, `selection.ts`). One function per rule, over plain values: `communityValues(input)` (`trimmedValues`, the short code upper-case); `validateCommunity(input, { others, loaded })` checks the field rules through the codec's `check` and adds `short-code.taken` and `color.taken`; `duplicateShortCodes`, `colorOwners`, `firstFreeColor`, `kindSuggestions`, `selectedCommunity`. The form's validators and the use cases call the same function, so a rule lives in one place. `CommunityFieldIssue` is the schema of the module's issues (`key`, `code`, and the data a sentence needs). First tests: `rules.test.ts`, `kinds-and-selection.test.ts`.
-3. A capability every feature needs belongs to `notes` or `shell`, not to the feature, with its tests on a small fixture type (`tests/unit/domain/notes/form.test.ts`, `file-name.test.ts`).
+4. A capability every feature needs belongs to `notes` or `shell`, not to the feature, with its tests on a small fixture type (`tests/unit/domain/notes/form.test.ts`, `file-name.test.ts`).
 
 ## 2. Application: records, use cases, selection, texts
 
@@ -153,5 +165,6 @@ What a feature author needs when it reads or writes notes. The mechanics are in 
 - **Save a form** with `update(path, editChange(type, loaded, edited))`. It fails with `NoteEditConflictError` (each field's `base`, `edited` and `current`) or `NoteWriteRefusedError`, and then writes nothing. After a conflict, save again with the conflicting fields of `loaded` replaced by their `current` values, as `CommunityForm.vue` does.
 - **Rename** with `rename(path, newName)`; a taken name is `NotePathTakenError`. **Delete** with `trash(path)`.
 - **Read lists from the index**, not with `list`: `noteSnapshot(type)` and `noteChanges(type)`. After a write the view follows by itself, about 100 ms later; use a write's result only for the form that wrote it.
+- **Find a record by id** (a route `item/<id>`, a reference's target) in the snapshot's `byId`, never by scanning `notes`. An id several notes carry gives the first by path, read-only with `id.duplicate`; an id no note carries gives `undefined`.
 - **Notes with problems** are shown, never repaired silently: a `read-only` record has no save; an `editable` one may have field issues, which the form marks by `key` and saving repairs. Unindexed notes come from `unindexedSnapshot` and `unindexedChanges`, worded by `describeUnindexedIssue`; the notes module shows them in the settings section "Datenprobleme".
 - **Never** call `vault.modify`, `vault.adapter`, or `read` followed by a write, and never scan the vault in a hot path.

@@ -1,10 +1,9 @@
 import { Array as Arr, Order } from "effect";
 import type {
-  FieldIssue,
-  FieldIssueCode,
   Frontmatter,
   NoteFields,
   PartialValues,
+  RecordFieldIssue,
   RecordIssue,
 } from "../../domain/notes";
 import type { IndexStatus, IndexedNote, NoteSnapshot } from "./note-index";
@@ -13,10 +12,7 @@ import type { IndexStatus, IndexedNote, NoteSnapshot } from "./note-index";
 export type KeyedIssue = { readonly key: string; readonly code: string };
 
 /** One record note as a list, a form and a dialog show it. */
-export type RecordRow<
-  F extends NoteFields,
-  Issue extends KeyedIssue = FieldIssue<FieldIssueCode<F>>,
-> = {
+export type RecordRow<F extends NoteFields, Issue extends KeyedIssue = RecordFieldIssue<F>> = {
   readonly path: string;
   /** The file name without folder and `.md`: what to show when the title cannot be read. */
   readonly fileName: string;
@@ -42,7 +38,7 @@ export const fileNameOf = (path: string): string =>
 export type RowRules<F extends NoteFields, Issue extends KeyedIssue> = {
   readonly title: keyof F & string;
   /** The issue with the data its sentence needs (an unknown colour's text); default: as it is. */
-  readonly issue?: (issue: FieldIssue<FieldIssueCode<F>>, frontmatter: Frontmatter) => Issue;
+  readonly issue?: (issue: RecordFieldIssue<F>, frontmatter: Frontmatter) => Issue;
   /** The issues between records (a duplicate short code), over the sorted rows. */
   readonly between?: (
     rows: readonly RecordRow<F, Issue>[],
@@ -86,7 +82,8 @@ export const recordRows = <F extends NoteFields, Issue extends KeyedIssue>(
     issues: note.issues.map((issue) => withData(issue, note.frontmatter)),
     frontmatter: note.frontmatter,
   });
-  const toList = (snapshot: NoteSnapshot<F>): RecordList<RecordRow<F, Issue>> => {
+  /** Needs only the status and the notes of a snapshot, so a test can hand them in plainly. */
+  const toList = (snapshot: Omit<NoteSnapshot<F>, "byId">): RecordList<RecordRow<F, Issue>> => {
     const rows = Arr.sort(snapshot.notes.map(rowOf), byTitle);
     return {
       ready: snapshot.ready,

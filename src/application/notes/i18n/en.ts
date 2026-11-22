@@ -117,6 +117,14 @@ export const notesEn: NotesCatalog = {
     "field.checkbox": (label) => `“${label}” isn't a checkbox value. Check or uncheck it.`,
     "field.date": (label) => `“${label}” isn't a valid date. Enter a date as YYYY-MM-DD.`,
     "field.list": (label) => `“${label}” isn't a list of text. Enter a list.`,
+    "field.reference": (label) =>
+      `“${label}” isn't a valid reference to a record. Choose the record again.`,
+    "field.references": (label) =>
+      `“${label}” holds a reference to a record that isn't valid. Choose the records again.`,
+  },
+  referenceIssues: {
+    "reference.missing": ({ id }, label) =>
+      `“${label}” refers to a record that doesn't exist (“${id}”). Restore its note or remove the reference.`,
   },
   unindexedIssues: {
     "schema.malformed": () =>

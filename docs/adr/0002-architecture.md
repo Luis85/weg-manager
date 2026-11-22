@@ -1,6 +1,6 @@
 # ADR 0002 · Layered plugin architecture
 
-- Status: accepted; the presentation bridge and the enforcement amended on 2026-11-21; CSS ownership amended on 21.11.2026 (colour tokens, base rules, harness host; see the notes at the end)
+- Status: accepted; the presentation bridge and the enforcement amended on 2026-11-21; CSS ownership amended on 21.11.2026 (colour tokens, base rules, harness host); the clock as a port added on 2026-11-22 (see the notes at the end)
 - Date: 2026-11-21
 
 ## Context
@@ -40,3 +40,10 @@ Measured in Obsidian 1.15.1 (default theme), scoping alone was not enough: Obsid
 - **The harness plays Obsidian.** Its fake host holds the default theme's values read from the running app and Obsidian's base rules that reach plugin markup, and the dev server scopes exactly as the build does (the scope transform ignores the line break before a selector).
 - **Proof.** `tests/e2e/specs/appearance.e2e.ts` measures computed styles and the contrast of every visible text, light and dark, in Obsidian.
 
+## Amendment, 2026-11-22: the clock is a port
+
+PBI-61, criterion 4. Values derived from the date ("overdue") need the user's local day, and a view may stay open overnight.
+
+- **`Today` is a port of the shell module** (`src/application/shell/today.ts`), like `DeviceStore`: one field of `AppAdapters`, an Obsidian adapter that reads the machine's clock in its local time zone, and an in-memory adapter whose day a test or the harness sets. A rule that depends on the date takes the day as a value (`YYYY-MM-DD`) instead of reading the clock.
+- **Its one timer belongs to the runtime and to the plugin.** The Obsidian adapter keeps a single window timer, cleared by `plugin.register` when Obsidian unloads the plugin and by the runtime's scope when it is disposed, so neither an unload nor a failed bootstrap leaves it behind (as the host event listeners, ADR 0004). It looks at the clock at local midnight and at least once a minute, because a timer counts awake time, not the clock: a changed system clock or a sleep across midnight is published within a minute, and a read is right at once.
+- **Mechanics** are in [architecture.md](../engineering/architecture.md#today).

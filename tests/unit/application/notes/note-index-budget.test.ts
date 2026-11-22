@@ -39,6 +39,7 @@ const frontmatterOf = (text: string) => {
 /** A note type that counts its decodes, whatever its decode does. */
 const counting = (inner: IndexedType, counter: { decodes: number }): IndexedType => ({
   type: inner.type,
+  fields: inner.fields,
   decode: (note) => {
     counter.decodes += 1;
     return inner.decode(note);

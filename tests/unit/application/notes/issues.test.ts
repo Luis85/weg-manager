@@ -2,10 +2,10 @@ import { anything, assert, dictionary, property, string } from "fast-check";
 import { describe, expect, it } from "vitest";
 import { de, en } from "../../../../src/application/messages";
 import { describeNoteIssue } from "../../../../src/application/notes";
-import type { NoteIssue } from "../../../../src/domain/notes";
-import { FULL, testItem } from "../../../support/notes/test-note-type";
+import type { MissingReference, NoteIssue } from "../../../../src/domain/notes";
+import { FULL, TEST_ID, testItem } from "../../../support/notes/test-note-type";
 
-const ISSUES: readonly NoteIssue[] = [
+const ISSUES: readonly (NoteIssue | MissingReference)[] = [
   { code: "schema.malformed" },
   { code: "schema.newer", version: 4 },
   { code: "migration.failed", from: 2 },
@@ -19,6 +19,9 @@ const ISSUES: readonly NoteIssue[] = [
   { code: "field.checkbox", key: "done" },
   { code: "field.date", key: "due" },
   { code: "field.list", key: "tags" },
+  { code: "field.reference", key: "item_id" },
+  { code: "field.references", key: "item_ids" },
+  { code: "reference.missing", key: "item_ids", id: TEST_ID },
 ];
 
 const LABELS: Readonly<Record<string, string>> = {
@@ -27,6 +30,8 @@ const LABELS: Readonly<Record<string, string>> = {
   done: "Erledigt",
   due: "Fällig",
   tags: "Schlagwörter",
+  item_id: "Punkt",
+  item_ids: "Punkte",
 };
 
 const label = (key: string): string => LABELS[key] ?? key;
@@ -52,6 +57,9 @@ describe("describeNoteIssue", () => {
       "„Erledigt“ ist kein Ja-oder-Nein-Wert. Setze das Häkchen oder entferne es.",
       "„Fällig“ ist kein gültiges Datum. Gib ein Datum im Format JJJJ-MM-TT ein.",
       "„Schlagwörter“ ist keine Liste von Texten. Gib eine Liste ein.",
+      "„Punkt“ ist kein gültiger Verweis auf einen Datensatz. Wähle den Datensatz neu aus.",
+      "„Punkte“ enthält einen ungültigen Verweis auf einen Datensatz. Wähle die Datensätze neu aus.",
+      `„Punkte“ verweist auf einen Datensatz, den es nicht gibt („${TEST_ID}“). Stelle seine Notiz wieder her oder entferne den Verweis.`,
     ]);
   });
 
@@ -70,6 +78,9 @@ describe("describeNoteIssue", () => {
       "“done” isn't a checkbox value. Check or uncheck it.",
       "“due” isn't a valid date. Enter a date as YYYY-MM-DD.",
       "“tags” isn't a list of text. Enter a list.",
+      "“item_id” isn't a valid reference to a record. Choose the record again.",
+      "“item_ids” holds a reference to a record that isn't valid. Choose the records again.",
+      `“item_ids” refers to a record that doesn't exist (“${TEST_ID}”). Restore its note or remove the reference.`,
     ]);
   });
 
@@ -80,7 +91,17 @@ describe("describeNoteIssue", () => {
       return key;
     };
     for (const issue of ISSUES) describeNoteIssue(issue, de.notes, recording);
-    expect(asked).toEqual(["title", "title", "count", "done", "due", "tags"]);
+    expect(asked).toEqual([
+      "title",
+      "title",
+      "count",
+      "done",
+      "due",
+      "tags",
+      "item_id",
+      "item_ids",
+      "item_ids",
+    ]);
   });
 
   it.each([de, en])("never words note content ($shell.language)", (messages) => {

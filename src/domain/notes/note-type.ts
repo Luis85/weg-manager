@@ -71,6 +71,32 @@ export type FieldIssue<Code extends string = KindIssueCode> = {
   readonly key: string;
 };
 
+/**
+ * A well-formed reference whose target no record has (no note of the target type carries the id,
+ * PBI-61): one per missing id and field. The note index adds it (`markMissingReferences`); it
+ * never makes a note read-only, and the value stays among the note's values. `id` is shown to the
+ * user, the only name left of a record that is gone; logs never carry it.
+ */
+export type MissingReference = {
+  readonly code: "reference.missing";
+  readonly key: string;
+  readonly id: string;
+};
+
+/** The keys of the reference fields of `F`. */
+type ReferenceKey<F extends NoteFields> = {
+  [K in keyof F]: F[K]["target"] extends string ? K : never;
+}[keyof F];
+
+/** `MissingReference` for a type with a reference field, `never` for one without. */
+export type ReferenceIssue<F extends NoteFields> = [ReferenceKey<F>] extends [never]
+  ? never
+  : MissingReference;
+
+/** Every issue a record of `F` has at one of its fields. */
+export type RecordFieldIssue<F extends NoteFields> =
+  FieldIssue<FieldIssueCode<F>> | ReferenceIssue<F>;
+
 /** Issues of the note as a whole: its marker, its version, its identity. Each makes it read-only. */
 export type RecordIssue =
   | { readonly code: "schema.malformed" }
@@ -114,7 +140,7 @@ type RecordNote<F extends NoteFields> = Located & {
 export type ReadOnlyRecord<F extends NoteFields> = RecordNote<F> & {
   readonly kind: "read-only";
   readonly id: string | undefined;
-  readonly issues: readonly NoteIssue<FieldIssueCode<F>>[];
+  readonly issues: readonly (NoteIssue<FieldIssueCode<F>> | ReferenceIssue<F>)[];
 };
 
 /**
@@ -124,7 +150,7 @@ export type ReadOnlyRecord<F extends NoteFields> = RecordNote<F> & {
 export type EditableRecord<F extends NoteFields> = RecordNote<F> & {
   readonly kind: "editable";
   readonly id: string;
-  readonly issues: readonly FieldIssue<FieldIssueCode<F>>[];
+  readonly issues: readonly RecordFieldIssue<F>[];
 };
 
 export type DecodedNote<F extends NoteFields> = NotThisType | ReadOnlyRecord<F> | EditableRecord<F>;

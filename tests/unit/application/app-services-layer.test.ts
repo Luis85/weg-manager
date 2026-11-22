@@ -5,7 +5,7 @@ import { appServicesLayer } from "../../../src/application/app-services-layer";
 import { AppEvent } from "../../../src/application/events";
 import { NoteStore, noteChanges, noteSnapshot } from "../../../src/application/notes";
 import { INDEX_BATCH_QUIET } from "../../../src/application/notes/index-batches";
-import { EventBus, Logger, Messages } from "../../../src/application/shell";
+import { EventBus, Logger, Messages, today, todayChanges } from "../../../src/application/shell";
 import { communityType } from "../../../src/domain/communities";
 import { testAdapters } from "../../support/adapters";
 import { FULL, testItem } from "../../support/notes/test-note-type";
@@ -144,5 +144,16 @@ describe("appServicesLayer", () => {
         ["test.debug", "test.warn"],
       );
     });
+  });
+
+  it.effect("serves today from the host's adapter", () => {
+    const test = testAdapters({ today: "2026-11-22" });
+    return Effect.gen(function* () {
+      assert.strictEqual(yield* today, "2026-11-22");
+      test.today.set("2026-11-23");
+      assert.strictEqual(Option.getOrThrow(yield* Stream.runHead(todayChanges)), "2026-11-23");
+    }).pipe(
+      Effect.provide(appServicesLayer(test.adapters, { language: "de", developmentMode: false })),
+    );
   });
 });

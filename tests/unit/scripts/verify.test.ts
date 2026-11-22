@@ -57,11 +57,11 @@ const controlled = () => {
 
 const GROUP_STAGE = STAGES[0] ?? [];
 const ALONE = STAGES[1]?.[0] ?? { name: "?", command: "", args: [] };
-const GROUP = ["format:check", "lint", "typecheck"];
+const GROUP = ["format:check", "lint", "typecheck", "check:versions"];
 const REST = ["test:coverage", "analyze", "build", "check:dist", "check:notices"];
 
 describe("the gate's stages", () => {
-  it("runs the three independent checks together, then the rest in order", () => {
+  it("runs the four independent checks together, then the rest in order", () => {
     expect(STAGES.map((stage) => stage.map((step) => step.name))).toEqual([
       GROUP,
       ...REST.map((name) => [name]),
@@ -91,7 +91,7 @@ describe("the gate's stages", () => {
 });
 
 describe("runStages", () => {
-  it("starts format:check, lint and typecheck at the same time", async () => {
+  it("starts format:check, lint, typecheck and check:versions at the same time", async () => {
     const run = controlled();
     const done = runStages(STAGES, run.spawn, () => undefined);
     await Promise.resolve();
@@ -107,11 +107,12 @@ describe("runStages", () => {
     expect(results.every((result) => result.code === 0)).toBe(true);
   });
 
-  it("waits for the slowest of the three before it starts test:coverage", async () => {
+  it("waits for the slowest of the four before it starts test:coverage", async () => {
     const run = controlled();
     const done = runStages(STAGES, run.spawn, () => undefined);
     await run.end("format:check");
     await run.end("typecheck");
+    await run.end("check:versions");
     expect(run.started).toEqual(GROUP);
     await run.end("lint");
     expect(run.started).toEqual([...GROUP, "test:coverage"]);
@@ -127,6 +128,7 @@ describe("runStages", () => {
     // The group is not over yet: typecheck still runs and nothing else has started.
     expect(run.started).toEqual(GROUP);
     await run.end("format:check");
+    await run.end("check:versions");
     await run.end("typecheck", 2, "type output\n");
     const results = await done;
     expect(run.started).toEqual(GROUP);
@@ -134,8 +136,9 @@ describe("runStages", () => {
       expect.objectContaining({ name: "format:check", code: 0 }),
       expect.objectContaining({ name: "lint", code: 1 }),
       expect.objectContaining({ name: "typecheck", code: 2 }),
+      expect.objectContaining({ name: "check:versions", code: 0 }),
     ]);
-    expect(printed).toHaveLength(3);
+    expect(printed).toHaveLength(4);
   });
 
   it("stops after a failed step of a later stage and starts nothing after it", async () => {
@@ -154,7 +157,7 @@ describe("runStages", () => {
     const done = runStages(STAGES, run.spawn, () => undefined);
     await run.drain();
     await done;
-    expect(GROUP.map((name) => run.buffered[name])).toEqual([true, true, true]);
+    expect(GROUP.map((name) => run.buffered[name])).toEqual([true, true, true, true]);
     expect(REST.map((name) => run.buffered[name])).toEqual([false, false, false, false, false]);
   });
 
@@ -166,8 +169,9 @@ describe("runStages", () => {
     expect(printed).toHaveLength(1);
     await run.end("lint", 1, "a.ts: error one\nb.ts: error two\n");
     await run.end("format:check", 0, "All matched files use Prettier code style!");
+    await run.end("check:versions");
     await done;
-    expect(printed).toHaveLength(3);
+    expect(printed).toHaveLength(4);
     expect(printed[0]).toMatch(
       /^\n--- typecheck ---\ntypes: 0 errors\n--- typecheck: ok, \d+\.\d s ---\n$/,
     );
@@ -214,6 +218,7 @@ describe("runGate", () => {
     await run.end("format:check");
     await run.end("lint", 1);
     await run.end("typecheck", 2);
+    await run.end("check:versions");
     expect(await done).toBe(1);
     const text = printed.at(-1) ?? "";
     for (const step of STAGES.flat()) expect(text).toContain(step.name);

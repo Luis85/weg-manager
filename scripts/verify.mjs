@@ -23,7 +23,7 @@ const npm = (/** @type {string} */ script) => ({
  * Independent of each other, so they start together. Lint (type-aware ESLint) is the longest and
  * sets the pace.
  */
-const PARALLEL = ["format:check", "lint", "typecheck"].map(npm);
+const PARALLEL = ["format:check", "lint", "typecheck", "check:versions"].map(npm);
 
 /**
  * Run after the group, one at a time. `check:dist` and `check:notices` read the fresh `dist/`, so

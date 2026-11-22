@@ -3,6 +3,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync } from "node:
 import { join } from "node:path";
 import { CSS_PREFIX, checkDist } from "./check-dist.mjs";
 import { NOTICES_FILE } from "./third-party-notices.mjs";
+import { versionsEntryProblem } from "./check-versions.mjs";
 import { isCli } from "./is-cli.mjs";
 
 export const RELEASE_FILES = ["main.js", "manifest.json", "styles.css"];
@@ -38,17 +39,8 @@ export const packageRelease = ({ distDir, outDir, rootDir, tag }) => {
     throw new Error(`${distDir} fails check:dist: ${violations.join("; ")}`);
   }
   const versions = JSON.parse(readFileSync(join(rootDir, "versions.json"), "utf8"));
-  const minAppVersion = versions[manifest.version];
-  if (minAppVersion === undefined) {
-    throw new Error(
-      `versions.json has no entry for ${manifest.version} (run "npm version" so the bump adds it)`,
-    );
-  }
-  if (minAppVersion !== manifest.minAppVersion) {
-    throw new Error(
-      `versions.json maps ${manifest.version} to "${minAppVersion}", but manifest.json has minAppVersion "${manifest.minAppVersion}"`,
-    );
-  }
+  const problem = versionsEntryProblem(manifest, versions);
+  if (problem !== undefined) throw new Error(problem);
   const noticesSource = join(rootDir, NOTICES_FILE);
   assertNotices(noticesSource);
   const folder = join(outDir, manifest.id);

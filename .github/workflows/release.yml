@@ -8,12 +8,16 @@
 #
 # Two jobs, so that the job with write permissions never runs repository code:
 #
-#   build    read-only token, no persisted credentials. Checks the version and that the commit is on
-#            main, installs (dependency install scripts run here), runs the gate and the real-Obsidian e2e
-#            suite (the gate includes check:notices, so THIRD-PARTY-NOTICES.txt is current), stages
-#            main.js, manifest.json and styles.css in release/weg-manager/ and the notices file
-#            beside that folder (`release:package` re-runs check:dist and checks versions.json) and
-#            uploads release/ as an artifact.
+#   build    read-only token, no persisted credentials. Resolves and checks the version first (the
+#            commit is on main, the tag equals the manifest version, package.json and manifest.json
+#            agree, versions.json has the entry: scripts/release-version.mjs and check-versions.mjs),
+#            then installs (dependency install scripts run here), runs the gate (it includes
+#            check:notices, so THIRD-PARTY-NOTICES.txt is current), stages main.js, manifest.json and
+#            styles.css in release/weg-manager/ and the notices file beside that folder
+#            (`release:package` re-runs check:dist and the versions check) and records their hashes.
+#            Only then it runs the real-Obsidian e2e suite, which rebuilds dist/ and starts cached
+#            binaries, checks that the staged files still match the hashes, and uploads release/ as an
+#            artifact.
 #   release  write permissions, no checkout and no npm. Downloads that artifact, attests the four
 #            files (the signed build-provenance attestation the Obsidian developer docs recommend,
 #            "Release your plugin with GitHub Actions") and creates the GitHub release with exactly
@@ -55,8 +59,14 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      # Node first: the checks below are plain scripts of this repository that need no install.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
       # The version comes from the tag, or from the input of a start by hand. An input is only ever
-      # read from the environment, never pasted into a script.
+      # read from the environment, never pasted into a script. scripts/release-version.mjs holds the
+      # rules (tested in tests/unit/scripts/release-version.test.ts).
       - name: Resolve the version
         id: version
         env:
@@ -64,27 +74,7 @@ jobs:
           REF: ${{ github.ref }}
           REF_NAME: ${{ github.ref_name }}
           INPUT_VERSION: ${{ inputs.version }}
-        run: |
-          if [ "$EVENT" = "workflow_dispatch" ]; then
-            if [ "$REF" != "refs/heads/main" ]; then
-              echo "::error title=Not on main::Start the release on main, not on $REF_NAME."
-              exit 1
-            fi
-            tag="$INPUT_VERSION"
-          else
-            tag="$REF_NAME"
-          fi
-          # Matched as one string, so an input with a line break cannot pass.
-          if ! [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error title=Not a version::The version must be a bare x.y.z, without a v."
-            exit 1
-          fi
-          # The checkout above fetched every tag (fetch-depth: 0). The release job asks GitHub again.
-          if [ "$EVENT" = "workflow_dispatch" ] && git rev-parse -q --verify "refs/tags/$tag" > /dev/null; then
-            echo "::error title=Tag exists::Tag $tag already exists. A version is released once; bump the version for a new release."
-            exit 1
-          fi
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+        run: node scripts/release-version.mjs
       - name: The commit must be on main
         env:
           TAG: ${{ steps.version.outputs.tag }}
@@ -93,12 +83,25 @@ jobs:
             echo "::error title=Not on main::$TAG ($(git rev-parse --short HEAD)) is not an ancestor of origin/main. Release from main only."
             exit 1
           fi
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version-file: .nvmrc
-          cache: npm
+      # The cheap checks first, before the install and the 20 to 30 minutes of gate and e2e: the tag
+      # equals the manifest version, package.json and manifest.json agree, versions.json has the entry.
+      - name: Check the versions
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: node scripts/check-versions.mjs --tag "$TAG"
       - run: npm ci
       - run: npm run verify
+      # Stage and hash what the gate built (it ends with build, check:dist and check:notices on
+      # dist/) before anything else runs: the e2e steps below start cached Obsidian and chromedriver
+      # binaries and rebuild dist/. release:package re-runs check:dist and the versions check.
+      - name: Stage the release files
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: npm run release:package -- --tag "$TAG"
+      - name: Record the hashes of the staged files
+        run: |
+          cd release
+          sha256sum weg-manager/main.js weg-manager/manifest.json weg-manager/styles.css THIRD-PARTY-NOTICES.txt | tee "$RUNNER_TEMP/release-files.sha256"
       # The same end-to-end setup as ci.yml (job e2e): latest Obsidian under Xvfb, kept in the cache.
       - name: Resolve Obsidian versions for the cache key
         run: |
@@ -140,11 +143,12 @@ jobs:
         with:
           path: .obsidian-cache
           key: ${{ steps.obsidian-cache.outputs.cache-primary-key }}
-      # Fails unless the version equals the one in manifest.json.
-      - name: Stage the release files
-        env:
-          TAG: ${{ steps.version.outputs.tag }}
-        run: npm run release:package -- --tag "$TAG"
+      # The e2e run rebuilt dist/ and ran cached binaries. What is uploaded must still be what the
+      # gate built, so the staged files must match the hashes taken at staging time.
+      - name: The staged files are unchanged
+        run: |
+          cd release
+          sha256sum --check --strict "$RUNNER_TEMP/release-files.sha256"
       - name: Upload the release files
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -182,6 +186,7 @@ jobs:
             release/weg-manager/styles.css
             release/THIRD-PARTY-NOTICES.txt
       - name: Create GitHub release
+        id: create
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -196,8 +201,13 @@ jobs:
           # tag must not exist: with an existing tag `gh` would ignore --target. Started by a tag,
           # that tag must exist.
           if [ "$EVENT" = "workflow_dispatch" ]; then
-            if gh api "repos/$GH_REPO/git/ref/tags/$TAG" > /dev/null 2>&1; then
+            # Only a 404 means "no such tag". Any other failure (5xx, rate limit, network) says
+            # nothing about the tag, so the job fails instead of going on with --target.
+            if lookup=$(gh api "repos/$GH_REPO/git/ref/tags/$TAG" 2>&1); then
               echo "::error title=Tag exists::Tag $TAG already exists. A version is released once; bump the version for a new release."
+              exit 1
+            elif ! grep -q "HTTP 404" <<< "$lookup"; then
+              echo "::error title=Tag lookup failed::Could not tell whether tag $TAG exists: $lookup"
               exit 1
             fi
             flags+=(--target "$SHA")

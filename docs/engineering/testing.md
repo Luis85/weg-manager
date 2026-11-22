@@ -80,7 +80,7 @@ The unit and dom projects run on loaded machines: the gate beside another suite,
 
 `npm run verify` (`scripts/verify.mjs`) is the one gate. It has two kinds of stage:
 
-1. `format:check`, `lint` and `typecheck` start together. They read the sources and write nothing, so they do not disturb each other.
+1. `format:check`, `lint`, `typecheck` and `check:versions` start together. They read the sources and write nothing, so they do not disturb each other. `check:versions` (`scripts/check-versions.mjs`, under a second) fails when `package.json` and `manifest.json` carry different versions or `versions.json` lacks the manifest version's entry; `release.yml` runs it with `--tag` before it installs anything.
 2. `test:coverage`, `analyze`, `build`, `check:dist` and `check:notices`, each alone and in this order. `check:dist` and `check:notices` read the fresh `dist/`, so they stay behind `build`.
 
 `npm run verify:full` adds `test:mutation` as a last stage.

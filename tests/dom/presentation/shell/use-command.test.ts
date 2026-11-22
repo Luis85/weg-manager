@@ -33,7 +33,7 @@ describe("useCommand while the scope is alive", () => {
     const { exposed } = host(runtime, () => useCommand(() => source.read));
     const running = exposed.run();
     expect(exposed.pending.value).toBe(true);
-    await running;
+    await expect(running).resolves.toEqual({ _tag: "success", value: 3 });
     expect(exposed.pending.value).toBe(false);
     expect(exposed.value.value).toBe(3);
     expect(exposed.error.value).toBeUndefined();
@@ -43,7 +43,8 @@ describe("useCommand while the scope is alive", () => {
     const { runtime, notifier } = make();
     const failure = new VaultReadError({ cause: new Error("x") });
     const { exposed } = host(runtime, () => useCommand(() => Effect.fail(failure)));
-    await exposed.run();
+    const outcome = await exposed.run();
+    expect(outcome).toEqual({ _tag: "failure", error: failure, message: exposed.message.value });
     expect(exposed.error.value).toBe(failure);
     expect(exposed.message.value?.title).toBe("Notizen nicht lesbar");
     expect(notifier.messages()).toEqual([]);
@@ -54,7 +55,7 @@ describe("useCommand while the scope is alive", () => {
     const { exposed } = host(runtime, () =>
       useCommand(() => Effect.die(new Error("boom")) as Effect.Effect<never, VaultReadError>),
     );
-    await exposed.run();
+    await expect(exposed.run()).resolves.toEqual({ _tag: "defect" });
     expect(exposed.error.value).toBeUndefined();
     expect(exposed.message.value).toBeUndefined();
     expect(notifier.messages()).toHaveLength(1);
@@ -68,7 +69,7 @@ describe("useCommand while the scope is alive", () => {
         throw new Error("build exploded");
       }),
     );
-    await expect(exposed.run()).resolves.toBeUndefined();
+    await expect(exposed.run()).resolves.toEqual({ _tag: "defect" });
     expect(exposed.pending.value).toBe(false);
     expect(notifier.messages()).toHaveLength(1);
     expect(defects(logger)).toHaveLength(1);
@@ -86,11 +87,40 @@ describe("useCommand while the scope is alive", () => {
     expect(exposed.value.value).toBe(5);
   });
 
+  it("clears the previous value when it runs again, so a failure after a success reads none", async () => {
+    const { runtime, source } = make();
+    source.hold();
+    const { exposed } = host(runtime, () => useCommand(() => source.read));
+    source.release();
+    await exposed.run();
+    expect(exposed.value.value).toBe(3);
+    source.hold();
+    source.set("fail");
+    const running = exposed.run();
+    expect(exposed.value.value).toBeUndefined();
+    source.release();
+    await expect(running).resolves.toMatchObject({ _tag: "failure" });
+    expect(exposed.value.value).toBeUndefined();
+  });
+
+  it("resolves a defect after a success as a defect, with no value left", async () => {
+    const { runtime } = make();
+    let die = false;
+    const { exposed } = host(runtime, () =>
+      useCommand(() => (die ? Effect.die(new Error("boom")) : Effect.succeed(1))),
+    );
+    await exposed.run();
+    die = true;
+    await expect(exposed.run()).resolves.toEqual({ _tag: "defect" });
+    expect(exposed.value.value).toBeUndefined();
+    expect(exposed.error.value).toBeUndefined();
+  });
+
   it("treats a disposed runtime as a defect it cannot report, without rejecting", async () => {
     const { runtime, source } = make();
     const { exposed } = host(runtime, () => useCommand(() => source.read));
     await runtime.dispose();
-    await expect(exposed.run()).resolves.toBeUndefined();
+    await expect(exposed.run()).resolves.toEqual({ _tag: "defect" });
     expect(exposed.error.value).toBeUndefined();
   });
 });
@@ -106,7 +136,7 @@ describe("useCommand runs once per pending call", () => {
     const second = exposed.run();
     expect(second).toBe(first);
     source.release();
-    await first;
+    await expect(second).resolves.toEqual({ _tag: "success", value: 3 });
     await settle();
     expect(counted).toEqual([3]);
     expect(exposed.value.value).toBe(3);
@@ -147,7 +177,7 @@ describe("useCommand after the scope ended", () => {
     await flushPromises();
     wrapper.unmount();
     source.release();
-    await running;
+    await expect(running).resolves.toEqual({ _tag: "success", value: 3 });
     await settle();
     expect(counted).toEqual([3]);
     expect(exposed.pending.value).toBe(true);
@@ -180,7 +210,11 @@ describe("useCommand after the scope ended", () => {
     await settle();
     wrapper.unmount();
     store.releaseSaves();
-    await running;
+    await expect(running).resolves.toMatchObject({
+      _tag: "failure",
+      error: { _tag: "StorageError" },
+      message: { title: "Einstellungen nicht gespeichert" },
+    });
     await settle();
     expect(notifier.messages()).toEqual([
       {
@@ -206,7 +240,7 @@ describe("useCommand after the scope ended", () => {
     await flushPromises();
     wrapper.unmount();
     source.release();
-    await running;
+    await expect(running).resolves.toEqual({ _tag: "defect" });
     await settle();
     expect(defects(logger)).toHaveLength(1);
     expect(notifier.messages()).toHaveLength(1);
@@ -221,7 +255,7 @@ describe("useCommand after the scope ended", () => {
     await flushPromises();
     wrapper.unmount();
     await runtime.dispose();
-    await expect(running).resolves.toBeUndefined();
+    await expect(running).resolves.toEqual({ _tag: "interrupted" });
     expect(notifier.messages()).toEqual([]);
     expect(defects(logger)).toEqual([]);
   });

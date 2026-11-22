@@ -18,7 +18,7 @@ describe("useQuery", () => {
     const { exposed } = host(runtime, () => useQuery(() => source.read));
     const running = exposed.run();
     expect(exposed.pending.value).toBe(true);
-    await running;
+    await expect(running).resolves.toEqual({ _tag: "success", value: 3 });
     expect(exposed.pending.value).toBe(false);
     expect(exposed.value.value).toBe(3);
     expect(exposed.error.value).toBeUndefined();
@@ -28,7 +28,7 @@ describe("useQuery", () => {
     const { runtime, notifier } = make();
     const failure = new VaultReadError({ cause: new Error("x") });
     const { exposed } = host(runtime, () => useQuery(() => Effect.fail(failure)));
-    await exposed.run();
+    await expect(exposed.run()).resolves.toMatchObject({ _tag: "failure", error: failure });
     expect(exposed.error.value).toBe(failure);
     expect(exposed.message.value?.title).toBe("Notizen nicht lesbar");
     expect(notifier.messages()).toEqual([]);
@@ -39,7 +39,7 @@ describe("useQuery", () => {
     const { exposed } = host(runtime, () =>
       useQuery(() => Effect.die(new Error("boom")) as Effect.Effect<never, VaultReadError>),
     );
-    await exposed.run();
+    await expect(exposed.run()).resolves.toEqual({ _tag: "defect" });
     expect(exposed.error.value).toBeUndefined();
     expect(exposed.message.value).toBeUndefined();
     expect(notifier.messages()).toHaveLength(1);
@@ -53,7 +53,7 @@ describe("useQuery", () => {
         throw new Error("build exploded");
       }),
     );
-    await expect(exposed.run()).resolves.toBeUndefined();
+    await expect(exposed.run()).resolves.toEqual({ _tag: "defect" });
     expect(exposed.pending.value).toBe(false);
     expect(exposed.error.value).toBeUndefined();
     expect(notifier.messages()).toHaveLength(1);
@@ -68,7 +68,7 @@ describe("useQuery", () => {
     await flushPromises();
     expect(source.held()).toBe(1);
     const second = exposed.run();
-    await first;
+    await expect(first).resolves.toEqual({ _tag: "interrupted" });
     expect(exposed.pending.value).toBe(true);
     expect(exposed.value.value).toBeUndefined();
     source.set(9);
@@ -90,7 +90,7 @@ describe("useQuery", () => {
     await flushPromises();
     wrapper.unmount();
     source.release();
-    await running;
+    await expect(running).resolves.toEqual({ _tag: "interrupted" });
     await flushPromises();
     expect(counted).toEqual([]);
     expect(exposed.value.value).toBeUndefined();
@@ -102,8 +102,17 @@ describe("useQuery", () => {
     const { runtime, source } = make();
     const { exposed } = host(runtime, () => useQuery(() => source.read));
     await runtime.dispose();
-    await expect(exposed.run()).resolves.toBeUndefined();
+    await expect(exposed.run()).resolves.toEqual({ _tag: "defect" });
     expect(exposed.error.value).toBeUndefined();
+  });
+
+  it("clears the previous value when it runs again", async () => {
+    const { runtime, source } = make();
+    const { exposed } = host(runtime, () => useQuery(() => source.read));
+    await exposed.run();
+    source.set("fail");
+    await expect(exposed.run()).resolves.toMatchObject({ _tag: "failure" });
+    expect(exposed.value.value).toBeUndefined();
   });
 });
 

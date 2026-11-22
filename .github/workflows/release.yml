@@ -186,7 +186,6 @@ jobs:
             release/weg-manager/styles.css
             release/THIRD-PARTY-NOTICES.txt
       - name: Create GitHub release
-        id: create
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}

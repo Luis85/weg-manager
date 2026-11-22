@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Event flow: from an Obsidian vault change to the view",
+    "output": "docs/archify/sequence-event-flow-20261122-130958/event-flow.html",
+    "quality_profile": "showcase",
+    "locale": "en",
+    "repository": {
+      "url": "https://github.com/Luis85/weg-manager",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "97d40ad43a3d5a88357f0033cbfbb02967c8953c"
+    }
+  },
+  "participants": [
+    {
+      "id": "obsidian",
+      "type": "external",
+      "label": "Obsidian",
+      "sublabel": "vault · metadata cache"
+    },
+    {
+      "id": "hostevents",
+      "type": "backend",
+      "label": "Host event adapter",
+      "sublabel": "hostEventsLayer",
+      "sources": [{ "path": "src/infrastructure/obsidian/shell/events.ts", "line": 44, "end_line": 165 }]
+    },
+    {
+      "id": "bus",
+      "type": "messagebus",
+      "label": "EventBus",
+      "sublabel": "PubSub<AppEvent>",
+      "sources": [{ "path": "src/application/shell/event-bus.ts", "line": 36, "end_line": 49 }]
+    },
+    {
+      "id": "index",
+      "type": "backend",
+      "label": "Note index",
+      "sublabel": "queue · worker · batches",
+      "sources": [
+        { "path": "src/application/notes/index-live.ts", "line": 188, "end_line": 203 },
+        { "path": "src/application/notes/index-batches.ts", "line": 68, "end_line": 88 }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "backend",
+      "label": "NoteStore",
+      "sublabel": "Obsidian adapter",
+      "sources": [{ "path": "src/infrastructure/obsidian/notes/note-store.ts", "line": 129, "end_line": 157 }]
+    },
+    {
+      "id": "view",
+      "type": "frontend",
+      "label": "View",
+      "sublabel": "useStream",
+      "sources": [{ "path": "src/presentation/shell/runtime/use-stream.ts", "line": 32, "end_line": 45 }]
+    }
+  ],
+  "segments": [
+    { "from": 150, "to": 555, "label": "Plugin start-up" },
+    { "from": 565, "to": 640, "label": "View opens" },
+    { "from": 650, "to": 840, "label": "A note changes" },
+    { "from": 850, "to": 1030, "label": "Batch is read" },
+    { "from": 1040, "to": 1120, "label": "Unload" }
+  ],
+  "messages": [
+    {
+      "id": "startup-scan",
+      "from": "obsidian",
+      "to": "hostevents",
+      "y": 170,
+      "label": "vault create × n",
+      "variant": "dashed",
+      "note": "startup scan: held back until the layout is ready"
+    },
+    {
+      "id": "layout-ready",
+      "from": "obsidian",
+      "to": "hostevents",
+      "y": 235,
+      "label": "onLayoutReady",
+      "variant": "default"
+    },
+    {
+      "id": "publish-layout-ready",
+      "from": "hostevents",
+      "to": "bus",
+      "y": 265,
+      "label": "publish LayoutReady",
+      "variant": "emphasis"
+    },
+    {
+      "id": "publish-vault-ready",
+      "from": "hostevents",
+      "to": "bus",
+      "y": 295,
+      "label": "publish VaultReady",
+      "variant": "emphasis",
+      "note": "once the cache holds every Markdown file: right away on a warm start, after the last resolved on a cold one"
+    },
+    {
+      "id": "deliver-vault-ready",
+      "from": "bus",
+      "to": "index",
+      "y": 375,
+      "label": "VaultReady",
+      "variant": "dashed",
+      "note": "every earlier event was dropped: the build reads what they changed"
+    },
+    {
+      "id": "list-notes",
+      "from": "index",
+      "to": "store",
+      "y": 440,
+      "label": "list · unreadable(rootFolder)",
+      "variant": "default"
+    },
+    {
+      "id": "read-cache",
+      "from": "store",
+      "to": "obsidian",
+      "y": 470,
+      "label": "getMarkdownFiles · getFileCache",
+      "variant": "default"
+    },
+    {
+      "id": "files",
+      "from": "obsidian",
+      "to": "store",
+      "y": 500,
+      "label": "files + frontmatter",
+      "variant": "return"
+    },
+    {
+      "id": "notes",
+      "from": "store",
+      "to": "index",
+      "y": 530,
+      "label": "notes",
+      "variant": "return"
+    },
+    {
+      "id": "view-subscribes",
+      "from": "view",
+      "to": "index",
+      "y": 585,
+      "label": "useStream(snapshot, changes)",
+      "variant": "default"
+    },
+    {
+      "id": "current-snapshot",
+      "from": "index",
+      "to": "view",
+      "y": 615,
+      "label": "current snapshot, then each change",
+      "variant": "return"
+    },
+    {
+      "id": "metadata-changed",
+      "from": "obsidian",
+      "to": "hostevents",
+      "y": 675,
+      "label": "metadataCache 'changed'",
+      "variant": "emphasis",
+      "note": "a note is written, edited or synced; the vault's create and modify come first and ask for nothing"
+    },
+    {
+      "id": "publish-metadata-changed",
+      "from": "hostevents",
+      "to": "bus",
+      "y": 745,
+      "label": "publish MetadataChanged",
+      "variant": "emphasis",
+      "note": "plain data {path, extension}; a defect goes to reportDefect, never into Obsidian"
+    },
+    {
+      "id": "deliver-metadata-changed",
+      "from": "bus",
+      "to": "index",
+      "y": 810,
+      "label": "MetadataChanged",
+      "variant": "dashed",
+      "note": "queued as a path; the batch closes after 100 ms of quiet, at most 1 s after its first event"
+    },
+    {
+      "id": "read-path",
+      "from": "index",
+      "to": "store",
+      "y": 880,
+      "label": "read(path)",
+      "variant": "default"
+    },
+    {
+      "id": "read-frontmatter",
+      "from": "store",
+      "to": "obsidian",
+      "y": 910,
+      "label": "getFileCache(file)",
+      "variant": "default"
+    },
+    {
+      "id": "frontmatter",
+      "from": "obsidian",
+      "to": "store",
+      "y": 940,
+      "label": "frontmatter",
+      "variant": "return"
+    },
+    {
+      "id": "note",
+      "from": "store",
+      "to": "index",
+      "y": 970,
+      "label": "note",
+      "variant": "return"
+    },
+    {
+      "id": "new-snapshot",
+      "from": "index",
+      "to": "view",
+      "y": 1000,
+      "label": "new snapshot",
+      "variant": "emphasis",
+      "note": "only if a note changed"
+    },
+    {
+      "id": "view-unmounts",
+      "from": "view",
+      "to": "index",
+      "y": 1065,
+      "label": "scope ends → stream interrupted",
+      "variant": "default"
+    },
+    {
+      "id": "unregister",
+      "from": "hostevents",
+      "to": "obsidian",
+      "y": 1100,
+      "label": "offref × 6 (runtime.dispose)",
+      "variant": "security"
+    }
+  ],
+  "activations": [
+    { "participant": "index", "from": 370, "to": 1015, "type": "backend" },
+    { "participant": "store", "from": 435, "to": 535, "type": "backend" },
+    { "participant": "store", "from": 875, "to": 975, "type": "backend" },
+    { "participant": "view", "from": 580, "to": 1070, "type": "frontend" }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Gating",
+      "items": [
+        "File events before onLayoutReady are dropped",
+        "LayoutReady is the first event of every load, VaultReady the second",
+        "The index builds at VaultReady and ignores everything before it"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Delivery",
+      "items": [
+        "Unbounded PubSub: no event is lost in a bulk sync",
+        "Each subscriber has its own subscription",
+        "The index follows by re-reading paths, never by applying a delta"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Own writes",
+      "items": [
+        "A write by the plugin does not notify the index",
+        "It arrives the same way as an outside edit, through MetadataChanged",
+        "The view waits for that event, like every other view"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Clean-up",
+      "items": [
+        "Closing the view interrupts its stream",
+        "Disposing the runtime removes all 6 listeners and stops the index"
+      ]
+    }
+  ]
+}

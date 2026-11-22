@@ -1,5 +1,6 @@
 {
   "$schema": "tokens v2",
+  "note": "Gestaltungswerte vom 15.11.2026, nicht der gebaute Stand. Siehe 01 - Design Tokens.md (Stand 22.11.2026) und src/styles/.",
   "version": "2.0",
   "date": "2026-11-15",
   "color": {

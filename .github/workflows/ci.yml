@@ -1,5 +1,5 @@
 # Quality gate on every push to main and every pull request. The logic lives in npm scripts;
-# this file only orchestrates (blueprint Task 11, GitHub Actions per the Task 11 decision).
+# this file only orchestrates them.
 name: CI
 
 on:

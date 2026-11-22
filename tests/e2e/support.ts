@@ -93,6 +93,33 @@ export const expectNotice = (text: string) =>
     timeoutMsg: `no notice said ${text}`,
   });
 
+/**
+ * Waits until Obsidian's metadata cache has worked through everything queued so far. A freshly
+ * started Obsidian indexes the vault's notes in the background, and its `changed` events would
+ * land in the middle of a spec that records events. Obsidian's cache works through its queue in
+ * order, so a note edited now is the last in line: once its own `changed` and the `resolved` after
+ * it have come, every earlier note is done too.
+ */
+export const cacheIdle = () =>
+  browser.executeObsidian(async ({ app }) => {
+    const file = app.vault.getMarkdownFiles()[0];
+    if (file === undefined) return;
+    await new Promise<void>((done) => {
+      let changed = false;
+      const refs = [
+        app.metadataCache.on("changed", (edited) => {
+          if (edited === file) changed = true;
+        }),
+        app.metadataCache.on("resolved", () => {
+          if (!changed) return;
+          for (const ref of refs) app.metadataCache.offref(ref);
+          done();
+        }),
+      ];
+      void app.vault.process(file, (text) => `${text}\n`);
+    });
+  });
+
 export const openView = () => browser.executeObsidianCommand(`${PLUGIN_ID}:open-view`);
 
 export const leafCount = () =>

@@ -9,4 +9,6 @@ export const preloadSurface = (): Promise<unknown> =>
   Promise.all([
     import("../../src/presentation/shell/mount"),
     import("../../src/presentation/communities"),
+    import("../../src/presentation/notes"),
+    import("../../src/presentation/shell"),
   ]);

@@ -1,5 +1,5 @@
 import { flushPromises } from "@vue/test-utils";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import { de } from "../../../../src/application/messages";
 import { routesOf, settingsRoute } from "../../../../src/application/shell/routes";
@@ -10,6 +10,10 @@ import {
   type SurfaceDefinition,
 } from "../../../../src/presentation/shell/host";
 import { runtimes } from "../../../support/composable";
+import { preloadSurface } from "../../../support/preload";
+import { eventually } from "../../../support/wait";
+
+await preloadSurface();
 
 /** The settings screen with two test sections; `data` has a badge. */
 const SettingsRoute = settingsRoute(["general", "data"]);
@@ -59,7 +63,7 @@ const mounted = async (
   const surface = definition(options.sections ?? PARTS);
   const navigation = memoryNavigation(surface, options.start ?? START);
   closes.push(mountSurface(root, runtime, { surface, navigation }));
-  await vi.waitFor(() =>
+  await eventually(() =>
     expect(root.querySelector("[data-testid=settings-screen]")).not.toBeNull(),
   );
   await settle();

@@ -2,12 +2,16 @@ import { flushPromises } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { appSurface } from "../../../../src/presentation/app-surface";
 import { runtimes } from "../../../support/composable";
+import { preloadSurface } from "../../../support/preload";
+import { eventually } from "../../../support/wait";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
 const { App } = await import("@test/obsidian");
 const { ShellView, SHELL_VIEW_TYPE } =
   await import("../../../../src/infrastructure/obsidian/shell/shell-view");
+
+await preloadSurface();
 
 const { make, disposeAll } = runtimes();
 
@@ -36,10 +40,7 @@ const restored = async (state: unknown) => {
 
 /** Waits until the view shows the section whose root carries `testid`. */
 const showing = (view: AppView, testid: string) =>
-  vi.waitFor(() => expect(view.contentEl.querySelector(`[data-testid=${testid}]`)).not.toBeNull(), {
-    timeout: 5000,
-    interval: 10,
-  });
+  eventually(() => expect(view.contentEl.querySelector(`[data-testid=${testid}]`)).not.toBeNull());
 
 afterEach(async () => {
   document.body.replaceChildren();

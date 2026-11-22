@@ -73,18 +73,21 @@ const textSamples = (scope: string): Promise<TextSample[]> =>
  * Contrast of every visible text inside `scope` (the plugin root, portal included, by default)
  * against the background it sits on.
  */
-export const measureTexts = async (scope = ROOT): Promise<Measured[]> =>
-  (await textSamples(scope)).map(({ text, testid, fg, layers }) => ({
+export const measureTexts = async (scope = ROOT): Promise<Measured[]> => {
+  await settleColours();
+  return (await textSamples(scope)).map(({ text, testid, fg, layers }) => ({
     text,
     testid,
     ratio: floor2(contrast(fg, flatten(layers))),
   }));
+};
 
 /**
  * The boundary of each text input in the root: the colour of its outline (a ring is an inset box
  * shadow, a border a border), against the background around it.
  */
 export const measureFieldBoundaries = async (): Promise<Measured[]> => {
+  await settleColours();
   const fields = await browser.execute((selector) => {
     const probe = document.createElement("i");
     document.body.append(probe);
@@ -149,45 +152,63 @@ export const useScheme = async (scheme: "light" | "dark") => {
       ),
     { timeoutMsg: `the root never turned ${scheme}` },
   );
-  await transitionsSettled();
+  await settleColours();
 };
 
 /**
- * Waits until no CSS transition inside the plugin's root is running. Nuxt UI's buttons fade their
- * colours (`transition-colors`, 150 ms) when the theme changes, and a computed colour read in the
- * middle is neither the old nor the new one. A style change starts its transitions at the next
- * style recalculation, so this lets two frames pass first, then waits for each running transition
- * to finish.
+ * Brings every colour of the page to its resting value, so a read is neither the old nor the new
+ * colour of a fade. Nuxt UI's elements fade their colours (`transition-colors`, 150 ms) when the
+ * theme changes, when a pointer leaves a button and when a dialog opens, and a dialog's overlay
+ * fades in (a CSS animation), which changes the background its text is measured against. These
+ * start at the next style recalculation and advance with the page's frames: in a window that gets
+ * no frames (no window manager, an unfocused or hidden window) they never advance, which is how
+ * a dialog's texts were once read with their light-theme ratios in the dark theme. So this does
+ * not wait for frames or for time: it forces a style recalculation (reading a computed style
+ * does), jumps each running transition and finite animation to its end (`finish()`), and repeats
+ * until none is left, which also takes the ones the jump itself starts. Animations that never end
+ * (a spinner) stay. It fails after 20 passes instead of hanging.
  */
-export const transitionsSettled = () =>
-  browser.execute(async (selector) => {
-    await new Promise<void>((done) => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          done();
-        });
-      });
-    });
-    const root = document.querySelector(selector);
-    const running = document
-      .getAnimations()
-      .filter(
-        (animation) =>
-          animation instanceof CSSTransition &&
-          animation.effect instanceof KeyframeEffect &&
-          animation.effect.target !== null &&
-          root?.contains(animation.effect.target) === true,
-      );
-    await Promise.allSettled(running.map((animation) => animation.finished));
-  }, ROOT);
+export const settleColours = async () => {
+  const left = await browser.execute(() => {
+    // Animations that cannot be finished (they throw) are not ones that fade a colour.
+    const stuck = new Set<Animation>();
+    const running = () => {
+      // Reading a computed style recalculates the style of the whole document.
+      getComputedStyle(document.documentElement).getPropertyValue("color");
+      return document
+        .getAnimations()
+        .filter(
+          (animation) =>
+            !stuck.has(animation) && animation.effect?.getComputedTiming().iterations !== Infinity,
+        );
+    };
+    for (let pass = 0; pass < 20; pass += 1) {
+      const current = running();
+      if (current.length === 0) return 0;
+      for (const animation of current) {
+        try {
+          animation.finish();
+        } catch {
+          stuck.add(animation);
+        }
+      }
+    }
+    return running().length;
+  });
+  if (left > 0) throw new Error(`${left} animations kept running after 20 passes`);
+};
 
 /** Moves the pointer off the plugin, so no hover colour is measured. */
-export const parkPointer = () =>
-  browser.action("pointer").move({ x: 1, y: 1, origin: "viewport" }).perform();
+export const parkPointer = async () => {
+  await browser.action("pointer").move({ x: 1, y: 1, origin: "viewport" }).perform();
+  // A button the pointer leaves fades back to its resting colour.
+  await settleColours();
+};
 
 /** Computed styles of every element matching `css` inside the root. */
-export const stylesOf = (css: string, properties: readonly string[]) =>
-  browser.execute(
+export const stylesOf = async (css: string, properties: readonly string[]) => {
+  await settleColours();
+  return browser.execute(
     (selector, inner, names) =>
       [...(document.querySelector(selector)?.querySelectorAll(inner) ?? [])].map((element) => {
         const style = getComputedStyle(element);
@@ -200,6 +221,7 @@ export const stylesOf = (css: string, properties: readonly string[]) =>
     css,
     [...properties],
   );
+};
 
 /** Elements of the root whose box reaches past the root's right edge, and the root's scroll. */
 export const overflow = () =>
@@ -225,6 +247,7 @@ export type PaletteBadge = {
  * inside the root), read back and removed again: its fill and the contrast of its short code.
  */
 export const measurePalette = async (colors: readonly string[]): Promise<PaletteBadge[]> => {
+  await settleColours();
   const badges = await browser.execute(
     (selector, names) => {
       const probe = document.createElement("i");

@@ -31,7 +31,7 @@ Gespeichert: Schritt (1–5), Position im Schritt, aktive Minuten (nur bei sicht
 stateDiagram-v2
   [*] --> ungeprueft
   ungeprueft --> zugeordnet: Zu Vorgang
-  ungeprueft --> neuer_punkt: Neuer Vorgang
+  ungeprueft --> neuer_vorgang: Neuer Vorgang
   ungeprueft --> dublette: Dublette
   ungeprueft --> spaeter: Später
   ungeprueft --> verworfen: Nicht relevant (Grund)

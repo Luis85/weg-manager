@@ -28,7 +28,7 @@ date: 2026-11-15
 | Begriff DE | EN (Eigentümertexte, Doku) | Bedeutung | Nicht verwenden |
 | --- | --- | --- | --- |
 | Gemeinschaft | community | WEG, Tiefgarage … | Mandant, Objekt |
-| Vorgang | item | einzeln erledigbares Anliegen mit prüfbarem Ergebnis | Ticket, Punkt, Aufgabe |
+| Vorgang | matter | einzeln erledigbares Anliegen mit prüfbarem Ergebnis | Ticket, Punkt, Aufgabe |
 | Thema | topic | Zusammenhang mehrerer Vorgänge | Projekt |
 | Zusage | commitment | Ankündigung eines Dritten mit oder ohne Termin | Versprechen |
 | Fremdtermin | stated date | von Dritten genannter Termin | Deadline |

@@ -101,7 +101,6 @@ DashboardSidebar (Desktop-Navigation) · DashboardPanel (Arbeitsfläche + Kontex
 | `v2-D11-Aufgaben.png` … `v2-D14-Sicherung.png` | Desktop: To-dos, Konflikt klären, Erststart, Sicherung |
 | `v2-Dlg-*.png` | Dialoge: Aufteilen, Zusammenführen, Bewerten, Reaktion erfassen, Als gesendet markieren |
 | `v2-M8-Nachricht.png` | Mobil: Nachricht prüfen |
-| `v2-D16-Tour-Start.png`, `v2-D17-Tour-Schritt.png`, `v2-M12-Tour-Start.png`, `v2-M13-Tour-Schritt.png` | Einführungstour: Willkommen und Schritt, Desktop und Mobil |
 | `v2-P-D-01-Lage.png` … `v2-P-D-18-…`, `v2-P-M-01-…` … `v2-P-M-18-…` | Prototyp-Stand Pilot 15.11., Desktop und Mobil, 18 Bildschirme; gilt bei Abweichung vor den älteren Mockups, siehe [[Prototyp - Stand Pilot]] |
 | `v2-Z-Zustaende.png` | Leer, keine Treffer, Laden, Speicherfehler, Konflikt, Datenlücke, Woche pausiert, Toast |
 | `v2-*-dark.png` | Dunkel: Desktop Lage, Vorgangsakte, Postausgang; Mobil Lage, Vorgangsakte. Referenz für Farben und Kontraste; Inhalt vor dem Prototyp-Stand |

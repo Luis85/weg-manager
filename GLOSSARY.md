@@ -68,10 +68,14 @@ _Avoid_: checklist, to-do, task (a task is a record)
 A single note shown beside an element the first time the user works in an area, closed with one click and remembered per device. Hints never chain, never block and never write notes. There is no tour.
 _Avoid_: tour, tutorial, coach mark, tooltip (a tooltip shows on hover every time)
 
+**Matter** (German: Vorgang):
+One thing the board member follows up until it has one checkable result: a promise, a deadline, a question or a task. It belongs to exactly one community, has a number that runs across all communities and is never deleted. Routes say `vorgang`, command ids and code say `matter`.
+_Avoid_: point, item, ticket, issue (an issue is a broken note), task (a to-do is the board member's own step)
+
 **Tracer slice** (German: Durchstich):
 The first record type built through every layer, to prove the path that all later types take.
 _Avoid_: walking skeleton, demo, prototype
 
 ## Not yet named
 
-The domain model follows the WCS data dictionary (K-20); its German terms and fields are in `docs/entities/00 - Fachliches Domänenmodell.md`. Vorgang (formerly Punkt), Verlaufseintrag, Eskalation, Entscheidungskarte, To-do, Übergabe, Prüfvermerk, Person und Rolle, Thema, Termin, Quelle and the other entities in `docs/entities/` get their English term here when their slice is planned. The keys in the entity notes are proposals until then. Host and vault events keep the name event; they are not the domain's Verlaufseintrag.
+The domain model follows the WCS data dictionary (K-20); its German terms and fields are in `docs/entities/00 - Fachliches Domänenmodell.md`. Verlaufseintrag, Eskalation, Entscheidungskarte, To-do, Übergabe, Prüfvermerk, Person und Rolle, Thema, Termin, Quelle and the other entities in `docs/entities/` get their English term here when their slice is planned. The keys in the entity notes are proposals until then. Host and vault events keep the name event; they are not the domain's Verlaufseintrag.

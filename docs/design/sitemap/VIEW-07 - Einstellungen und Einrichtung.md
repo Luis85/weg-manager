@@ -32,15 +32,10 @@ decisions:
   - "[[docs/decisions/K-10 - Manuelle Quellenübernahme und Registerimport vorsehen]]"
   - "[[docs/decisions/K-11 - Lokalen Obsidian-Kern ohne Konto und KI-Pflicht anbieten]]"
 mockups:
-  - "[[docs/design/sitemap/assets/v2-D13-Erststart.png]]"
   - "[[docs/design/sitemap/assets/v2-D14-Sicherung.png]]"
   - "[[docs/design/sitemap/assets/v2-D12-Konflikt.png]]"
   - "[[docs/design/sitemap/assets/v2-P-D-17-Einstellungen.png]]"
   - "[[docs/design/sitemap/assets/v2-D8-Import.png]]"
-  - "[[docs/design/sitemap/assets/v2-D16-Tour-Start.png]]"
-  - "[[docs/design/sitemap/assets/v2-D17-Tour-Schritt.png]]"
-  - "[[docs/design/sitemap/assets/v2-M12-Tour-Start.png]]"
-  - "[[docs/design/sitemap/assets/v2-M13-Tour-Schritt.png]]"
 ---
 
 # VIEW-07 · Einstellungen und Einrichtung
@@ -84,7 +79,7 @@ Beide Fassungen nebeneinander (Plugin / extern geändert) mit Zeitpunkt und Quel
 
 Drei Schritte: Gemeinschaften (Name, Kürzel, Art, Farbe aus geprüfter Palette; vergebene Farben gesperrt) → Kontakte (gleiches Formular wie in [[VIEW-08 - Kontakte]]) → Register übernehmen (optional). Ablageordner änderbar.
 
-![[v2-D13-Erststart.png]]
+Das Mockup dieses Stands ist am 22.11.2026 entfallen; die Einrichtung zeigt [[VIEW-09 - Einrichtung]].
 
 ## Einführungstour
 
@@ -105,9 +100,7 @@ Startet einmalig nach dem Erststart auf der Lage; danach über Einstellungen ›
 
 Regeln: Die Tour blockiert die Oberfläche, bis sie beendet wird; Esc beendet, Pfeiltasten blättern, der Fokus springt auf den Titel der Karte. Je Schritt ein Satz Funktionsbeschreibung, keine Beruhigungs- oder Erklärtexte darüber hinaus. Abschluss oder Überspringen wird gespeichert (Plugin-Daten, nicht im Vault). Eine laufende Wochenarbeit wird beim Start pausiert. Bei reduzierter Bewegung ohne Animation.
 
-![[v2-D16-Tour-Start.png]]
-![[v2-D17-Tour-Schritt.png]]
-![[v2-M13-Tour-Schritt.png]]
+Die Mockups dieser Tour sind am 22.11.2026 entfallen; es gibt keine Tour mehr ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]).
 
 ## Sicherung
 

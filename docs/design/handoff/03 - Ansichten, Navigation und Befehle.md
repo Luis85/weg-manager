@@ -22,8 +22,8 @@ date: 2026-11-15
 | --- | --- | --- | --- |
 | `lage` | [[VIEW-01 - Lage]] | Filter | — |
 | `woche/<schritt>` | [[VIEW-02 - Wochenarbeit]] | Schritt 1–5, Position | „← Zurück zur Lage“ pausiert → `lage` |
-| `punkte` | [[VIEW-03 - Vorgänge und Vorgangsakte]] Liste | Segment, Filter, Suche | — |
-| `punkt/<id>` | Vorgangsakte | Vorgangsnummer | Herkunft (Liste, Lage, Woche) inkl. Scrollposition |
+| `vorgaenge` | [[VIEW-03 - Vorgänge und Vorgangsakte]] Liste | Segment, Filter, Suche | — |
+| `vorgang/<id>` | Vorgangsakte | Vorgangsnummer | Herkunft (Liste, Lage, Woche) inkl. Scrollposition |
 | `post` | [[VIEW-04 - Postausgang]] | gewählte Nachricht, Sprache | — |
 | `ausgabe/<gemeinschaft>` | [[VIEW-06 - Sachstand ausgeben]] | Empfängerart | Vorgänge |
 | `kontakte` | [[VIEW-08 - Kontakte]] | Segment, Suche | — |
@@ -34,7 +34,7 @@ date: 2026-11-15
 
 Desktop: Vorgangsakte aus Lage/Woche öffnet im rechten Panel; aus der Liste als Hauptinhalt. Mobil immer Vollbild.
 
-Routen und Befehls-IDs wie `punkte`, `punkt/<id>` und `open-point` tragen noch die Begriffe vor dem 22.11.2026. Sie werden nach den WCS-Begriffen nachgezogen (O-D13 in [[09 - Offene Punkte vor Implementierung]]).
+Routen und Befehls-IDs folgen seit dem 22.11.2026 den WCS-Begriffen ([[K-20 - WCS-Datenmodell als fachliche Grundlage]]). Routen sind deutsche Wörter ohne Umlaute (`vorgaenge`, `vorgang/<id>`); Befehls-IDs sind englisch und nutzen den Code-Begriff des Objekts, für den Vorgang `matter`.
 
 ## Befehle (Command Palette)
 
@@ -49,7 +49,7 @@ Ohne Standard-Hotkeys (Obsidian-Richtlinie); Namen in Satzanfang-Großschreibung
 | `open-post` | Postausgang öffnen |
 | `open-contacts` | Kontakte öffnen |
 | `new-contact` | Neuer Kontakt |
-| `open-point` | Vorgang öffnen … (Suche) |
+| `open-matter` | Vorgang öffnen … (Suche) |
 | `backup-now` | Jetzt sichern |
 | `open-settings` | Einstellungen öffnen |
 | `reset-hints` | Hinweise erneut zeigen (ohne Tastenkürzel, [[PBI-72 - Beim ersten Benutzen eines Bereichs einen Hinweis erhalten]]) |

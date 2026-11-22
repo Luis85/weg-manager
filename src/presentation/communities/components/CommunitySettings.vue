@@ -68,7 +68,7 @@ const close = () => {
     <header class="wm:flex wm:flex-wrap wm:items-start wm:justify-between wm:gap-2">
       <div class="wm:flex wm:flex-col wm:gap-1">
         <h2 class="wm:text-lg wm:font-semibold">{{ t.screen.title }}</h2>
-        <p class="wm:text-sm wm:text-muted" data-testid="communities-intro">
+        <p class="wm:text-sm wm:text-muted wm:wrap-break-word" data-testid="communities-intro">
           {{ t.screen.intro(folder) }}
         </p>
       </div>
@@ -132,7 +132,7 @@ const close = () => {
           :key="note.path"
           class="wm:flex wm:flex-col wm:gap-0.5 wm:rounded-md wm:border wm:border-default wm:p-3"
         >
-          <span class="wm:font-mono wm:text-sm">{{ note.path }}</span>
+          <span class="wm:font-mono wm:text-sm wm:wrap-anywhere">{{ note.path }}</span>
           <span class="wm:text-sm wm:text-warning">
             {{ describeUnindexedIssue(note.issue, catalog.notes) }}
           </span>

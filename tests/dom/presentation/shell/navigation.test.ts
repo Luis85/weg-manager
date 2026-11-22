@@ -38,6 +38,9 @@ const routeShown = (root: ParentNode) => root.querySelector("[data-testid=route]
 const navButtons = (root: ParentNode) => [
   ...root.querySelectorAll<HTMLButtonElement>("nav li button"),
 ];
+/** Whether a navigation button carries the current page's bar (an inset shadow). */
+const barred = (button: HTMLButtonElement) =>
+  [...button.classList].some((name) => name.startsWith("wm:shadow-[inset"));
 const buttonNamed = (root: ParentNode, label: string): HTMLButtonElement => {
   const button = [...root.querySelectorAll("button")].find((el) => el.textContent.includes(label));
   if (button === undefined) throw new Error(`no button "${label}"`);
@@ -227,6 +230,18 @@ describe("the app frame", () => {
     expect(frame?.classList.contains("wm:@container")).toBe(true);
     expect(frame?.firstElementChild?.classList.contains("wm:@min-[860px]:flex-row")).toBe(true);
     expect(frame?.querySelector("nav")?.classList.contains("wm:@min-[860px]:w-56")).toBe(true);
+  });
+
+  it("marks the current page with a bar too, not by colour alone", async () => {
+    const { root } = await mounted({ start: { name: "second" } });
+    expect(navButtons(root).map(barred)).toEqual([false, true]);
+  });
+
+  it("states the UI language, so the browser hyphenates and reads its texts in it", async () => {
+    const german = await mounted();
+    expect(german.root.querySelector("[data-testid=app-frame]")?.getAttribute("lang")).toBe("de");
+    const english = await mounted({ language: "en" });
+    expect(english.root.querySelector("[data-testid=app-frame]")?.getAttribute("lang")).toBe("en");
   });
 
   it("fills its context area from the surface definition, and shows none without", async () => {

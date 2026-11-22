@@ -391,6 +391,18 @@ sequenceDiagram
 - `dist/styles.css` is scoped under `.weg-manager-root` by `scripts/scope-css.mjs`. It has no Tailwind preflight, no surviving `@layer`, and prefixed `@keyframes` and `@property` names. `check:dist` verifies all of this, and the size budgets (`main.js` 1.5 MB, `styles.css` 250 KB).
 - Mounting adds nothing to `document.head`. Nuxt UI's runtime `colors` and `head` plugins are replaced by sha256-pinned no-ops (`scripts/no-head-plugins.mjs`); the colour roles live in `src/styles/bridge.css`.
 - Tailwind scans only `src/presentation` and an explicit list of Nuxt UI component themes in `src/styles/app.css`. A newly used Nuxt UI component has to be added there.
+- **Base reset** (`src/styles/bridge.css`). Obsidian's element rules reach every element on the page. Inside the root, `ol`/`ul`, headings, `p`, `fieldset` and `legend` start from zero and buttons drop Obsidian's chrome (`button:not(svg)`, which weighs (0,1,2) once scoped: above Obsidian's button rules, below every utility). Do not raise these selectors: a utility has to keep winning.
+- **Colour tokens** (`src/styles/tokens.css`, [ADR 0002](../adr/0002-architecture.md), amendment 21.11.2026). Components never use a host hue raw for text or a fill. They use Nuxt UI's roles, which `bridge.css` maps to derived tokens:
+
+  | Token | Formula | Nuxt UI role |
+  | --- | --- | --- |
+  | `--wm-primary-fg`, `--wm-warn-fg`, `--wm-bad-fg`, `--wm-ok-fg` | `color-mix(in oklab, <hue> 55%, var(--text-normal))`, hue `--interactive-accent`, `--text-warning`, `--text-error`, `--text-success` | `--ui-primary`/`secondary`/`info`, `--ui-warning`, `--ui-error`, `--ui-success` |
+  | `--wm-primary-fill`, `--wm-warn-fill`, `--wm-bad-fill`, `--wm-ok-fill` | `color-mix(in oklab, <hue> 60%, black)` | the same roles on an element with `wm:text-inverted` (solid variants) |
+  | `--wm-on-fill` | `var(--text-on-accent)` | `--ui-text-inverted` |
+  | `--wm-line-strong` | `color-mix(in oklab, var(--text-muted) 70%, var(--background-primary))` | `--ui-border-accented` (field and outline-button boundaries) |
+
+  In Obsidian's default theme every text then reaches 4.5:1 on its background (tints and the 75 % hover of a solid button included) and a field boundary 3:1, light and dark; `tests/e2e/specs/appearance.e2e.ts` measures it. `--wm-accent` (the raw accent) is for focus outlines only. Neutral solid (`bg-inverted`) is not covered.
+- **Layout.** A flex child that truncates needs `min-w-0` up its chain; long user text wraps (`wrap-break-word`, `hyphens-auto`; the frame sets `lang` to the UI language). The selected community and the current page are marked by shape too (check mark, bar).
 - Icons are bundled offline. Add new `lucide:*` names to `SHELL_ICONS` in `configs/vite.shared.ts`.
 
 ## Communities

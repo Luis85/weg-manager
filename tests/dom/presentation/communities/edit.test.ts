@@ -96,7 +96,11 @@ describe("editing a community", () => {
       t.conflict.theirs("Tiefgarage"),
     ]);
     expect(screen.all("conflict-kind")).toHaveLength(1);
-    expect((screen.q("community-save") as HTMLButtonElement).disabled).toBe(true);
+    const saveButton = screen.q("community-save") as HTMLButtonElement;
+    expect([saveButton.disabled, saveButton.getAttribute("aria-disabled")]).toEqual([
+      false,
+      "true",
+    ]);
     expect((await read(screen)).frontmatter).toEqual({ ...AW, kind: "Tiefgarage" });
     await screen.click(
       screen.q("conflict-kind")?.querySelector("[data-testid=choose-theirs]") ?? undefined,
@@ -134,7 +138,7 @@ describe("editing a community", () => {
     expect(screen.input("field-kind").value).toBe("");
     expect(screen.q("community-form")?.textContent).toContain(t.missing.kind);
     const saveButton = () => screen.q("community-save") as HTMLButtonElement;
-    expect(saveButton().disabled).toBe(false);
+    expect(saveButton().getAttribute("aria-disabled")).toBeNull();
     expect((await read(screen)).frontmatter).toEqual({ ...AW, kind: null });
     await fill(screen, { kind: "Reihenhaus" });
     await save(screen);

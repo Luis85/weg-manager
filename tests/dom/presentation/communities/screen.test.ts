@@ -35,8 +35,11 @@ const TWO = (notes: Memory) => {
 };
 
 describe("the community settings", () => {
-  it("shows a busy status while the index is not built, then the empty state with a create action", async () => {
+  it("shows a busy status once the index takes longer than 300 ms, then the empty state", async () => {
     const screen = await openCommunities({ ready: false });
+    // Nothing in between for a read that is quick (handoff 02, B-NFR-04).
+    expect(screen.q("communities-loading")).toBeUndefined();
+    await screen.until(() => expect(screen.q("communities-loading")).toBeDefined());
     const loading = screen.q("communities-loading");
     expect(loading?.getAttribute("role")).toBe("status");
     expect(loading?.getAttribute("aria-busy")).toBe("true");
@@ -90,6 +93,19 @@ describe("the community settings", () => {
     expect(screen.button("Ahornweg 12 bearbeiten")).toBeDefined();
     expect(screen.button("Tiefgarage Ahornweg löschen")).toBeDefined();
     expect(screen.q("communities")?.getAttribute("aria-label")).toBe("Gemeinschaften");
+  });
+
+  it("marks the selected community's card in words and with a mark, not by colour", async () => {
+    const screen = await openCommunities({ seed: TWO });
+    expect(screen.q("community-selected")).toBeUndefined();
+    await screen.click(screen.all("community-option")[1]);
+    const marked = screen
+      .all("community")
+      .map((card) => card.querySelector("[data-testid=community-selected]")?.textContent.trim());
+    expect(marked).toEqual([undefined, t.screen.selected]);
+    expect(screen.q("community-selected")?.querySelector("svg")?.getAttribute("aria-hidden")).toBe(
+      "true",
+    );
   });
 
   it("follows a note created outside the plugin", async () => {

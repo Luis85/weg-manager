@@ -92,13 +92,20 @@ export const defineRecords = <F extends NoteFields, Issue extends KeyedIssue = R
 ) => {
   type Row = RecordRow<F, Issue>;
   const { type, title, log } = kind;
-  const { shownName, toList } = recordRows(kind);
+  const { shownName, toList, namesOf } = recordRows(kind);
   const titleOf = (values: RecordValues<F>) => values[title] as string;
 
   /** The list now, for `useStream`. Never suspends. */
   const list = Effect.map(noteSnapshot(type), toList);
   /** The list: the current one first, then each change. */
   const changes = Stream.map(noteChanges(type), toList);
+
+  /**
+   * The shown name of each record by its id, for references to this type (cards, conflicts): now,
+   * and the current names first, then each change. `shownReference` falls back to the id.
+   */
+  const names = Effect.map(noteSnapshot(type), namesOf);
+  const nameChanges = Stream.map(noteChanges(type), namesOf);
 
   /** Where the record lives now: by its id, and refused while another note carries the id too. */
   const pathOf = (row: Row) =>
@@ -153,5 +160,5 @@ export const defineRecords = <F extends NoteFields, Issue extends KeyedIssue = R
       yield* confirm((notices) => notices.deleted(shownName(row)));
     });
 
-  return { type, toList, list, changes, shownName, create, update, remove };
+  return { type, toList, list, changes, shownName, names, nameChanges, create, update, remove };
 };

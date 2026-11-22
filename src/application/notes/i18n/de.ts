@@ -79,6 +79,8 @@ export const notesDe: NotesCatalog = {
     theirs: (value) => `Jetzt in der Notiz: ${value}`,
     apply: "Auswahl speichern",
     empty: "(leer)",
+    checked: "Ja",
+    unchecked: "Nein",
   },
   deletion: {
     detail: (name) =>

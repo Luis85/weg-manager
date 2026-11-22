@@ -72,6 +72,28 @@ const gamma = defineModule({ name: "gamma", catalog: { de: 1, en: 2 } });
 
 const MODULES = [alpha, beta, gamma] as const;
 
+/** A service the core modules build before every feature (the notes index, say). */
+class CoreService extends Context.Service<CoreService, { readonly name: string }>()(
+  "test/CoreService",
+) {}
+const coreLayer = Layer.succeed(CoreService)({ name: "core" });
+
+/** A later feature's service built on an earlier feature's (`alpha`) and on the core's. */
+class DeltaService extends Context.Service<DeltaService, { readonly value: string }>()(
+  "test/DeltaService",
+) {}
+const delta = defineModule({
+  name: "delta",
+  catalog: { de: {}, en: {} },
+  services: Layer.effect(DeltaService)(
+    Effect.gen(function* () {
+      const core = yield* CoreService;
+      const earlier = yield* AlphaService;
+      return { value: `${core.name} ${earlier.value}` };
+    }),
+  ),
+});
+
 describe("defineModule", () => {
   it("returns the manifest it is given", () => {
     const manifest = { name: "delta", catalog: { de: {}, en: {} } } as const;
@@ -134,12 +156,28 @@ describe("the module parts", () => {
     );
   });
 
-  it.effect("merges the modules' service Layers, skipping a module without services", () =>
+  it.effect("folds the modules' service Layers onto the base, skipping one without services", () =>
     Effect.gen(function* () {
       const service = yield* AlphaService;
       assert.strictEqual(service.value, 7);
-    }).pipe(Effect.provide(servicesLayerOf(MODULES))),
+      assert.strictEqual((yield* CoreService).name, "core");
+    }).pipe(Effect.provide(servicesLayerOf(MODULES, coreLayer))),
   );
+
+  it.effect("gives a later module's services those of an earlier one and of the base", () =>
+    Effect.gen(function* () {
+      assert.strictEqual((yield* DeltaService).value, "core 7");
+    }).pipe(Effect.provide(servicesLayerOf([alpha, gamma, delta], coreLayer))),
+  );
+
+  it("does not compile when a module needs a service of a later one", () => {
+    // @ts-expect-error: `delta` needs `AlphaService`, which only the module after it builds.
+    const reversed: Layer.Layer<DeltaService | AlphaService> = servicesLayerOf(
+      [delta, alpha],
+      coreLayer,
+    );
+    assert.isDefined(reversed);
+  });
 
   it("adds nothing for modules without parts", () => {
     assert.deepStrictEqual(noteTypesOf([gamma]), []);

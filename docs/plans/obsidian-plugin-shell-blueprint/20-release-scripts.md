@@ -1,0 +1,29 @@
+# Task 20 · Release scripts and third-party notices
+
+Phase D. Needs: Task 19.
+
+**Goal.** A version bump that keeps `package.json`, `manifest.json` and `versions.json` in step; a packaging script that refuses anything but a fresh production build of the tagged version; and a licence file for exactly the third-party code the bundle ships, kept current by the gate.
+
+## Files
+
+Create: `scripts/version-bump.mjs`, `scripts/package-release.mjs`, `scripts/bundled-packages.mjs`, `scripts/third-party-notices.mjs`, `scripts/notice-overrides.mjs`, `THIRD-PARTY-NOTICES.txt` (generated), `tests/unit/scripts/{version-bump,package-release,bundled-packages,third-party-notices}.test.ts`. Modify: `configs/vite.config.ts` (the `bundledPackages` plugin), `package.json` (scripts `version`, `release:package`, `notices`, `check:notices`), `scripts/verify.mjs` (`check:notices` last).
+
+## Steps
+
+- [ ] **1. `bumpVersion(pkgVersion, manifest, versions)`** (`scripts/version-bump.mjs`). Tests first: sets `manifest.version`; adds `versions[new] = manifest.minAppVersion`; keeps existing entries; rejects a version that is not plain `x.y.z` or not greater than the current one. CLI: reads `package.json`, writes both files with two-space JSON and a final newline. Script `version`: `node scripts/version-bump.mjs && git add manifest.json versions.json` (npm's `version` hook). With a protected `main`, bump on a branch with `npm version <x.y.z> --no-git-tag-version`, commit `package.json`, `package-lock.json`, `manifest.json` and `versions.json` as `chore: release <x.y.z>`, merge through a pull request, then tag the merge commit on `main` (Task 21 step 8). Where direct pushes to `main` are allowed, plain `npm version <x.y.z>` commits and tags `x.y.z` without `v` (`.npmrc`) in one step. Raise `minAppVersion` before a bump whenever the plugin starts using a newer Obsidian API.
+- [ ] **2. `packageRelease({ distDir, outDir, rootDir, tag? })`** (`scripts/package-release.mjs`, `RELEASE_FILES = ["main.js", "manifest.json", "styles.css"]`). Tests first: it stages `<outDir>/<plugin-id>/` with exactly the three files and `<outDir>/THIRD-PARTY-NOTICES.txt` **beside** the folder, not inside (the folder a user copies into `<vault>/.obsidian/plugins/<plugin-id>/` stays the three files Obsidian loads); it throws for a missing file, a tag with `v`, a tag that differs from the manifest version, a `dist/` that fails the `check:dist` invariants (a stale or development build), a `versions.json` without an entry for the version or with another `minAppVersion`, and a missing or empty notices file. Script `release:package`: `node scripts/package-release.mjs` (`--tag x.y.z` in the workflow).
+- [ ] **3. Which packages the bundle holds** (`scripts/bundled-packages.mjs`, a Vite plugin enabled for production builds in `configs/vite.config.ts`): after each production build it writes `reports/bundled-packages.json` (not checked in) with the packages of the bundler's module list, the icon collections Nuxt UI turns into `virtual:nuxt-ui-icons` (`@iconify-json/*`, which no module id points at), the packages the plugin's style sheets `@import` (Tailwind, Nuxt UI), and the sha256 of the `main.js` it describes, so a list from an older build is refused. Notices come from the bundle, not from the dependency tree (L35: 248 packages in the runtime tree, 26 in the bundle).
+- [ ] **4. The notices** (`scripts/third-party-notices.mjs`, `NOTICES_FILE`, `PACKAGES_FILE`): for each bundled package, its `package.json` licence id and its `LICENSE`, `LICENCE`, `COPYING` and `NOTICE` files from `node_modules/`; packages with the same text share one section; a text that differs (MIT with another copyright line) stays its own section; no version numbers in the file, so a version bump changes it only when a package enters or leaves the bundle or its licence text changes. A package without a licence file gets the standard MIT or ISC text with its `author` as copyright line; when that is not possible, or `package.json` has no `license` field, the script fails naming the package, and the way out is an entry with its evidence in `scripts/notice-overrides.mjs` (the source has two: `vaul-vue`, `@iconify-json/lucide`). Scripts: `notices`: `npm run build && node scripts/third-party-notices.mjs` (rewrites the file; commit it); `check:notices`: `node scripts/third-party-notices.mjs --check` (regenerates in memory, exits 1 with `THIRD-PARTY-NOTICES.txt is out of date` when it differs, or `run "npm run build" first` when the package list is missing or from another `dist/`). Add `check:notices` as the last step of `STEPS`, after `build`, because it reads the fresh `dist/`.
+- [ ] **5. A new licence is a question.** A licence id that is not MIT, ISC, BSD or Apache, or a copyleft one, goes to the human before the file is committed.
+
+## Checks
+
+- `npm run notices` then `git diff --exit-code THIRD-PARTY-NOTICES.txt` exits 0 on a second run (deterministic).
+- `npm run build && npm run release:package` writes `release/<plugin-id>/` with exactly three files and `release/THIRD-PARTY-NOTICES.txt`.
+- `npm run build -- --mode development && npm run release:package` exits non-zero: a development build fails `check:dist` (in the source, on the `main.js` budget: 9.5 MB unminified with an inline sourcemap). Run `npm run build` afterwards to restore `dist/`.
+
+## Done when
+
+`npm run verify` exits 0 with `check:notices` in its summary; `npm run verify:full` exits 0. Commit `build: version bump, release packaging and third-party notices`.
+
+**Proven in the source repository:** the script tests above (PR #40 there: 26 bundled packages, 25 MIT and 1 ISC) and the local packaging. **Not run there yet:** packaging inside the release workflow (Task 21).

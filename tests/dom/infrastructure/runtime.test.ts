@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createCommunity } from "../../../src/application/communities";
+import { asObsidianPlugin } from "../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -21,7 +22,7 @@ describe("makeRuntime(appLayer(plugin))", () => {
   it("runs a use case against the Obsidian adapters", async () => {
     const { plugin, app } = createTestPlugin(Bare, { data: { rootFolder: "Beirat" } });
     const runtime = makeRuntime(
-      appLayer(plugin as never, { developmentMode: false, language: "de" }),
+      appLayer(asObsidianPlugin(plugin), { developmentMode: false, language: "de" }),
     );
     const note = await runtime.runPromise(createCommunity(AHORNWEG));
     expect(note.path).toBe("Beirat/Gemeinschaften/Ahornweg 12.md");
@@ -32,7 +33,7 @@ describe("makeRuntime(appLayer(plugin))", () => {
   it("rejects effects after dispose", async () => {
     const { plugin } = createTestPlugin(Bare);
     const runtime = makeRuntime(
-      appLayer(plugin as never, { developmentMode: false, language: "de" }),
+      appLayer(asObsidianPlugin(plugin), { developmentMode: false, language: "de" }),
     );
     await runtime.runPromise(createCommunity(AHORNWEG));
     await runtime.dispose();

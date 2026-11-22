@@ -1,8 +1,10 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import { Events } from "./events";
 import { normalizePath } from "./paths";
 
 /** Obsidian's file tree node; `path` is vault-relative and changes when the file is renamed. */
-export abstract class TAbstractFile {
+export abstract class TAbstractFile implements Uses<Obsidian.TAbstractFile, "path" | "name"> {
   constructor(public path: string) {}
 
   get name(): string {
@@ -10,7 +12,10 @@ export abstract class TAbstractFile {
   }
 }
 
-export class TFile extends TAbstractFile {
+export class TFile
+  extends TAbstractFile
+  implements Uses<Obsidian.TFile, "path" | "name" | "basename" | "extension" | "stat">
+{
   stat = { ctime: 0, mtime: 0, size: 0 };
 
   get extension(): string {
@@ -24,7 +29,10 @@ export class TFile extends TAbstractFile {
   }
 }
 
-export class TFolder extends TAbstractFile {
+export class TFolder
+  extends TAbstractFile
+  implements Uses<Obsidian.TFolder, "path" | "name" | "children" | "isRoot">
+{
   /** The files and folders directly inside, kept up to date by the vault. */
   children: TAbstractFile[] = [];
 
@@ -109,7 +117,26 @@ const gate = () => {
  * of its own name works. Lookups stay exact, as the d.ts documents them ("case sensitive"), so an
  * adapter has to find such a clash itself.
  */
-export class Vault extends Events {
+export class Vault
+  extends Events
+  implements
+    Uses<
+      Obsidian.Vault,
+      | "getRoot"
+      | "getAbstractFileByPath"
+      | "getFileByPath"
+      | "getFolderByPath"
+      | "getFiles"
+      | "getMarkdownFiles"
+      | "read"
+      | "cachedRead"
+      | "create"
+      | "createFolder"
+      | "process"
+      | "offref"
+      | "trigger"
+    >
+{
   failReads = false;
   failWrites = false;
   caseInsensitive = false;
@@ -223,9 +250,12 @@ export class Vault extends Events {
   /**
    * Test helper: a file written from outside Obsidian (a person, Sync, an agent) as Obsidian then
    * sees it: missing folders and the file appear with `create`, an existing file changes with
-   * `modify`, and the metadata cache indexes it. No checks, no waiting, no failure knobs.
+   * `modify`, and the metadata cache indexes it. No checks, no waiting, no failure knobs. A name
+   * written in NFD (as macOS writes them) is listed in NFC, as Obsidian 1.15.1 lists it (measured
+   * on Linux: the file keeps its NFD name on the disk, the vault knows it only in NFC).
    */
-  seedFile(path: string, text: string): void {
+  seedFile(written: string, text: string): void {
+    const path = written.normalize("NFC");
     const segments = path.split("/");
     for (let depth = 1; depth < segments.length; depth += 1) {
       const prefix = segments.slice(0, depth).join("/");
@@ -293,24 +323,35 @@ export class Vault extends Events {
     this.indexer(file);
   }
 
-  /** Double-internal: `fileManager.renameFile` for a file. */
-  move(file: TFile, newPath: string): void {
-    if (this.entries.get(file.path) !== file) throw enoent(file.path, "rename");
+  /**
+   * Double-internal: `fileManager.renameFile`. A folder moves with everything inside it: `rename`
+   * fires for the folder, then for each entry inside in the vault's order, and each joins the
+   * vault's order again, as in Obsidian. A folder's `children` keep their order.
+   */
+  move(entry: TAbstractFile, newPath: string): void {
+    if (this.entries.get(entry.path) !== entry) throw enoent(entry.path, "rename");
     if (this.entries.has(newPath)) throw new Error("Destination file already exists!");
     if (this.getFolderByPath(parentOf(newPath)) === null) throw enoent(newPath, "rename");
-    if (this.collides(newPath, file)) throw eexist(newPath);
-    const oldPath = file.path;
-    this.unlink(file);
-    file.path = newPath;
-    this.link(file);
-    this.trigger("rename", file, oldPath);
+    if (this.collides(newPath, entry)) throw eexist(newPath);
+    const oldPath = entry.path;
+    const inside = entry instanceof TFolder ? this.contentsOf(entry) : [];
+    this.unlink(entry);
+    entry.path = newPath;
+    this.link(entry);
+    const moved = inside.map((child) => {
+      const old = child.path;
+      this.entries.delete(old);
+      child.path = `${newPath}${old.slice(oldPath.length)}`;
+      this.entries.set(child.path, child);
+      return [child, old] as const;
+    });
+    this.trigger("rename", entry, oldPath);
+    for (const [child, old] of moved) this.trigger("rename", child, old);
   }
 
-  /** Double-internal: the files and folders inside `folder`, deepest first. */
+  /** Double-internal: the files and folders inside `folder`, in the vault's order. */
   contentsOf(folder: TFolder): TAbstractFile[] {
-    return [...this.entries.values()]
-      .filter((entry) => entry.path.startsWith(`${folder.path}/`))
-      .toSorted((a, b) => b.path.split("/").length - a.path.split("/").length);
+    return [...this.entries.values()].filter((entry) => entry.path.startsWith(`${folder.path}/`));
   }
 
   /**

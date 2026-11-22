@@ -9,7 +9,6 @@ const { createTestPlugin, recordedNotices, settingsIn } = await import("@test/ob
 const { default: WegManagerPlugin } = await import("../../src/main");
 await preloadSurface();
 
-type External = { onExternalSettingsChange(): Promise<void> };
 type Select = { selectEl: HTMLSelectElement; disabled?: boolean };
 
 const settle = async () => {
@@ -28,7 +27,7 @@ const withOpenView = async (data: unknown = { rootFolder: "Beirat" }) => {
   await settle();
   // The screen loads lazily, the first time a view shows it.
   await eventually(() => expect(document.querySelector(INTRO)).not.toBeNull());
-  const external = created.plugin as unknown as External;
+  const external = created.plugin;
   const arrive = async (next: unknown) => {
     created.registry.writeExternally(next);
     await external.onExternalSettingsChange();
@@ -102,7 +101,7 @@ describe("settings changed outside Obsidian", () => {
     registry.holdLoadData();
     const loading = registry.load();
     registry.writeExternally({ logLevel: "debug" });
-    const reloading = (plugin as unknown as External).onExternalSettingsChange();
+    const reloading = plugin.onExternalSettingsChange();
     registry.releaseLoadData();
     await loading;
     await reloading;
@@ -117,7 +116,7 @@ describe("settings changed outside Obsidian", () => {
   it("does nothing once the plugin is unloaded", async () => {
     const { plugin, registry, external } = await withOpenView();
     plugin.unload();
-    const loadData = vi.spyOn(plugin as unknown as { loadData(): Promise<unknown> }, "loadData");
+    const loadData = vi.spyOn(plugin, "loadData");
     registry.writeExternally({ rootFolder: "Zu spät" });
     await expect(external.onExternalSettingsChange()).resolves.toBeUndefined();
     expect(loadData).not.toHaveBeenCalled();
@@ -129,9 +128,7 @@ describe("settings changed outside Obsidian", () => {
     registry.failNextAddCommand();
     await expect(registry.load()).rejects.toThrow("addCommand failed");
     const notices = noticeTexts().length;
-    await expect(
-      (plugin as unknown as External).onExternalSettingsChange(),
-    ).resolves.toBeUndefined();
+    await expect(plugin.onExternalSettingsChange()).resolves.toBeUndefined();
     expect(noticeTexts()).toHaveLength(notices);
   });
 });

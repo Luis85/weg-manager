@@ -4,5 +4,5 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["node", "@wdio/globals/types", "@wdio/mocha-framework", "wdio-obsidian-service"]
   },
-  "include": ["**/*.ts", "**/*.mts"]
+  "include": ["**/*.ts", "**/*.mts", "../../src/env.d.ts"]
 }

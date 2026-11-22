@@ -31,9 +31,11 @@ import {
  */
 const EDITS = 5;
 
-const frontmatterOf = (text: string) => {
+const frontmatterOf = (text: string): Record<string, unknown> | "none" => {
   const split = splitFrontmatter(text);
-  return split === undefined ? "none" : (parseYaml(split.yaml) ?? "none");
+  if (split === undefined) return "none";
+  const parsed: unknown = parseYaml(split.yaml);
+  return (parsed as Record<string, unknown> | null) ?? "none";
 };
 
 /** A note type that counts its decodes, whatever its decode does. */

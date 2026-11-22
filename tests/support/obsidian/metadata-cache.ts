@@ -1,3 +1,5 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 import { Events } from "./events";
 import type { TFile, Vault } from "./vault";
 import { parseYaml } from "./yaml";
@@ -6,13 +8,13 @@ type Loc = { readonly line: number; readonly col: number; readonly offset: numbe
 type Pos = { readonly start: Loc; readonly end: Loc };
 
 /** One block of a note; the double knows only the frontmatter block (`yaml`). */
-export type SectionCache = { readonly type: string; readonly position: Pos };
+export type SectionCache = { type: string; position: Pos };
 
 /** The part of Obsidian's `CachedMetadata` the double fills. */
 export type CachedMetadata = {
   readonly frontmatter?: Record<string, unknown>;
   readonly frontmatterPosition?: Pos;
-  readonly sections?: readonly SectionCache[];
+  readonly sections?: SectionCache[];
 };
 
 /** A note's text split as Obsidian does: the YAML between the `---` lines, and the body after. */
@@ -48,16 +50,21 @@ const indexOf = (raw: string): CachedMetadata => {
   };
   // Obsidian lists the block as a `yaml` section whether or not it can read it.
   const sections = [{ type: "yaml", position }];
-  let frontmatter: Record<string, unknown> | null;
+  let frontmatter: unknown;
   try {
     frontmatter = parseYaml(found.yaml);
   } catch {
     // Obsidian keeps a note with broken YAML without `frontmatter` and without its position.
     return { sections };
   }
-  if (frontmatter === null) return { sections };
+  // So it keeps a block that holds nothing (only comments, say), a text or a list.
+  if (!isMap(frontmatter)) return { sections };
   return { frontmatter, frontmatterPosition: position, sections };
 };
+
+/** A YAML mapping, as `parseYaml` gives it: a plain object, not a list. */
+export const isMap = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
 /**
  * Obsidian's metadata cache as 1.15.1 behaves (checked by `tests/e2e/specs/note-store.e2e.ts` and
@@ -78,7 +85,10 @@ const indexOf = (raw: string): CachedMetadata => {
  *
  * Obsidian exposes no "resolved" state; a caller sees completeness only through `getFileCache`.
  */
-export class MetadataCache extends Events {
+export class MetadataCache
+  extends Events
+  implements Uses<Obsidian.MetadataCache, "getFileCache" | "getCache" | "offref" | "trigger">
+{
   private readonly caches = new Map<TFile, CachedMetadata>();
   private readonly withheld = new Set<string>();
   private pending = 0;

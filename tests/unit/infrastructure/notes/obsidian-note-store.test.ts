@@ -12,6 +12,7 @@ import { splitFrontmatter } from "../../../support/obsidian/metadata-cache";
 import { noteStoreContract, type NoteStoreFixture } from "../../../support/notes/contract";
 import { NORMALIZE_CASES } from "../../../support/notes/fidelity";
 import { eventually } from "../../../support/wait";
+import { asObsidian } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -23,7 +24,7 @@ const textOf = (frontmatter: Parameters<NoteStoreFixture["seed"]>[1], body = "")
 
 /** The Obsidian adapter on the double, with handles that go through the double's public API. */
 const onDouble = (app = new App()): NoteStoreFixture => ({
-  layer: noteStoreLayer(app as never),
+  layer: noteStoreLayer(asObsidian(app)),
   seed: (path, frontmatter, body) =>
     Promise.resolve(app.vault.seedFile(path, textOf(frontmatter, body))),
   removeOutside: (path) => {
@@ -86,7 +87,7 @@ const rawText = (app: App, path: string): string => {
 };
 
 const run = <A, E>(app: App, use: (store: NoteStore["Service"]) => Effect.Effect<A, E>) =>
-  NoteStore.use(use).pipe(Effect.provide(noteStoreLayer(app as never)));
+  NoteStore.use(use).pipe(Effect.provide(noteStoreLayer(asObsidian(app))));
 
 const textAt = (app: App, path: string) => {
   const file = app.vault.getFileByPath(path);
@@ -268,6 +269,47 @@ describe("Obsidian NoteStore adapter", () => {
       app.vault.seedFile("F/Kaputt.md", "---\nschema: [unclosed\n---\n");
       app.vault.seedFile("F/Kaputt.txt", "---\nschema: [unclosed\n---\n");
       yield* Effect.promise(() => app.metadataCache.whenIndexed());
+      assert.deepStrictEqual(yield* run(app, (notes) => notes.unreadable("F")), ["F/Kaputt.md"]);
+    }),
+  );
+
+  // Obsidian's cache keeps such a block as a `yaml` section without `frontmatter`, as it does for
+  // broken YAML (`difficult-fidelity.ts`), while `update` reads it as `{}` and writes into it.
+  it.effect("counts a block of comments or blank lines as readable, as update does", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      app.vault.seedFile("F/Kommentar.md", "---\n# properties: later\n---\nbody\n");
+      app.vault.seedFile("F/Leerzeilen.md", "---\n\n\n---\nbody\n");
+      app.vault.seedFile("F/Kaputt.md", "---\nschema: [unclosed\n---\n");
+      yield* Effect.promise(() => app.metadataCache.whenIndexed());
+      assert.deepStrictEqual(yield* run(app, (notes) => notes.unreadable("/")), ["F/Kaputt.md"]);
+      const note = yield* run(app, (notes) =>
+        notes.update("F/Kommentar.md", () => Result.succeed({ set: { a: 1 } })),
+      );
+      assert.deepStrictEqual(note.frontmatter, { a: 1 });
+    }),
+  );
+
+  it.effect("fails unreadable with VaultReadError when a candidate cannot be read", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      app.vault.seedFile("F/Kommentar.md", "---\n# c\n---\n");
+      yield* Effect.promise(() => app.metadataCache.whenIndexed());
+      app.vault.cachedRead = () => Promise.reject(new Error("EACCES: permission denied"));
+      const error = yield* Effect.flip(run(app, (notes) => notes.unreadable("F")));
+      assert.strictEqual(error._tag, "VaultReadError");
+    }),
+  );
+
+  // Deleted outside while Obsidian still lists it: the note is gone, not unreadable, and the
+  // other candidates are still checked (a failed read would leave the index marked as failed).
+  it.effect("leaves a candidate out of unreadable when it is gone from the disk", () =>
+    Effect.gen(function* () {
+      const app = new App();
+      app.vault.seedFile("F/Kaputt.md", "---\nschema: [unclosed\n---\n");
+      app.vault.seedFile("F/Weg.md", "---\nschema: [unclosed\n---\n");
+      yield* Effect.promise(() => app.metadataCache.whenIndexed());
+      app.vault.vanish("F/Weg.md");
       assert.deepStrictEqual(yield* run(app, (notes) => notes.unreadable("F")), ["F/Kaputt.md"]);
     }),
   );

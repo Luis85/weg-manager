@@ -1,5 +1,6 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
+import type { TFile } from "obsidian";
 import { VANISHED_FACTS, vanishedScenario } from "../../support/notes/vanished-scenario";
 import type { Outcome, ProbeApi } from "../../support/notes/probe-api";
 import { installConsoleSpy, pluginProblems } from "../support";
@@ -15,7 +16,7 @@ describe("a note deleted while Obsidian still lists it", function () {
 
   it("rejects vault.process with Node's ENOENT while the vault lists the file", async function () {
     await installConsoleSpy();
-    const report = await browser.executeObsidian(vanishedScenario, 300);
+    const report = await browser.executeObsidian(vanishedScenario);
     expect(report).toEqual(VANISHED_FACTS);
   });
 
@@ -27,15 +28,26 @@ describe("a note deleted while Obsidian still lists it", function () {
       const api = (plugins as unknown as { noteStoreProbe?: { api?: unknown } }).noteStoreProbe
         ?.api as Probe["api"];
       if (api === undefined) throw new Error("the probe plugin is not loaded");
-      const file = await app.vault.create(path, "---\na: 1\n---\n");
-      await new Promise((resolve) => setTimeout(resolve, 300));
       type NodeRequire = (name: string) => {
+        writeFileSync(path: string, text: string): void;
         unlinkSync(path: string): void;
         join(...parts: string[]): string;
       };
       const nodeRequire = (window as unknown as { require: NodeRequire }).require;
       const basePath = (app.vault.adapter as unknown as { basePath: string }).basePath;
-      nodeRequire("fs").unlinkSync(nodeRequire("path").join(basePath, path));
+      const onDisk = nodeRequire("path").join(basePath, path);
+      // Written from outside and indexed first, so Obsidian's watcher has done with the file
+      // (a note created through the vault and deleted at once can still be read by it, which
+      // rejects with ENOENT, unhandled).
+      const file = await new Promise<TFile>((done) => {
+        const ref = app.metadataCache.on("changed", (changed) => {
+          if (changed.path !== path) return;
+          app.metadataCache.offref(ref);
+          done(changed);
+        });
+        nodeRequire("fs").writeFileSync(onDisk, "---\na: 1\n---\n");
+      });
+      nodeRequire("fs").unlinkSync(onDisk);
       const listed = app.vault.getFileByPath.bind(app.vault);
       app.vault.getFileByPath = (wanted) => (wanted === path ? file : listed(wanted));
       try {

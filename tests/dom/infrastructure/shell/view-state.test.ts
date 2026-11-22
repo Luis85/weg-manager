@@ -5,6 +5,12 @@ import type { ViewNavigation } from "../../../../src/presentation/shell/host";
 import { preloadSurface } from "../../../support/preload";
 import { runtimes } from "../../../support/composable";
 import { testSurface, type TestRoute } from "../../../support/surface";
+import {
+  asDoubleView,
+  asObsidianLeaf,
+  asObsidianWorkspace,
+  viewOf,
+} from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -31,9 +37,8 @@ const workspace = () => {
   const { runtime, logger } = make();
   const app = new App();
   const surfaces = new Set<() => void>();
-  app.workspace.registerViewCreator(
-    SHELL_VIEW_TYPE,
-    (leaf) => new ShellView(leaf as never, runtime, surfaces, testSurface()) as never,
+  app.workspace.registerViewCreator(SHELL_VIEW_TYPE, (leaf) =>
+    asDoubleView(new ShellView(asObsidianLeaf(leaf), runtime, surfaces, testSurface())),
   );
   const open = async (state?: unknown) => {
     const leaf = app.workspace.getLeaf(true);
@@ -42,7 +47,7 @@ const workspace = () => {
       ...(state === undefined ? {} : { state: state as Record<string, unknown> }),
     });
     await settle();
-    return { leaf, view: leaf.view as unknown as TestView };
+    return { leaf, view: viewOf<TestView>(leaf) };
   };
   return { app, open, logger };
 };
@@ -235,7 +240,7 @@ describe("ShellView state", () => {
       };
     };
     const view = new ShellView(
-      app.workspace.getLeaf(true) as never,
+      asObsidianLeaf(app.workspace.getLeaf(true)),
       runtime,
       new Set(),
       testSurface(),
@@ -253,7 +258,7 @@ describe("ShellView state", () => {
 describe("openRoute", () => {
   it("opens a new view on the route", async () => {
     const { app } = workspace();
-    await openRoute(app.workspace as never, { name: "second" });
+    await openRoute(asObsidianWorkspace(app.workspace), { name: "second" });
     await settle();
     const leaves = app.workspace.getLeavesOfType(SHELL_VIEW_TYPE);
     expect(leaves).toHaveLength(1);
@@ -264,7 +269,7 @@ describe("openRoute", () => {
   it("reveals the open view and sets its route, as a step in the view's history", async () => {
     const { app, open } = workspace();
     const { leaf, view } = await open();
-    await openRoute(app.workspace as never, { name: "item", id: "3" });
+    await openRoute(asObsidianWorkspace(app.workspace), { name: "item", id: "3" });
     await settle();
     expect(app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)).toEqual([leaf]);
     expect(app.workspace.revealed).toEqual([leaf]);
@@ -276,23 +281,23 @@ describe("openRoute", () => {
 
   it("starts a view it opens on the route, with nothing to go back to", async () => {
     const { app } = workspace();
-    await openRoute(app.workspace as never, { name: "second" });
+    await openRoute(asObsidianWorkspace(app.workspace), { name: "second" });
     await settle();
-    const view = app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)[0]?.view as unknown as TestView;
+    const view = viewOf<TestView>(app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)[0]);
     expect(shown(view)).toBe("Second screen");
     expect(canGo(view, "Zurück")).toBe(false);
   });
 
   it("without a route, opens a view on the start route or reveals the open one as it is", async () => {
     const { app } = workspace();
-    await openRoute(app.workspace as never);
+    await openRoute(asObsidianWorkspace(app.workspace));
     await settle();
     const [leaf] = app.workspace.getLeavesOfType(SHELL_VIEW_TYPE);
-    const view = leaf?.view as unknown as TestView;
+    const view = viewOf<TestView>(leaf);
     expect(view.getState()).toEqual({ route: { name: "first" } });
     button(view, "Second").click();
     await settle();
-    await openRoute(app.workspace as never);
+    await openRoute(asObsidianWorkspace(app.workspace));
     await settle();
     expect(view.getState()).toEqual({ route: { name: "second" } });
     expect(app.workspace.getLeavesOfType(SHELL_VIEW_TYPE)).toEqual([leaf]);

@@ -1,4 +1,4 @@
-import type { App } from "obsidian";
+import type { App, TFile } from "obsidian";
 
 /** What `vanishedScenario` finds out. */
 export type VanishedReport = {
@@ -23,18 +23,19 @@ export type VanishedReport = {
  * unchanged in real Obsidian (`tests/e2e/specs/note-vanished.e2e.ts`, through
  * `browser.executeObsidian`), where it deletes the file with Node's `fs`, and on the Obsidian
  * double (`tests/unit/support/obsidian-double.test.ts`), where `vault.vanish` does; both compare
- * with `VANISHED_FACTS`. The call comes right after the delete, with no turn of the event loop in
- * between, so the watcher cannot have reported it. `executeObsidian` serialises the function, so
+ * with `VANISHED_FACTS`. In Obsidian the note is written from outside too, so it is the file
+ * watcher that reports it, and the scenario waits until the metadata cache has read it: a note
+ * created through the vault and deleted at once can still be read by Obsidian's own watcher
+ * afterwards, which rejects with ENOENT, unhandled (seen once in five runs). The call comes right
+ * after the delete, with no turn of the event loop in between, so the watcher cannot have reported
+ * it. `executeObsidian` serialises the function, so
  * it uses only its arguments and what it defines itself.
  */
-export const vanishedScenario = async (
-  { app }: { readonly app: App },
-  settleMs: number,
-): Promise<VanishedReport> => {
+export const vanishedScenario = async ({ app }: { readonly app: App }): Promise<VanishedReport> => {
   const path = "Verschwunden.md";
-  const file = await app.vault.create(path, "---\na: 1\n---\n");
-  await new Promise((resolve) => setTimeout(resolve, settleMs));
+  const text = "---\na: 1\n---\n";
   type NodeRequire = (name: string) => {
+    writeFileSync(path: string, text: string): void;
     unlinkSync(path: string): void;
     join(...parts: string[]): string;
   };
@@ -42,18 +43,34 @@ export const vanishedScenario = async (
     typeof window === "undefined"
       ? undefined
       : (window as unknown as { require?: NodeRequire }).require;
+  const onDisk = () =>
+    nodeRequire === undefined
+      ? ""
+      : nodeRequire("path").join(
+          (app.vault.adapter as unknown as { basePath: string }).basePath,
+          path,
+        );
+  // Listed and indexed first: the delete must not race the first read.
+  const file = await new Promise<TFile>((done, fail) => {
+    const ref = app.metadataCache.on("changed", (changed) => {
+      if (changed.path !== path) return;
+      app.metadataCache.offref(ref);
+      done(changed);
+    });
+    if (nodeRequire === undefined) app.vault.create(path, text).catch(fail);
+    else nodeRequire("fs").writeFileSync(onDisk(), text);
+  });
   if (nodeRequire === undefined) {
     (app.vault as unknown as { vanish(path: string): void }).vanish(path);
   } else {
-    const basePath = (app.vault.adapter as unknown as { basePath: string }).basePath;
-    nodeRequire("fs").unlinkSync(nodeRequire("path").join(basePath, path));
+    nodeRequire("fs").unlinkSync(onDisk());
   }
   const listedAfterDelete = app.vault.getFileByPath(path) === file;
   let called = false;
   try {
-    await app.vault.process(file, (text) => {
+    await app.vault.process(file, (data) => {
       called = true;
-      return text;
+      return data;
     });
   } catch (error) {
     const rejection = error as Error & { code?: unknown; errno?: unknown; syscall?: unknown };

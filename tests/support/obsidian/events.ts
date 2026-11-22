@@ -1,3 +1,5 @@
+import type * as Obsidian from "obsidian";
+import type { Uses } from "./conformance";
 type Handler = (...args: unknown[]) => unknown;
 
 /** As in Obsidian 1.15.1: the ref knows its emitter (`e`), so `Component.registerEvent` can release it. */
@@ -8,7 +10,7 @@ export type EventRef = { readonly e: Events; readonly name: string; readonly fn:
  * that ref (by identity) and does nothing for a ref that is already gone, so releasing a ref twice,
  * through `offref` and through `Component.registerEvent`, is harmless.
  */
-export class Events {
+export class Events implements Uses<Obsidian.Events, "off" | "offref" | "trigger"> {
   private readonly handlers = new Map<string, EventRef[]>();
 
   on(name: string, callback: Handler): EventRef {

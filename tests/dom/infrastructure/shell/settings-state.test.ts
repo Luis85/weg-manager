@@ -4,6 +4,7 @@ import { appSurface } from "../../../../src/presentation/app-surface";
 import { runtimes } from "../../../support/composable";
 import { preloadSurface } from "../../../support/preload";
 import { eventually } from "../../../support/wait";
+import { asDoubleView, asObsidianLeaf, viewOf } from "../../../support/obsidian/real";
 
 vi.mock("obsidian", () => import("@test/obsidian"));
 
@@ -28,14 +29,13 @@ const restored = async (state: unknown) => {
   const { runtime, vaultReady } = make();
   await vaultReady();
   const app = new App();
-  app.workspace.registerViewCreator(
-    SHELL_VIEW_TYPE,
-    (leaf) => new ShellView(leaf as never, runtime, new Set(), appSurface) as never,
+  app.workspace.registerViewCreator(SHELL_VIEW_TYPE, (leaf) =>
+    asDoubleView(new ShellView(asObsidianLeaf(leaf), runtime, new Set(), appSurface)),
   );
   const leaf = app.workspace.getLeaf(true);
   await leaf.setViewState({ type: SHELL_VIEW_TYPE, state: state as Record<string, unknown> });
   await settle();
-  return leaf.view as unknown as AppView;
+  return viewOf<AppView>(leaf);
 };
 
 /** Waits until the view shows the section whose root carries `testid`. */

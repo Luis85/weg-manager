@@ -79,7 +79,12 @@ describe("the note index on the Obsidian double", () => {
       unindexed: useStream(unindexedSnapshot, unindexedChanges),
     }));
     app.workspace.markLayoutReady();
-    expect(exposed.notes.value).toEqual({ ready: false, failure: undefined, notes: [] });
+    expect(exposed.notes.value).toEqual({
+      ready: false,
+      failure: undefined,
+      notes: [],
+      byId: new Map(),
+    });
     const ready = await next(runtime, (snapshot) => snapshot.ready);
     expect(ready.notes.map((note) => [note.path, note.kind])).toEqual([
       ["Privat/B.md", "editable"],

@@ -12,11 +12,13 @@ import type {
 import type { NoteIndexReadError } from "./errors";
 
 /**
- * What the index needs of a note type: its name and its decode. Every `defineNoteType` result is
- * one. The application root composes them (`src/application/note-types.ts`).
+ * What the index needs of a note type: its name, its decode, and its fields, whose references it
+ * checks against the records of every type. Every `defineNoteType` result is one. The application
+ * root composes them (`src/application/note-types.ts`).
  */
 export type IndexedType = {
   readonly type: string;
+  readonly fields: NoteFields;
   readonly decode: (note: NoteInput) => DecodedNote<NoteFields>;
 };
 
@@ -39,9 +41,16 @@ export type IndexStatus = {
   readonly failure: NoteIndexReadError | undefined;
 };
 
-/** The notes of one type, sorted by path (code-unit order), with the index's status. */
+/**
+ * The notes of one type, sorted by path (code-unit order), with the index's status, and the same
+ * notes by id (`byId`), built once per published snapshot, so a route or a reference finds its
+ * record without a scan. A note without a valid id is only in `notes`. An id that several notes
+ * carry gives the first of them by path: like each of them, it is read-only with `id.duplicate`,
+ * so a write through it is refused.
+ */
 export type NoteSnapshot<F extends NoteFields> = IndexStatus & {
   readonly notes: readonly IndexedNote<F>[];
+  readonly byId: ReadonlyMap<string, IndexedNote<F>>;
 };
 
 /** The notes of no registered type, sorted by path, with the index's status. */

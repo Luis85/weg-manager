@@ -5,7 +5,7 @@ import {
   type NotesCatalog,
   type RecordTexts,
 } from "../../../../src/application/notes";
-import type { RecordIssue } from "../../../../src/domain/notes";
+import type { MissingReference, RecordIssue } from "../../../../src/domain/notes";
 
 /** A feature's issues: a plain code, one with data, and a field kind's code. */
 type SampleIssue =
@@ -48,6 +48,17 @@ describe("describeRecordIssue", () => {
     );
     expect(describeRecordIssue({ code: "id.missing" }, en.notes, TEXTS)).toBe(
       en.notes.recordIssues["id.missing"]({ code: "id.missing" }),
+    );
+  });
+
+  it("words a missing reference target as the notes catalog does, with the feature's label", () => {
+    type LinkIssue =
+      MissingReference | { readonly key: "communities"; readonly code: "field.missing" };
+    const texts: RecordTexts<LinkIssue> = { fields: { communities: "Gemeinschaften" }, issues: {} };
+    const id = "community-3f2b8c1e-7a44-4d0b-9c2e-5b1f0a6d9e21";
+    const issue = { code: "reference.missing", key: "communities", id } as const;
+    expect(describeRecordIssue(issue, de.notes, texts)).toBe(
+      `„Gemeinschaften“ verweist auf einen Datensatz, den es nicht gibt („${id}“). Stelle seine Notiz wieder her oder entferne den Verweis.`,
     );
   });
 });

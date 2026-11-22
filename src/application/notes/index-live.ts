@@ -13,6 +13,7 @@ import { NoteIndexReadError } from "./errors";
 import { awaitReady, collectBatch, forwardTo, type Command } from "./index-batches";
 import {
   contentsOf,
+  notesById,
   trackedNoteOf,
   sameNotes,
   trackedUnindexed,
@@ -33,17 +34,46 @@ const EMPTY = { ready: false, failure: undefined, notes: [] } as const;
 
 const UNREADABLE = { code: "frontmatter.unreadable" } as const;
 
-type Snapshots<A> = SubscriptionRef.SubscriptionRef<IndexStatus & { readonly notes: readonly A[] }>;
+type Snapshot<A> = IndexStatus & { readonly notes: readonly A[] };
 
-/** Sets `ref` to `status` and `notes` unless it holds them already: unchanged publishes nothing. */
-const publishTo = <A>(ref: Snapshots<A>, status: IndexStatus, notes: readonly A[]) =>
+/**
+ * Sets `ref` to what `make` builds of `status` and `notes`, unless it holds them already: an
+ * unchanged snapshot is neither built nor published.
+ */
+const publishTo = <A, S extends Snapshot<A>>(
+  ref: SubscriptionRef.SubscriptionRef<S>,
+  status: IndexStatus,
+  notes: readonly A[],
+  make: (snapshot: Snapshot<A>) => S,
+) =>
   Effect.flatMap(SubscriptionRef.get(ref), (current) =>
     current.ready === status.ready &&
     current.failure === status.failure &&
     sameNotes(current.notes, notes)
       ? Effect.void
-      : SubscriptionRef.set(ref, { ...status, notes }),
+      : SubscriptionRef.set(ref, make({ ...status, notes })),
   );
+
+/** A snapshot of one type's records with its lookup by id, built once when it is published. */
+const recordSnapshot = (snapshot: Snapshot<IndexedNote<NoteFields>>): NoteSnapshot<NoteFields> => ({
+  ...snapshot,
+  byId: notesById(snapshot.notes),
+});
+
+/** The first reference field of `registry` whose target type is not in it, as a defect. */
+const unregisteredTarget = (registry: NoteTypeRegistry): Error | undefined => {
+  const names = new Set(registry.map(({ type }) => type));
+  for (const { type, fields } of registry) {
+    for (const [key, { target }] of Object.entries(fields)) {
+      if (target !== undefined && !names.has(target)) {
+        return new Error(
+          `The field ${key} of ${type} refers to the note type ${target}, which is not registered.`,
+        );
+      }
+    }
+  }
+  return undefined;
+};
 
 /** Tells each caller of a rebuild that it is done. */
 const completeAll = (rebuilds: readonly Deferred.Deferred<void>[]) =>
@@ -67,13 +97,15 @@ export const noteIndexLayer = (registry: NoteTypeRegistry) =>
       if (types.size !== registry.length) {
         return yield* Effect.die(new Error("A note type is registered twice."));
       }
+      const orphan = unregisteredTarget(registry);
+      if (orphan !== undefined) return yield* Effect.die(orphan);
       const store = yield* NoteStore;
       const settings = yield* SettingsService;
       const logger = yield* Logger;
       const reporting = yield* Effect.context<Incidents | Logger | Messages | Notifier>();
-      const refs = new Map<string, Snapshots<IndexedNote<NoteFields>>>();
+      const refs = new Map<string, SubscriptionRef.SubscriptionRef<NoteSnapshot<NoteFields>>>();
       for (const name of types.keys()) {
-        refs.set(name, yield* SubscriptionRef.make<NoteSnapshot<NoteFields>>(EMPTY));
+        refs.set(name, yield* SubscriptionRef.make(recordSnapshot(EMPTY)));
       }
       const unindexedRef = yield* SubscriptionRef.make<UnindexedSnapshot>(EMPTY);
       const queue = yield* Effect.acquireRelease(Queue.unbounded<Command>(), Queue.shutdown);
@@ -87,10 +119,10 @@ export const noteIndexLayer = (registry: NoteTypeRegistry) =>
       const publish = Effect.gen(function* () {
         const contents = contentsOf(types, trackedByPath.values());
         for (const [name, ref] of refs) {
-          yield* publishTo(ref, status, contents.records.get(name) ?? []);
+          yield* publishTo(ref, status, contents.records.get(name) ?? [], recordSnapshot);
         }
         // Last, so a test that waits for it knows every type's snapshot is set.
-        yield* publishTo(unindexedRef, status, contents.unindexed);
+        yield* publishTo(unindexedRef, status, contents.unindexed, (snapshot) => snapshot);
       });
 
       const build = Effect.gen(function* () {

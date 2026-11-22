@@ -5,10 +5,9 @@ import {
   followsTitle,
   recordFileName,
   type FieldDeclaration,
-  type FieldIssue,
-  type FieldIssueCode,
   type NoteFields,
   type NoteType,
+  type RecordFieldIssue,
   type RecordValues,
 } from "../../domain/notes";
 import { Logger, Messages, Notifier, SettingsService } from "../shell";
@@ -86,10 +85,7 @@ const renameTo = (note: Note, target: string, log: string) =>
  * id, both are read-only and the write is refused (`duplicate-id`) rather than guessing which note
  * the form loaded. A note that is gone is `NoteNotFoundError`.
  */
-export const defineRecords = <
-  F extends NoteFields,
-  Issue extends KeyedIssue = FieldIssue<FieldIssueCode<F>>,
->(
+export const defineRecords = <F extends NoteFields, Issue extends KeyedIssue = RecordFieldIssue<F>>(
   kind: RecordKind<F, Issue>,
 ) => {
   type Row = RecordRow<F, Issue>;
@@ -104,16 +100,11 @@ export const defineRecords = <
 
   /** Where the record lives now: by its id, and refused while another note carries the id too. */
   const pathOf = (row: Row) =>
-    Effect.flatMap(list, ({ records }) => {
-      const found = records.filter(
-        (candidate) => candidate.id !== undefined && candidate.id === row.id,
-      );
-      const duplicated = found.some((candidate) =>
-        candidate.issues.some((issue) => issue.code === "id.duplicate"),
-      );
-      return duplicated
+    Effect.flatMap(noteSnapshot(type), ({ byId }) => {
+      const found = row.id === undefined ? undefined : byId.get(row.id);
+      return found?.issues.some((issue) => issue.code === "id.duplicate")
         ? Effect.fail(new NoteWriteRefusedError({ reason: "duplicate-id" }))
-        : Effect.succeed(found[0]?.path ?? row.path);
+        : Effect.succeed(found?.path ?? row.path);
     });
 
   /** The file follows a new title while it carries the old one; a name the user gave it stays. */

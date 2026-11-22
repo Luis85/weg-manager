@@ -7,6 +7,8 @@ export {
   lineOfText,
   list,
   number,
+  reference,
+  references,
   required,
   text,
   type FieldDeclaration,
@@ -18,15 +20,16 @@ export type {
   DecodedNote,
   EditableRecord,
   FieldIssue,
-  FieldIssueCode,
   Frontmatter,
   FrontmatterPatch,
   Migrations,
+  MissingReference,
   NoteFields,
   NoteInput,
   NoteIssue,
   PartialValues,
   ReadOnlyRecord,
+  RecordFieldIssue,
   RecordIssue,
   RecordValues,
   UnindexedIssue,
@@ -47,5 +50,6 @@ export {
   noteNameIssue,
 } from "./notes";
 export { parseRecordId, recordId } from "./record-id";
+export { markMissingReferences } from "./references";
 export { RECORD_SCHEMA_PREFIX, parseSchemaMarker } from "./schema-marker";
 export { FieldConflict, WriteRefusal, type MergeFailure } from "./write";

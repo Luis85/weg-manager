@@ -10,7 +10,9 @@ const REFERENCE_VAULT = "tests/e2e/vaults/reference";
 
 /**
  * The one bound here is a promise of the docs: PBI-54 batches the index's reads after 100 ms of
- * quiet and at most after 1 s (`INDEX_BATCH_MAX`), so an outside edit shows within that. How soon
+ * quiet and at most after 1 s (`INDEX_BATCH_MAX`), so an outside edit shows within that of
+ * Obsidian's `changed` for the file. The time from the write is recorded, not asserted: it adds
+ * Obsidian's file watcher and indexing, which no doc of ours bounds. How soon
  * the index is ready after `VaultReady` promises no doc (B-NFR-04's five seconds are for the first
  * overview on the reference machine), so it is recorded in `reports/e2e/note-index-timings.json`
  * and only its order is asserted: the index is ready after `VaultReady`, never before.
@@ -58,7 +60,13 @@ const readiness = (recorded: StartupRecord) => {
   return { vaultReadyMs: vaultReady, indexReadyMs: ready, afterVaultReadyMs: ready - vaultReady };
 };
 
-/** Edits one Punkt's title from outside, as an editor or agent would: ms until the index shows it. */
+/**
+ * Edits one Punkt's title from outside, as an editor or agent would (Node's `fs`, so Obsidian's own
+ * file watcher finds the change, not a call of the vault API). Two times come back: from the write
+ * to the index showing it (it includes the watcher's debounce and Obsidian's own indexing, which
+ * no doc of ours bounds; recorded only), and from the metadata cache's `changed` for the file to
+ * the index showing it (what the batch delay and `INDEX_BATCH_MAX` promise).
+ */
 const editShown = (title: string) =>
   browser.executeObsidian(async ({ app, plugins }, wanted) => {
     const events = (plugins as unknown as { noteStoreProbe?: Probe }).noteStoreProbe?.events;
@@ -67,11 +75,33 @@ const editShown = (title: string) =>
       .filter((candidate) => candidate.path.includes("/Punkte/"))
       .toSorted((a, b) => (a.path < b.path ? -1 : 1))[0];
     if (events === undefined || file === undefined) throw new Error("nothing to edit");
+    type NodeRequire = (name: string) => {
+      readFileSync(path: string, encoding: string): string;
+      writeFileSync(path: string, text: string): void;
+      join(...parts: string[]): string;
+    };
+    const nodeRequire = (window as unknown as { require: NodeRequire }).require;
+    const basePath = (app.vault.adapter as unknown as { basePath: string }).basePath;
+    const onDisk = nodeRequire("path").join(basePath, file.path);
+    const changedAt = new Promise<number>((done) => {
+      const ref = app.metadataCache.on("changed", (changed) => {
+        if (changed.path !== file.path) return;
+        app.metadataCache.offref(ref);
+        done(performance.now());
+      });
+    });
     const shown = events.titleShown(file.path, wanted);
-    const started = performance.now();
-    await app.vault.process(file, (text) => text.replace(/^title: .*$/m, `title: ${wanted}`));
-    return (await shown) - started;
+    const fs = nodeRequire("fs");
+    const written = performance.now();
+    fs.writeFileSync(
+      onDisk,
+      fs.readFileSync(onDisk, "utf8").replace(/^title: .*$/m, `title: ${wanted}`),
+    );
+    const [indexed, changed] = await Promise.all([shown, changedAt]);
+    return { fromWriteMs: indexed - written, fromChangedMs: indexed - changed };
   }, title);
+
+type Edit = { readonly fromWriteMs: number; readonly fromChangedMs: number };
 
 const FULL = { ready: true, failed: false, communities: 2, items: 1998, unindexed: 0 };
 
@@ -105,10 +135,10 @@ describe("the note index in Obsidian", function () {
     await installConsoleSpy();
     // One edit after the other: each waits until the one before has shown.
     const edits = await Array.from({ length: EDITS }, (_, n) => `Geändert ${n + 1}`).reduce<
-      Promise<number[]>
+      Promise<Edit[]>
     >(async (done, title) => [...(await done), await editShown(title)], Promise.resolve([]));
-    for (const ms of edits) expect(ms).toBeLessThan(EDIT_SHOWN_MS);
-    timings["editShownMs"] = edits;
+    for (const edit of edits) expect(edit.fromChangedMs).toBeLessThan(EDIT_SHOWN_MS);
+    timings["editShown"] = edits;
     expect(await counts()).toEqual(FULL);
     expect(await pluginProblems()).toEqual([]);
     mkdirSync("reports/e2e", { recursive: true });

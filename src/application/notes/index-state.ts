@@ -10,41 +10,48 @@ import type { Note } from "./ports";
 
 type AnyRecord = IndexedNote<NoteFields>;
 
-/** What the index holds for one path: a record of a registered type, or a note of none. */
-export type Entry =
+/**
+ * The note the index tracks at one path: a record of a registered type, or a note of none
+ * (`GLOSSARY.md`: a record, never an "entry").
+ */
+export type TrackedNote =
   | { readonly kind: "record"; readonly type: string; readonly note: AnyRecord }
   | { readonly kind: "unindexed"; readonly note: UnindexedNote };
 
 /** The registered types by name. */
 export type TypesByName = ReadonlyMap<string, IndexedType>;
 
-export const unindexedEntry = (path: string, issue: UnindexedIssue): Entry => ({
+export const trackedUnindexed = (path: string, issue: UnindexedIssue): TrackedNote => ({
   kind: "unindexed",
   note: { path, issue },
 });
 
 /**
  * What the index makes of a note `list` or `read` returned: a record of its registered type, a
- * note with an unreadable or unknown marker, or nothing (no record at all). `previous` is the
- * entry the path had: when the frontmatter is the same, it is kept as it is, so an unchanged note
- * stays the same object and publishes nothing.
+ * note with an unreadable or unknown marker, or nothing (no record at all). `previous` is the note
+ * tracked at the path so far: when the frontmatter is the same, it is kept as it is, so an
+ * unchanged note stays the same object and publishes nothing.
  */
-export const entryOf = (types: TypesByName, note: Note, previous?: Entry): Entry | undefined => {
+export const trackedNoteOf = (
+  types: TypesByName,
+  note: Note,
+  previous?: TrackedNote,
+): TrackedNote | undefined => {
   if (previous?.kind === "record" && Equal.equals(previous.note.frontmatter, note.frontmatter)) {
     return previous;
   }
   const marker = parseSchemaMarker(note.frontmatter["schema"]);
   if (marker.kind === "none") return undefined;
-  if (marker.kind === "malformed") return unindexedEntry(note.path, { code: "schema.malformed" });
+  if (marker.kind === "malformed") return trackedUnindexed(note.path, { code: "schema.malformed" });
   const type = types.get(marker.type);
   if (type === undefined) {
-    return unindexedEntry(note.path, { code: "schema.unknown-type", type: marker.type });
+    return trackedUnindexed(note.path, { code: "schema.unknown-type", type: marker.type });
   }
   // The marker names this type, so decode never answers `not-this-type`.
   return { kind: "record", type: marker.type, note: type.decode(note) as AnyRecord };
 };
 
-const byPath = Order.mapInput(Order.String, (entry: Entry) => entry.note.path);
+const byPath = Order.mapInput(Order.String, (tracked: TrackedNote) => tracked.note.path);
 
 /** What the index publishes, before the status is added: the notes per type and the others. */
 export type Contents = {
@@ -56,17 +63,17 @@ export type Contents = {
  * The notes per registered type and the unindexed ones, each sorted by path, after
  * `markDuplicateIds` over the records of every type: an id is unique across types too.
  */
-export const contentsOf = (types: TypesByName, entries: Iterable<Entry>): Contents => {
-  const sorted = Arr.sort(Arr.fromIterable(entries), byPath);
-  const records: Extract<Entry, { kind: "record" }>[] = [];
+export const contentsOf = (types: TypesByName, trackedNotes: Iterable<TrackedNote>): Contents => {
+  const sorted = Arr.sort(Arr.fromIterable(trackedNotes), byPath);
+  const records: Extract<TrackedNote, { kind: "record" }>[] = [];
   const unindexed: UnindexedNote[] = [];
-  for (const entry of sorted) {
-    if (entry.kind === "record") records.push(entry);
-    else unindexed.push(entry.note);
+  for (const tracked of sorted) {
+    if (tracked.kind === "record") records.push(tracked);
+    else unindexed.push(tracked.note);
   }
-  const marked = markDuplicateIds(records.map((entry) => entry.note));
+  const marked = markDuplicateIds(records.map((tracked) => tracked.note));
   const byType = new Map<string, AnyRecord[]>(Arr.map([...types.keys()], (name) => [name, []]));
-  records.forEach((entry, at) => byType.get(entry.type)?.push(marked[at] as AnyRecord));
+  records.forEach((tracked, at) => byType.get(tracked.type)?.push(marked[at] as AnyRecord));
   return { records: byType, unindexed };
 };
 

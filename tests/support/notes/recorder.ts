@@ -119,9 +119,15 @@ export const eventRecorder = (app: App, options: RecorderOptions) => {
     return { result, events: events.filter(keep) };
   };
 
+  /** Puts `label` among the events of the step that is recording, where a promise settled, say. */
+  const mark = (label: string): void => {
+    if (recording) events.push(label);
+  };
+
   return {
     fence,
     step,
+    mark,
     dispose: () => {
       for (const ref of vaultRefs) app.vault.offref(ref);
       for (const ref of cacheRefs) app.metadataCache.offref(ref);

@@ -78,4 +78,33 @@ export const ORDER_FACTS = {
       "resolved",
     ],
   },
+  // The rename waits for the write's index: the cache holds the written frontmatter after it.
+  renameAfterWrite: {
+    result: { n: "neu" },
+    events: [
+      "vault:modify W.md",
+      "changed W.md",
+      "resolve W.md",
+      "resolved",
+      "vault:rename W.md -> W2.md",
+      "done",
+      "resolved",
+    ],
+  },
+  // The second rename joins the first one's link update: it resolves before its file moves.
+  renameDuringRename: {
+    result: { first: "renamed", second: "renamed", queuedAt: "O2b.md" },
+    events: [
+      "vault:rename O1.md -> O1b.md",
+      "second resolved, its file at O2.md",
+      "vault:rename O2.md -> O2b.md",
+      "done",
+    ],
+  },
+  // Its move fails (the name is taken): the first caller's promise rejects with that, the second
+  // caller's has resolved, and its file stays.
+  failingJoinedRename: {
+    result: { first: "Destination file already exists!", second: "renamed", queuedAt: "O3.md" },
+    events: ["vault:rename O1b.md -> O1c.md", "second resolved, its file at O3.md", "done"],
+  },
 };

@@ -80,6 +80,56 @@ export const orderScenario = async ({ app, plugins }: ScenarioContext) => {
     const renameFile = await step(() => app.fileManager.renameFile(file("P1.md"), "R/P1.md"));
     const trashFile = await step(() => app.fileManager.trashFile(file("P2.md")));
     const trashFolder = await step(() => app.fileManager.trashFile(folder("R/Q")));
+    await step(async () => {
+      await Promise.all(
+        ["W", "O1", "O2", "O3", "Belegt"].map((name) =>
+          app.vault.create(`${name}.md`, `---\nn: ${name}\n---\n`),
+        ),
+      );
+    });
+    // A rename right after a write: `renameFile` first waits until the metadata cache has
+    // indexed the write, so the cache holds the written frontmatter once it has resolved.
+    const renameAfterWrite = await step(async () => {
+      const written = file("W.md");
+      await app.vault.process(written, () => "---\nn: neu\n---\n");
+      await app.fileManager.renameFile(written, "W2.md");
+      return app.metadataCache.getFileCache(written)?.frontmatter;
+    });
+    // A rename asked for while another rename moves its file (here from that move's `rename`
+    // event, as another plugin or the user's own rename could): Obsidian lets it join the first
+    // one's link update, so its promise resolves before its file moves, and a move that fails
+    // rejects the first caller's promise while its own has resolved. `resolved` is left out:
+    // where the first move's comes among the others is Obsidian's timing.
+    const overlapping = (firstPath: string, target: string, queued: string, queuedTarget: string) =>
+      step(
+        async () => {
+          const first = file(firstPath);
+          const second = file(queued);
+          let joined: Promise<string> | undefined;
+          const ref = app.vault.on("rename", (moved) => {
+            if (moved !== first || joined !== undefined) return;
+            joined = app.fileManager.renameFile(second, queuedTarget).then(
+              () => {
+                recorder.mark(`second resolved, its file at ${second.path}`);
+                return "renamed";
+              },
+              (error: Error) => error.message,
+            );
+          });
+          try {
+            const settled = await app.fileManager.renameFile(first, target).then(
+              () => "renamed",
+              (error: Error) => error.message,
+            );
+            return { first: settled, second: (await joined) ?? null, queuedAt: second.path };
+          } finally {
+            app.vault.offref(ref);
+          }
+        },
+        (event) => !event.startsWith("resolve"),
+      );
+    const renameDuringRename = await overlapping("O1.md", "O1b.md", "O2.md", "O2b.md");
+    const failingJoinedRename = await overlapping("O1b.md", "O1c.md", "O3.md", "Belegt.md");
     const report = {
       writeAfterCreate,
       cachedAfterWrite,
@@ -90,6 +140,9 @@ export const orderScenario = async ({ app, plugins }: ScenarioContext) => {
       renameFile,
       trashFile,
       trashFolder,
+      renameAfterWrite,
+      renameDuringRename,
+      failingJoinedRename,
     };
     // As plain JSON on both sides: `executeObsidian` turns `undefined` into `null` and sorts keys.
     return JSON.parse(JSON.stringify(report)) as typeof report;

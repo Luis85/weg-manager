@@ -167,6 +167,7 @@ export const harnessLayer = (
       logSink: consoleSinkLayer,
       noteStore: failingOnce(scenario).pipe(Layer.provideMerge(memory.layer)),
       idGenerator: sequentialIdGenerator().layer,
+      noteOpener: memory.opener,
       // As the host event adapter is in the plugin: the browser has no metadata cache to wait
       // for, so the vault is ready at once and the index builds from the in-memory notes.
       hostEvents: vaultReadyAtOnce,

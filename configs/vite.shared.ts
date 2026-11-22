@@ -22,6 +22,7 @@ export const SHELL_ICONS = [
   "lucide:trash-2",
   "lucide:check",
   "lucide:lock",
+  "lucide:external-link",
 ];
 
 export type SharedOptions = {

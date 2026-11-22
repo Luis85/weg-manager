@@ -2,7 +2,7 @@ import { parseRecordId } from "../notes";
 import { communityType } from "./community-type";
 
 /** What the selection rule needs to know of a community: its id and whether it has an issue. */
-export type SelectionCandidate = {
+type SelectionCandidate = {
   readonly id: string | undefined;
   readonly issues: readonly unknown[];
 };

@@ -1,4 +1,4 @@
-import type { CommunityKey } from "../../../domain/communities";
+import type { CommunityFieldIssue, CommunityKey } from "../../../domain/communities";
 import { describeNoteIssue, type NotesCatalog } from "../../notes";
 import type { CommunityNoteIssue } from "../list";
 import type { CommunitiesCatalog } from "./catalog";
@@ -7,6 +7,27 @@ import type { CommunitiesCatalog } from "./catalog";
 type IssueTexts = {
   readonly notes: NotesCatalog;
   readonly communities: CommunitiesCatalog;
+};
+
+/** An issue whose sentence needs data beyond the field's label. */
+type DataIssue = Extract<CommunityFieldIssue, { readonly value: string }>;
+
+/** An issue whose sentence needs nothing but the field's label. */
+type PlainIssue = Exclude<CommunityFieldIssue, DataIssue | { readonly code: "field.missing" }>;
+
+const describeWithData = (
+  issue: DataIssue,
+  words: CommunitiesCatalog["issues"],
+  field: string,
+): string => {
+  switch (issue.code) {
+    case "short-code.taken":
+      return words[issue.code](issue, field);
+    case "short-code.duplicate":
+      return words[issue.code](issue, field);
+    case "color.unknown":
+      return words[issue.code](issue, field);
+  }
 };
 
 /**
@@ -20,24 +41,9 @@ export const describeCommunityIssue = (issue: CommunityNoteIssue, texts: IssueTe
   if (!("key" in issue)) return describeNoteIssue(issue, texts.notes, label);
   const words = texts.communities.issues;
   const field = label(issue.key);
-  switch (issue.code) {
-    case "field.missing":
-      return texts.communities.missing[issue.key];
-    case "short-code.taken":
-      return words[issue.code](issue, field);
-    case "short-code.duplicate":
-      return words[issue.code](issue, field);
-    case "color.unknown":
-      return words[issue.code](issue, field);
-    case "name.invalid":
-      return words[issue.code]({ key: issue.key, code: issue.code }, field);
-    case "short-code.invalid":
-      return words[issue.code]({ key: issue.key, code: issue.code }, field);
-    case "color.taken":
-      return words[issue.code]({ key: issue.key, code: issue.code }, field);
-    case "kind.invalid":
-      return words[issue.code]({ key: issue.key, code: issue.code }, field);
-    case "unit-label.invalid":
-      return words[issue.code]({ key: issue.key, code: issue.code }, field);
-  }
+  if ("value" in issue) return describeWithData(issue, words, field);
+  if (issue.code === "field.missing") return texts.communities.missing[issue.key];
+  // Each plain code's sentence takes the issue as it is: its key and that code (`IssueOf`).
+  const plain = words[issue.code] as (issue: PlainIssue, label: string) => string;
+  return plain(issue, field);
 };

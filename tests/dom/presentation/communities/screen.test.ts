@@ -175,12 +175,47 @@ describe("the community settings", () => {
     expect(section?.querySelector("h3")?.textContent).toBe(t.screen.otherNotes);
     expect(
       [...(section?.querySelectorAll("li") ?? [])].map((item) =>
-        [...item.querySelectorAll("span")].map((part) => part.textContent.trim()).join(" | "),
+        [...item.querySelectorAll(":scope > span")]
+          .map((part) => part.textContent.trim())
+          .join(" | "),
       ),
     ).toEqual([
       `Irgendwo/Fremd.md | ${de.notes.unindexedIssues["schema.malformed"]({ code: "schema.malformed" })}`,
       `WEG Manager/Gemeinschaften/Kaputt.md | ${de.notes.unindexedIssues["frontmatter.unreadable"]({ code: "frontmatter.unreadable" })}`,
     ]);
+  });
+
+  it("opens each other note and each read-only community in Obsidian, and only those", async () => {
+    const screen = await openCommunities({
+      seed: (notes) => {
+        notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "A" }));
+        notes.seed(`${FOLDER}/Neu.md`, communityNote(2, { schema: "weg-manager.community/v2" }));
+        notes.seed("Irgendwo/Fremd.md", { schema: "weg-manager.punkt" });
+      },
+    });
+    const openers = screen.all("open-note");
+    expect(openers.map((button) => button.getAttribute("aria-label"))).toEqual([
+      t.screen.openNoteLabel("Neu"),
+      t.screen.openNoteLabel("Irgendwo/Fremd.md"),
+    ]);
+    expect(openers.map((button) => button.textContent.trim())).toEqual([
+      t.screen.openNote,
+      t.screen.openNote,
+    ]);
+    await screen.click(openers[1]);
+    await screen.click(openers[0]);
+    expect(screen.notes.opened()).toEqual(["Irgendwo/Fremd.md", `${FOLDER}/Neu.md`]);
+  });
+
+  it("says so when a note to open is gone", async () => {
+    const screen = await openCommunities({
+      seed: (notes) => notes.seed("Irgendwo/Fremd.md", { schema: "weg-manager.punkt" }),
+    });
+    screen.notes.removeOutside("Irgendwo/Fremd.md");
+    await screen.click(screen.q("open-note"));
+    expect(screen.q("unindexed-notes")?.querySelector("[role=alert]")?.textContent).toContain(
+      de.notes.errors.notFound.title,
+    );
   });
 
   it("speaks English in an English Obsidian", async () => {

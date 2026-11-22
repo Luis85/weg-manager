@@ -21,12 +21,6 @@ export {
   normalizeShortCode,
   validateCommunity,
   CommunityFieldIssue,
-  type CommunityIssueCode,
   type CommunityInput,
 } from "./rules";
-export {
-  isCommunityChoice,
-  selectableIds,
-  selectedCommunity,
-  type SelectionCandidate,
-} from "./selection";
+export { isCommunityChoice, selectableIds, selectedCommunity } from "./selection";

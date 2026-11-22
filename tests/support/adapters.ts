@@ -43,6 +43,7 @@ export const testAdapters = (options: TestAdaptersOptions = {}) => {
     logSink: logger.layer,
     noteStore: notes.layer,
     idGenerator: sequentialIdGenerator().layer,
+    noteOpener: notes.opener,
     hostEvents: options.hostEvents ?? Layer.empty,
   };
   return { adapters, store, notifier, clipboard, logger, notes };

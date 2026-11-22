@@ -93,6 +93,16 @@ export class NoteStore extends Context.Service<
 >()("weg-manager/application/NoteStore") {}
 
 /**
+ * Opens a note for the user in Obsidian, in a new tab beside the plugin's view, so a note the
+ * plugin cannot write (read-only, unreadable, of no known type) can be repaired by hand. A path
+ * that holds no Markdown note is `NoteNotFoundError`.
+ */
+export class NoteOpener extends Context.Service<
+  NoteOpener,
+  { open(path: string): Effect.Effect<void, NoteNotFoundError> }
+>()("weg-manager/application/NoteOpener") {}
+
+/**
  * Makes the UUID of a new record's `id` (`<type>-<uuid>`, ADR 0007): a fresh lower-case UUID per
  * call. The plugin's adapter draws it at random; tests and the harness count up, so ids are known.
  */

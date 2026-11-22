@@ -2,6 +2,7 @@ import { Effect, Layer, Option, Result } from "effect";
 import { AppEvent } from "../../../application/events";
 import {
   NoteNotFoundError,
+  NoteOpener,
   NoteStore,
   NoteUnreadableError,
   applyPatch,
@@ -65,7 +66,7 @@ const differs = (before: Frontmatter | undefined, after: Frontmatter): boolean =
   JSON.stringify(Object.entries(after));
 
 /**
- * The `NoteStore` for tests and the browser harness: a vault in memory that keeps what the
+ * The `NoteStore` and `NoteOpener` for tests and the browser harness: a vault in memory that keeps what the
  * Obsidian adapter keeps (frontmatter key order, unknown keys, the body) and fails as it fails. It
  * passes the same contract suite (`tests/support/notes/contract.ts`). Reads see every write at
  * once, where Obsidian's metadata cache lags a moment behind.
@@ -86,6 +87,7 @@ export const memoryNoteStore = () => {
   let open = true;
   let waiting: (() => void)[] = [];
   let publish: (event: AppEvent) => void = unpublished;
+  const opened: string[] = [];
 
   const created = (path: string) => {
     publish(AppEvent.FileCreated(file(path)));
@@ -221,9 +223,18 @@ export const memoryNoteStore = () => {
       return service;
     }),
   );
+  /** The `NoteOpener` over the same notes: it records what it opened, as a tab would show it. */
+  const openerLayer = Layer.succeed(NoteOpener)({
+    open: (path) =>
+      Effect.map(find(path), (found) => {
+        opened.push(found.path);
+      }),
+  });
 
   return {
     layer,
+    /** The `NoteOpener` over these notes; `opened()` lists what it opened. */
+    opener: openerLayer,
     /** Writes a note as a person, Sync or an agent would: no checks, no waiting. */
     seed: (path: string, frontmatter: SeedFrontmatter, body = ""): void => {
       addFolders(folderOf(path));
@@ -260,5 +271,7 @@ export const memoryNoteStore = () => {
       for (const resume of queued) resume();
     },
     heldWrites: (): number => waiting.length,
+    /** The paths the `NoteOpener` opened, in order. */
+    opened: (): readonly string[] => [...opened],
   };
 };

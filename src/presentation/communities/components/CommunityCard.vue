@@ -9,10 +9,12 @@ import {
 } from "../../../application/communities";
 import { useMessages } from "../../shell";
 import CommunityBadge from "./CommunityBadge.vue";
+import OpenNoteButton from "./OpenNoteButton.vue";
 
 /**
  * One community in the list (VIEW-07): badge, name, kind and unit label, and its issues as text. An
- * editable note offers edit and delete; a read-only one says so and offers nothing. A long name
+ * editable note offers edit and delete; a read-only one says so and offers to open the note in
+ * Obsidian, where the user can repair it. A long name
  * wraps, hyphenated in the frame's language, and breaks inside a word only when nothing else fits.
  */
 const props = defineProps<{ community: Community }>();
@@ -68,6 +70,7 @@ const issues = computed(() =>
         <li v-for="issue in issues" :key="issue">{{ issue }}</li>
       </ul>
     </div>
+    <OpenNoteButton v-if="!community.editable" :path="community.path" :name="name" />
     <div v-if="community.editable" class="wm:flex wm:gap-2">
       <UButton
         type="button"

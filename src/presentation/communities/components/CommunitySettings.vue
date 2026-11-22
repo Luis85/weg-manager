@@ -20,6 +20,7 @@ import { ErrorNotice, useCommand, useMessages, useSettings, useStream } from "..
 import CommunityCard from "./CommunityCard.vue";
 import CommunityForm from "./CommunityForm.vue";
 import DeleteCommunityDialog from "./DeleteCommunityDialog.vue";
+import OpenNoteButton from "./OpenNoteButton.vue";
 
 /**
  * The community settings (VIEW-07, route `settings/communities`): the communities from the note
@@ -136,6 +137,7 @@ const close = () => {
           <span class="wm:text-sm wm:text-warning">
             {{ describeUnindexedIssue(note.issue, catalog.notes) }}
           </span>
+          <OpenNoteButton :path="note.path" :name="note.path" class="wm:mt-1" />
         </li>
       </ul>
     </section>

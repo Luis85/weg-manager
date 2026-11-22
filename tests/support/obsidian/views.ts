@@ -98,6 +98,14 @@ export class WorkspaceLeaf {
     }
   }
 
+  /** Test helper: the files opened in this leaf, with the state they were opened with. */
+  readonly openedFiles: { readonly path: string; readonly state: unknown }[] = [];
+
+  /** Opens a note in this leaf, as a file editor would; the double only records it. */
+  async openFile(file: { readonly path: string }, state?: unknown): Promise<void> {
+    this.openedFiles.push({ path: file.path, state });
+  }
+
   async detach(): Promise<void> {
     await this.closeView();
     this.containerEl.remove();

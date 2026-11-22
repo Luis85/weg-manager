@@ -11,7 +11,7 @@ import {
   saveForm,
   writeNotes,
 } from "../communities";
-import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
+import { ROOT, installConsoleSpy, leafCount, openView, pluginProblems } from "../support";
 
 const NOTES: Readonly<Record<string, string>> = {
   "Gut.md": communityText(community(1, { name: "Gut", short_code: "GUT" })),
@@ -90,6 +90,27 @@ describe("communities: notes that break the file contract", function () {
     expect(await Promise.all(untouched.map((name) => fileText(`${FOLDER}/${name}`)))).toEqual(
       untouched.map((name) => NOTES[name]),
     );
+  });
+
+  it("opens a note it cannot write in another tab, and the view stays open", async function () {
+    const activeFile = () =>
+      browser.executeObsidian(({ app }) => app.workspace.getActiveFile()?.path ?? null);
+    const opener = browser
+      .$(ROOT)
+      .$("[data-testid=unindexed-notes]")
+      .$("button[aria-label='WEG Manager/Gemeinschaften/Kaputt.md in Obsidian öffnen']");
+    await opener.click();
+    await browser.waitUntil(async () => (await activeFile()) === `${FOLDER}/Kaputt.md`, {
+      timeoutMsg: "the note never became the active file",
+    });
+    expect(await leafCount()).toBe(1);
+    await openView();
+    const readOnly = browser.$(ROOT).$("button[aria-label='Kopie A in Obsidian öffnen']");
+    await readOnly.click();
+    await browser.waitUntil(async () => (await activeFile()) === `${FOLDER}/Kopie A.md`, {
+      timeoutMsg: "the read-only community's note never became the active file",
+    });
+    expect(await leafCount()).toBe(1);
   });
 
   it("logged no error or warning from the plugin and no uncaught error", async function () {

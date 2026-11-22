@@ -52,7 +52,6 @@ export const CommunityFieldIssue = Schema.Union([
   }),
 ]);
 export type CommunityFieldIssue = typeof CommunityFieldIssue.Type;
-export type CommunityIssueCode = CommunityFieldIssue["code"];
 
 /**
  * What the rules need to know of another community: its valid short code and colour, if any, and

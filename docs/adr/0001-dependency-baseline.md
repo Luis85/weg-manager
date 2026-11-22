@@ -52,6 +52,7 @@ The plugin shell pins every dependency exactly. "Latest" means the newest stable
 | `postcss-selector-parser` | 7.2.1 | dev |
 | `@iconify-json/lucide` | 1.2.157 | dev |
 | `@types/node` | 26.6.6 | dev |
+| `yaml` | 2.9.1 | dev (the Obsidian double's `parseYaml` and the tests that read note frontmatter) |
 
 Runtime: Node 24 LTS (`.nvmrc`), npm 11.
 

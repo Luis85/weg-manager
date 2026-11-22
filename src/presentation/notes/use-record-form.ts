@@ -1,29 +1,27 @@
 import { useForm } from "@tanstack/vue-form";
-import { computed, nextTick, shallowRef } from "vue";
-import type { RecordRow } from "../../application/notes";
+import { computed, nextTick, onScopeDispose, shallowRef, watch } from "vue";
+import type { AppServices } from "../../application/app-services";
+import type { RecordRow, ReferenceSource } from "../../application/notes";
 import type { AppError } from "../../application/errors";
-import type {
-  FieldConflict,
-  FormInput,
-  Frontmatter,
-  NoteFields,
-  NoteType,
-  RecordIssue,
+import {
+  formInput,
+  type FieldConflict,
+  type FormInput,
+  type FormValue,
+  type Frontmatter,
+  type NoteFields,
+  type NoteType,
+  type RecordIssue,
 } from "../../domain/notes";
-import { useCommand, type UseCaseFn } from "../shell";
-import type { ConflictChoices } from "./conflict";
+import { useCommand, useMessages, useStream, type UseCaseFn } from "../shell";
+import { shownValue, type ConflictChoices } from "./conflict";
+import { useSheetGuard } from "./sheet-guard";
 
 /** A field's issue as the feature reports it: by key, with a code. */
 type KeyedIssue = { readonly key: string; readonly code: string };
 
 /** What a save returns: the note as written. */
 type Written = { readonly frontmatter: Frontmatter };
-
-/** A value of the note as the form shows it: text as written, numbers and flags as text. */
-const rawText = (value: unknown): string =>
-  typeof value === "string" || typeof value === "number" || typeof value === "boolean"
-    ? String(value)
-    : "";
 
 /**
  * Puts the focus on the first field marked invalid in `root` (WCAG 3.3.1): an input, or the chosen
@@ -56,6 +54,11 @@ export type RecordFormOptions<F extends NoteFields, Issue extends KeyedIssue> = 
   readonly describe: (issue: RecordIssue | Issue) => string;
   /** The label of each field: the conflict's legend names the field by it. */
   readonly labels: Readonly<Record<keyof F & string, string>>;
+  /**
+   * The target of each reference field, by its key, so the conflict choice shows a referenced
+   * record by its name; a field without one shows the ids.
+   */
+  readonly references?: Partial<Readonly<Record<keyof F & string, ReferenceSource<AppServices>>>>;
   /** The summary a failed submit shows at the top of the form. */
   readonly summary: { readonly title: string; readonly detail: string };
   readonly root: () => HTMLElement | undefined;
@@ -70,7 +73,8 @@ export type RecordFormOptions<F extends NoteFields, Issue extends KeyedIssue> = 
  * focus to the first invalid field. A field shows the note's own issue until the user changes it.
  * An outside edit to a field the user changed too shows the conflict choice; the form then saves
  * again against the note's current values (ADR 0007). Save stays focusable: `blocked` says when it
- * does nothing (`aria-disabled`).
+ * does nothing (`aria-disabled`). Whether the form holds unsaved input (`dirty`, TanStack's
+ * `isDirty`) goes to the record screen around it, whose sheet then asks before it closes (PBI-72).
  */
 export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
   options: RecordFormOptions<F, Issue>,
@@ -94,9 +98,8 @@ export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
     focusFirstInvalid(options.root());
   };
 
-  const loaded = Object.fromEntries(
-    options.type.keys.map((key) => [key, rawText(record?.frontmatter[key])]),
-  ) as Input;
+  // Each field in the form of its kind (PBI-71): a list stays a list, a number a number.
+  const loaded: Input = formInput(options.type, record?.frontmatter ?? {});
 
   const form = useForm({
     defaultValues: { ...loaded, ...options.initial },
@@ -113,8 +116,20 @@ export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
     },
   });
 
-  /** The form's field at `key`; TanStack types field names by the form's data, which is generic here. */
-  const field = (key: Key) => key as never;
+  /**
+   * Puts `error` at each field it names. The names come from the form's own fields, which TanStack
+   * types by the form's data; a field the feature does not show has no place to show an issue.
+   */
+  const markFields = (errors: ReadonlyMap<string, string>) => {
+    for (const name in form.fieldInfo) {
+      const error = errors.get(name);
+      if (error === undefined) continue;
+      form.setFieldMeta(name, (meta) => ({
+        ...meta,
+        errorMap: { ...meta.errorMap, onSubmit: error },
+      }));
+    }
+  };
 
   /**
    * After a save, by its outcome: done with the saved record's id, a conflict to choose in, or the
@@ -128,12 +143,7 @@ export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
     if (error._tag === "NoteEditConflictError") conflicts.value = error.conflicts;
     const issues = fieldIssues(error);
     if (issues === undefined) return;
-    for (const issue of issues) {
-      form.setFieldMeta(field(issue.key as Key), (meta) => ({
-        ...meta,
-        errorMap: { ...meta.errorMap, onSubmit: options.describe(issue) },
-      }));
-    }
+    markFields(new Map(issues.map((issue) => [issue.key, options.describe(issue)])));
     await showInvalid();
   };
   /** The id of the record the save wrote: the edited one's, or the new note's. */
@@ -150,8 +160,8 @@ export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
   /** The rule's issue for `key` if the field held `value`, worded; `undefined` when it is fine. */
   const issueOf =
     (key: Key) =>
-    ({ value }: { value: string }) => {
-      const input = { ...form.state.values, [key]: value } as Input;
+    ({ value }: { value: FormValue }) => {
+      const input: Input = { ...form.state.values, [key]: value };
       const issue = options.rules(input).find((candidate) => candidate.key === key);
       return issue === undefined ? undefined : options.describe(issue);
     };
@@ -172,6 +182,12 @@ export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
     return meta.isDirty ? false : (loadedIssue(key) ?? false);
   };
 
+  /** The user changed a field since the form opened: closing would discard input. */
+  const dirty = form.useSelector((state) => state.isDirty);
+  const report = useSheetGuard();
+  watch(dirty, report, { immediate: true });
+  onScopeDispose(() => report(false));
+
   const isSubmitting = form.useSelector((state) => state.isSubmitting);
   const fieldsValid = form.useSelector((state) => state.isFieldsValid);
   const pending = computed(() => isSubmitting.value || command.pending.value);
@@ -189,10 +205,13 @@ export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
     for (const conflict of conflicts.value ?? []) {
       if (conflict.current === undefined) delete next[conflict.key];
       else next[conflict.key] = conflict.current;
-      if (choices[conflict.key] === "theirs") {
-        form.setFieldValue(field(conflict.key as Key), rawText(conflict.current) as never);
-      }
     }
+    // "theirs" puts the note's value into the form through the same mapping as loading does.
+    const current = formInput(options.type, next);
+    const theirs = Object.fromEntries(
+      Object.entries(current).filter(([key]) => choices[key] === "theirs"),
+    );
+    form.baseStore.setState((state) => ({ ...state, values: { ...state.values, ...theirs } }));
     base.value = next;
     conflicts.value = undefined;
     void form.handleSubmit();
@@ -214,6 +233,18 @@ export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
   /** A field's label, for the conflict's legend. */
   const label = (key: string): string => options.labels[key as Key];
 
+  const conflictTexts = useMessages().notes.conflict;
+  const names = new Map(
+    Object.entries(options.references ?? {}).flatMap(([key, source]) =>
+      source === undefined ? [] : [[key, useStream(source.names, source.nameChanges)] as const],
+    ),
+  );
+  /** A field's value as the conflict shows it, in the form of the field's kind. */
+  const show = (key: string, value: unknown): string => {
+    const kind = options.type.fields[key]?.kind ?? "text";
+    return shownValue(kind, value, conflictTexts, names.get(key)?.value);
+  };
+
   return {
     form,
     conflicts,
@@ -222,8 +253,10 @@ export const useRecordForm = <F extends NoteFields, Issue extends KeyedIssue>(
     submit,
     resolve,
     label,
+    show,
     pending,
     blocked,
+    dirty,
     summary,
     notice,
   };

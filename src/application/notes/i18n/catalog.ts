@@ -96,14 +96,27 @@ export type NotesCatalog = {
     mine(value: string): string;
     theirs(value: string): string;
     readonly apply: string;
-    /** How an unset value is shown. */
+    /** How an unset value (and an empty list) is shown. */
     readonly empty: string;
+    /** How a checkbox's value is shown: ticked, not ticked. */
+    readonly checked: string;
+    readonly unchecked: string;
   };
   /** The dialog that asks before a record goes to the trash; its title is the feature's. */
   readonly deletion: {
     detail(name: string): string;
     readonly confirm: string;
     readonly cancel: string;
+  };
+  /**
+   * The question before a record's form closes with unsaved input (PBI-72): discard it, or keep
+   * editing, the safe choice.
+   */
+  readonly discard: {
+    readonly title: string;
+    readonly detail: string;
+    readonly confirm: string;
+    readonly keep: string;
   };
   /**
    * The settings section of the notes the plugin cannot read or assign to a record type

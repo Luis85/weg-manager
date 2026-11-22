@@ -81,7 +81,9 @@ describe("communities: create, edit and delete", function () {
     // Teal is Ahornweg 12's: it is offered no more, and the form started on the next free one.
     await expect(root.$("input[type=radio][value=teal]")).toBeDisabled();
     await expect(root.$("input[type=radio][value=violet]")).toBeSelected();
+    // The form holds typed input, so Escape asks first (PBI-72).
     await browser.keys("Escape");
+    await root.$(`button=${de.notes.discard.confirm}`).click();
     await expectFormClosed();
     expect(await filesIn("WEG Manager")).toEqual([PATH]);
   });

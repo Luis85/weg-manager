@@ -8,7 +8,7 @@ actors:
 release: ""
 status: ""
 started: ""
-finished: ""
+finished: 2026-11-22
 horizon: ""
 start: ""
 due: ""
@@ -23,12 +23,12 @@ hypotheses: []
 pages: []
 user-flows: []
 dependsOn: []
-triage: needs-triage
+triage: ""
 ---
 
 # PBI-72 · Eingaben im Gemeinschaftsblatt gehen beim Schließen verloren
 
-**Planungsstand:** Befund bestätigt im Code, im echten Obsidian nicht ausgeführt; die Entscheidung des Eigentümers steht aus · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, Review-Runde 2 vom 22.11.2026)
+**Planungsstand:** Befund bestätigt im Code, im echten Obsidian nicht ausgeführt; Entscheidung des Eigentümers am 22.11.2026 getroffen (Rückfrage vor dem Verwerfen, in jedem Formular des Datensatz-Bausteins) · **Bezug:** `docs/plans/pre-feature-improvement-plan.md` (Abschnitt 8, Review-Runde 2 vom 22.11.2026)
 
 ## User Story
 
@@ -42,18 +42,17 @@ Als Beirat möchte ich, dass ein Text, den ich im Blatt einer Gemeinschaft getip
 
 **Bekannter Rahmen.** `docs/design/handoff/03 - Ansichten, Navigation und Befehle.md` (Zeile 75) nennt den Verlust von Formulareingaben beim Schließen der View und stellt einen Entwurfsspeicher je Formular zurück. Dieser Weg ist deutlich häufiger als das Schließen der View, und das Formular für Ansprechpartner wird länger.
 
-## Offene Entscheidung des Eigentümers
+## Entscheidung des Eigentümers (22.11.2026, viertes Interview)
 
-Die Note legt nichts fest. Zur Wahl stehen:
+**Vor dem Verwerfen fragen.** Ein Formular schließt nicht ohne Rückfrage, solange es nicht gespeicherte Eingaben enthält. Ohne solche Eingaben schließt es wie bisher. Für die Umsetzung gilt die erste der beiden Möglichkeiten, die diese Note vorgeschlagen hatte: das Blatt schließt nicht von selbst, solange das Formular geändert ist (`:dismissible="!dirty"` mit `isDirty` des Formulars), und `close:prevent` fragt vor dem Verwerfen. Die zweite Möglichkeit (so lassen, bis es einen Entwurfsspeicher gibt) ist nicht gewählt.
 
-- **Vor dem Verwerfen fragen.** Das Blatt schließt nicht von selbst, solange das Formular geändert ist (`:dismissible="!dirty"` mit `isDirty` des Formulars), und `close:prevent` fragt vor dem Verwerfen.
-- **So lassen, bis es einen Entwurfsspeicher gibt.** Das Verhalten bleibt, das Handoff nennt den Weg über Escape und Klick daneben ausdrücklich, und der Entwurfsspeicher löst beide Fälle zusammen.
+**Umfang.** Jedes Formular, das der Datensatz-Baustein in `notes` baut, nicht nur das Blatt der Gemeinschaften. Die Rückfrage wird einmal im Baustein gebaut, nicht je Feature.
 
 ## Akzeptanzkriterien
 
-1. Der Eigentümer hat entschieden; die Entscheidung steht als Kommentar in dieser Note.
-2. Bei „vor dem Verwerfen fragen“: Escape und ein Klick neben das Blatt verwerfen geänderte Eingaben nicht ohne Rückfrage; ein unverändertes Formular schließt wie bisher. Ein DOM-Test deckt beide Wege ab, ein E2e-Spec in echtem Obsidian den Klick daneben. Der Text der Rückfrage steht in beiden Katalogen (Du-Form, Ursache vor Handlung).
-3. Bei „so lassen“: `docs/design/handoff/03 - Ansichten, Navigation und Befehle.md` und die Beschreibung des Blatts nennen Escape und den Klick daneben als bekannten Verlust, und die Note verweist auf den Entwurfsspeicher als Lösung.
+1. Der Eigentümer hat entschieden; die Entscheidung steht in dieser Note (erledigt am 22.11.2026).
+2. Jedes Formular, das der Datensatz-Baustein in `notes` baut, fragt vor dem Verwerfen, wenn es nicht gespeicherte Eingaben enthält. Das gilt für beide Wege, die diese Note nennt (Escape und ein Klick neben das Blatt) und für die eigenen Knöpfe des Formulars zum Abbrechen und Schließen. Ein unverändertes Formular schließt wie bisher ohne Frage. Die Rückfrage ist einmal im Baustein gebaut, nicht nur im Blatt der Gemeinschaften. Ein DOM-Test deckt alle vier Wege ab, ein E2e-Spec in echtem Obsidian den Klick daneben. Der Text der Rückfrage steht in beiden Katalogen (Du-Form, Ursache vor Handlung).
+3. Entfällt: die Möglichkeit „so lassen, bis es einen Entwurfsspeicher gibt“ ist nicht gewählt.
 4. `npm run verify` endet mit Exit 0; bei einer Änderung am Code auch `npm run test:e2e` (unter `xvfb-run -a`).
 
 ## Herkunft und Bezüge
@@ -63,3 +62,5 @@ Review-Runde vom 22.11.2026 am Stand `65eb006`, Bericht zum Produktcode, Befund 
 ## Kommentare
 
 - 22.11.2026: Angelegt aus der Review-Runde nach dem Stand `65eb006` (vier unabhängige Reviews: Produktcode, Tests, CI und Release, Blueprint und Dokumente). Der Befund ist gegen den Code gelesen, nicht in Obsidian ausgeführt, und nicht umgesetzt. `triage` ist `needs-triage`, weil die Entscheidung zwischen Rückfrage und Warten auf den Entwurfsspeicher beim Eigentümer liegt.
+- 22.11.2026 (viertes Interview): Der Eigentümer hat entschieden, vor dem Verwerfen zu fragen, in jedem Formular des Datensatz-Bausteins und nur bei nicht gespeicherten Eingaben (Abschnitt „Entscheidung des Eigentümers“, Kriterien 2 und 3). `triage` ist `ready-for-agent`. Die Version 0.2.1 wird veröffentlicht, wenn [[PBI-71 - Formulare des Datensatz-Bausteins für alle Feldarten tragfähig machen]] und diese Note zusammengeführt und grün sind; der Agent startet die Veröffentlichung dann. Vorher gibt es keine.
+- 22.11.2026 (Umsetzung): Umgesetzt im Zweig `forms-kit`, einmal im Datensatz-Baustein. Ein Formular meldet `isDirty` von TanStack an den Bildschirm um es herum (`useRecordForm` über `sheet-guard.ts`). Das neue `RecordSheet` in `notes` setzt dann `dismissible: false`; Escape, ein Klick neben das Blatt, sein Schließen-Knopf und „Abbrechen“ im Formular öffnen `DiscardInputDialog` („Eingaben verwerfen?“, „Verwerfen“, „Weiter bearbeiten“; Texte in beiden Katalogen). „Weiter bearbeiten“ hat zuerst den Fokus und ist auch, was Escape im Dialog wählt; danach kehrt der Fokus dorthin zurück, wo er war. Ohne Eingaben und nach dem Speichern schließt das Blatt wie bisher. Die Gemeinschaften nutzen `RecordSheet`; jedes künftige Formular des Bausteins bekommt die Rückfrage mit. Tests: `tests/dom/presentation/notes/discard-input.test.ts` (alle vier Wege, mit und ohne Eingaben, Name, Fokus, Weiter bearbeiten, Verwerfen), `tests/e2e/specs/communities-discard.e2e.ts` (Escape und Klick daneben in Obsidian). `npm run verify` mit Exit 0, `npm run test:e2e` unter `xvfb-run -a` dreimal hintereinander grün (26 von 26 Specs, je 93 bis 96 s); ein früherer dritter Lauf scheiterte in `note-vanished.e2e.ts` an einer unbehandelten ENOENT-Ablehnung. Die Ursache liegt nicht in dieser Änderung: Eine andere Session hat sie unter CPU-Last nachgestellt und auf ein Promise im Inneren von Electron zurückgeführt (weder Obsidian noch das Plugin lesen die gelöschte Datei ein zweites Mal); ihre Korrektur des Specs kommt mit dem Pull Request #5. Der Spec bleibt hier unverändert. Weiter offen, wie entschieden: Eingaben nach dem Schließen der View oder von Obsidian wiederherstellen (Entwurfsspeicher, Handoff 03) und eine Rückfrage beim Wechsel der Route. Die Darstellung bei 320 px und in beiden Farbschemata ist nicht eigens gemessen; der Dialog nutzt dasselbe `UModal` und dieselben Klassen wie der Löschdialog, den `appearance.e2e.ts` misst.

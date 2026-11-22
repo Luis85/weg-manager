@@ -9,6 +9,7 @@ import type {
   NoteInput,
   NoteTypeSpec,
   PartialValues,
+  RecordValues,
 } from "./note-type";
 import { recordIdIssue } from "./record-id";
 import { parseSchemaMarker, schemaMarker } from "./schema-marker";
@@ -38,6 +39,19 @@ export const readFields = <F extends NoteFields>(
     else issues.push({ code: field.issue, key });
   }
   return { values: values as PartialValues<F>, issues };
+};
+
+/**
+ * A form's values as the type's values, once every field rule holds: every required field set and
+ * each set value of its kind (and narrower schema). Otherwise the issues, as `check` gives them.
+ */
+export const parseValues = <F extends NoteFields>(
+  fields: F,
+  input: Readonly<Record<string, unknown>>,
+): Result.Result<RecordValues<F>, readonly FieldIssue<FieldIssueCode<F>>[]> => {
+  const { values, issues } = readFields(fields, input);
+  // No issue: every required field is set and every value passed its field's schema.
+  return issues.length === 0 ? Result.succeed(values as RecordValues<F>) : Result.fail(issues);
 };
 
 /**

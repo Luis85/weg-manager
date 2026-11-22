@@ -48,6 +48,10 @@ _Avoid_: schema (the version marker inside a note), format, data model
 A named reason why a note or a value breaks its file contract or a rule. An issue is shown to the user and never repaired silently.
 _Avoid_: error, warning, violation, problem
 
+**Unsaved input** (German: nicht gespeicherte Eingaben):
+What the user typed or chose in a record's form since it opened and has not saved. Closing the form asks before it is discarded.
+_Avoid_: draft (a stored copy, which does not exist yet), dirty data
+
 **Reference** (German: Verweis):
 A field of a record that names another record by its `id`, such as a contact's communities. A reference whose target no note carries is shown with an issue and kept as it is.
 _Avoid_: link, relation, foreign key, wikilink (a link in a note's text)

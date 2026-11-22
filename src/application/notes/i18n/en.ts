@@ -78,11 +78,19 @@ export const notesEn: NotesCatalog = {
     theirs: (value) => `Now in the note: ${value}`,
     apply: "Save choice",
     empty: "(empty)",
+    checked: "Yes",
+    unchecked: "No",
   },
   deletion: {
     detail: (name) => `“${name}” will be moved to Obsidian's trash, where you can restore it.`,
     confirm: "Move to trash",
     cancel: "Cancel",
+  },
+  discard: {
+    title: "Discard your input?",
+    detail: "Your input in this form isn't saved yet. If you discard it, it's lost.",
+    confirm: "Discard",
+    keep: "Keep editing",
   },
   dataIssues: {
     title: "Data issues",

@@ -21,7 +21,14 @@ export { openNote } from "./open-note";
 export { applyPatch } from "./patch";
 export { editChange, newRecordFrontmatter } from "./records";
 export { defineRecords } from "./record-kit";
-export { fileNameOf, type RecordList, type RecordRow } from "./record-list";
+export {
+  fileNameOf,
+  shownReference,
+  type RecordList,
+  type RecordRow,
+  type ReferenceNames,
+  type ReferenceSource,
+} from "./record-list";
 export {
   IdGenerator,
   NoteOpener,

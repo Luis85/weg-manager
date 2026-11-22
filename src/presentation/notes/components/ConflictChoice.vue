@@ -9,7 +9,8 @@ import type { ConflictChoices } from "../conflict";
  * The per-field choice after an outside edit (ADR 0007, VIEW-07 "Konflikt klären"): for each
  * field both sides changed, the value when the form opened, the user's and the note's current
  * one. The user picks one per field; `apply` hands the choices back for the form to save again.
- * `label` names a field in the feature's words. It takes the focus to its heading when it appears,
+ * `label` names a field in the feature's words, `show` gives a value in the form of its field's
+ * kind (`shownValue`: a list with its entries, a reference by its record's name). It takes the focus to its heading when it appears,
  * so a screen reader announces it and the keyboard continues there (WCAG 2.4.3); the save button
  * it replaces may hold the focus no longer.
  */
@@ -17,6 +18,7 @@ const props = defineProps<{
   conflicts: readonly FieldConflict[];
   disabled: boolean;
   label: (key: string) => string;
+  show: (key: string, value: unknown) => string;
 }>();
 const emit = defineEmits<{ apply: [choices: ConflictChoices] }>();
 
@@ -30,11 +32,6 @@ const apply = () => {
 const choices = reactive<Record<string, "mine" | "theirs">>(
   Object.fromEntries(props.conflicts.map(({ key }) => [key, "mine"])),
 );
-
-const shown = (value: unknown): string =>
-  typeof value === "string" || typeof value === "number" || typeof value === "boolean"
-    ? String(value)
-    : t.empty;
 </script>
 
 <template>
@@ -55,7 +52,7 @@ const shown = (value: unknown): string =>
       :data-testid="`conflict-${conflict.key}`"
     >
       <legend class="wm:text-sm wm:font-medium">{{ label(conflict.key) }}</legend>
-      <p class="wm:text-xs wm:text-muted">{{ t.loaded(shown(conflict.base)) }}</p>
+      <p class="wm:text-xs wm:text-muted">{{ t.loaded(show(conflict.key, conflict.base)) }}</p>
       <label class="wm:flex wm:items-center wm:gap-2 wm:text-sm">
         <input
           v-model="choices[conflict.key]"
@@ -64,7 +61,7 @@ const shown = (value: unknown): string =>
           :name="`conflict-${conflict.key}`"
           data-testid="choose-mine"
         />
-        <span>{{ t.mine(shown(conflict.edited)) }}</span>
+        <span>{{ t.mine(show(conflict.key, conflict.edited)) }}</span>
       </label>
       <label class="wm:flex wm:items-center wm:gap-2 wm:text-sm">
         <input
@@ -74,7 +71,7 @@ const shown = (value: unknown): string =>
           :name="`conflict-${conflict.key}`"
           data-testid="choose-theirs"
         />
-        <span>{{ t.theirs(shown(conflict.current)) }}</span>
+        <span>{{ t.theirs(show(conflict.key, conflict.current)) }}</span>
       </label>
     </fieldset>
     <div>

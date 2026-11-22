@@ -254,11 +254,13 @@ describe("creating a community", () => {
     await screen.until(() => expect(screen.q("community-form")).toBeUndefined());
   });
 
-  it("closes without writing on cancel", async () => {
+  it("closes without writing on cancel, once the input is discarded (PBI-72)", async () => {
     const screen = await openCommunities();
     await openForm(screen);
     await fill(screen, VALID);
     await screen.click(screen.button("Abbrechen"));
+    expect(screen.q("community-form")).toBeDefined();
+    await screen.click(screen.button(de.notes.discard.confirm));
     expect(screen.q("community-form")).toBeUndefined();
     expect(await paths(screen)).toEqual([]);
   });

@@ -219,10 +219,19 @@ After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its 
 | #60 | Release workflow, CI, gate scripts and notices after review round 2: the versions are checked before the install, the staged files are hashed and checked again after the e2e run, one CLI guard for every script, `check:versions` in the gate, a CI run for every push to `main`, a wider nightly cache key with a full run on Sundays (PBI-69). |
 | #61 | A failed trash is reported, `unreadable` reads the disk, a note that will not open is no defect, the double models the rename queue (PBI-68). |
 | #62 | E2e negative checks get a positive sign; the four write-failure cases of the `NoteStore` contract run for real in Obsidian as a user that is not root (PBI-70). |
+| #63 | The blueprint synced with what review round 2 changed and measured; PBI-70 finished. |
+| #64 | The owner decisions of the fourth interview, recorded in the plan, the backlog notes and ADR 0007. |
+| #65 | Record forms carry every field kind: one mapping per kind in the domain, an untouched field keeps its bytes, the conflict dialog shows lists and references; feature services are folded in module order (PBI-71). |
+| #66 | A record form asks before unsaved input is discarded, built once in the record kit (PBI-72). |
 
 ### The 0.2.0 pre-release
 
 Everything the owner asked for before the tag is on `main` (PRs #39 to #46). The version bump to 0.2.0 went through its own pull request (#47). Version 0.2.0 was released on 2026-11-22 as a pre-release through the release workflow, started by hand on `main` (#49: the workflow creates the tag itself, because the agent session may not push tags). Both jobs passed on the first run; the release carries `main.js`, `manifest.json`, `styles.css` and `THIRD-PARTY-NOTICES.txt`, and the attestation step passed. The start by a pushed tag has not run yet. The plugin-shell blueprint for other plugins was written beside it (#48, #50) and did not hold the tag.
+
+
+### Version 0.2.1
+
+The version in `package.json`, `manifest.json` and `versions.json` is 0.2.1 (the pull request after #66). It holds everything merged since 0.2.0: the fixes of both review rounds (#51 to #62), record forms for every field kind (#65) and the question before unsaved input is discarded (#66). The release has not been started yet. Its run will be the first real run of the release workflow as changed in #60.
 
 ### Owner decisions (2026-11-22)
 
@@ -262,6 +271,23 @@ Everything the owner asked for before the tag is on `main` (PRs #39 to #46). The
 | Dependabot and notices | An agent may push the regenerated notices file onto a Dependabot branch; an unusual licence goes to the owner. | [github-setup](../engineering/github-setup.md) |
 | Nightly mutation run | The agent starts it by hand once after the tag. | PBI-67 |
 
+### Owner decisions (fourth interview)
+
+Taken on 2026-11-22.
+
+| Topic | Decision | Recorded in |
+| --- | --- | --- |
+| Manual check of 0.2.0 | Not done yet on Windows. The first feature (contacts or items) is decided after that check. | this plan |
+| Record forms | Record forms for every field kind (PBI-71) are built now, before the first feature. | PBI-71 |
+| Typed input in a form | The form asks before discarding it, and only when there is unsaved input. Scope: every record form, built once in the record kit, not only the community sheet. | PBI-72 |
+| Version 0.2.1 | Released after PBI-71 and PBI-72 are merged and green; the agent starts the release then. No release before. | PBI-71 and PBI-72 comments, [releasing](../engineering/releasing.md) |
+| Missing target | A record that points at a missing target (for example a deleted note) still saves; the form marks the field and the note is listed under the data issues. Saving is never refused for that reason. | ADR 0007 amendment, PBI-61 and PBI-71 comments |
+| Link between records | Written as the target's id only. No wikilink property; Obsidian's graph and backlinks do not show the relation. | ADR 0007 amendment, PBI-61 and PBI-71 comments |
+| "Today" after wake or clock change | Showing the old date for up to one minute is accepted. No further work. | ADR 0002 amendment, [architecture](../engineering/architecture.md#today), PBI-61 comment |
+| `CI / e2e` required | Not yet (asked again, postponed again). | PBI-67, [github-setup](../engineering/github-setup.md) |
+| Approval click per release | No protected `release` environment. A release starts only when the owner asks and publishes when its checks pass. | PBI-67, [releasing](../engineering/releasing.md) |
+| Manual accessibility checks | The two checks without a tester in PBI-66 (keyboard only, screen reader) are closed as not planned; the automated checks are accepted as enough for now. | PBI-66 |
+
 ### The backlog now
 
 As the notes under `docs/requirements/` say it (2026-11-22).
@@ -274,13 +300,13 @@ As the notes under `docs/requirements/` say it (2026-11-22).
 | PBI-63 | Finished (PRs #54, #57). |
 | PBI-64 | Finished (PRs #52, #56). The e2e job has passed four runs in a row without a window manager; the measured times of gate and CI are in the note. |
 | PBI-65 | Finished (PRs #46, #53). |
-| PBI-66 | Open, `ready-for-human`: the manual checks (the owner checks theme and zoom with 0.2.0 on Windows; keyboard only, screen reader and other plugins have no tester), the focus ring on inputs, hyphenation, three small points from the UX step. |
-| PBI-67 | Open, `ready-for-human`. Criterion 1 (0.2.0 through the release workflow) and criterion 4 (third-party notices) are met; criterion 2 is partly met (a scheduled run passed; a second run that uses the first one's results and the failure issue are not shown yet); criterion 3 (the first Dependabot run) is open; criterion 5 (`CI / e2e` required) is postponed. |
+| PBI-66 | Open, `ready-for-human`: the manual checks (the owner checks theme and zoom with 0.2.0 on Windows, not done yet; other plugins have no tester; keyboard only and screen reader are closed as not planned, fourth interview), the focus ring on inputs, hyphenation, three small points from the UX step. |
+| PBI-67 | Open, `ready-for-human`. Criterion 1 (0.2.0 through the release workflow) and criterion 4 (third-party notices) are met; criterion 2 is partly met (a scheduled run passed; a second run that uses the first one's results and the failure issue are not shown yet); criterion 3 (the first Dependabot run) is open; criterion 5 (`CI / e2e` required) is postponed again (fourth interview), and there is no approval click per release. |
 | PBI-68 | Finished (PR #61): the findings on the note store and the test double (a failed system trash, reads of a note deleted outside, a typed error for a note that does not open, `Today` guarded, one frame context area). The queued rename was measured and the double models it; the adapter stays as it is, a decision taken in the review of that step and recorded in the note and in ADR 0007. |
 | PBI-69 | Open, `ready-for-agent`: the fixes to release, CI and scripts are merged (#60); the changed release and nightly workflows have not run yet. |
 | PBI-70 | Finished (PR #62): e2e negative checks, the outside edit, the probe's outcome, the pinned contract. The four write-failure cases ran and passed in real Obsidian on the CI runner, which is not root (run 45071294408, 2026-11-22). |
-| PBI-71 | Open, `ready-for-agent`: record forms for every field kind, before the second record type. |
-| PBI-72 | Open, `needs-triage`: typed input in the community sheet is lost on Escape or a click outside; the owner decides. |
+| PBI-71 | Finished (PR #65). Input components for numbers, flags, lists and reference pickers are built with the first record type that needs one. |
+| PBI-72 | Finished (PR #66). Not built, as decided: restoring input after the whole view closes, and a question on a route change. |
 
 ### Review round 2 (2026-11-22)
 

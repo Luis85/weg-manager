@@ -79,12 +79,21 @@ export const notesDe: NotesCatalog = {
     theirs: (value) => `Jetzt in der Notiz: ${value}`,
     apply: "Auswahl speichern",
     empty: "(leer)",
+    checked: "Ja",
+    unchecked: "Nein",
   },
   deletion: {
     detail: (name) =>
       `„${name}“ wird in Obsidians Papierkorb verschoben. Dort kannst du die Notiz wiederherstellen.`,
     confirm: "In den Papierkorb verschieben",
     cancel: "Abbrechen",
+  },
+  discard: {
+    title: "Eingaben verwerfen?",
+    detail:
+      "Deine Eingaben in diesem Formular sind noch nicht gespeichert. Wenn du sie verwirfst, sind sie verloren.",
+    confirm: "Verwerfen",
+    keep: "Weiter bearbeiten",
   },
   dataIssues: {
     title: "Datenprobleme",

@@ -53,11 +53,11 @@ How to treat these pull requests:
 2. **Protect `main`.** *Settings → Rules → Rulesets → New branch ruleset* for `main`:
    - require a pull request before merging, with at least one approval;
    - require status checks to pass, and add **`CI / verify`** (it appears after the workflow has run once);
-   - add **`CI / e2e`** too, once it has run without a flake for about two weeks; until then it reports but does not block;
+   - **`CI / e2e`** is not required yet. The owner was asked again on 2026-11-22 (fourth interview) and postponed it again, so the job reports but does not block, and an agent waits for it before merging by its own rule. Add it here only when the owner says so;
    - block force pushes;
    - allow only squash merges (*Settings → General → Pull Requests*).
 3. **Prove the rule.** Open a pull request containing a planted type error (for example `const x: number = "a";` in `src/domain/shell/settings.ts`). The `verify` check must fail and the merge button must stay blocked. Close the PR without merging.
-4. **First release.** See [releasing.md](releasing.md). The first tag also shows whether the `release` workflow may create releases in your repository.
+4. **First release.** See [releasing.md](releasing.md). The first tag also shows whether the `release` workflow may create releases in your repository. There is no approval click per release and no protected `release` environment (owner decision, 2026-11-22): a release starts only when the owner asks, and it publishes when its checks pass.
 
 ## Distribution
 

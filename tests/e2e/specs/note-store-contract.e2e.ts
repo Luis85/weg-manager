@@ -8,6 +8,13 @@ import { cacheIdle, installConsoleSpy, pluginProblems } from "../support";
 const CONTRACT = "NoteStore contract in Obsidian";
 
 /**
+ * How many cases the contract has (`tests/support/notes/contract-*.ts`), counted on the run that
+ * wrote this: a contract that shrinks must be seen here too, not only a case that fails. A case
+ * added to the contract raises it.
+ */
+const CASES = 53;
+
+/**
  * The cases that need a hook a real app cannot give, by name, with the hook. They still run
  * against the in-memory adapter and the Obsidian adapter on the double
  * (`tests/unit/infrastructure/notes/`); the case-insensitive disk of Windows and macOS is not
@@ -49,6 +56,7 @@ describe("the NoteStore contract in Obsidian", function () {
       return probe.contract();
     });
     const cases = results as CaseResult[];
+    expect(cases.length).toBe(CASES);
     const named = (result: CaseResult) => result.name.replace(`${CONTRACT} > `, "");
     mkdirSync("reports/e2e", { recursive: true });
     writeFileSync(

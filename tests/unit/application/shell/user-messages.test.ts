@@ -13,6 +13,7 @@ import { describeIssue } from "../../../../src/application/shell/i18n/describe";
 import {
   describeDefect,
   describeSettingsIssues,
+  forClosedView,
   type UserMessage,
 } from "../../../../src/application/shell/user-messages";
 import { describeError } from "../../../../src/application/user-messages";
@@ -27,7 +28,7 @@ const LOG_LEVEL: SettingsIssue = { code: "logLevel.unknown", allowed: ["error", 
 const expectPlain = (message: UserMessage, rawCause?: string) => {
   expect(message.title.trim()).not.toBe("");
   expect(message.detail.trim()).not.toBe("");
-  for (const text of [message.title, message.detail]) {
+  for (const text of [message.title, message.detail, message.detailAfterClose ?? "x"]) {
     for (const forbidden of FORBIDDEN) expect(text).not.toContain(forbidden);
     if (rawCause !== undefined && rawCause.trim().length > 3) expect(text).not.toContain(rawCause);
   }
@@ -133,6 +134,8 @@ describe("message catalog texts", () => {
       title: "Einstellungen nicht gespeichert",
       detail:
         "Die Einstellungsdatei konnte nicht geschrieben werden. Deine Eingabe ist erhalten. Speichere erneut.",
+      detailAfterClose:
+        "Die Einstellungsdatei konnte nicht geschrieben werden, und deine Eingabe ging mit dem Schließen der Ansicht verloren. Öffne die Ansicht erneut und gib die Änderung noch einmal ein.",
       action: "retry",
     });
     expect(describeError(new ReadOnlySettingsError({ reason: "unreadable" }), de)).toEqual({
@@ -175,6 +178,17 @@ describe("message catalog texts", () => {
     });
   });
 
+  it("words a failed save in English, with the open view and with the closed one", () => {
+    expect(describeError(new StorageError({ cause: null }), en)).toEqual({
+      severity: "error",
+      title: "Settings not saved",
+      detail: "The settings file couldn't be written. Your input is kept. Save again.",
+      detailAfterClose:
+        "The settings file couldn't be written, and your input was lost when the view closed. Open the view again and enter the change once more.",
+      action: "retry",
+    });
+  });
+
   it("explains partially reset settings with every issue", () => {
     expect(describeSettingsIssues([ROOT_FOLDER, { code: "file.invalid" }], de.shell)).toEqual({
       severity: "warning",
@@ -208,6 +222,41 @@ describe("message catalog texts", () => {
         "The action was stopped (error code K7Q2). Copy the diagnostics and report the error with its code on the plugin's GitHub page. The report contains no content of your notes.",
       link: "https://github.com/Luis85/weg-manager/issues",
       action: "copy-diagnostics",
+    });
+  });
+});
+
+describe.each(CATALOGS)("forClosedView ($language)", (messages) => {
+  it("says what is true once the view is gone: the input is lost, not kept", () => {
+    const open = describeError(new StorageError({ cause: null }), messages);
+    const closed = forClosedView(open);
+    expect(closed).toEqual({
+      severity: open.severity,
+      title: open.title,
+      detail: open.detailAfterClose,
+    });
+    expectPlain(closed);
+  });
+
+  it("leaves a message that does not depend on the view as it is", () => {
+    const message = describeError(new VaultReadError({ cause: null }), messages);
+    expect(forClosedView(message)).toBe(message);
+  });
+
+  it("keeps the link of a message that has one", () => {
+    const message: UserMessage = {
+      severity: "error",
+      title: "T",
+      detail: "open",
+      detailAfterClose: "closed",
+      action: "retry",
+      link: "https://example.org",
+    };
+    expect(forClosedView(message)).toEqual({
+      severity: "error",
+      title: "T",
+      detail: "closed",
+      link: "https://example.org",
     });
   });
 });

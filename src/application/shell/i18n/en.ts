@@ -18,6 +18,8 @@ export const shellEn: ShellCatalog = {
     storage: {
       title: "Settings not saved",
       detail: "The settings file couldn't be written. Your input is kept. Save again.",
+      detailAfterClose:
+        "The settings file couldn't be written, and your input was lost when the view closed. Open the view again and enter the change once more.",
     },
     readOnly: {
       title: "Settings are read-only",

@@ -9,11 +9,11 @@ One association the board member works for, such as a WEG or its underground car
 _Avoid_: WEG (one kind of community), association, property, tenant
 
 **Short code** (German: Kürzel):
-The two to five characters that name a community wherever its full name does not fit. It is unique and fixed once given.
+The two to five characters that name a community wherever its full name does not fit. It is unique. It can be changed later; references use the record's id, never the short code (K-20, PBI-73).
 _Avoid_: abbreviation, slug, key, id
 
 **Kind** (German: Art):
-What sort of community it is, in the user's own words, such as WEG or Tiefgarage. It implies no legal form and no powers.
+What sort of community it is, in the user's own words, such as WEG, Tiefgarage or Viertel (offered as suggestions, never a closed list). It implies no legal form and no powers.
 _Avoid_: type, category, legal form
 
 **Unit label** (German: Einheitenbezeichnung):
@@ -74,4 +74,4 @@ _Avoid_: walking skeleton, demo, prototype
 
 ## Not yet named
 
-Punkt, Thema, Ansprechpartner, Termin, Ereignis, Quelle and the other entities in `docs/design/entities/` get their English term when their slice is planned.
+The domain model follows the WCS data dictionary (K-20); its German terms and fields are in `docs/entities/00 - Fachliches Domänenmodell.md`. Vorgang (formerly Punkt), Verlaufseintrag, Eskalation, Entscheidungskarte, To-do, Übergabe, Prüfvermerk, Person und Rolle, Thema, Termin, Quelle and the other entities in `docs/entities/` get their English term here when their slice is planned. The keys in the entity notes are proposals until then. Host and vault events keep the name event; they are not the domain's Verlaufseintrag.

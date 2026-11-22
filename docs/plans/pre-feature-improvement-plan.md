@@ -3,6 +3,7 @@
 - Date: 2026-11-21
 - Reviewed: PR #4 at `e10ce37` (branch `claude/upbeat-lovelace-v4rir1`), all of `src/`, `harness/`, `configs/`, `scripts/`, the workflows, `docs/engineering/`, ADR 0001–0005, the handoff, and the product backlog as the source of what features will demand.
 - Status (2026-11-21): every step of the plan has landed; this documentation step (4.1, PBI-59) is the last. Section 4 says where each step landed, section 5 which readiness criteria are met and what is still open. Sections 1 to 3 are the review as it was written; section 6 lists what the owner decided since.
+- Review round (2026-11-22): four independent reviews of the result and the fixes that followed are in section 8.
 
 ## Verdict
 
@@ -134,10 +135,10 @@ Checked on 2026-11-21 against `71e39c4`. "Met" means the code and a test in the 
 
 ### Not done
 
-- **Manual checks in a personal vault:** keyboard-only use, a screen reader, other themes, other plugins. No person has done them (the list is in [testing](../engineering/testing.md#manual-checks-in-obsidian)).
-- **`CI / e2e` as a required check.** It runs on every pull request but does not block. It is a repository setting of the owner ([github-setup](../engineering/github-setup.md)); PBI-58 criterion 5.
-- **The 0.2.0 pre-release** for those manual checks. It has not been tagged; `manifest.json` is 0.1.0.
-- **Open robustness items:**
+- **Manual checks in a personal vault:** keyboard-only use, a screen reader, other themes, other plugins. No person has done them (the list is in [testing](../engineering/testing.md#manual-checks-in-obsidian)); PBI-66.
+- **`CI / e2e` as a required check.** It runs on every pull request but does not block. It is a repository setting of the owner ([github-setup](../engineering/github-setup.md)); PBI-58 criterion 5, PBI-67.
+- **The 0.2.0 pre-release** for those manual checks. It has not been tagged; `manifest.json` is 0.1.0. Its tag will also be the first run of the release workflow (PBI-67).
+- **Open robustness items** (PBI-65; a root folder inside a hidden folder, found in the review round, is fixed by PR #30):
   - `VaultReady` has no fallback if a Markdown file is never indexed; it would hold the index back. No such file was seen.
   - The known gap of PBI-52: an existing root folder whose name differs from the setting only in case (`weg manager/` for `WEG Manager/`) is not detected, and on Windows and macOS creating a note then fails as a write error.
   - The storage-failure notice after a closed view (see the first criterion).
@@ -163,6 +164,62 @@ Checked on 2026-11-21 against `71e39c4`. "Met" means the code and a test in the 
 
 - **The stack.** Effect 4, Vue, Nuxt UI, TanStack Form and the gate stay as they are.
 - **A client store (Pinia).** ADR 0002's rule still holds; the index and the filter are services with streams.
-- **The vendored agent tooling and the community scan.** Decided for submission time.
+- **The vendored agent tooling and the community scan.** Decided on 2026-11-22: `.claude/skills` stays in the repository (section 8).
 - **Money and payment logic.** B-NFR-03: not in the MVP.
 - **The file contract's content** (fields, ids and file names per entity). That is product design under PBI-31 and PBI-41; this plan builds only the mechanism it will run on.
+
+## 8. Review round (2026-11-22)
+
+After the tracer (PR #26) four fresh reviewers looked at `0cb8292`, each on its own: architecture and design, correctness and robustness, UX and accessibility in real Obsidian 1.15.1, and tests, tooling and release readiness. Their findings were checked against the code before anything was changed. Clear defects were fixed by implementers, one pull request per step, each merged after the gate, the real-Obsidian suite and mutation testing were green. What is not fixed is in the backlog (PBI-60 to PBI-67).
+
+### What the reviews found
+
+- **Correctness:** seven defects, each reproduced. The worst: a save rewrote the user's own frontmatter keys (`plz: 01067` became `1067`, comments were dropped), against the file contract DV-01.
+- **UX and accessibility:** in real Obsidian the screen showed list bullets, a 40 px indent and raised ghost buttons; warning text measured 2.95:1; focus was lost after every action. The browser harness hid this, because its host colours and base rules were not Obsidian's.
+- **Architecture:** the core (note codec, `NoteStore`, index, event bus, lazy presentation) was judged sound. The gaps were boundary rules that contradicted ADR 0006, error tag lists the compiler did not check, and generic record handling living in `communities`.
+- **Tests and tooling:** the release workflow held a write token while running `npm ci`, nothing kept a missing icon from being requested from Iconify's API, and the mutation score of 100 % does not cover the edge layers (82.75 % in the reviewer's own run).
+
+### Merged
+
+| PR | What |
+| --- | --- |
+| #27 | The closing docs step of this plan (PBI-59): engineering guides, ADRs and `AGENTS.md` match the code. |
+| #28 | Boundary rules match ADR 0006 (feature modules may import each other; core modules cannot reach a feature through the composition files); a missing error tag is a type error; a note type missing from `appNoteTypes` fails a test. |
+| #29 | A save changes only the frontmatter lines it writes, through `vault.process`; a BOM and the file's line endings stay; a text the line edit cannot handle safely is refused, not written. |
+| #30 | Seven communities defects: a selection that survives a note being gone for a moment, no write or trash of a copy with the same id, a hidden root folder falls back, the conflict choice no longer dead-ends, untouched fields are not rewritten, one delete dialog per community, save and rename as one command. |
+| #31 | Styles in real Obsidian: a base reset inside the plugin root, colours derived from host variables so every text reaches 4.5:1 (measured by an e2e spec), long names, and a harness whose host matches Obsidian. |
+| #32 | The release in two jobs from `main` only, with 0.x as a pre-release; no icon request at runtime; three more lint rules; the nightly mutation run keeps its cache and reports a failure. |
+| #33 | Composition seams: one service graph (`appServicesLayer`), commands composed in `appCommands`, the adapter kit of `notes` behind its own entry, command runs that resolve to their outcome. |
+| #34 | The communities screen: focus and modality, only communities without issues selectable, texts in plain words that name their data, notices after writes, notes the plugin cannot write open in Obsidian. |
+
+### In progress on 2026-11-22
+
+- Generic record handling moves from `communities` into `notes`, and the settings screen gets one section per module (owner decision: before the pre-release).
+- Tests for the edge layers where planted mutations survive, a second, non-gating mutation run for those layers, and the timing-sensitive unit and dom tests.
+
+### Owner decisions (2026-11-22)
+
+| Topic | Decision | Recorded in |
+| --- | --- | --- |
+| Short code | Stays fixed after creation; the form says so next to the field. | PBI-56 comment |
+| Selection | Only communities without issues can be selected. | ADR 0008 amendment, PBI-56 comment |
+| Primary colour | Obsidian's accent, darkened for contrast; the handoff's neutral primary is superseded. | PBI-56 comment, PBI-66 |
+| German wording | "Vault", not "Tresor". | PBI-56 comment |
+| Kind suggestions | Keep following the UI language. | PBI-56 comment |
+| Help with defects | Texts point to the plugin's GitHub issues, not to "support". | PBI-56 comment |
+| Groundwork | The architecture groundwork from the review is done before the 0.2.0 pre-release. | this plan |
+| Agent skills | `.claude/skills` stays in the repository. | this plan |
+| Dependabot | Action updates are reviewed and merged by an agent under the standing rule of 2026-11-21. | [github-setup](../engineering/github-setup.md) |
+
+### Not fixed, in the backlog
+
+| Note | What |
+| --- | --- |
+| PBI-60 | A module manifest, as an option that needs a decision. |
+| PBI-61 | References between records, lookup by id, a source for "today"; and how a contact's role per community is stored, which must be decided before the contacts contract. |
+| PBI-62 | One index snapshot across types, and whether unused machinery stays. |
+| PBI-63 | Fidelity of the Obsidian double, fixed pauses and literal sentences in e2e specs. |
+| PBI-64 | Run time and cost of the gate and CI. |
+| PBI-65 | Open robustness cases when reading and writing notes. |
+| PBI-66 | Manual accessibility checks, the focus ring on inputs, two similar colours, documents that no longer match. |
+| PBI-67 | The first release: workflows that have never run, third-party notices, `CI / e2e` as a required check. |

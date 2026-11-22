@@ -86,6 +86,11 @@ describe("communities: notes that break the file contract", function () {
     expect(await fileText(`${FOLDER}/Farbe.md`)).toBe(
       communityText(community(2, { name: "Farbe", short_code: "FA", color: "cyan" })),
     );
+    // The list follows the write a moment later and the card loses its issue line, which moves
+    // everything below it; a click sent before that lands where a button used to be.
+    await browser.waitUntil(async () => (await issuesOf("Farbe")).length === 0, {
+      timeoutMsg: "the repaired community kept its issue in the list",
+    });
     const untouched = ["Kürzel A.md", "Kürzel B.md", "Kopie A.md", "Kopie B.md", "Kaputt.md"];
     expect(await Promise.all(untouched.map((name) => fileText(`${FOLDER}/${name}`)))).toEqual(
       untouched.map((name) => NOTES[name]),

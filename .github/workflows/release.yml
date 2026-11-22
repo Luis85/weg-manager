@@ -21,7 +21,8 @@
 #            people who read the licences. A 0.x release is a pre-release (BRAT). Started by hand,
 #            it creates the tag on the built commit; a tag the release creates starts no second run.
 #
-# Never run so far; see docs/engineering/releasing.md.
+# First run: 0.2.0, started by hand. The start by a pushed tag has not run yet; see
+# docs/engineering/releasing.md.
 name: Release
 
 on:

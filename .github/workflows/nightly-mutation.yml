@@ -2,7 +2,12 @@
 # Stryker re-tests only the mutants whose code or tests changed since the cached
 # reports/stryker-incremental.json. A by-hand run can ask for every mutant (`full`). A failed run
 # opens, or adds a comment to, the one issue "Nightly mutation run failed", so that a red night
-# reaches somebody. Never run so far; see docs/engineering/github-setup.md.
+# reaches somebody. A job that runs into its time limit counts as failed for that issue.
+#
+# The cache key holds the lockfile, because a dependency can change what a test kills. A version
+# bump changes the lockfile too, so the first run after a release or a dependency update tests every
+# mutant: the time limits are set for that full run (the first manual run on 2026-11-22 was cut off
+# at 45 minutes without a report).
 #
 # A second job, `mutation-edge`, mutates the edge layers the gated run skips (Obsidian adapters,
 # presentation `.ts` files, bootstrap) with its own config, cache and report. It has no threshold:
@@ -26,7 +31,7 @@ permissions:
 jobs:
   mutation:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -104,7 +109,9 @@ jobs:
 
   report-failure:
     needs: [mutation, mutation-edge]
-    if: ${{ failure() }}
+    # A job cut off by its time limit ends as "cancelled", which failure() does not see, so the
+    # results are read directly. A run a person cancels reports too; close that comment by hand.
+    if: ${{ always() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

@@ -21,9 +21,6 @@ export const communitiesEn: CommunitiesCatalog = {
     readOnly: "Read-only",
     selected: "Current",
     summary: (kind, unitLabel) => `${kind} (${unitLabel})`,
-    otherNotes: "Other WEG Manager notes",
-    openNote: "Open in Obsidian",
-    openNoteLabel: (name) => `Open ${name} in Obsidian`,
   },
   fields: {
     name: "Name",
@@ -60,22 +57,7 @@ export const communitiesEn: CommunitiesCatalog = {
     save: "Save",
     cancel: "Cancel",
   },
-  conflict: {
-    title: "Note changed while you were editing",
-    detail:
-      "These fields were also changed outside this form, for example on another device. Choose the value to keep for each, then save.",
-    loaded: (value) => `When you opened it: ${value}`,
-    mine: (value) => `Your entry: ${value}`,
-    theirs: (value) => `Now in the note: ${value}`,
-    apply: "Save choice",
-    empty: "(empty)",
-  },
-  deletion: {
-    title: "Delete community",
-    detail: (name) => `“${name}” will be moved to Obsidian's trash, where you can restore it.`,
-    confirm: "Move to trash",
-    cancel: "Cancel",
-  },
+  deletion: { title: "Delete community" },
   switcher: {
     label: "Community",
     loading: "Loading…",

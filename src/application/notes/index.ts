@@ -22,7 +22,7 @@ export { openNote } from "./open-note";
 export { applyPatch } from "./patch";
 export { editChange, newRecordFrontmatter } from "./records";
 export { defineRecords } from "./record-kit";
-export { fileNameOf, type RecordRow } from "./record-list";
+export { fileNameOf, type RecordList, type RecordRow } from "./record-list";
 export {
   IdGenerator,
   NoteOpener,

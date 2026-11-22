@@ -30,17 +30,9 @@ const rendered = (catalog: CommunitiesCatalog) => {
       editLabel: catalog.screen.editLabel("Ahornweg 12"),
       removeLabel: catalog.screen.removeLabel("Ahornweg 12"),
       summary: catalog.screen.summary("WEG", "Einheiten"),
-      openNoteLabel: catalog.screen.openNoteLabel("Ahornweg 12"),
     },
     colorTaken: catalog.colorTaken("Petrol"),
     suggestion: catalog.suggestion({ kind: "WEG", unit_label: "Einheiten" }),
-    conflict: {
-      ...catalog.conflict,
-      loaded: catalog.conflict.loaded("WEG"),
-      mine: catalog.conflict.mine("Haus"),
-      theirs: catalog.conflict.theirs("Tiefgarage"),
-    },
-    deletion: { ...catalog.deletion, detail: catalog.deletion.detail("Ahornweg 12") },
     issues: {
       "name.invalid": issues["name.invalid"](plain, "Feld"),
       "short-code.invalid": issues["short-code.invalid"](
@@ -91,9 +83,6 @@ describe("the communities catalog", () => {
         readOnly: "Schreibgeschützt",
         selected: "Aktuell",
         summary: "WEG (Einheiten)",
-        otherNotes: "Andere Notizen von WEG Manager",
-        openNote: "In Obsidian öffnen",
-        openNoteLabel: "Ahornweg 12 in Obsidian öffnen",
       },
       fields: {
         name: "Name",
@@ -131,23 +120,7 @@ describe("the communities catalog", () => {
         save: "Speichern",
         cancel: "Abbrechen",
       },
-      conflict: {
-        title: "Notiz geändert, während du bearbeitet hast",
-        detail:
-          "Diese Angaben wurden auch außerhalb dieses Formulars geändert, etwa auf einem anderen Gerät. Wähle je Angabe den Wert, der gelten soll, und speichere.",
-        loaded: "Beim Öffnen: WEG",
-        mine: "Deine Eingabe: Haus",
-        theirs: "Jetzt in der Notiz: Tiefgarage",
-        apply: "Auswahl speichern",
-        empty: "(leer)",
-      },
-      deletion: {
-        title: "Gemeinschaft löschen",
-        detail:
-          "„Ahornweg 12“ wird in Obsidians Papierkorb verschoben. Dort kannst du die Notiz wiederherstellen.",
-        confirm: "In den Papierkorb verschieben",
-        cancel: "Abbrechen",
-      },
+      deletion: { title: "Gemeinschaft löschen" },
       switcher: {
         label: "Gemeinschaft",
         loading: "Wird geladen …",
@@ -201,9 +174,6 @@ describe("the communities catalog", () => {
         readOnly: "Read-only",
         selected: "Current",
         summary: "WEG (Einheiten)",
-        otherNotes: "Other WEG Manager notes",
-        openNote: "Open in Obsidian",
-        openNoteLabel: "Open Ahornweg 12 in Obsidian",
       },
       fields: {
         name: "Name",
@@ -240,22 +210,7 @@ describe("the communities catalog", () => {
         save: "Save",
         cancel: "Cancel",
       },
-      conflict: {
-        title: "Note changed while you were editing",
-        detail:
-          "These fields were also changed outside this form, for example on another device. Choose the value to keep for each, then save.",
-        loaded: "When you opened it: WEG",
-        mine: "Your entry: Haus",
-        theirs: "Now in the note: Tiefgarage",
-        apply: "Save choice",
-        empty: "(empty)",
-      },
-      deletion: {
-        title: "Delete community",
-        detail: "“Ahornweg 12” will be moved to Obsidian's trash, where you can restore it.",
-        confirm: "Move to trash",
-        cancel: "Cancel",
-      },
+      deletion: { title: "Delete community" },
       switcher: {
         label: "Community",
         loading: "Loading…",

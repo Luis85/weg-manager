@@ -8,7 +8,7 @@ import { useMessages, useStream } from "../../shell";
 import OpenNoteButton from "./OpenNoteButton.vue";
 
 /**
- * The WEG Manager notes that are no community record (VIEW-07): a `schema` that cannot be read or
+ * The WEG Manager notes that are no record of a known type (VIEW-07): a `schema` that cannot be read or
  * names an unknown type anywhere in the vault, or unreadable properties in the plugin's folder,
  * each with its path, its issue and a way to open it in Obsidian to repair it by hand.
  */
@@ -22,7 +22,7 @@ const unindexed = useStream(unindexedSnapshot, unindexedChanges);
     class="wm:flex wm:flex-col wm:gap-2"
     data-testid="unindexed-notes"
   >
-    <h3 class="wm:text-base wm:font-semibold">{{ catalog.communities.screen.otherNotes }}</h3>
+    <h3 class="wm:text-base wm:font-semibold">{{ catalog.notes.dataIssues.otherNotes }}</h3>
     <ul class="wm:flex wm:flex-col wm:gap-2">
       <li
         v-for="note in unindexed.notes"

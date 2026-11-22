@@ -79,6 +79,30 @@ export type NotesCatalog = {
     };
     readonly indexRead: Text;
   };
+  /** The action that opens a note in another Obsidian tab, and its accessible name. */
+  readonly openNote: { readonly label: string; labelFor(name: string): string };
+  /** The per-field choice after an outside edit (ADR 0007). */
+  readonly conflict: {
+    readonly title: string;
+    readonly detail: string;
+    loaded(value: string): string;
+    mine(value: string): string;
+    theirs(value: string): string;
+    readonly apply: string;
+    /** How an unset value is shown. */
+    readonly empty: string;
+  };
+  /** The dialog that asks before a record goes to the trash; its title is the feature's. */
+  readonly deletion: {
+    detail(name: string): string;
+    readonly confirm: string;
+    readonly cancel: string;
+  };
+  /** The notes the plugin cannot read or assign to a record type. */
+  readonly dataIssues: {
+    /** The heading of their list: WEG Manager notes that are no record. */
+    readonly otherNotes: string;
+  };
   /** The notices that confirm a record's write (handoff: Toast, only for short-lived success). */
   readonly notices: {
     created(name: string): string;

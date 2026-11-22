@@ -62,6 +62,29 @@ export const notesDe: NotesCatalog = {
         "Obsidian konnte nicht alle Notizen lesen, deshalb ist die Liste vielleicht unvollständig. Versuche es erneut.",
     },
   },
+  openNote: {
+    label: "In Obsidian öffnen",
+    labelFor: (name) => `${name} in Obsidian öffnen`,
+  },
+  conflict: {
+    title: "Notiz geändert, während du bearbeitet hast",
+    detail:
+      "Diese Angaben wurden auch außerhalb dieses Formulars geändert, etwa auf einem anderen Gerät. Wähle je Angabe den Wert, der gelten soll, und speichere.",
+    loaded: (value) => `Beim Öffnen: ${value}`,
+    mine: (value) => `Deine Eingabe: ${value}`,
+    theirs: (value) => `Jetzt in der Notiz: ${value}`,
+    apply: "Auswahl speichern",
+    empty: "(leer)",
+  },
+  deletion: {
+    detail: (name) =>
+      `„${name}“ wird in Obsidians Papierkorb verschoben. Dort kannst du die Notiz wiederherstellen.`,
+    confirm: "In den Papierkorb verschieben",
+    cancel: "Abbrechen",
+  },
+  dataIssues: {
+    otherNotes: "Andere Notizen von WEG Manager",
+  },
   notices: {
     created: (name) => `„${name}“ angelegt`,
     saved: (name) => `„${name}“ gespeichert`,

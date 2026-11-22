@@ -61,6 +61,28 @@ export const notesEn: NotesCatalog = {
       detail: "Obsidian couldn't read every note, so the list may be incomplete. Try again.",
     },
   },
+  openNote: {
+    label: "Open in Obsidian",
+    labelFor: (name) => `Open ${name} in Obsidian`,
+  },
+  conflict: {
+    title: "Note changed while you were editing",
+    detail:
+      "These fields were also changed outside this form, for example on another device. Choose the value to keep for each, then save.",
+    loaded: (value) => `When you opened it: ${value}`,
+    mine: (value) => `Your entry: ${value}`,
+    theirs: (value) => `Now in the note: ${value}`,
+    apply: "Save choice",
+    empty: "(empty)",
+  },
+  deletion: {
+    detail: (name) => `“${name}” will be moved to Obsidian's trash, where you can restore it.`,
+    confirm: "Move to trash",
+    cancel: "Cancel",
+  },
+  dataIssues: {
+    otherNotes: "Other WEG Manager notes",
+  },
   notices: {
     created: (name) => `“${name}” created`,
     saved: (name) => `“${name}” saved`,

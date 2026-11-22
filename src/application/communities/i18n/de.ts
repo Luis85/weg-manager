@@ -20,9 +20,6 @@ export const communitiesDe: CommunitiesCatalog = {
     readOnly: "Schreibgeschützt",
     selected: "Aktuell",
     summary: (kind, unitLabel) => `${kind} (${unitLabel})`,
-    otherNotes: "Andere Notizen von WEG Manager",
-    openNote: "In Obsidian öffnen",
-    openNoteLabel: (name) => `${name} in Obsidian öffnen`,
   },
   fields: {
     name: "Name",
@@ -60,23 +57,7 @@ export const communitiesDe: CommunitiesCatalog = {
     save: "Speichern",
     cancel: "Abbrechen",
   },
-  conflict: {
-    title: "Notiz geändert, während du bearbeitet hast",
-    detail:
-      "Diese Angaben wurden auch außerhalb dieses Formulars geändert, etwa auf einem anderen Gerät. Wähle je Angabe den Wert, der gelten soll, und speichere.",
-    loaded: (value) => `Beim Öffnen: ${value}`,
-    mine: (value) => `Deine Eingabe: ${value}`,
-    theirs: (value) => `Jetzt in der Notiz: ${value}`,
-    apply: "Auswahl speichern",
-    empty: "(leer)",
-  },
-  deletion: {
-    title: "Gemeinschaft löschen",
-    detail: (name) =>
-      `„${name}“ wird in Obsidians Papierkorb verschoben. Dort kannst du die Notiz wiederherstellen.`,
-    confirm: "In den Papierkorb verschieben",
-    cancel: "Abbrechen",
-  },
+  deletion: { title: "Gemeinschaft löschen" },
   switcher: {
     label: "Gemeinschaft",
     loading: "Wird geladen …",

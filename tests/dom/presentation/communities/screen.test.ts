@@ -11,6 +11,7 @@ import {
 afterEach(closeAll);
 
 const t = de.communities;
+const n = de.notes;
 
 const duplicateCode = (other: string) =>
   t.issues["short-code.duplicate"](
@@ -188,7 +189,7 @@ describe("the community settings", () => {
     });
     expect(screen.names()).toEqual(["A"]);
     const section = screen.q("unindexed-notes");
-    expect(section?.querySelector("h3")?.textContent).toBe(t.screen.otherNotes);
+    expect(section?.querySelector("h3")?.textContent).toBe(n.dataIssues.otherNotes);
     expect(
       [...(section?.querySelectorAll("li") ?? [])].map((item) =>
         [...item.querySelectorAll(":scope > span")]
@@ -211,12 +212,12 @@ describe("the community settings", () => {
     });
     const openers = screen.all("open-note");
     expect(openers.map((button) => button.getAttribute("aria-label"))).toEqual([
-      t.screen.openNoteLabel("Neu"),
-      t.screen.openNoteLabel("Irgendwo/Fremd.md"),
+      n.openNote.labelFor("Neu"),
+      n.openNote.labelFor("Irgendwo/Fremd.md"),
     ]);
     expect(openers.map((button) => button.textContent.trim())).toEqual([
-      t.screen.openNote,
-      t.screen.openNote,
+      n.openNote.label,
+      n.openNote.label,
     ]);
     await screen.click(openers[1]);
     await screen.click(openers[0]);

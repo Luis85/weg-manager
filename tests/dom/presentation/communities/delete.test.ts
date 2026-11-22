@@ -13,6 +13,7 @@ import {
 afterEach(closeAll);
 
 const t = de.communities;
+const n = de.notes;
 
 const TWO = (notes: Memory) => {
   notes.seed(`${FOLDER}/A.md`, communityNote(1, { name: "Ahornweg 12", short_code: "AW" }));
@@ -31,7 +32,7 @@ describe("deleting a community", () => {
   it("says the note was not deleted when Obsidian cannot move it to the trash", async () => {
     const screen = await openCommunities({ seed: TWO });
     await screen.click(screen.button(t.screen.removeLabel("Ahornweg 12")));
-    expect(screen.q("delete-confirm")?.textContent.trim()).toBe(t.deletion.confirm);
+    expect(screen.q("delete-confirm")?.textContent.trim()).toBe(n.deletion.confirm);
     screen.notes.setFailWrites(true);
     await screen.click(screen.q("delete-confirm"));
     const alert = screen.root.querySelector("[role=dialog] [role=alert]");
@@ -45,7 +46,7 @@ describe("deleting a community", () => {
     await screen.click(screen.button("Ahornweg 12 löschen"));
     const dialog = screen.root.querySelector("[role=dialog]");
     expect(dialog?.textContent).toContain("Gemeinschaft löschen");
-    expect(dialog?.textContent).toContain(t.deletion.detail("Ahornweg 12"));
+    expect(dialog?.textContent).toContain(n.deletion.detail("Ahornweg 12"));
     await screen.click(screen.button("Abbrechen"));
     expect(screen.q("delete-dialog")).toBeUndefined();
     expect(await paths(screen)).toEqual([`${FOLDER}/A.md`, `${FOLDER}/T.md`]);
@@ -91,11 +92,11 @@ describe("deleting a community", () => {
     await screen.click(screen.button("Abbrechen"));
     await screen.click(screen.button("Tiefgarage löschen"));
     const dialog = () => screen.root.querySelector("[role=dialog]");
-    expect(dialog()?.textContent).toContain(t.deletion.detail("Tiefgarage"));
+    expect(dialog()?.textContent).toContain(n.deletion.detail("Tiefgarage"));
     expect(screen.q("delete-confirm")?.getAttribute("aria-disabled")).toBeNull();
     screen.notes.releaseWrites();
     await screen.until(() => expect(screen.names()).toEqual(["Tiefgarage"]));
-    expect(dialog()?.textContent).toContain(t.deletion.detail("Tiefgarage"));
+    expect(dialog()?.textContent).toContain(n.deletion.detail("Tiefgarage"));
   });
 
   it("shows no earlier community's failure in the next dialog", async () => {

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { de, en } from "../../../../src/application/messages";
-import { describeRecordIssue, type RecordTexts } from "../../../../src/application/notes";
+import {
+  describeRecordIssue,
+  type NotesCatalog,
+  type RecordTexts,
+} from "../../../../src/application/notes";
 import type { RecordIssue } from "../../../../src/domain/notes";
 
 /** A feature's issues: a plain code, one with data, and a field kind's code. */
@@ -48,23 +52,78 @@ describe("describeRecordIssue", () => {
   });
 });
 
+/** The record texts of a notes catalog, its functions called with samples, as plain data. */
+const rendered = (notes: NotesCatalog) => ({
+  openNote: { label: notes.openNote.label, labelFor: notes.openNote.labelFor("Ahornweg 12") },
+  conflict: {
+    ...notes.conflict,
+    loaded: notes.conflict.loaded("WEG"),
+    mine: notes.conflict.mine("Haus"),
+    theirs: notes.conflict.theirs("Tiefgarage"),
+  },
+  deletion: { ...notes.deletion, detail: notes.deletion.detail("Ahornweg 12") },
+  dataIssues: notes.dataIssues,
+  notices: {
+    created: notes.notices.created("Ahornweg 12"),
+    saved: notes.notices.saved("Ahornweg 12"),
+    deleted: notes.notices.deleted("Ahornweg 12"),
+  },
+});
+
 /** The catalog is product copy: a change here is a deliberate wording change. */
 describe("the notes catalog's record texts", () => {
   it("has exact German texts", () => {
-    const { notices } = de.notes;
-    expect([notices.created("A"), notices.saved("A"), notices.deleted("A")]).toEqual([
-      "„A“ angelegt",
-      "„A“ gespeichert",
-      "„A“ in den Papierkorb verschoben",
-    ]);
+    expect(rendered(de.notes)).toEqual({
+      openNote: { label: "In Obsidian öffnen", labelFor: "Ahornweg 12 in Obsidian öffnen" },
+      conflict: {
+        title: "Notiz geändert, während du bearbeitet hast",
+        detail:
+          "Diese Angaben wurden auch außerhalb dieses Formulars geändert, etwa auf einem anderen Gerät. Wähle je Angabe den Wert, der gelten soll, und speichere.",
+        loaded: "Beim Öffnen: WEG",
+        mine: "Deine Eingabe: Haus",
+        theirs: "Jetzt in der Notiz: Tiefgarage",
+        apply: "Auswahl speichern",
+        empty: "(leer)",
+      },
+      deletion: {
+        detail:
+          "„Ahornweg 12“ wird in Obsidians Papierkorb verschoben. Dort kannst du die Notiz wiederherstellen.",
+        confirm: "In den Papierkorb verschieben",
+        cancel: "Abbrechen",
+      },
+      dataIssues: { otherNotes: "Andere Notizen von WEG Manager" },
+      notices: {
+        created: "„Ahornweg 12“ angelegt",
+        saved: "„Ahornweg 12“ gespeichert",
+        deleted: "„Ahornweg 12“ in den Papierkorb verschoben",
+      },
+    });
   });
 
   it("has exact English texts", () => {
-    const { notices } = en.notes;
-    expect([notices.created("A"), notices.saved("A"), notices.deleted("A")]).toEqual([
-      "“A” created",
-      "“A” saved",
-      "“A” moved to the trash",
-    ]);
+    expect(rendered(en.notes)).toEqual({
+      openNote: { label: "Open in Obsidian", labelFor: "Open Ahornweg 12 in Obsidian" },
+      conflict: {
+        title: "Note changed while you were editing",
+        detail:
+          "These fields were also changed outside this form, for example on another device. Choose the value to keep for each, then save.",
+        loaded: "When you opened it: WEG",
+        mine: "Your entry: Haus",
+        theirs: "Now in the note: Tiefgarage",
+        apply: "Save choice",
+        empty: "(empty)",
+      },
+      deletion: {
+        detail: "“Ahornweg 12” will be moved to Obsidian's trash, where you can restore it.",
+        confirm: "Move to trash",
+        cancel: "Cancel",
+      },
+      dataIssues: { otherNotes: "Other WEG Manager notes" },
+      notices: {
+        created: "“Ahornweg 12” created",
+        saved: "“Ahornweg 12” saved",
+        deleted: "“Ahornweg 12” moved to the trash",
+      },
+    });
   });
 });

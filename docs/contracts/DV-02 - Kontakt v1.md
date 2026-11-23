@@ -2,7 +2,7 @@
 type: FileContract
 id: DV-02
 contract: weg-manager.contact/v1
-status: entwurf
+status: gültig
 entities:
   - "[[docs/entities/ENT-02 - Person und Rolle]]"
 requirements:

@@ -6,7 +6,7 @@ actors:
   - "[[ACT-01-Beirat]]"
 release: "[[MVP - Beirat Support]]"
 status: ""
-started: ""
+started: 2026-11-23
 finished: ""
 horizon: ""
 start: ""
@@ -88,4 +88,5 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
   - **Notiztyp und Ordner:** `schema: weg-manager.contact/v1`, `id` `contact-<uuid>`, Ordner `<Wurzelordner>/Kontakte/`. Person und Firma sind derselbe Notiztyp mit der Art `kind`.
   - **Nicht mehr verwendet:** Kennzeichnen statt löschen. Es gibt kein Löschen; ein Kontakt mit `inactive: true` bleibt in der Liste und ist hinter dem Filter „Nicht mehr verwendete zeigen“ ausgeblendet.
   - **Ort:** eine eigene Route „Kontakte“ in der Navigation, wie in Sitemap und Prototyp, nicht in den Einstellungen.
+- 23.11.2026 (Umsetzung des ersten Schnitts): Modul `contacts` in allen Schichten, Dateivertrag [[DV-02 - Kontakt v1]], eigene Route „Kontakte“ in der Navigation. Erfüllt sind die Kriterien 4 (Person oder Firma, Person einer Firma zugeordnet, die Firma zeigt ihre Personen, eine neue Firma wird beim Speichern mit angelegt), 5 (je Gemeinschaft eine Rolle, Name und mindestens eine Rolle Pflicht, gleichnamiger Kontakt vor dem Speichern angezeigt), 8 (Eigentümerrolle setzt `private: true` und hält es) und 10 (fehlende Markierung als Problem mit Ausweg). Teilweise: Kriterium 1 (Name, Rolle, Kontaktdaten erfassbar; die Zuordnung zu einem Vorgang folgt mit den Vorgängen) und 3 (ein nicht mehr verwendeter Kontakt bleibt erhalten, `inactive`; der Nachweis in Quellen folgt mit Vorgängen und Nachrichten). Offen: Kriterien 2, 6, 7 und 9, die Nachrichten, Postausgang und Vorgänge brauchen. Kriterium 10 behandelt eine Notiz ohne Markierung schon wie eine private, weil das Plugin noch nichts ausgibt; der Schutz in Ausgaben selbst ist Teil von Kriterium 9. Tests: `tests/unit/domain/contacts/`, `tests/unit/application/contacts/`, `tests/dom/presentation/contacts/screen.test.ts`, `tests/e2e/specs/contacts.e2e.ts`. `npm run verify` mit Exit 0, e2e 27 von 27 Specs grün.
 

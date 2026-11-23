@@ -290,5 +290,11 @@ export default defineConfig(
     rules: { "max-lines": ["error", { max: 450, ...LOC }] },
   },
   ...oxlint.buildFromOxlintConfigFile("./.oxlintrc.json"),
+  {
+    // oxlint has the rule but misses a non-breaking space inside a regular expression, which the
+    // community directory's scan reports; ESLint's rule finds it (blueprint L50).
+    files: ["src/**/*.ts", "src/**/*.vue"],
+    rules: { "no-irregular-whitespace": ["error", { skipRegExps: false }] },
+  },
   ...moduleBoundaries,
 );

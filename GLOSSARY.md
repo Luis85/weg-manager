@@ -83,6 +83,27 @@ _Avoid_: tour, tutorial, coach mark, tooltip (a tooltip shows on hover every tim
 **Matter** (German: Vorgang):
 One thing the board member follows up until it has one checkable result: a promise, a deadline, a question or a task. It belongs to exactly one community, has a number that runs across all communities and is never deleted. Routes say `vorgang`, command ids and code say `matter`.
 _Avoid_: point, item, ticket, issue (an issue is a broken note), task (a to-do is the board member's own step)
+
+**Contact** (German: Kontakt):
+A person or a company the board member deals with, kept as one note of type `contact` in the folder `Kontakte`. A contact has a role in one or more communities; the role gives it no authority.
+_Avoid_: addressee, stakeholder, user, person (a person is one kind of contact)
+
+**Contact kind** (German: Art des Kontakts):
+Whether a contact is a `person` or a `company`. A person may belong to a company (`organization_id`); the company shows its people.
+_Avoid_: type (the note type is `contact`), organisation (in code only `organization_id`)
+
+**Role** (German: Rolle):
+What a contact is in one community, from a closed list: `board` (Beirat), `deputy` (Vertretung), `owner` (Eigentümer), `manager` (Verwaltung), `other_board` (Beirat andere Gemeinschaft), `third_party` (Dritte), `agent` (Agent). A contact has at most one role per community, stored as `<community id>:<role>` in the list `roles`.
+_Avoid_: function, position, permission
+
+**Private contact** (German: private Person):
+A contact marked `private: true`, such as an owner. The plugin never copies anything from a private contact into drafts, cards, reports or anything shared, and an agent never gets it as context. An owner role makes a contact private.
+_Avoid_: personal, confidential, hidden
+
+**Inactive contact** (German: nicht mehr verwendet):
+A contact marked `inactive: true`. It is never deleted, so older matters and messages still show who it was; lists hide it unless asked to show it.
+_Avoid_: archived, deleted, disabled
+
 **Settings section** (German: Bereich der Einstellungen):
 One area of the plugin's settings screen, such as the communities or the data issues, contributed by one module and reached through the screen's own navigation. Its id (`communities`, `data-issues`) is the `section` of the settings route.
 _Avoid_: tab, page, panel, category

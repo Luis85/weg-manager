@@ -72,11 +72,11 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 
 ## Was Menschen und Agenten ändern dürfen
 
-- `name`, `color`, `kind` und `unit_label` nach den Regeln oben.
+- `name`, `short_code`, `color`, `kind` und `unit_label` nach den Regeln oben.
 - Dateiname und Ordner frei; die Notiz bleibt dieselbe Gemeinschaft.
 - Den Text unter dem Frontmatter frei, und eigene zusätzliche Schlüssel.
 - Neue Gemeinschaften, mit einer neuen `id` und einem Kürzel, das noch keine andere Gemeinschaft hat.
-- Nicht ändern: `id` und `schema`. `short_code` nur, solange es ungültig ist oder eine andere Gemeinschaft dasselbe hat.
+- Nicht ändern: `id` und `schema`. `short_code` darf sich ändern, solange keine andere Gemeinschaft dasselbe hat.
 
 ## Probleme
 

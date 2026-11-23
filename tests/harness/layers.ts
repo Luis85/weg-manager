@@ -1,8 +1,8 @@
 import { Effect, Layer } from "effect";
-import type { AppServices } from "../src/application/app-services";
-import { appServicesLayer } from "../src/application/app-services-layer";
-import { AppEvent } from "../src/application/events";
-import { NoteStore } from "../src/application/notes";
+import type { AppServices } from "../../src/application/app-services";
+import { appServicesLayer } from "../../src/application/app-services-layer";
+import { AppEvent } from "../../src/application/events";
+import { NoteStore } from "../../src/application/notes";
 import {
   Clipboard,
   ClipboardError,
@@ -13,12 +13,12 @@ import {
   VaultReadError,
   type Language,
   type UserMessage,
-} from "../src/application/shell";
-import { memoryNoteStore, sequentialIdGenerator } from "../src/infrastructure/memory/notes";
-import { localDay } from "../src/domain/shell";
-import { deviceStoreInMemory, memoryToday } from "../src/infrastructure/memory/shell";
-import { consoleSinkLayer } from "../src/infrastructure/logging/console-sink";
-import { incidentsLayer } from "../src/infrastructure/logging/incidents";
+} from "../../src/application/shell";
+import { memoryNoteStore, sequentialIdGenerator } from "../../src/infrastructure/memory/notes";
+import { localDay } from "../../src/domain/shell";
+import { deviceStoreInMemory, memoryToday } from "../../src/infrastructure/memory/shell";
+import { consoleSinkLayer } from "../../src/infrastructure/logging/console-sink";
+import { incidentsLayer } from "../../src/infrastructure/logging/incidents";
 
 /**
  * The states the harness can show (`?scenario=`): two communities, none, notes that break the

@@ -76,7 +76,8 @@ One deliberate change: the 15 pre-rendered demo pages `examples/*.html` (about 1
 - Needs Node 18+, no npm install.
 - In this project, diagrams go to `docs/archify/<type>-<slug>-<timestamp>/` instead of Archify's default `.archify/`. `AGENTS.md` sets this; the skill itself is unchanged. Archify's temporary `.archify-*` files and its delivery and finalize receipts there (absolute local paths and hashes) are git-ignored; the candidate and the HTML are what gets committed.
 - During delivery, Archify can check online for a newer stable release and show a reminder. It never updates itself.
-- To update: replace the folder with a newer upstream `archify/` (again without `examples/*.html`), run `doctor`, and adjust the version and commit above.
+- To update: replace the folder with a newer upstream `archify/` (again without `examples/*.html`, `explainer/reader.css` and `explainer/reader.js`), run `doctor`, and adjust the version and commit above.
+- Since 23.11.2026 the explainer's reader, `explainer/reader.css` and `explainer/reader.js`, is not in the repository (owner decision): the community directory's source scan flags `reader.js` (`innerHTML`) and `reader.css` (CSS lint), and the scan has no ignore option. Both are git-ignored. Diagrams work without them; explainers need them. For explainers, copy both files from the upstream commit above into `.claude/skills/archify/explainer/`; `doctor` then reports "Archify is ready" again (without them it reports the explainer runtime as missing).
 
 ### License
 

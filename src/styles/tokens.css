@@ -1,3 +1,4 @@
+/* stylelint-disable at-rule-no-unknown -- Tailwind v4 source directives (@source, @theme); the build compiles them away, styles.css has none. */
 /* Plugin tokens, mapped once from Obsidian's theme variables so light/dark and themes follow the host. */
 :root {
   --wm-bg: var(--background-primary);

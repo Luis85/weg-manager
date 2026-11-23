@@ -37,7 +37,7 @@ flowchart LR
 | `src/infrastructure/obsidian` | `obsidian`, application, presentation | The adapters of every port, one record per module (`shellAdapters` with `hostEventsLayer` and `todayLayer`, `notesAdapters` with the `NoteStore` and `NoteOpener` adapters), commands, ribbon, `openRoute`, settings tab, `ShellView` (all in `shell/`), `appLayer` |
 | `src/infrastructure/memory` | application, domain | In-memory adapters for tests and the harness (`notes/`, `shell/`). Nothing in `src/` imports them, so they never reach `main.js` |
 | `src/presentation` | `vue`, `@nuxt/ui`, `@tanstack/vue-form`, application, domain | Vue surfaces: the app frame, the route outlet and the screens (`appSurface` in `app-surface.ts` composes them). Components never see an Effect value. They run reads through `useQuery`, state changes through `useCommand` (whose `run` resolves to a `RunOutcome`: `success`, `failure`, `defect` or `interrupted`) and follow streams through `useStream` |
-| `harness/` | everything except `obsidian` | Browser stand-in for Obsidian with scenario Layers (see [testing.md](testing.md#browser-harness)) |
+| `tests/harness/` | everything except `obsidian` | Browser stand-in for Obsidian with scenario Layers (see [testing.md](testing.md#browser-harness)) |
 
 `infrastructure/obsidian` may import `presentation` only because `ShellView` mounts the surface (ADR 0002; a mount port would remove the edge). It imports only the Vue-free `presentation/shell/host` and loads `presentation/shell/mount` through `loadSurface`. Nothing that runs at plugin load may import a module that pulls in Vue (see [Lazy presentation](#lazy-presentation)).
 
@@ -70,7 +70,7 @@ flowchart LR
 - **Composition.** `APP_MODULES = [shellModule, notesModule, communitiesModule]` (`modules.ts`) is the one module list, in load order, the core modules first. A root file derives its part from it with a helper of `module.ts` and holds no rule of its own:
   - `AppError = ErrorOf<AppModule>`, the union of the describers' errors; `describeError = describerOf(APP_MODULES)` hands an error to the module whose tags name it, with that module's part of the catalog;
   - `Catalog = CatalogOf<AppModule>`, one key per module name; `de` and `en` are `catalogOf(APP_MODULES, language)`, held whole by the `Messages` service; module code reads its own part (`(yield* Messages).shell`);
-  - `AppServices = ShellServices | NotesServices | ServicesOf<AppModule>`; `appServicesLayer(adapters, options)` (`app-services-layer.ts`) is the one service graph: the shell's services on the shell's ports (`SettingsService`, then `Logger` on it, `EventBus`, then the `Today` adapter on them), the notes module's on them (`NoteIndex` over the `NoteStore` adapter, for `appNoteTypes`, beside the `IdGenerator` and `NoteOpener` adapters), the feature modules' Layers folded on both in `APP_MODULES` order (`servicesLayerOf(APP_MODULES, notes)`: each module's Layer `Layer.provideMerge`d on the fold so far, so a feature service may use an earlier feature's; today `CommunitySelectionService`; PBI-71), the host event adapter last. It is typed `Layer<AppServices>`, and the fold's type keeps a service that only a later module builds among the requirements, so a feature service that needs one no module builds before it fails typecheck there (`tests/unit/application/module.test.ts` proves both). `AppAdapters` holds one adapter Layer per port; the plugin (`appLayer` = `appServicesLayer({ ...shellAdapters(plugin), ...notesAdapters(plugin) }, options)`), the harness (`harness/layers.ts`) and the tests (`tests/support/adapters.ts`) supply only adapters;
+  - `AppServices = ShellServices | NotesServices | ServicesOf<AppModule>`; `appServicesLayer(adapters, options)` (`app-services-layer.ts`) is the one service graph: the shell's services on the shell's ports (`SettingsService`, then `Logger` on it, `EventBus`, then the `Today` adapter on them), the notes module's on them (`NoteIndex` over the `NoteStore` adapter, for `appNoteTypes`, beside the `IdGenerator` and `NoteOpener` adapters), the feature modules' Layers folded on both in `APP_MODULES` order (`servicesLayerOf(APP_MODULES, notes)`: each module's Layer `Layer.provideMerge`d on the fold so far, so a feature service may use an earlier feature's; today `CommunitySelectionService`; PBI-71), the host event adapter last. It is typed `Layer<AppServices>`, and the fold's type keeps a service that only a later module builds among the requirements, so a feature service that needs one no module builds before it fails typecheck there (`tests/unit/application/module.test.ts` proves both). `AppAdapters` holds one adapter Layer per port; the plugin (`appLayer` = `appServicesLayer({ ...shellAdapters(plugin), ...notesAdapters(plugin) }, options)`), the harness (`tests/harness/layers.ts`) and the tests (`tests/support/adapters.ts`) supply only adapters;
   - `appNoteTypes = noteTypesOf(APP_MODULES)` (`note-types.ts`);
   - `appCommands = commandsOf(APP_MODULES)` (`commands.ts`): each command (`PluginCommand`, `src/application/shell/commands.ts`) has an `id` without the plugin id, a `name` read from its module's part of the catalog, and an action, `{ _tag: "open", route? }` (a typed `Route`; none keeps an open view's route) or `{ _tag: "run", effect }` (a use case that handles its expected failures itself). `registerCommands` (`src/infrastructure/obsidian/shell/commands.ts`) adds each, without hotkeys; only the shell has commands yet;
   - `SETTINGS_SECTIONS = sectionsOf(APP_MODULES)` (`["communities", "data-issues"]`) and `Route`, the type of `Schema.Union([settingsRoute(SETTINGS_SECTIONS), ...routeSchemasOf(APP_MODULES)])` (`routes.ts`, ADR 0008, amendment 22.11.2026); `appRoutes` starts on `COMMUNITY_SETTINGS`;
@@ -131,7 +131,7 @@ sequenceDiagram
   O->>V: onOpen
   V->>V: contentEl.empty(), loadSurface() = import("presentation/shell/mount")
   Note over V: closed meanwhile? do not mount
-  V->>V: mountSurface(contentEl, runtime, { surface: appSurface, navigation })
+  V->>V: mountSurface(contentEl, runtime, { surface: appSurface, navigation, elements })
   O->>V: setState(saved state), the surface follows the route
   O->>M: onExternalSettingsChange (data.json changed on disk)
   M->>B: reloadSettings()
@@ -384,9 +384,9 @@ flowchart LR
 
 ### A surface
 
-`mountSurface(root, runtime, { surface, navigation })` creates one Vue app per view. `surface` is a `SurfaceDefinition` (`appSurface` in the plugin), `navigation` the view's route (see [Navigation](#navigation)); tests pass `content` to mount a single component instead of the frame.
+`mountSurface(root, runtime, { surface, navigation, elements })` creates one Vue app per view. `surface` is a `SurfaceDefinition` (`appSurface` in the plugin), `navigation` the view's route (see [Navigation](#navigation)); tests pass `content` to mount a single component instead of the frame.
 
-- The app mounts into an element appended to `root`, beside a portal element for modals and popovers. Both live in `root.ownerDocument`, so a pop-out window keeps its dialogs.
+- The app mounts into an element appended to `root`, beside a portal element for modals and popovers. Both live in `root.ownerDocument`, so a pop-out window keeps its dialogs. The caller makes them (`elements: { host, portal }`): `ShellView` with Obsidian's `contentEl.createDiv()`, the tests and the harness with `createElement`. Presentation creates no DOM element itself, because the directory's scan flags `createElement` (`obsidianmd/prefer-create-el`) and refuses a disable comment for that rule.
 - `bindHostTheme(root)` mirrors `theme-dark`/`theme-light` from the owner document's body to `dark`/`light` on `root`.
 - `app.config.errorHandler` routes render errors to `reportDefect`.
 - The returned close is idempotent. It runs every release even if one throws, then rethrows the first error.
@@ -486,7 +486,7 @@ The tracer slice (PBI-56): module `communities` in every layer. The worked examp
 
 | Where | What |
 | --- | --- |
-| `src/`, `harness/`, `tests/` | plugin code, the browser harness, tests (`unit`, `dom`, `e2e`, `support`) |
+| `src/`, `tests/` | plugin code; tests (`unit`, `dom`, `e2e`, `support`) and the browser harness (`tests/harness/`) |
 | `scripts/` | build, check and release scripts run by npm scripts |
 | `configs/` | tool configs that take an explicit path: Vite (plugin, harness, probe, shared), Vitest (+ Stryker variant), Stryker, fallow, the scanner lint, `tsconfig.{app,node,base}.json`. Each resolves paths from the repository root. |
 | `docs/` | product concept, backlog, contracts, ADRs and these guides (see `docs/README_DOCS.md`) |

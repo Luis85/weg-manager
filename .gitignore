@@ -26,3 +26,7 @@ docs/archify/**/*.finalize-summary.json
 docs/archify/**/*.browser-check.json
 docs/archify/**/*.visual-check.json
 .fallow/
+# Archify's explainer reader (reader.css, reader.js) fails the community directory's source scan
+# (innerHTML, CSS lint); it stays a local install, outside the plugin repo (.claude/skills/THIRD_PARTY.md)
+.claude/skills/archify/explainer/reader.css
+.claude/skills/archify/explainer/reader.js

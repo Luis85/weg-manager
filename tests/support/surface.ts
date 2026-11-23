@@ -15,7 +15,13 @@ import {
   type SurfaceDefinition,
   type ViewNavigation,
 } from "../../src/presentation/shell/host";
-import type { MountOptions } from "../../src/presentation/shell/mount";
+import type { MountOptions, SurfaceElements } from "../../src/presentation/shell/mount";
+
+/** A surface's host and portal as plain elements in `root`'s document: no Obsidian helpers here. */
+export const plainElements = (root: HTMLElement): SurfaceElements => ({
+  host: root.ownerDocument.createElement("div"),
+  portal: root.ownerDocument.createElement("div"),
+});
 
 /** Mounts the app's own surface (`appSurface`) on an in-memory navigation, as the harness does. */
 export const mountApp = (
@@ -26,6 +32,7 @@ export const mountApp = (
   mountSurface(root, runtime, {
     surface: appSurface,
     navigation: memoryNavigation(appSurface),
+    elements: plainElements(root),
     ...options,
   });
 
@@ -107,4 +114,6 @@ export const mountTest = (
   runtime: AppRuntime,
   surface: SurfaceDefinition<TestRoute> = testSurface(),
   navigation: ViewNavigation<TestRoute> = memoryNavigation(surface),
-) => ({ close: mountSurface(root, runtime, { surface, navigation }) });
+) => ({
+  close: mountSurface(root, runtime, { surface, navigation, elements: plainElements(root) }),
+});

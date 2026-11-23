@@ -11,6 +11,7 @@ import {
 } from "../../../../src/presentation/shell/host";
 import { runtimes } from "../../../support/composable";
 import { preloadSurface } from "../../../support/preload";
+import { plainElements } from "../../../support/surface";
 import { eventually } from "../../../support/wait";
 
 await preloadSurface();
@@ -66,7 +67,7 @@ const mounted = async (
   document.body.append(root);
   const surface = definition(options.sections ?? PARTS, options.menu);
   const navigation = memoryNavigation(surface, options.start ?? START);
-  closes.push(mountSurface(root, runtime, { surface, navigation }));
+  closes.push(mountSurface(root, runtime, { surface, navigation, elements: plainElements(root) }));
   await eventually(() =>
     expect(root.querySelector("[data-testid=settings-screen]")).not.toBeNull(),
   );

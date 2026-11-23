@@ -274,7 +274,7 @@ export default defineConfig(
   },
   {
     // The harness is a plain browser page standing in for Obsidian: no activeDocument, no createEl.
-    files: ["harness/**"],
+    files: ["tests/harness/**"],
     rules: {
       "obsidianmd/prefer-active-doc": "off",
       "obsidianmd/prefer-create-el": "off",

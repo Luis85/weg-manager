@@ -1,10 +1,10 @@
 import { ManagedRuntime } from "effect";
-import { languageFromCode } from "../src/application/messages";
-import type { UserMessage } from "../src/application/shell";
-import { appSurface } from "../src/presentation/app-surface";
-import { mountSurface } from "../src/presentation/shell";
-import { memoryNavigation } from "../src/presentation/shell/host";
-import "../src/styles/app.css";
+import { languageFromCode } from "../../src/application/messages";
+import type { UserMessage } from "../../src/application/shell";
+import { appSurface } from "../../src/presentation/app-surface";
+import { mountSurface } from "../../src/presentation/shell";
+import { memoryNavigation } from "../../src/presentation/shell/host";
+import "../../src/styles/app.css";
 import "./fake-host.css";
 import { SCENARIOS, harnessLayer, parseScenario } from "./layers";
 
@@ -41,6 +41,7 @@ const mount = (id: string) =>
   mountSurface(element(id), runtime, {
     surface: appSurface,
     navigation: memoryNavigation(appSurface),
+    elements: { host: document.createElement("div"), portal: document.createElement("div") },
   });
 mount("surface-wide");
 mount("surface-narrow");

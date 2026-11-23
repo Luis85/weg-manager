@@ -122,7 +122,7 @@ Entwicklerdokumentation (englisch): [Architektur](docs/engineering/architecture.
 | Ort | Inhalt |
 | --- | --- |
 | `src/` | Plugin-Quellcode in vier Schichten (`domain`, `application`, `infrastructure`, `presentation`), jede in Module gegliedert: `shell`, `notes`, `communities` |
-| `harness/` | Browser-Harness für UI-Arbeit ohne Obsidian |
+| `tests/harness/` | Browser-Harness für UI-Arbeit ohne Obsidian |
 | `docs/` | Produktkonzept, Anforderungen, Design, Prototyp, Dateiverträge der Notizen (`contracts/`), Architekturentscheidungen (`adr/`), Entwicklerdokumentation (`engineering/`) |
 | `.github/` | CI-Workflows, Dependabot, Vorlage für Pull Requests |
 | `scripts/` | Build-, Prüf- und Release-Skripte des Plugins |

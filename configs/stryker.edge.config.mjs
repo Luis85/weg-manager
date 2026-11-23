@@ -31,7 +31,7 @@ const config = {
     "/dist",
     "/release",
     "/coverage",
-    "/harness",
+    "/tests/harness",
   ],
   // The folder every linter and formatter already ignores; two Stryker runs in one checkout at once
   // would share it, so run the gated and the edge run one after the other.

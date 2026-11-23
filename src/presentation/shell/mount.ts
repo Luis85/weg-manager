@@ -21,19 +21,29 @@ export type MountOptions<R extends RouteLike> = {
   readonly navigation: ViewNavigation<R>;
   /** Replaces the frame (tests mount single components). */
   readonly content?: Component;
+  /**
+   * The app's element and the portal target for modals and popovers, made by the caller in
+   * `root`'s document. Presentation never creates DOM elements itself: in Obsidian the view makes
+   * them with Obsidian's `createDiv` (the directory's `prefer-create-el` rule); tests and the
+   * harness, which run without Obsidian's DOM helpers, make plain ones.
+   */
+  readonly elements: SurfaceElements;
 };
+
+/** The two elements a surface lives in; `mountSurface` appends them to its root. */
+export type SurfaceElements = { readonly host: HTMLElement; readonly portal: HTMLElement };
 
 /**
  * Mounts one Vue app into `root` and returns an idempotent close. Everything lives in
- * `root.ownerDocument` (a pop-out window's document when the view is there): the app element,
- * the portal target for modals and popovers, and the theme binding.
+ * `root.ownerDocument` (a pop-out window's document when the view is there): the app element and
+ * the portal target for modals and popovers (`options.elements`, appended to `root` and removed on
+ * close), and the theme binding.
  */
 export const mountSurface = <R extends RouteLike>(
   root: HTMLElement,
   runtime: AppRuntime,
   options: MountOptions<R>,
 ): (() => void) => {
-  const doc = root.ownerDocument;
   const releases: (() => void)[] = [];
   const hadScope = root.classList.contains(SCOPE_CLASS);
   root.classList.add(SCOPE_CLASS);
@@ -42,9 +52,8 @@ export const mountSurface = <R extends RouteLike>(
   });
   releases.push(bindHostTheme(root));
 
-  const host = doc.createElement("div");
-  const portal = doc.createElement("div");
-  portal.className = PORTAL_CLASS;
+  const { host, portal } = options.elements;
+  portal.classList.add(PORTAL_CLASS);
   const app = createApp({
     render: () => h(ShellApp, { portal, ...(options.content ? { content: options.content } : {}) }),
   });

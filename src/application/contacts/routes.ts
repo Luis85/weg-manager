@@ -5,4 +5,3 @@ export const CONTACTS = { name: "contacts" } as const;
 
 /** The route schema of the contacts screen. */
 export const ContactsRoute = Schema.Struct({ name: Schema.Literal(CONTACTS.name) });
-export type ContactsRoute = typeof ContactsRoute.Type;

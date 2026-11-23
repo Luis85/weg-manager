@@ -27,10 +27,6 @@ const emit = defineEmits<{ edit: [] }>();
 const catalog = useMessages();
 const t = catalog.contacts;
 const name = computed(() => shownName(props.contact));
-const kind = computed(() => {
-  const value = props.contact.values.kind;
-  return value === undefined ? undefined : t.kinds[value];
-});
 const roles = computed(() =>
   (props.contact.values.roles ?? []).flatMap((entry) => {
     const role = parseRole(entry);
@@ -39,10 +35,40 @@ const roles = computed(() =>
     return [t.screen.roleIn(t.roles[role.role], community)];
   }),
 );
-const company = computed(() => {
-  const id = props.contact.values.organization_id;
-  return id === undefined ? undefined : (props.names.get(id) ?? id);
+/** Kind, a person's company and a company's people, in one line. */
+const summary = computed(() => {
+  const { kind, organization_id: company } = props.contact.values;
+  return [
+    kind === undefined ? undefined : t.kinds[kind],
+    company === undefined ? undefined : t.screen.worksFor(props.names.get(company) ?? company),
+    props.people.length === 0 ? undefined : t.screen.people(props.people.join(", ")),
+  ]
+    .filter((part) => part !== undefined)
+    .join(" · ");
 });
+/** The marks of the contact, each in words with its icon. */
+const marks = computed(() =>
+  [
+    {
+      show: props.contact.values.private === true,
+      icon: "i-lucide-shield",
+      text: t.screen.private,
+      id: "contact-private",
+    },
+    {
+      show: props.contact.values.inactive === true,
+      icon: "i-lucide-archive",
+      text: t.screen.inactive,
+      id: "contact-inactive",
+    },
+    {
+      show: !props.contact.editable,
+      icon: "i-lucide-lock",
+      text: t.screen.readOnly,
+      id: "contact-read-only",
+    },
+  ].filter((mark) => mark.show),
+);
 const issues = computed(() =>
   props.contact.issues.map((issue) => describeContactIssue(issue, catalog)),
 );
@@ -63,9 +89,7 @@ const issues = computed(() =>
         {{ name }}
       </h3>
       <p class="wm:text-sm wm:text-muted wm:wrap-break-word" data-testid="contact-summary">
-        <span v-if="kind">{{ kind }}</span>
-        <span v-if="company"> · {{ t.screen.worksFor(company) }}</span>
-        <span v-if="people.length > 0"> · {{ t.screen.people(people.join(", ")) }}</span>
+        {{ summary }}
       </p>
       <ul v-if="roles.length > 0" class="wm:flex wm:flex-wrap wm:gap-1" data-testid="contact-roles">
         <li
@@ -76,30 +100,15 @@ const issues = computed(() =>
           {{ role }}
         </li>
       </ul>
-      <p class="wm:flex wm:flex-wrap wm:gap-3 wm:text-xs wm:text-muted">
+      <p v-if="marks.length > 0" class="wm:flex wm:flex-wrap wm:gap-3 wm:text-xs wm:text-muted">
         <span
-          v-if="contact.values.private"
+          v-for="mark in marks"
+          :key="mark.id"
           class="wm:flex wm:items-center wm:gap-1"
-          data-testid="contact-private"
+          :data-testid="mark.id"
         >
-          <UIcon name="i-lucide-shield" class="wm:size-3.5" aria-hidden="true" />
-          {{ t.screen.private }}
-        </span>
-        <span
-          v-if="contact.values.inactive"
-          class="wm:flex wm:items-center wm:gap-1"
-          data-testid="contact-inactive"
-        >
-          <UIcon name="i-lucide-archive" class="wm:size-3.5" aria-hidden="true" />
-          {{ t.screen.inactive }}
-        </span>
-        <span
-          v-if="!contact.editable"
-          class="wm:flex wm:items-center wm:gap-1"
-          data-testid="contact-read-only"
-        >
-          <UIcon name="i-lucide-lock" class="wm:size-3.5" aria-hidden="true" />
-          {{ t.screen.readOnly }}
+          <UIcon :name="mark.icon" class="wm:size-3.5" aria-hidden="true" />
+          {{ mark.text }}
         </span>
       </p>
       <ul

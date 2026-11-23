@@ -36,30 +36,29 @@ export const closeAll = async () => {
 };
 
 /** Waits until `check` passes: the index follows a write after its batch delay. */
-const until = (check: () => void) => vi.waitFor(check, { timeout: 2000, interval: 20 });
+const until = (check: () => void | Promise<void>) =>
+  vi.waitFor(check, { timeout: 2000, interval: 20 });
 
 /** The test id a settings section's root carries: `<section id>-screen`. */
 const sectionScreen = (section: SettingsSection) => `${section}-screen`;
 
 /**
- * The app on a section of the settings screen over the in-memory store, with handles to drive it:
- * query by test id, type into an input, click, and wait until the screen shows what a test
- * expects (the index follows a write about 100 ms later, as in Obsidian).
+ * The app on `route` over the in-memory store, once the element with the test id `screenId` is
+ * there, with handles to drive it: query by test id, type into an input, click, and wait until the
+ * screen shows what a test expects (the index follows a write about 100 ms later, as in Obsidian).
  */
-export const openSettings = async (section: SettingsSection, options: ScreenOptions = {}) => {
+export const openRoute = async (route: Route, screenId: string, options: ScreenOptions = {}) => {
   const test = testRuntime(options);
   options.seed?.(test.notes);
   const root = document.createElement("div");
   document.body.append(root);
-  const route: Route = { name: "settings", section };
   const close = mountApp(root, test.runtime, { navigation: memoryNavigation(appSurface, route) });
   opened.push({ close, dispose: () => test.runtime.dispose() });
   if (options.ready !== false) await test.vaultReady();
   // The screen and its section are lazily loaded components: wait until they are there.
   await vi.waitFor(
     () => {
-      if (root.querySelector(`[data-testid=${sectionScreen(section)}]`) === null)
-        throw new Error("no screen");
+      if (root.querySelector(`[data-testid=${screenId}]`) === null) throw new Error("no screen");
     },
     { timeout: 5000, interval: 10 },
   );
@@ -73,18 +72,26 @@ export const openSettings = async (section: SettingsSection, options: ScreenOpti
     input(id).dispatchEvent(new Event("input"));
     await settle();
   };
-  const click = async (element: Element | undefined) => {
-    if (!(element instanceof HTMLElement)) throw new Error("nothing to click");
-    element.click();
-    await settle();
-  };
   const button = (label: string) =>
     [...root.querySelectorAll("button")].find(
       (candidate) =>
         candidate.textContent.trim() === label || candidate.getAttribute("aria-label") === label,
     );
-  const names = () => all("community-name").map((element) => element.textContent.trim());
-  return { ...test, root, close, all, q, text, input, type, click, button, until, names };
+  return { ...test, root, close, all, q, text, input, type, click, button, until };
+};
+
+/** Clicks `element` and lets the screen settle. */
+const click = async (element: Element | undefined) => {
+  if (!(element instanceof HTMLElement)) throw new Error("nothing to click");
+  element.click();
+  await settle();
+};
+
+/** The app on a section of the settings screen (`openRoute`), with the community names. */
+export const openSettings = async (section: SettingsSection, options: ScreenOptions = {}) => {
+  const screen = await openRoute({ name: "settings", section }, sectionScreen(section), options);
+  const names = () => screen.all("community-name").map((element) => element.textContent.trim());
+  return { ...screen, names };
 };
 
 /** The app on the community settings, the start route. */

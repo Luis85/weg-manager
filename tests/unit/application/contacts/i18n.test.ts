@@ -6,6 +6,9 @@ import {
 } from "../../../../src/application/contacts";
 import { de, en } from "../../../../src/application/messages";
 
+const words = (issue: Parameters<typeof describeContactIssue>[0]) =>
+  describeContactIssue(issue, de);
+
 describe("the contacts catalog", () => {
   it("words the error as a warning in both languages", () => {
     const error = new InvalidContactError({ issues: [] });
@@ -19,8 +22,6 @@ describe("the contacts catalog", () => {
   });
 
   it("words its own codes, a missing field in its own words and a missing company", () => {
-    const words = (issue: Parameters<typeof describeContactIssue>[0]) =>
-      describeContactIssue(issue, de);
     expect(words({ key: "private", code: "private.missing" })).toBe(
       "Ein Eigentümer ist nicht als privat markiert. Setze die Markierung „Privat“.",
     );

@@ -362,22 +362,30 @@ describe("the app frame", () => {
     expect(without.querySelector("[data-testid=frame-context]")).toBeNull();
   });
 
-  it("starts on the settings, the frame's one entry, with the switch in the context area", async () => {
+  it("starts on the settings, after the contacts (PBI-02), with the switch in the context area", async () => {
     const { runtime } = make();
     const root = newRoot();
     closes.push(mountApp(root, runtime));
     await settle();
-    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Einstellungen"]);
-    expect(navButtons(root)[0]?.getAttribute("aria-current")).toBe("page");
+    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual([
+      "Kontakte",
+      "Einstellungen",
+    ]);
+    expect(navButtons(root).map((button) => button.getAttribute("aria-current"))).toEqual([
+      null,
+      "page",
+    ]);
     await eventually(() =>
       expect(root.querySelector("section [data-testid=communities-screen]")).not.toBeNull(),
     );
     await eventually(() =>
       expect(root.querySelector("nav [data-testid=community-switch]")).not.toBeNull(),
     );
-    // The entry carries its bundled icon, drawn (an empty svg is a missing icon).
+    // Each entry carries its bundled icon, drawn (an empty svg is a missing icon).
     await eventually(() =>
-      expect(navButtons(root)[0]?.querySelector("svg")?.innerHTML ?? "").not.toBe(""),
+      expect(
+        navButtons(root).map((button) => button.querySelector("svg")?.innerHTML ?? ""),
+      ).not.toContain(""),
     );
   });
 
@@ -390,20 +398,24 @@ describe("the app frame", () => {
     } as const);
     closes.push(mountApp(root, runtime, { navigation }));
     await settle();
-    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Einstellungen"]);
-    expect(navButtons(root)[0]?.getAttribute("aria-current")).toBe("page");
-    expect(barred(navButtons(root)[0] as HTMLButtonElement)).toBe(true);
-    navButtons(root)[0]?.click();
+    const settings = () => navButtons(root)[1] as HTMLButtonElement;
+    expect(settings().textContent.trim()).toBe("Einstellungen");
+    expect(settings().getAttribute("aria-current")).toBe("page");
+    expect(barred(settings())).toBe(true);
+    settings().click();
     await settle();
     expect(navigation.current()).toEqual({ name: "settings", section: "communities" });
-    expect(navButtons(root)[0]?.getAttribute("aria-current")).toBe("page");
+    expect(settings().getAttribute("aria-current")).toBe("page");
   });
 
-  it("words the settings entry in English", async () => {
+  it("words the entries in English", async () => {
     const { runtime } = make({ language: "en" });
     const root = newRoot();
     closes.push(mountApp(root, runtime));
     await settle();
-    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual(["Settings"]);
+    expect(navButtons(root).map((button) => button.textContent.trim())).toEqual([
+      "Contacts",
+      "Settings",
+    ]);
   });
 });

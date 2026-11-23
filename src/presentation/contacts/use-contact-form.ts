@@ -21,6 +21,10 @@ import { useMessages } from "../shell";
 /** The company choice of a person: none, an existing company by id, or a new one by name. */
 export const NEW_COMPANY = "new";
 
+/** The input the rules and the use case see: a new company is no id yet. */
+const effective = (input: ContactInput): ContactInput =>
+  input.organization_id === NEW_COMPANY ? { ...input, organization_id: "" } : input;
+
 /**
  * The contact form's rules (PBI-02) on the notes module's record form (`useRecordForm`, which
  * holds its state and flow): the validators call `validateContact` against the other contacts and
@@ -60,10 +64,6 @@ export const useContactForm = (options: {
   const newCompany = shallowRef("");
   const saveOptions = (input: ContactInput) =>
     input.organization_id === NEW_COMPANY ? { newCompany: newCompany.value } : {};
-  /** The input the rules and the use case see: a new company is no id yet. */
-  const effective = (input: ContactInput): ContactInput =>
-    input.organization_id === NEW_COMPANY ? { ...input, organization_id: "" } : input;
-
   const record = useRecordForm({
     type: contactType,
     record: contact,

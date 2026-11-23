@@ -4,7 +4,7 @@ import UFormField from "@nuxt/ui/components/FormField.vue";
 import UInput from "@nuxt/ui/components/Input.vue";
 import { useId, useTemplateRef } from "vue";
 import type { Community } from "../../../application/communities";
-import { ConflictChoice } from "../../notes";
+import { ConflictChoice, RecordFormFooter } from "../../notes";
 import { ErrorNotice } from "../../shell";
 import { useCommunityForm } from "../use-community-form";
 import ColorField from "./ColorField.vue";
@@ -187,27 +187,13 @@ const suggestionsId = useId();
       />
       <ErrorNotice v-if="notice" :message="notice" />
     </div>
-    <div
-      class="wm:sticky wm:bottom-0 wm:flex wm:flex-wrap wm:justify-end wm:gap-2 wm:border-t wm:border-default wm:bg-default wm:px-4 wm:py-3 wm:sm:px-6"
-      data-testid="form-footer"
-    >
-      <UButton
-        type="button"
-        color="neutral"
-        variant="outline"
-        :label="t.form.cancel"
-        @click="emit('cancel')"
-      />
-      <UButton
-        type="submit"
-        :label="t.form.save"
-        :icon="pending ? 'i-lucide-loader-circle' : undefined"
-        :ui="{ leadingIcon: pending ? 'wm:animate-spin' : '' }"
-        :aria-disabled="blocked ? 'true' : undefined"
-        :aria-busy="pending ? 'true' : undefined"
-        class="wm:aria-disabled:cursor-not-allowed wm:aria-disabled:opacity-75"
-        data-testid="community-save"
-      />
-    </div>
+    <RecordFormFooter
+      :cancel="t.form.cancel"
+      :save="t.form.save"
+      :pending="pending"
+      :blocked="blocked"
+      save-id="community-save"
+      @cancel="emit('cancel')"
+    />
   </form>
 </template>

@@ -4,7 +4,6 @@ export {
   CONTACT_LANGUAGES,
   CONTACT_ROLES,
   NAME_MAX_LENGTH,
-  ROLE_ENTRY,
   contactType,
   roleEntry,
   type ContactFields,
@@ -22,8 +21,5 @@ export {
   parseRole,
   sameNameContacts,
   validateContact,
-  type ContactDraft,
   type ContactInput,
-  type ContactRuleContext,
-  type OtherContact,
 } from "./rules";

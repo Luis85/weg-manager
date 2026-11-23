@@ -18,11 +18,11 @@ Eine Person oder Organisation mit einer Rolle in einer Gemeinschaft, etwa die Ve
 
 | Feld | Schlüssel | Typ | Pflicht | Bedeutung und Regel |
 | --- | --- | --- | --- | --- |
-| Technische Identität | `id` | Text | P | `person-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]]. |
-| Schema | `schema` | Text | P | `weg-manager.person/v1` (vorgeschlagen). |
+| Technische Identität | `id` | Text | P | `contact-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]]. |
+| Schema | `schema` | Text | P | `weg-manager.contact/v1` (entschieden 23.11.2026, [[PBI-02 - Personen und Rollen zuordnen]]). |
 | Art | `kind` | Text | P | Person oder Organisation (Firma). Bisherige Angabe unseres Modells. |
 | Name | `name` | Text | P | Name beziehungsweise Bezeichnung, z. B. „Verwaltung“, „Hausmeisterdienst“. |
-| Firma | `organization` | Text | O | Bei Personen die Organisation, für die sie handeln. |
+| Firma | `organization_id` | Text | O | Bei Personen die `id` der Firmen-Notiz, für die sie handeln (entschieden 23.11.2026). |
 | Rollen je Gemeinschaft | `roles` | Liste | P | WCS „rolle“ und „gemeinschaft“: je Eintrag `<id der Gemeinschaft>:<Rolle>`, etwa Beirat in der WEG und Eigentümer in der Tiefgarage (O-ENT02-1). Kodierte Liste, damit die Schlüssel flach bleiben ([[docs/adr/0007-vault-data-access.md\|ADR 0007]], Nachtrag). Ein fehlerhafter Eintrag ist ein Problem. |
 | Privat | `private` | Checkbox | P | Wahr für Eigentümer und andere Privatpersonen. Aus privaten Notizen übernimmt das Plugin nie Inhalte in Entwürfe, Karten, Berichte oder Freigaben; ein Agent liest sie nicht (O-ENT02-2). |
 | Kontakt | `email`, `phone`, `address`, `preferred_channel` | Text | O | WCS „kontakt“. Bei privaten Personen nur, wo nötig; nie in geteilten Bereichen. |

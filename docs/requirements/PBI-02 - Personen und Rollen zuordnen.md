@@ -83,4 +83,9 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
   - **Firma (Kriterium 4):** Eine Firma ist eine eigene Kontaktnotiz mit der Art „Firma“. Eine Person verweist mit `organization_id` auf deren `id`, wie `community_id` auf die Gemeinschaft. Eine beim Speichern genannte, noch unbekannte Firma wird mit angelegt.
   - **Eigentümer (Kriterien 6 und 8):** Im ersten Schnitt sind Eigentümer einzelne Personen mit `private: true`. Der Verteiler bekommt mit dem Postausgang eine eigene Entität.
   - **Vor der Umsetzung:** ein Dateivertrag `docs/contracts/DV-02 - Kontakt v1.md` und die Begriffe in `GLOSSARY.md`.
+- 23.11.2026 (Interview): weitere Entscheidungen des Produktverantwortlichen zum ersten Schnitt.
+  - **Rollen:** die geschlossene WCS-Liste aus [[ENT-02 - Person und Rolle]]: Beirat (`board`), Vertretung (`deputy`), Eigentümer (`owner`), Verwaltung (`manager`), Beirat andere Gemeinschaft (`other_board`), Dritte (`third_party`), Agent (`agent`).
+  - **Notiztyp und Ordner:** `schema: weg-manager.contact/v1`, `id` `contact-<uuid>`, Ordner `<Wurzelordner>/Kontakte/`. Person und Firma sind derselbe Notiztyp mit der Art `kind`.
+  - **Nicht mehr verwendet:** Kennzeichnen statt löschen. Es gibt kein Löschen; ein Kontakt mit `inactive: true` bleibt in der Liste und ist hinter dem Filter „Nicht mehr verwendete zeigen“ ausgeblendet.
+  - **Ort:** eine eigene Route „Kontakte“ in der Navigation, wie in Sitemap und Prototyp, nicht in den Einstellungen.
 

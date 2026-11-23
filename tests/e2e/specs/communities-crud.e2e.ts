@@ -100,8 +100,9 @@ describe("communities: create, edit and delete", function () {
     await expectSummary("Ahornweg 12", de.communities.screen.summary("WEG", "Wohnungen"));
     const root = browser.$(ROOT);
     await root.$(`button[aria-label='${de.communities.screen.editLabel("Ahornweg 12")}']`).click();
-    await expect(root.$("[data-testid=field-short_code]")).toHaveAttribute("readonly");
-    await fillForm({ name: "Ahornweg 12a", kind: "Haus" });
+    // The short code is editable like every other field (PBI-78).
+    await expect(root.$("[data-testid=field-short_code]")).not.toHaveAttribute("readonly");
+    await fillForm({ name: "Ahornweg 12a", short_code: "ah", kind: "Haus" });
     await saveForm();
     await expectFormClosed();
     await expectListed(["Ahornweg 12a"]);
@@ -113,7 +114,7 @@ describe("communities: create, edit and delete", function () {
         "schema: weg-manager.community/v1",
         `id: ${id}`,
         "name: Ahornweg 12a",
-        "short_code: AW",
+        "short_code: AH",
         "color: teal",
         "kind: Haus",
         "unit_label: Wohnungen",

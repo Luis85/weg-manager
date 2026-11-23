@@ -91,9 +91,7 @@ describe("the communities catalog", () => {
         unit_label: "Einheitenbezeichnung",
       },
       noShortCode: "?",
-      shortCodeHint:
-        "2 bis 5 Buchstaben oder Ziffern, z. B. AW. Lässt sich nach dem Anlegen nicht mehr ändern.",
-      shortCodeFixed: "Das Kürzel lässt sich nach dem Anlegen nicht mehr ändern.",
+      shortCodeHint: "2 bis 5 Buchstaben oder Ziffern, z. B. AW.",
       unitLabelHelp: "Wie die Einheiten heißen, z. B. Einheiten oder Stellplätze.",
       colors: {
         teal: "Petrol",
@@ -184,8 +182,7 @@ describe("the communities catalog", () => {
         unit_label: "Unit label",
       },
       noShortCode: "?",
-      shortCodeHint: "2–5 letters or digits, e.g. AW. Can't be changed later.",
-      shortCodeFixed: "The short code can't be changed after creation.",
+      shortCodeHint: "2–5 letters or digits, e.g. AW.",
       unitLabelHelp: "What the units are called, e.g. units or parking spaces.",
       colors: {
         teal: "Teal",

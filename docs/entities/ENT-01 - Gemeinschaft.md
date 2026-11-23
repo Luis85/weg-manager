@@ -69,7 +69,7 @@ Die Gemeinschaft selbst enthält keine personenbezogenen Daten anderer Eigentüm
 
 - **O-ENT01-1:** Konkrete Organisationsform und Zuständigkeiten der Tiefgarage (bisher O-05).
 - **O-ENT01-2:** Ab wann wird die Gemeinschaft im WCS als eigenes Objekt geführt statt als Zeichenkette (WCS PRD Q9)? Bei uns ist sie schon eine Note; offen ist nur die Übernahme der WCS-Altdaten.
-- **O-ENT01-3:** [[DV-01 - Gemeinschaft v1]] und `GLOSSARY.md` nennen das Kürzel noch „nach dem Anlegen fest“. Nach PBI-78 ist es änderbar; Vertrag und Glossar sind nachzuziehen.
+- **O-ENT01-3 (erledigt 23.11.2026):** Das Kürzel ist änderbar; [[DV-01 - Gemeinschaft v1]], `GLOSSARY.md` und das Formular sind mit [[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]] nachgezogen.
 - **O-ENT01-4:** Wie wird „nur teilbare Daten“ bei einer Viertel-Gemeinschaft geprüft: als Regel beim Anlegen oder nur als Hinweis?
 - **O-ENT01-5:** Wann kommen `plot_ids`, `manager_id`, `fiscal_year_start` und `filing_folder` in eine neue Vertragsversion?
 

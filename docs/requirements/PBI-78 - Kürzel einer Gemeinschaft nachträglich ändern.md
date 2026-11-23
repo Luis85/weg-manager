@@ -6,8 +6,8 @@ actors:
   - "[[ACT-01-Beirat]]"
 release: "[[MVP - Beirat Support]]"
 status: ""
-started: ""
-finished: ""
+started: 2026-11-23
+finished: 2026-11-23
 horizon: ""
 start: ""
 due: ""
@@ -51,7 +51,7 @@ Seit [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]] is
 2. Nach dem Speichern zeigen alle offenen Ansichten das neue Kürzel, auch Gemeinschaftswechsel und Badges. Die Auswahl der Gemeinschaft bleibt erhalten, weil sie an der `id` hängt.
 3. Andere Notizen werden nicht umgeschrieben. Notizen, die auf die Gemeinschaft verweisen, tun das über `community_id`; ein geändertes Kürzel bricht keinen Verweis.
 4. Der Hinweis „Kann später nicht geändert werden“ entfällt in Formular und Einrichtung.
-5. Ein vergebenes Kürzel zeigt den Fehler `short-code.duplicate` am Feld mit Ursache und Ausweg, in beiden Katalogen.
+5. Ein vergebenes Kürzel zeigt den Fehler `short-code.taken` am Feld mit Ursache und Ausweg, in beiden Katalogen.
 6. Eine extern geänderte Gemeinschaft wird wie bei den übrigen Feldern je Feld zusammengeführt (Kriterium 8 von [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]).
 
 ## Herkunft und Bezüge
@@ -59,3 +59,5 @@ Seit [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]] is
 Revidiert die Festlegung „nach dem Anlegen nicht änderbar“ aus den Kommentaren von [[PBI-01 - Gemeinschaftskontext wählen]] (21.11.2026) und Kriterium 3 von [[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]. Voraussetzung für [[PBI-75 - Gemeinschaften im Einrichtungsassistenten anlegen]]. Dateivertrag: `docs/contracts/DV-01 - Gemeinschaft v1.md`.
 
 ## Kommentare
+
+- 23.11.2026 (Umsetzung): Alle sechs Kriterien erfüllt. `canChangeShortCode` entfällt; `updateCommunity` und das Formular behandeln das Kürzel wie jedes andere Feld, mit denselben Regeln wie beim Anlegen. Kriterium 5 nennt jetzt den Code, den das Formular schon seit PBI-56 zeigt: `short-code.taken` (eine andere Gemeinschaft hat das Kürzel); `short-code.duplicate` bleibt das Problem eines außerhalb des Plugins entstandenen Duplikats in der Liste. Der Hinweis am Feld lautet nur noch „2 bis 5 Buchstaben oder Ziffern, z. B. AW.“ („2–5 letters or digits, e.g. AW.“); der Text „Lässt sich nach dem Anlegen nicht mehr ändern“ ist aus beiden Katalogen entfernt. Die Auswahl hängt an der `id` und bleibt erhalten (Kriterium 2); das Zusammenführen je Feld kommt unverändert aus dem Datensatz-Baustein (Kriterium 6). Kriterium 4 für die Einrichtung gilt, sobald [[PBI-75 - Gemeinschaften im Einrichtungsassistenten anlegen]] gebaut ist; sie nutzt dieselben Texte. Tests: `tests/unit/application/communities/update.test.ts` (Kürzel ändern, vergebenes Kürzel abgelehnt), `tests/dom/presentation/communities/edit.test.ts` (Feld bearbeitbar, geändertes Kürzel auf der Karte, Dateiname bleibt). Vertrag, Glossar, ENT-01 und Handoff 02/06 nachgezogen.

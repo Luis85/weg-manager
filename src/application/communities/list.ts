@@ -67,11 +67,3 @@ export const toCommunityList = communityRecords.toList;
 
 /** The name a list shows: the community's name, else its file name. */
 export const shownName = communityRecords.shownName;
-
-/**
- * Whether the form lets the user set the short code. It is fixed once given (PBI-56), unless the
- * note has none that is valid, or one another community has too: then the form repairs it.
- */
-export const canChangeShortCode = (community: Community): boolean =>
-  community.values.short_code === undefined ||
-  community.issues.some((issue) => issue.code === "short-code.duplicate");

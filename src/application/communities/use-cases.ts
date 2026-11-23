@@ -8,7 +8,7 @@ import {
 } from "../../domain/communities";
 import { editedValues, type FormDraft } from "../../domain/notes";
 import { InvalidCommunityError } from "./errors";
-import { canChangeShortCode, communityRecords, shownName, type Community } from "./list";
+import { communityRecords, shownName, type Community } from "./list";
 
 /** The communities now, for `useStream`. Never suspends. */
 export const communityList = communityRecords.list;
@@ -55,25 +55,22 @@ export const createCommunity = (input: CommunityInput) =>
 
 /**
  * Saves the form of `community` (as it was loaded) with `input` (PBI-56, ADR 0007). The rules run
- * against the other communities; the short code stays as loaded unless it may be repaired
- * (`canChangeShortCode`). A field left as loaded keeps the note's value as written, not even
- * trimmed (`editedValues`). The record kit then merges per field with an outside edit and lets the
+ * against the other communities; the short code may change like any other field (PBI-78): other
+ * notes refer to the community by its id, never by its short code. A field left as loaded keeps
+ * the note's value as written, not even trimmed (`editedValues`). The record kit then merges per field with an outside edit and lets the
  * file follow the name, as one command.
  */
 export const updateCommunity = (community: Community, input: CommunityInput) =>
   Effect.gen(function* () {
     const { records } = yield* communityList;
     const loaded = community.values;
-    const fixed = canChangeShortCode(community)
-      ? input
-      : { ...input, short_code: loaded.short_code ?? input.short_code };
     const edited = editedValues(
       communityType,
-      fixed,
-      communityValues(fixed),
+      input,
+      communityValues(input),
       community.frontmatter,
     );
-    const values = yield* checked(fixed, { others: valuesOf(records), loaded }, edited);
+    const values = yield* checked(input, { others: valuesOf(records), loaded }, edited);
     return yield* communityRecords.update(community, values);
   });
 

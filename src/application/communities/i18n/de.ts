@@ -29,9 +29,7 @@ export const communitiesDe: CommunitiesCatalog = {
     unit_label: "Einheitenbezeichnung",
   },
   noShortCode: "?",
-  shortCodeHint:
-    "2 bis 5 Buchstaben oder Ziffern, z. B. AW. Lässt sich nach dem Anlegen nicht mehr ändern.",
-  shortCodeFixed: "Das Kürzel lässt sich nach dem Anlegen nicht mehr ändern.",
+  shortCodeHint: "2 bis 5 Buchstaben oder Ziffern, z. B. AW.",
   unitLabelHelp: "Wie die Einheiten heißen, z. B. Einheiten oder Stellplätze.",
   colors: {
     teal: "Petrol",

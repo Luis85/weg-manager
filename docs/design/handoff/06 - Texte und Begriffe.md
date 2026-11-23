@@ -50,7 +50,7 @@ Jeder sichtbare Text kommt aus den getippten Katalogen, je Modul ein Teil in Deu
 | Als gesendet markieren | mark as sent | Dokumentation eines externen Versands | Senden |
 | Übergabe | handover | Wochenabschluss mit Schwerpunkten | Notiz |
 | Lage | situation | Startansicht | Dashboard |
-| Kürzel | short code | 2 bis 5 Zeichen (A–Z, 0–9), eindeutig, nach dem Anlegen fest | Abkürzung, Kennung |
+| Kürzel | short code | 2 bis 5 Zeichen (A–Z, 0–9), eindeutig, änderbar | Abkürzung, Kennung |
 | Art | kind | was für eine Gemeinschaft es ist, in eigenen Worten (WEG, Tiefgarage); ohne Rechtsform und Befugnis | Typ, Kategorie |
 | Einheitenbezeichnung | unit label | wie die Gemeinschaft ihre Einheiten nennt (Einheiten, Stellplätze) | Einheitentyp |
 | Gemeinschaftswechsel | community switch | die Auswahl im Rahmen, die die Gemeinschaft zeigt und ändert | Filter, Dropdown |

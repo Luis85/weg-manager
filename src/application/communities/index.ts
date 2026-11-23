@@ -5,13 +5,7 @@ export type { CommunitiesCatalog } from "./i18n/catalog";
 export { communitiesDe } from "./i18n/de";
 export { describeCommunityIssue } from "./i18n/describe";
 export { communitiesEn } from "./i18n/en";
-export {
-  canChangeShortCode,
-  shownName,
-  toCommunityList,
-  type Community,
-  type CommunityNoteIssue,
-} from "./list";
+export { shownName, toCommunityList, type Community, type CommunityNoteIssue } from "./list";
 export { communitiesModule } from "./module";
 export { COMMUNITIES_SECTION, COMMUNITY_SETTINGS } from "./routes";
 export {

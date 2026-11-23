@@ -48,7 +48,7 @@ Als neuer Beirat möchte ich in zwei kurzen Schritten meine Gemeinschaften anleg
 
 ## Ausgangslage
 
-Gemeinschaften lassen sich heute in der Gemeinschaftsverwaltung anlegen ([[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]). Jede Gemeinschaft hat Name, Kürzel, Art, Farbe und Einheitenbezeichnung. Das Kürzel ist heute nach dem Anlegen fest und wird mit [[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]] änderbar. Der Assistent nutzt dieselben Regeln und Anwendungsfälle und führt nur durch sie hindurch.
+Gemeinschaften lassen sich heute in der Gemeinschaftsverwaltung anlegen ([[PBI-56 - Gemeinschaften als Notizen anlegen, bearbeiten und wechseln]]). Jede Gemeinschaft hat Name, Kürzel, Art, Farbe und Einheitenbezeichnung. Das Kürzel ist seit [[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]] auch nach dem Anlegen änderbar. Der Assistent nutzt dieselben Regeln und Anwendungsfälle und führt nur durch sie hindurch.
 
 ## Akzeptanzkriterien
 

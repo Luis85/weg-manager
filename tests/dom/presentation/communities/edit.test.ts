@@ -37,7 +37,7 @@ const editing = async (frontmatter: Record<string, unknown> = AW) => {
 };
 
 describe("editing a community", () => {
-  it("loads the note's values, keeps the short code fixed and says so", async () => {
+  it("loads the note's values with the short code editable (PBI-78)", async () => {
     const screen = await editing();
     expect(screen.root.querySelector("[role=dialog]")?.textContent).toContain(
       "Gemeinschaft bearbeiten",
@@ -45,8 +45,8 @@ describe("editing a community", () => {
     expect(
       ["name", "short_code", "kind", "unit_label"].map((key) => screen.input(`field-${key}`).value),
     ).toEqual(["Ahornweg 12", "AW", "WEG", "Einheiten"]);
-    expect(screen.input("field-short_code").readOnly).toBe(true);
-    expect(screen.q("community-form")?.textContent).toContain(t.shortCodeFixed);
+    expect(screen.input("field-short_code").readOnly).toBe(false);
+    expect(screen.q("community-form")?.textContent).toContain(t.shortCodeHint);
     const teal = screen.root.querySelector<HTMLInputElement>("input[type=radio][value=teal]");
     expect([teal?.checked, teal?.disabled]).toEqual([true, false]);
   });
@@ -64,6 +64,16 @@ describe("editing a community", () => {
     });
     expect(screen.notes.body(`${FOLDER}/Ahornweg 12a.md`)).toBe("Notizen\n");
     await screen.until(() => expect(screen.names()).toEqual(["Ahornweg 12a"]));
+  });
+
+  it("saves a changed short code, shows it on the card and keeps the file name (PBI-78)", async () => {
+    const screen = await editing();
+    await fill(screen, { short_code: "ah" });
+    await save(screen);
+    await screen.until(() => expect(screen.q("community-form")).toBeUndefined());
+    expect(await paths(screen)).toEqual([PATH]);
+    expect((await read(screen)).frontmatter).toEqual({ ...AW, short_code: "AH" });
+    await screen.until(() => expect(screen.all("community-badge")[0]?.textContent).toBe("AH"));
   });
 
   it("merges an outside change to another field", async () => {

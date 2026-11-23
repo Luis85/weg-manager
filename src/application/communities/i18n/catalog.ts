@@ -38,9 +38,8 @@ export type CommunitiesCatalog = {
   readonly fields: Readonly<Record<CommunityKey, string>>;
   /** What a badge shows for a community without a valid short code. */
   readonly noShortCode: string;
-  /** Beside the short code: its form on create, that it stays fixed on edit. */
+  /** Beside the short code: the form it takes. */
   readonly shortCodeHint: string;
-  readonly shortCodeFixed: string;
   /** Below the unit label: what it means. */
   readonly unitLabelHelp: string;
   readonly colors: Readonly<Record<CommunityColor, string>>;

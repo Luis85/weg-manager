@@ -38,7 +38,7 @@ Alle Schlüssel sind Pflicht. Ein leerer Wert (wie Obsidian ihn beim Leeren eine
 | `schema` | Text | Genau `weg-manager.community/v1`. Erkennt die Notiz als Gemeinschaft, egal in welchem Ordner sie liegt. | `weg-manager.community/v1` |
 | `id` | Text | `community-` und eine UUID in Kleinbuchstaben. Einmal vergeben, nie geändert. | `community-3f2b8c1e-7a44-4d0b-9c2e-5b1f0a6d9e21` |
 | `name` | Text | Eine Zeile, nicht leer, höchstens 100 Zeichen. So, wie der Mensch ihn schreibt. Der Dateiname, der daraus wird, darf mit ` (100).md` höchstens 255 Bytes in UTF-8 haben (siehe unten). | `Ahornweg 12` |
-| `short_code` | Text | 2 bis 5 Zeichen, nur `A`–`Z` und `0`–`9`, in Großbuchstaben. Unter allen Gemeinschaften eindeutig. Nach dem Anlegen fest. | `AW` |
+| `short_code` | Text | 2 bis 5 Zeichen, nur `A`–`Z` und `0`–`9`, in Großbuchstaben. Unter allen Gemeinschaften eindeutig. Änderbar seit 23.11.2026 ([[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]]); andere Notizen verweisen über die `id`, nie über das Kürzel. | `AW` |
 | `color` | Text | Ein Name der Palette: `teal`, `violet`, `blue`, `rust`, `slate`, `amber`, `pink`, `olive`. Jede Gemeinschaft eine andere Farbe. Die Farbtöne je Theme legt das Plugin fest. `cyan` war bis 22.11.2026 ein Name der Palette und gilt jetzt als unbekannt (`color.unknown`): das Plugin ersetzt ihn nicht von selbst, der Mensch wählt eine Farbe und speichert neu. | `teal` |
 | `kind` | Text | Die Art in eigenen Worten. Eine Zeile, nicht leer, höchstens 50 Zeichen. Aus ihr folgt weder Rechtsform noch Befugnis. | `WEG`, `Tiefgarage` |
 | `unit_label` | Text | Wie die Gemeinschaft ihre Einheiten nennt. Eine Zeile, nicht leer, höchstens 50 Zeichen. | `Einheiten`, `Stellplätze` |

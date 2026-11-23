@@ -90,3 +90,4 @@ Das Plugin hat die technischen Grundlagen (Notizspeicher, Codec, Index, Navigati
   - **Wortwahl:** Die deutschen Texte sagen weiter „Vault“, nicht „Tresor“.
   - **Hilfe bei Fehlern:** Texte zu Programmfehlern und zum Diagnosebericht nennen nicht mehr „den Support“, sondern die GitHub-Issues des Plugins; der Diagnosebericht enthält keine Notizinhalte.
 - 22.11.2026, später am Tag: Der Produktverantwortliche revidiert die Kürzel-Entscheidung im Zuge des Onboardings ([[K-19 - Onboarding über Einrichtungsassistent, Erste Schritte und Hinweise im Kontext]]). Kriterium 3 („nach dem Anlegen nicht änderbar“) und der Hinweis am Feld werden durch [[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]] abgelöst.
+- 23.11.2026: Kriterium 3 ist durch [[PBI-78 - Kürzel einer Gemeinschaft nachträglich ändern]] abgelöst und umgesetzt: Das Kürzel ist änderbar.

@@ -1,6 +1,5 @@
 import { computed } from "vue";
 import {
-  canChangeShortCode,
   createCommunity,
   describeCommunityIssue,
   shownName,
@@ -13,7 +12,6 @@ import {
   firstFreeColor,
   kindSuggestions,
   validateCommunity,
-  type CommunityInput,
   type CommunityKey,
   type KindPair,
 } from "../../domain/communities";
@@ -23,7 +21,7 @@ import { useMessages } from "../shell";
 /**
  * The community form's rules (handoff CommunityForm) on the notes module's record form
  * (`useRecordForm`, which holds its state and flow): the validators call `validateCommunity`
- * against the other communities; the short code is fixed once given (`canChangeShortCode`); a new
+ * against the other communities; the short code may change like any other field (PBI-78); a new
  * community starts with the first free colour; the colours other communities use are taken; and
  * the kind suggests its unit label. `done` gets the id of the community that was saved.
  */
@@ -37,7 +35,6 @@ export const useCommunityForm = (options: {
   const t = catalog.communities;
   const { community } = options;
   const loaded = community?.values;
-  const shortCodeEditable = community === undefined || canChangeShortCode(community);
 
   /** The other communities' valid values and the name each is shown by: what the rules compare. */
   const others = computed(() =>
@@ -54,10 +51,6 @@ export const useCommunityForm = (options: {
   });
   const suggestions = computed(() => kindSuggestions(t.builtInKinds, others.value));
 
-  /** What the rules see: a fixed short code stays as loaded, whatever the field holds. */
-  const effective = (input: CommunityInput): CommunityInput =>
-    shortCodeEditable ? input : { ...input, short_code: loaded?.short_code ?? input.short_code };
-
   const record = useRecordForm({
     type: communityType,
     record: community,
@@ -65,10 +58,7 @@ export const useCommunityForm = (options: {
     create: createCommunity,
     update: updateCommunity,
     invalid: "InvalidCommunityError",
-    rules: (input) => {
-      const issues = validateCommunity(effective(input), { others: others.value, loaded });
-      return shortCodeEditable ? issues : issues.filter((issue) => issue.key !== "short_code");
-    },
+    rules: (input) => validateCommunity(input, { others: others.value, loaded }),
     describe: (issue) => describeCommunityIssue(issue, catalog),
     labels: t.fields,
     summary: t.errors.invalid,
@@ -90,5 +80,5 @@ export const useCommunityForm = (options: {
     if (pair !== undefined) form.setFieldValue("unit_label", pair.unit_label);
   };
 
-  return { ...record, t, shortCodeEditable, taken, suggestions, choose, typed };
+  return { ...record, t, taken, suggestions, choose, typed };
 };

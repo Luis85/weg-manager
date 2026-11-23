@@ -7,6 +7,8 @@ node_modules/
 dist/
 release/
 reports/
+# test coverage written outside reports/ (e.g. a vitest run without the project config)
+coverage/
 .stryker-tmp/
 .env.local
 # a folder, or in a worktree a symlink to the main checkout's (docs/engineering/testing.md)

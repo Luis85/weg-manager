@@ -2,7 +2,6 @@ import { assert, describe, it } from "@effect/vitest";
 import { Effect } from "effect";
 import {
   InvalidCommunityError,
-  canChangeShortCode,
   communityList,
   updateCommunity,
   type Community,
@@ -100,16 +99,37 @@ describe("updateCommunity", () => {
     }).pipe(Effect.provide(fixture.layer));
   });
 
-  it.effect("keeps a valid short code: it is fixed once given", () => {
+  it.effect("changes a valid short code, upper-cased, and keeps the other fields (PBI-78)", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {
       const community = yield* loaded(fixture);
-      assert.isFalse(canChangeShortCode(community));
-      yield* updateCommunity(community, inputOf(community, { short_code: "XY", kind: "Haus" }));
+      yield* updateCommunity(community, inputOf(community, { short_code: "xy" }));
       assert.deepStrictEqual((yield* stored(PATH)).frontmatter, {
         ...community.frontmatter,
-        kind: "Haus",
+        short_code: "XY",
       });
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("refuses a valid short code another community has (PBI-78)", () => {
+    const fixture = communitiesFixture();
+    return Effect.gen(function* () {
+      fixture.memory.seed(
+        `${FOLDER}/Zweite.md`,
+        communityNote(2, { short_code: "TG", color: "blue" }),
+      );
+      const community = yield* loaded(fixture);
+      const taken = yield* Effect.flip(
+        updateCommunity(community, inputOf(community, { short_code: "tg" })),
+      );
+      assert.deepStrictEqual(
+        taken,
+        new InvalidCommunityError({
+          issues: [
+            { key: "short_code", code: "short-code.taken", value: "TG", other: "Gemeinschaft 2" },
+          ],
+        }),
+      );
     }).pipe(Effect.provide(fixture.layer));
   });
 
@@ -117,7 +137,6 @@ describe("updateCommunity", () => {
     const fixture = communitiesFixture();
     return Effect.gen(function* () {
       const community = yield* loaded(fixture, { short_code: "a" });
-      assert.isTrue(canChangeShortCode(community));
       yield* updateCommunity(community, inputOf(community, { short_code: "aw" }));
       assert.strictEqual((yield* stored(PATH)).frontmatter["short_code"], "AW");
     }).pipe(Effect.provide(fixture.layer));
@@ -131,7 +150,6 @@ describe("updateCommunity", () => {
         communityNote(2, { short_code: "G1", color: "blue" }),
       );
       const community = yield* loaded(fixture);
-      assert.isTrue(canChangeShortCode(community));
       yield* updateCommunity(community, inputOf(community, { kind: "Haus" }));
       assert.strictEqual((yield* stored(PATH)).frontmatter["kind"], "Haus");
       yield* indexed;

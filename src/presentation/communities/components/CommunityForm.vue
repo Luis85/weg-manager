@@ -27,7 +27,6 @@ const root = useTemplateRef<HTMLFormElement>("root");
 const {
   form,
   t,
-  shortCodeEditable,
   taken,
   suggestions,
   conflicts,
@@ -87,12 +86,11 @@ const suggestionsId = useId();
           <UFormField
             :label="t.fields.short_code"
             :name="field.name"
-            :description="shortCodeEditable ? t.shortCodeHint : t.shortCodeFixed"
+            :description="t.shortCodeHint"
             :error="errorOf('short_code', field.state.meta)"
           >
             <UInput
               :model-value="field.state.value"
-              :readonly="!shortCodeEditable"
               maxlength="5"
               autocapitalize="characters"
               aria-required="true"

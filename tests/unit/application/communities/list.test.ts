@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest";
-import { canChangeShortCode, toCommunityList } from "../../../../src/application/communities";
+import { toCommunityList } from "../../../../src/application/communities";
 import { communityType } from "../../../../src/domain/communities";
 import { FOLDER, communityId, communityNote } from "../../../support/communities/fixture";
 
@@ -95,36 +95,5 @@ describe("toCommunityList", () => {
       list.records.map((community) => community.editable),
       [true, true, true],
     );
-  });
-});
-
-/** Community 1 named `A`, beside `others`, as the list shows it. */
-const community = (extra: Record<string, unknown>, others: Record<string, unknown>[] = []) =>
-  toCommunityList({
-    ready: true,
-    failure: undefined,
-    notes: [
-      decoded("A.md", communityNote(1, { name: "A", ...extra })),
-      ...others.map((other, at) =>
-        decoded(`O${at}.md`, communityNote(at + 2, { name: "O", ...other })),
-      ),
-    ],
-  }).records[0];
-
-describe("canChangeShortCode", () => {
-  it("is false for a valid, unique short code, also beside another field's issue", () => {
-    for (const found of [community({}), community({ color: "cyan" })]) {
-      assert.isFalse(found !== undefined && canChangeShortCode(found));
-    }
-  });
-
-  it("is true for a missing, broken or duplicate short code", () => {
-    for (const found of [
-      community({ short_code: undefined }),
-      community({ short_code: "x" }),
-      community({}, [{ short_code: "G1" }]),
-    ]) {
-      assert.isTrue(found !== undefined && canChangeShortCode(found));
-    }
   });
 });

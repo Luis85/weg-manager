@@ -30,8 +30,7 @@ export const communitiesEn: CommunitiesCatalog = {
     unit_label: "Unit label",
   },
   noShortCode: "?",
-  shortCodeHint: "2–5 letters or digits, e.g. AW. Can't be changed later.",
-  shortCodeFixed: "The short code can't be changed after creation.",
+  shortCodeHint: "2–5 letters or digits, e.g. AW.",
   unitLabelHelp: "What the units are called, e.g. units or parking spaces.",
   colors: {
     teal: "Teal",

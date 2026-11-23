@@ -26,6 +26,10 @@ export const SHELL_ICONS = [
   "lucide:external-link",
   "lucide:circle-check",
   "lucide:triangle-alert",
+  "lucide:users",
+  "lucide:shield",
+  "lucide:archive",
+  "lucide:x",
 ];
 
 export type SharedOptions = {

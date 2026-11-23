@@ -1,4 +1,5 @@
 import { communitiesModule } from "./communities";
+import { contactsModule } from "./contacts";
 import { notesModule } from "./notes";
 import { shellModule } from "./shell";
 
@@ -11,7 +12,7 @@ import { shellModule } from "./shell";
  * (`scripts/modules.mjs` reads the names from this file). Presentation adds each module's screens
  * in `src/presentation/app-surface.ts`.
  */
-export const APP_MODULES = [shellModule, notesModule, communitiesModule] as const;
+export const APP_MODULES = [shellModule, notesModule, communitiesModule, contactsModule] as const;
 
 /** The manifest of any module of the plugin. */
 export type AppModule = (typeof APP_MODULES)[number];

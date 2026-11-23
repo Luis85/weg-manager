@@ -52,7 +52,9 @@ describe("parseRole and hasOwnerRole", () => {
 describe("contactValues", () => {
   it("trims texts, drops blank ones and saves the flags only when set", () => {
     expect(
-      contactValues(input({ name: "  Erika  ", email: " e@x.de ", private: false, inactive: true })),
+      contactValues(
+        input({ name: "  Erika  ", email: " e@x.de ", private: false, inactive: true }),
+      ),
     ).toEqual({
       name: "Erika",
       kind: "person",
@@ -95,20 +97,32 @@ describe("contactRuleIssues", () => {
 
   it("lets a person name a company, never a person, and a company name nothing", () => {
     expect(
-      contactRuleIssues({ kind: "person", roles: [`${AW}:manager`], organization_id: FIRM }, context),
+      contactRuleIssues(
+        { kind: "person", roles: [`${AW}:manager`], organization_id: FIRM },
+        context,
+      ),
     ).toEqual([]);
     expect(
-      contactRuleIssues({ kind: "person", roles: [`${AW}:manager`], organization_id: PERSON }, context),
+      contactRuleIssues(
+        { kind: "person", roles: [`${AW}:manager`], organization_id: PERSON },
+        context,
+      ),
     ).toEqual([{ key: "organization_id", code: "organization.not-company" }]);
     expect(
-      contactRuleIssues({ kind: "company", roles: [`${AW}:manager`], organization_id: FIRM }, context),
+      contactRuleIssues(
+        { kind: "company", roles: [`${AW}:manager`], organization_id: FIRM },
+        context,
+      ),
     ).toEqual([{ key: "organization_id", code: "organization.not-company" }]);
   });
 
   it("leaves a reference to no known contact to the index (`reference.missing`)", () => {
     const unknown = "contact-00000000-0000-4000-8000-000000000009";
     expect(
-      contactRuleIssues({ kind: "person", roles: [`${AW}:board`], organization_id: unknown }, context),
+      contactRuleIssues(
+        { kind: "person", roles: [`${AW}:board`], organization_id: unknown },
+        context,
+      ),
     ).toEqual([]);
   });
 });

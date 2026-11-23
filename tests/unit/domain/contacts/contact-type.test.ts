@@ -73,7 +73,9 @@ describe("the contact note type (weg-manager.contact/v1)", () => {
       ...NOTE,
       name: "N".repeat(NAME_MAX_LENGTH),
       organization_id: COMPANY,
-      roles: CONTACT_ROLES.map((role, at) => `${at === 0 ? AW : TG.replace("0f1a", `0f${at}a`)}:${role}`),
+      roles: CONTACT_ROLES.map(
+        (role, at) => `${at === 0 ? AW : TG.replace("0f1a", `0f${at}a`)}:${role}`,
+      ),
       email: "erika@example.org",
       phone: "+49 30 1234567",
       language: "de+en",
@@ -81,7 +83,8 @@ describe("the contact note type (weg-manager.contact/v1)", () => {
       inactive: false,
     };
     expect(decode(full)).toMatchObject({ kind: "editable", issues: [] });
-    for (const kind of CONTACT_KINDS) expect(decode({ ...NOTE, kind })).toMatchObject({ issues: [] });
+    for (const kind of CONTACT_KINDS)
+      expect(decode({ ...NOTE, kind })).toMatchObject({ issues: [] });
     for (const language of CONTACT_LANGUAGES) {
       expect(decode({ ...NOTE, language })).toMatchObject({ issues: [] });
     }

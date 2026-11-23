@@ -4,6 +4,7 @@ import {
   ROLE_ENTRY,
   contactType,
   type ContactFields,
+  type ContactKey,
   type ContactKind,
   type ContactRole,
 } from "./contact-type";
@@ -19,7 +20,6 @@ const ContactIssueCode = Schema.Literals([
   "field.missing",
   "field.reference",
   "field.checkbox",
-  "reference.missing",
   "name.invalid",
   "name.too-long",
   "kind.unknown",
@@ -54,8 +54,8 @@ export type OtherContact = {
 export type ContactRuleContext = {
   /** The other contacts; the edited one is not among them. */
   readonly others: readonly OtherContact[];
-  /** The ids of the communities a role may name. */
-  readonly communities: ReadonlySet<string>;
+  /** The ids of the communities a role may name; without them, no role is checked for it. */
+  readonly communities?: ReadonlySet<string> | undefined;
   /** The values the edited contact had when the form loaded it. */
   readonly loaded?: { readonly name?: string | undefined } | undefined;
 };
@@ -102,7 +102,8 @@ const rolesIssue = (
   if (new Set(communities).size < communities.length) {
     return { key: "roles", code: "roles.duplicate-community" };
   }
-  return communities.some((community) => !context.communities.has(community))
+  const known = context.communities;
+  return known !== undefined && communities.some((community) => !known.has(community))
     ? { key: "roles", code: "roles.community-missing" }
     : undefined;
 };
@@ -112,7 +113,8 @@ const organizationIssue = (
   context: ContactRuleContext,
 ): ContactFieldIssue | undefined => {
   if (values.organization_id === undefined) return undefined;
-  if (values.kind === "company") return { key: "organization_id", code: "organization.not-company" };
+  if (values.kind === "company")
+    return { key: "organization_id", code: "organization.not-company" };
   const target = context.others.find((other) => other.id === values.organization_id);
   return target !== undefined && target.kind !== "company"
     ? { key: "organization_id", code: "organization.not-company" }
@@ -151,7 +153,8 @@ export const validateContact = (
   const draft = contactValues(input);
   const issues: ContactFieldIssue[] = contactType
     .check(draft)
-    .map((issue) => ({ key: issue.key, code: issue.code }));
+    // `check` reports the type's own keys only.
+    .map((issue) => ({ key: issue.key as ContactKey, code: issue.code }));
   const name = draft.name;
   if (
     name !== undefined &&

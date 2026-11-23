@@ -92,6 +92,8 @@ export class ShellView<R extends RouteLike> extends ItemView {
     release = mountSurface(this.contentEl, this.runtime, {
       surface: this.definition,
       navigation: this.routes,
+      // Obsidian's own DOM helpers, in the view's document (a pop-out's included).
+      elements: { host: this.contentEl.createDiv(), portal: this.contentEl.createDiv() },
     });
   }
 

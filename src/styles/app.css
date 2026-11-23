@@ -1,3 +1,4 @@
+/* stylelint-disable at-rule-no-unknown -- Tailwind v4 source directives (@source, @theme); the build compiles them away, styles.css has none. */
 /*
  * Plugin stylesheet. No Tailwind preflight: Obsidian owns the page; bridge.css carries the small
  * reset this plugin needs. Every selector is scoped under .weg-manager-root and @layer blocks are

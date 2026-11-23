@@ -46,6 +46,21 @@ describe("mountSurface", () => {
     expect(SCOPE_CLASS).toBe(SCRIPT_SCOPE_CLASS);
   });
 
+  it("renders into the host and portal its caller made and removes them on close", async () => {
+    const { runtime } = testRuntime({ store: { initial: { rootFolder: "Beirat" } } });
+    const root = newRoot();
+    const host = document.createElement("div");
+    const portal = document.createElement("div");
+    const close = mountApp(root, runtime, { elements: { host, portal } });
+    await settle();
+    expect([...root.children]).toEqual([host, portal]);
+    expect(portal.classList.contains(PORTAL_CLASS)).toBe(true);
+    await showing(host, "„Beirat/Gemeinschaften“");
+    close();
+    expect([host.isConnected, portal.isConnected]).toEqual([false, false]);
+    await runtime.dispose();
+  });
+
   it("renders the start screen inside a scoped root", async () => {
     const { runtime } = testRuntime({ store: { initial: { rootFolder: "Beirat" } } });
     const root = newRoot();

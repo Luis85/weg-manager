@@ -31,7 +31,7 @@ const siblings = ({ modules, has }, zone, folder) =>
 /** @param {ModuleFolders} folders */
 export const fallowConfig = (folders) => ({
   $schema: "../node_modules/fallow/schema.json",
-  entry: ["harness/main.ts"],
+  entry: ["tests/harness/main.ts"],
   supportEntry: [
     "scripts/*.mjs",
     "tests/**/*.test.ts",
@@ -229,7 +229,6 @@ export const fallowConfig = (folders) => ({
         "src/styles/**",
         "tests/**",
         "scripts/**",
-        "harness/**",
         "configs/**",
         "*.mjs",
       ],

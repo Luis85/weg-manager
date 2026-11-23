@@ -151,7 +151,7 @@ Survivors left on 2026-11-22, each planted by hand or read in the code, and why 
 
 ## Browser harness
 
-`npm run dev:ui` serves `harness/`: two surfaces on one runtime (one of them 320 px wide, so its frame shows the navigation as a row), each with its own in-memory route, a theme switch, and visible notices. `?scenario=` selects the state:
+`npm run dev:ui` serves `tests/harness/`: two surfaces on one runtime (one of them 320 px wide, so its frame shows the navigation as a row), each with its own in-memory route, a theme switch, and visible notices. `?scenario=` selects the state:
 
 | Scenario | Shows |
 | --- | --- |
@@ -161,7 +161,7 @@ Survivors left on 2026-11-22, each planted by hand or read in the code, and why 
 | `readonly` | a note of a newer schema version beside a valid one |
 | `failure` | the index's first read fails: the failure with retry, which then reads the communities |
 
-The fake host (`harness/fake-host.css`) plays Obsidian 1.15.1's default theme: the theme variables read from the running app in light and dark, and Obsidian's base rules that reach plugin markup (button chrome, text inputs, heading sizes and margins). Take new values from the app, not from memory: print them from `getComputedStyle(document.body)` in a throwaway e2e spec. The dev server scopes the plugin CSS with the same transform as the build. Below 720 px the two surfaces stack and stretch to the window.
+The fake host (`tests/harness/fake-host.css`) plays Obsidian 1.15.1's default theme: the theme variables read from the running app in light and dark, and Obsidian's base rules that reach plugin markup (button chrome, text inputs, heading sizes and margins). Take new values from the app, not from memory: print them from `getComputedStyle(document.body)` in a throwaway e2e spec. The dev server scopes the plugin CSS with the same transform as the build. Below 720 px the two surfaces stack and stretch to the window.
 
 The note index runs in every scenario over the in-memory `NoteStore`, with the plugin's registry (`appNoteTypes`). The browser has no metadata cache to wait for, so the harness publishes `LayoutReady` and `VaultReady` once its services are built, and the index builds at once from the notes the scenario seeds.
 
@@ -226,7 +226,8 @@ The console spy flags plugin, Vue and Nuxt UI warnings or errors, and any uncaug
 - **What it adds to the scanner's list.** Files git does not track are skipped, because the scanner sees a clone. Bundled JavaScript outside `src/` is skipped by the scanner's content rule. `.js` files are linted without type information, because no tsconfig here takes them in.
 - **Not exact.** The scanner also turns most remaining errors into warnings and adds stricter layers for new submissions. Read the output as a preview, not a verdict.
 - **Informational.** It is not part of `verify`. CI runs it as the last step of the `verify` job with `continue-on-error`, so findings show in the log and as a warning annotation but never block.
-- **Known failure.** `.claude/skills/archify/explainer/reader.js` fails with `no-unsanitized/property` (it assigns `innerHTML`) and other errors. The owner decided to deal with it at submission time; options are in [Plugin research](../research/Plugin%20research%20-%20Obsidian%20best%20practices.md) item 1.
+- **No ignore option.** The directory documents no way to exclude files from its scan beyond the fixed list (checked 23.11.2026), and refuses disable comments for some rules (`eslint-comments/no-restricted-disable`, e.g. `obsidianmd/prefer-create-el`). So agent tooling that the scan flags stays out of the repo: Archify (`.claude/skills/archify/`) is git-ignored and each collaborator installs it (`.claude/skills/THIRD_PARTY.md`). The browser harness lives in `tests/harness/`, which the scan ignores. Tailwind's `@source` and `@theme` in `src/styles/` carry a `stylelint-disable at-rule-no-unknown` comment with its reason; whether the scan honours it is not documented.
+- **Dependency install.** `.npmrc` has no `engine-strict`: `engines.node` (`>=24`) is advice, so the scan's `npm install` on another Node version warns instead of failing. A failed install switches the scan's type-aware rules off.
 
 ## Manual checks in Obsidian
 

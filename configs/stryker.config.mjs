@@ -21,7 +21,7 @@ const config = {
     "/dist",
     "/release",
     "/coverage",
-    "/harness",
+    "/tests/harness",
   ],
   tempDirName: ".stryker-tmp",
   cleanTempDir: "always",

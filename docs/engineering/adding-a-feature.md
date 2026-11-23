@@ -14,7 +14,7 @@ A module registers itself with **two manifests**, plain data in its own folders,
 | **Shared line 2:** its screens in `MODULE_SCREENS` | `src/presentation/app-surface.ts` | typecheck: the map is keyed by every module name of `APP_MODULES` |
 | `configs/fallow.json`, generated: run `npm run fallow:config` | (generated, not edited) | `npm run analyze` (in the gate) fails with `` configs/fallow.json does not match the module list: run `npm run fallow:config`. `` |
 
-Not covered by the manifest, each a further shared place when a module needs it: its own events (`src/application/events.ts`, typecheck fails at the first `AppEvent.<Tag>` it publishes), a new port (a field of `AppAdapters` in `src/application/app-services-layer.ts` and an adapter in `app-layer.ts`, `harness/layers.ts` and `tests/support/adapters.ts`; typecheck fails at each), a new Nuxt UI component (the `@source` lists in `src/styles/app.css`) and a new icon (`SHELL_ICONS` in `configs/vite.shared.ts`), which fail nowhere but render unstyled or blank. A feature service may use an earlier feature's service: `servicesLayerOf` folds the feature Layers in `APP_MODULES` order, each on the ones before it (PBI-71), so list the module after the modules whose services it needs; one that needs a later module's service does not compile in `appServicesLayer`.
+Not covered by the manifest, each a further shared place when a module needs it: its own events (`src/application/events.ts`, typecheck fails at the first `AppEvent.<Tag>` it publishes), a new port (a field of `AppAdapters` in `src/application/app-services-layer.ts` and an adapter in `app-layer.ts`, `tests/harness/layers.ts` and `tests/support/adapters.ts`; typecheck fails at each), a new Nuxt UI component (the `@source` lists in `src/styles/app.css`) and a new icon (`SHELL_ICONS` in `configs/vite.shared.ts`), which fail nowhere but render unstyled or blank. A feature service may use an earlier feature's service: `servicesLayerOf` folds the feature Layers in `APP_MODULES` order, each on the ones before it (PBI-71), so list the module after the modules whose services it needs; one that needs a later module's service does not compile in `appServicesLayer`.
 
 ### Worked example: a second feature module
 
@@ -116,7 +116,7 @@ return adapters.hostEvents.pipe(Layer.provideMerge(features));
 ```
 
 - **A new application service** is the manifest's `services` (merge several of the module's Layers there); nothing else changes. The plugin, the harness and the tests get it at once.
-- **A new port** is a field of `AppAdapters` in the same file, merged into the graph where its service needs it, plus one adapter in each host: Obsidian's in the module's folder of `src/infrastructure/obsidian/<module>/`, spread into `appLayer` (`src/infrastructure/obsidian/app-layer.ts`, as `shellAdapters` and `notesAdapters` are); the harness's in `harness/layers.ts`; the tests' in `tests/support/adapters.ts` (`testAdapters`, in-memory adapters from `src/infrastructure/memory/`, never imported by `src/`). Typecheck fails at each until it supplies the field. `noteOpener` (`NoteOpener`) is one: `notesAdapters` gives Obsidian's, the harness and `testAdapters` the in-memory store's `opener`.
+- **A new port** is a field of `AppAdapters` in the same file, merged into the graph where its service needs it, plus one adapter in each host: Obsidian's in the module's folder of `src/infrastructure/obsidian/<module>/`, spread into `appLayer` (`src/infrastructure/obsidian/app-layer.ts`, as `shellAdapters` and `notesAdapters` are); the harness's in `tests/harness/layers.ts`; the tests' in `tests/support/adapters.ts` (`testAdapters`, in-memory adapters from `src/infrastructure/memory/`, never imported by `src/`). Typecheck fails at each until it supplies the field. `noteOpener` (`NoteOpener`) is one: `notesAdapters` gives Obsidian's, the harness and `testAdapters` the in-memory store's `opener`.
 
 Test: `tests/unit/application/app-services-layer.test.ts` (the graph's order, the note types, the language, the log level); `tests/dom/infrastructure/runtime.test.ts` runs `createCommunity` against the Obsidian adapters on the double.
 
@@ -150,7 +150,7 @@ One spec per behaviour in `tests/e2e/specs/`, with helpers in `tests/e2e/communi
 
 ## 6. Harness
 
-Make the new states reachable through `?scenario=` in `harness/layers.ts`: `loaded`, `empty`, `invalid`, `readonly`, `failure`. Test: `tests/unit/harness-layers.test.ts`.
+Make the new states reachable through `?scenario=` in `tests/harness/layers.ts`: `loaded`, `empty`, `invalid`, `readonly`, `failure`. Test: `tests/unit/harness-layers.test.ts`.
 
 ## 7. Gate
 

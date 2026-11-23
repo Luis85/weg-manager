@@ -13,8 +13,6 @@
     "../src/**/*.vue",
     "../tests/**/*.ts",
     "../tests/**/*.vue",
-    "../harness/**/*.ts",
-    "../harness/**/*.vue",
     "../src/env.d.ts"
   ],
   "exclude": ["../tests/e2e/**"]

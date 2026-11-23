@@ -26,3 +26,6 @@ docs/archify/**/*.finalize-summary.json
 docs/archify/**/*.browser-check.json
 docs/archify/**/*.visual-check.json
 .fallow/
+# Archify is installed by each collaborator, never committed: the community directory's source
+# scan reads the whole repository and flags its files (.claude/skills/THIRD_PARTY.md)
+.claude/skills/archify/

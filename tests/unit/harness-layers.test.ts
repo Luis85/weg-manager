@@ -17,7 +17,7 @@ import {
 import { INDEX_BATCH_QUIET } from "../../src/application/notes/index-batches";
 import { Clipboard, today } from "../../src/application/shell";
 import { localDay } from "../../src/domain/shell";
-import { harnessLayer, parseScenario } from "../../harness/layers";
+import { harnessLayer, parseScenario } from "../harness/layers";
 
 /** The communities once the index's first build is published, or its failure. */
 const built = Effect.andThen(

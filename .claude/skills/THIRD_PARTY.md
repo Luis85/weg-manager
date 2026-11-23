@@ -69,16 +69,21 @@ SOFTWARE.
 
 ## tt-a1i/archify
 
-`archify` is copied from [tt-a1i/archify](https://github.com/tt-a1i/archify) (folder `archify/`), skill version 3.2.0, commit `8509a3d`, the location Archify documents for Claude Code (`.claude/skills/`). The install was checked with `node .claude/skills/archify/bin/archify.mjs doctor` ("Archify is ready").
+`archify` is **not in the repository** (owner decision, 23.11.2026). The community directory's source scan reads the whole repository, has no ignore option, and flags Archify's files (`explainer/reader.js` assigns `innerHTML`; `explainer/reader.css` fails its CSS lint). So `.claude/skills/archify/` is git-ignored, and **every collaborator installs it themselves**, into the location Archify documents for Claude Code:
 
-One deliberate change: the 15 pre-rendered demo pages `examples/*.html` (about 13 MB) are left out. The skill's instructions use only the `examples/*.json` sources, which are kept, and a demo can be rebuilt from its JSON. Everything else is unchanged.
+```bash
+git clone https://github.com/tt-a1i/archify /tmp/archify
+git -C /tmp/archify checkout 8509a3d
+cp -R /tmp/archify/archify .claude/skills/archify
+rm -f .claude/skills/archify/examples/*.html
+node .claude/skills/archify/bin/archify.mjs doctor
+```
+
+The version this project was set up with is skill version 3.2.0, commit `8509a3d`; `doctor` reports "Archify is ready". The 15 pre-rendered demo pages `examples/*.html` (about 13 MB) are not needed: the skill uses only the `examples/*.json` sources. A cloud session gets Archify only through its environment's setup script, which can run the same commands.
 
 - Needs Node 18+, no npm install.
 - In this project, diagrams go to `docs/archify/<type>-<slug>-<timestamp>/` instead of Archify's default `.archify/`. `AGENTS.md` sets this; the skill itself is unchanged. Archify's temporary `.archify-*` files and its delivery and finalize receipts there (absolute local paths and hashes) are git-ignored; the candidate and the HTML are what gets committed.
 - During delivery, Archify can check online for a newer stable release and show a reminder. It never updates itself.
-- To update: replace the folder with a newer upstream `archify/` (again without `examples/*.html`), run `doctor`, and adjust the version and commit above.
-
-### License
-
-Apache License 2.0; the full text is in `archify/LICENSE`, and `archify/NOTICE` and `archify/THIRD_PARTY_NOTICES.md` carry the required notices. The repository also ships `archify/LICENSE-MIT`.
+- To update: install a newer upstream `archify/` the same way, run `doctor`, and adjust the version and commit above.
+- Archify is licensed under the Apache License 2.0 (with `LICENSE`, `NOTICE` and `THIRD_PARTY_NOTICES.md` in the installed folder, plus `LICENSE-MIT`). Since the repository no longer ships it, it carries none of these files.
 

@@ -10,7 +10,7 @@ The five default triage roles, stored in the `triage` frontmatter property (neve
 
 ### Diagrams (Archify)
 
-Archify writes every diagram or explainer to `docs/archify/<type>-<slug>-<YYYYMMDD-HHMMSS>/`, never to `.archify/`; pass this folder as the output location to the `archify` skill, with `meta.output` relative to the repo root. The candidate (`candidate.json` / `candidate.archify.md`) and the `<slug>.html` stay together in that folder.
+Archify is not in the repository: each collaborator installs it into `.claude/skills/archify/` (git-ignored; steps in `.claude/skills/THIRD_PARTY.md`). Without it, there is no `archify` skill. Archify writes every diagram or explainer to `docs/archify/<type>-<slug>-<YYYYMMDD-HHMMSS>/`, never to `.archify/`; pass this folder as the output location to the `archify` skill, with `meta.output` relative to the repo root. The candidate (`candidate.json` / `candidate.archify.md`) and the `<slug>.html` stay together in that folder.
 
 ### Domain docs
 

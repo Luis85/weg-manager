@@ -38,3 +38,18 @@ The Obsidian plugin lives in `src/`; read `docs/engineering/architecture.md` bef
 - **Limits:** 400 lines of code per source file, 450 per test file (ESLint `max-lines`).
 - **Release:** bump the version through a pull request (`npm version <x.y.z> --no-git-tag-version`), then start the workflow `Release` on `main` with the input `version`; it creates the tag and the GitHub release. A release publishes: only when the owner asked for it. Steps: `docs/engineering/releasing.md`.
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `test:`, `build:`, `ci:`, `docs:`, `chore:`).
+
+Before you answer, list what you'd need to know that I haven't told you.
+End every answer with a "## 80/20" section, placed last, with a line (---) above it. Bottom line only, nothing new. Show a line only when it has real content:
+
+✅ Result: always. One line.
+👉 Next: only if I must do something.
+Numbered, action in bold.
+❓ Decide: only if the choice is mine.
+⚠️ Watch out: only a real risk.
+🔀 Git: only if a repo changed.
+💯 Confidence: What would it take to move you to 100%?
+
+Bold the key actions, so the bold text alone is the answer.
+
+After a coding session: Summarize or GTFO! Give me a traffic-light (🟢🟡🔴) and summarize what changed and how much you need to care.

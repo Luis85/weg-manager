@@ -9,25 +9,37 @@ const byHand = (inputVersion: string, ref = "refs/heads/main") => ({
   ref,
   refName: ref.replace("refs/heads/", ""),
   inputVersion,
+  manifestVersion: "0.3.0",
 });
 const byTag = (refName: string) => ({
   event: "push",
   ref: `refs/tags/${refName}`,
   refName,
   inputVersion: "",
+  manifestVersion: "0.3.0",
 });
 
-const env = (e: ReturnType<typeof byHand>, file: string) => ({
+const env = (
+  e: ReturnType<typeof byHand>,
+  file: string,
+  extra: { PRERELEASE?: string; DRY_RUN?: string } = {},
+) => ({
   EVENT: e.event,
   REF: e.ref,
   REF_NAME: e.refName,
   INPUT_VERSION: e.inputVersion,
   GITHUB_OUTPUT: file,
+  ...extra,
 });
+const MANIFEST = () => "0.3.0";
 
 describe("resolveReleaseTag", () => {
   it("takes the input of a start by hand on main", () => {
     expect(resolveReleaseTag(byHand("0.3.0"))).toBe("0.3.0");
+  });
+
+  it("takes the manifest version for `current`, the default of a start by hand", () => {
+    expect(resolveReleaseTag(byHand("current"))).toBe("0.3.0");
   });
 
   it("takes the tag name of a start by tag", () => {
@@ -63,13 +75,13 @@ describe("runResolve", () => {
 
   it("writes the tag to the step output", () => {
     const file = output();
-    expect(runResolve(env(byHand("0.3.0"), file), () => false)).toBeUndefined();
-    expect(readFileSync(file, "utf8")).toBe("tag=0.3.0\n");
+    expect(runResolve(env(byHand("0.3.0"), file), () => false, MANIFEST)).toBeUndefined();
+    expect(readFileSync(file, "utf8")).toBe("tag=0.3.0\nprerelease=false\npublish=true\n");
   });
 
   it("refuses an existing tag in a start by hand, and writes nothing", () => {
     const file = output();
-    expect(runResolve(env(byHand("0.3.0"), file), (tag) => tag === "0.3.0")).toContain(
+    expect(runResolve(env(byHand("0.3.0"), file), (tag) => tag === "0.3.0", MANIFEST)).toContain(
       "Tag 0.3.0 already exists",
     );
     expect(readFileSync(file, "utf8")).toBe("");
@@ -77,11 +89,28 @@ describe("runResolve", () => {
 
   it("accepts the existing tag of a start by tag", () => {
     const file = output();
-    expect(runResolve(env(byTag("0.3.0"), file), () => true)).toBeUndefined();
-    expect(readFileSync(file, "utf8")).toBe("tag=0.3.0\n");
+    expect(runResolve(env(byTag("0.3.0"), file), () => true, MANIFEST)).toBeUndefined();
+    // A pushed 0.x tag stays a pre-release, as before; a full release is started by hand.
+    expect(readFileSync(file, "utf8")).toBe("tag=0.3.0\nprerelease=true\npublish=true\n");
   });
 
   it("returns the refusal of the version rules", () => {
-    expect(runResolve(env(byHand("x"), output()), () => false)).toContain("bare x.y.z");
+    expect(runResolve(env(byHand("x"), output()), () => false, MANIFEST)).toContain("bare x.y.z");
+  });
+
+  it("marks a start by hand a pre-release only when asked", () => {
+    const file = output();
+    expect(
+      runResolve(env(byHand("current"), file, { PRERELEASE: "true" }), () => false, MANIFEST),
+    ).toBeUndefined();
+    expect(readFileSync(file, "utf8")).toBe("tag=0.3.0\nprerelease=true\npublish=true\n");
+  });
+
+  it("builds a dry run without publishing, also for a version that has a tag", () => {
+    const file = output();
+    expect(
+      runResolve(env(byHand("current"), file, { DRY_RUN: "true" }), () => true, MANIFEST),
+    ).toBeUndefined();
+    expect(readFileSync(file, "utf8")).toBe("tag=0.3.0\nprerelease=false\npublish=false\n");
   });
 });

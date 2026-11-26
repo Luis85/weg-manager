@@ -36,7 +36,7 @@ The Obsidian plugin lives in `src/`; read `docs/engineering/architecture.md` bef
 - **Obsidian guidelines:** no `innerHTML`, no default hotkeys, `console` only in `src/infrastructure/logging/`, listeners through `this.register*` (checked by tests, not lint), command ids without the plugin id. `.vue` files are linted with the obsidianmd rules too; `v-html` is banned.
 - **Effect 4:** services are `Context.Service` classes, errors `Schema.TaggedError`; check `node_modules/effect/dist/*.d.ts` rather than Effect 3 habits.
 - **Limits:** 400 lines of code per source file, 450 per test file (ESLint `max-lines`).
-- **Release:** bump the version through a pull request (`npm version <x.y.z> --no-git-tag-version`), then start the workflow `Release` on `main` with the input `version`; it creates the tag and the GitHub release. A release publishes: only when the owner asked for it. Steps: `docs/engineering/releasing.md`.
+- **Release:** bump the version through a pull request (`npm version <x.y.z> --no-git-tag-version`), then start the workflow `Release` on `main` with `version` (`current` or the bare `x.y.z`), `prerelease` (off: Obsidian's directory reads full releases only) and `dry_run` (on: build and test, publish nothing); it creates the tag and the GitHub release. A release publishes: only when the owner asked for it. No backwards compatibility before 1.0.0. Steps: `docs/engineering/releasing.md`.
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `test:`, `build:`, `ci:`, `docs:`, `chore:`).
 
 Before you answer, list what you'd need to know that I haven't told you.

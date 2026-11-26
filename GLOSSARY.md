@@ -84,6 +84,42 @@ _Avoid_: tour, tutorial, coach mark, tooltip (a tooltip shows on hover every tim
 One thing the board member follows up until it has one checkable result: a promise, a deadline, a question or a task. It belongs to exactly one community, has a number that runs across all communities and is never deleted. Routes say `vorgang`, command ids and code say `matter`.
 _Avoid_: point, item, ticket, issue (an issue is a broken note), task (a to-do is the board member's own step)
 
+**Matter number** (German: Vorgangsnummer):
+The readable number of a matter, one sequence across all communities, shown with the community's short code ("AW 041"). A new matter gets the highest number in the vault plus one; two matters with the same number (after a sync) are an issue. The number is never the identity: references use the matter's id.
+_Avoid_: id, reference number, ticket number
+
+**Matter kind** (German: Vorgangsart):
+What kind of matter it is, from a closed list: `manager_promise` (Zusage Verwaltung), `third_party_promise` (Zusage Dritter), `board_deadline` (Frist Beirat), `legal_deadline` (Frist gesetzlich), `question` (Frage), `board_task` (Aufgabe Beirat).
+_Avoid_: type, category
+
+**Matter status** (German: Bearbeitungsstand):
+Where a matter stands: `open` (offen), `unclear` (ungeklärt), `done` (erledigt), `obsolete` (hinfällig). "Not kept" (nicht eingehalten) is no status but a rating of the board's own.
+_Avoid_: state, phase, rating
+
+**Topic** (German: Thema):
+A short word or phrase that groups matters, such as "Beleuchtung". It bundles matters without tying their status together.
+_Avoid_: tag, category, subject
+
+**Outcome** (German: Zusage, erwartetes Ergebnis):
+The one result a matter is done with, in one sentence.
+_Avoid_: promise (in code), goal, deliverable
+
+**Next step** (German: nächster Schritt):
+The concrete next action on a matter.
+_Avoid_: todo (a to-do is the board member's own step), action item
+
+**Source** (German: Quelle):
+Where a matter comes from, in short: a mail, minutes, a meeting, a talk. `unknown` is allowed and shown as a source gap, so capturing never blocks.
+_Avoid_: origin (that is how a matter came about: import, split, merge), reference
+
+**Check mark** (German: Prüfvermerk):
+A hint the plugin computes and never stores: `overdue` (überfällig) when an open or unclear matter's due date has passed, `ask_for_date` (Termin erfragen) when an open matter has no due date.
+_Avoid_: flag, warning, rating
+
+**Follow-up date** (German: Wiedervorlage):
+The board member's own date to look at a matter again. It never changes the due date.
+_Avoid_: reminder, due date, deadline
+
 **Contact** (German: Kontakt):
 A person or a company the board member deals with, kept as one note of type `contact` in the folder `Kontakte`. A contact has a role in one or more communities; the role gives it no authority.
 _Avoid_: addressee, stakeholder, user, person (a person is one kind of contact)

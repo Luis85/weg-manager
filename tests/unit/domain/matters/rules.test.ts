@@ -35,6 +35,10 @@ const input = (change: Partial<MatterInput> = {}): MatterInput => ({
   next_step: "Nachfragen.",
   message_ref: "",
   link: "",
+  split_from_id: "",
+  split_into_ids: [],
+  merged_into_id: "",
+  merged_from_ids: [],
   ...change,
 });
 

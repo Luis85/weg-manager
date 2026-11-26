@@ -17,6 +17,8 @@ const ENTRY_KINDS = [
   "status_change",
   "assessment",
   "note",
+  "split",
+  "merge",
 ] as const;
 export type EntryKind = (typeof ENTRY_KINDS)[number];
 
@@ -53,6 +55,8 @@ export type HistoryEntry = {
   readonly status?: MatterStatus | undefined;
   /** The due date a `new_date` entry replaced, or `none` when there was none (PBI-09). */
   readonly previous?: string | undefined;
+  /** The other matters a `split` or `merge` entry names, by id (PBI-06, PBI-07). */
+  readonly related?: readonly string[] | undefined;
   readonly source?: string | undefined;
   readonly corrects?: string | undefined;
   readonly recorded_on: CalendarDay;
@@ -74,6 +78,7 @@ export const formatEntry = (entry: HistoryEntry): string => {
     ["actor", entry.actor],
     ["status", entry.status],
     ["previous", entry.previous],
+    ["related", entry.related?.join(" ")],
     ["source", entry.source === undefined ? undefined : clean(entry.source)],
     ["corrects", entry.corrects],
     ["recorded", entry.recorded_on],
@@ -121,6 +126,9 @@ const parseItem = (line: string): HistoryEntry | undefined => {
     actor,
     ...(isStatus(status) ? { status } : {}),
     ...(fields.has("previous") ? { previous: fields.get("previous") } : {}),
+    ...(fields.has("related")
+      ? { related: (fields.get("related") ?? "").split(" ").filter(Boolean) }
+      : {}),
     ...(fields.has("source") ? { source: fields.get("source") } : {}),
     ...(fields.has("corrects") ? { corrects: fields.get("corrects") } : {}),
     recorded_on: recorded,

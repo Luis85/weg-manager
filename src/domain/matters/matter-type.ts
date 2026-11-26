@@ -5,6 +5,7 @@ import {
   lineOfText,
   number,
   reference,
+  references,
   required,
   text,
   type RecordValues,
@@ -79,6 +80,11 @@ export const matterType = defineNoteType({
     next_step: required(text({ schema: lineOfText(TEXT_MAX_LENGTH), issue: "next-step.invalid" })),
     message_ref: text({ schema: lineOfText(TEXT_MAX_LENGTH), issue: "message-ref.invalid" }),
     link: text({ schema: lineOfText(TEXT_MAX_LENGTH), issue: "link.invalid" }),
+    // Lineage (PBI-06, PBI-07): where a part came from, what a split or merged matter became.
+    split_from_id: reference("matter"),
+    split_into_ids: references("matter"),
+    merged_into_id: reference("matter"),
+    merged_from_ids: references("matter"),
   },
   migrations: {},
 });

@@ -53,6 +53,10 @@ describe("the matter note type (weg-manager.matter/v1)", () => {
       "next_step",
       "message_ref",
       "link",
+      "split_from_id",
+      "split_into_ids",
+      "merged_into_id",
+      "merged_from_ids",
     ]);
   });
 
@@ -118,6 +122,8 @@ describe("the matter note type (weg-manager.matter/v1)", () => {
       [{ source: "" }, "source", "source.invalid"],
       [{ next_step: "N".repeat(301) }, "next_step", "next-step.invalid"],
       [{ due_kind: "follow_up" }, "due_kind", "due-kind.unknown"],
+      [{ split_into_ids: [AW] }, "split_into_ids", "field.references"],
+      [{ merged_into_id: FIRM }, "merged_into_id", "field.reference"],
       [{ due_checked: "ja" }, "due_checked", "due-checked.unknown"],
       [{ due_source: "S".repeat(101) }, "due_source", "due-source.invalid"],
     ];

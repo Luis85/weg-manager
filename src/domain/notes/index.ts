@@ -4,6 +4,7 @@ export { markDuplicateIds } from "./duplicates";
 export {
   checkbox,
   date,
+  isCalendarDate,
   lineOfText,
   list,
   number,

@@ -1,5 +1,8 @@
 import type {
   CheckMark,
+  EntryIssue,
+  EntryKind,
+  StatusChangeIssue,
   MatterFieldIssue,
   MatterKey,
   MatterKind,
@@ -61,7 +64,51 @@ export type MattersCatalog = {
     readonly noContacts: string;
     readonly noCommunities: string;
   };
+  /** The history of a matter and its status change (PBI-08, PBI-12). */
+  readonly history: {
+    readonly show: string;
+    readonly hide: string;
+    showLabel(name: string): string;
+    readonly title: string;
+    readonly loading: string;
+    readonly empty: string;
+    readonly kinds: Readonly<Record<EntryKind, string>>;
+    readonly board: string;
+    readonly unknownDay: string;
+    /** An entry's line under its text: kind, who, source, when recorded. */
+    meta(kind: string, actor: string, source: string | undefined, recorded: string): string;
+    statusTo(status: string): string;
+    readonly corrected: string;
+    correction(of: string): string;
+    readonly unreadable: string;
+    readonly add: string;
+    readonly addTitle: string;
+    readonly kind: string;
+    readonly text: string;
+    readonly day: string;
+    readonly dayHint: string;
+    readonly actor: string;
+    readonly source: string;
+    readonly corrects: string;
+    readonly noCorrection: string;
+    readonly save: string;
+    readonly change: string;
+    readonly changeTitle: string;
+    readonly to: string;
+    readonly reason: string;
+    readonly reasonHint: string;
+    readonly sourceForClosing: string;
+    readonly doneOn: string;
+    readonly apply: string;
+    readonly cancel: string;
+    readonly entryIssues: Readonly<Record<EntryIssue, string>>;
+    readonly statusIssues: Readonly<Record<StatusChangeIssue, string>>;
+  };
   readonly missing: Partial<Readonly<Record<MatterKey, string>>>;
   readonly issues: IssueSentences<MatterFieldIssue>;
-  readonly errors: { readonly invalid: Text };
+  readonly errors: {
+    readonly invalid: Text;
+    readonly invalidEntry: Text;
+    readonly invalidStatusChange: Text;
+  };
 };

@@ -10,5 +10,9 @@ export const describeMattersError = (
   switch (error._tag) {
     case "InvalidMatterError":
       return { severity: "warning", ...messages.errors.invalid };
+    case "InvalidHistoryEntryError":
+      return { severity: "warning", ...messages.errors.invalidEntry };
+    case "InvalidStatusChangeError":
+      return { severity: "warning", ...messages.errors.invalidStatusChange };
   }
 };

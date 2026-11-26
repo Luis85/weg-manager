@@ -1,0 +1,132 @@
+import { assert, describe, it } from "@effect/vitest";
+import { Effect } from "effect";
+import {
+  InvalidHistoryEntryError,
+  InvalidStatusChangeError,
+  addHistoryEntry,
+  changeStatus,
+  matterHistory,
+  matterList,
+} from "../../../../src/application/matters";
+import { HISTORY_HEADING } from "../../../../src/domain/matters";
+import {
+  FOLDER,
+  matterNote,
+  mattersFixture,
+  ready,
+  stored,
+} from "../../../support/matters/fixture";
+
+const PATH = `${FOLDER}/A.md`;
+const first = Effect.map(matterList, ({ records }) => {
+  const [matter] = records;
+  if (matter === undefined) throw new Error("no matter");
+  return matter;
+});
+
+describe("matterHistory and addHistoryEntry", () => {
+  it.effect("adds an entry to the section, recorded today, and reads it back", () => {
+    const fixture = mattersFixture();
+    fixture.memory.seed(PATH, matterNote(5), "Eigene Notiz\n");
+    return Effect.gen(function* () {
+      yield* ready;
+      const matter = yield* first;
+      assert.deepStrictEqual(yield* matterHistory(matter), []);
+      yield* addHistoryEntry(matter, {
+        kind: "request",
+        text: "Anfrage per Mail",
+        occurred_on: "2026-11-20",
+        actor: "board",
+        source: "Mail",
+      });
+      const body = fixture.memory.body(PATH) ?? "";
+      assert.isTrue(
+        body.startsWith(
+          `Eigene Notiz\n\n${HISTORY_HEADING}\n\n- 2026-11-20 Anfrage per Mail [kind:: request]`,
+        ),
+      );
+      assert.deepStrictEqual(
+        (yield* matterHistory(matter)).map((line) =>
+          line.kind === "entry" ? [line.entry.text, line.entry.recorded_on] : [],
+        ),
+        [["Anfrage per Mail", "2026-11-26"]],
+      );
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("refuses an entry without text and writes nothing", () => {
+    const fixture = mattersFixture();
+    fixture.memory.seed(PATH, matterNote(5), "");
+    return Effect.gen(function* () {
+      yield* ready;
+      const error = yield* Effect.flip(
+        addHistoryEntry(yield* first, {
+          kind: "note",
+          text: " ",
+          occurred_on: "",
+          actor: "board",
+          source: "",
+        }),
+      );
+      assert.deepStrictEqual(error, new InvalidHistoryEntryError({ issues: ["text.missing"] }));
+      assert.strictEqual(fixture.memory.body(PATH), "");
+    }).pipe(Effect.provide(fixture.layer));
+  });
+});
+
+describe("changeStatus", () => {
+  it.effect("writes the status, the done day and the entry in one write (PBI-08)", () => {
+    const fixture = mattersFixture();
+    fixture.memory.seed(PATH, matterNote(5), "");
+    return Effect.gen(function* () {
+      yield* ready;
+      yield* changeStatus(yield* first, {
+        to: "done",
+        reason: "Lampe ersetzt, Foto per Mail",
+        source: "Mail",
+        done_on: "2026-11-25",
+      });
+      const written = (yield* stored(PATH)).frontmatter;
+      assert.deepStrictEqual([written["status"], written["done_on"]], ["done", "2026-11-25"]);
+      const body = fixture.memory.body(PATH) ?? "";
+      assert.include(
+        body,
+        "- 2026-11-25 Lampe ersetzt, Foto per Mail [kind:: status_change] [actor:: board] [status:: done] [source:: Mail] [recorded:: 2026-11-26]",
+      );
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("reopens a done matter with a reason and drops its done day (criterion 3)", () => {
+    const fixture = mattersFixture();
+    fixture.memory.seed(PATH, matterNote(5, { status: "done", done_on: "2026-11-25" }), "");
+    return Effect.gen(function* () {
+      yield* ready;
+      yield* changeStatus(yield* first, {
+        to: "open",
+        reason: "Wieder defekt",
+        source: "",
+        done_on: "",
+      });
+      const written = (yield* stored(PATH)).frontmatter;
+      assert.strictEqual(written["status"], "open");
+      assert.isFalse(Object.hasOwn(written, "done_on"));
+      assert.include(
+        fixture.memory.body(PATH) ?? "",
+        "- 2026-11-26 Wieder defekt [kind:: status_change] [actor:: board] [status:: open]",
+      );
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect("refuses to close a matter without a source and writes nothing", () => {
+    const fixture = mattersFixture();
+    fixture.memory.seed(PATH, matterNote(5), "");
+    return Effect.gen(function* () {
+      yield* ready;
+      const error = yield* Effect.flip(
+        changeStatus(yield* first, { to: "obsolete", reason: "entfällt", source: "", done_on: "" }),
+      );
+      assert.deepStrictEqual(error, new InvalidStatusChangeError({ issues: ["source.missing"] }));
+      assert.strictEqual((yield* stored(PATH)).frontmatter["status"], "open");
+    }).pipe(Effect.provide(fixture.layer));
+  });
+});

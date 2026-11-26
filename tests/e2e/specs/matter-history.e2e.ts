@@ -97,6 +97,23 @@ describe("matters: history and status change", function () {
     expect(items[1]).toMatch(/^- \? Rechnung folgt \[kind:: note\] \[actor:: board\]/);
   });
 
+  it("changes the due date with a reason, the earlier one kept (PBI-09)", async function () {
+    const root = browser.$(ROOT);
+    await root.$("[data-testid=due-change]").click();
+    await root.$("[data-testid=due-on]").setValue("2026-12-15");
+    await root.$("[data-testid=due-kind]").selectByAttribute("value", "promise");
+    await root.$("[data-testid=due-reason]").setValue("Neue Zusage");
+    await root.$("[data-testid=due-apply]").click();
+    await expect(root.$("[data-testid=due-form]")).not.toExist();
+    await browser.waitUntil(async () => ((await fileText(PATH)) ?? "").includes("new_date"));
+    const text = (await fileText(PATH)) ?? "";
+    expect(text).toContain("due_on: 2026-12-15\n");
+    expect(text).toContain("due_kind: promise\n");
+    expect(text).toMatch(
+      /- \d{4}-\d{2}-\d{2} Neue Zusage \[kind:: new_date\] \[actor:: board\] \[previous:: none\]/,
+    );
+  });
+
   it("logged no error or warning from the plugin and no uncaught error", async function () {
     expect(await pluginProblems()).toEqual([]);
   });

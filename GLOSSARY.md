@@ -116,6 +116,14 @@ _Avoid_: origin (that is how a matter came about: import, split, merge), referen
 A hint the plugin computes and never stores: `overdue` (überfällig) when an open or unclear matter's due date has passed, `ask_for_date` (Termin erfragen) when an open matter has no due date.
 _Avoid_: flag, warning, rating
 
+**Due kind** (German: Art des Termins):
+What a due date is: `promise` (Zusage), `contractual` (vertraglich), `formal_deadline` (formelle Frist), `requested_reply` (gewünschte Antwort). With `due_source` (who gave it, where) and `due_checked` (`confirmed`, `proposed`, `unknown`).
+_Avoid_: deadline type, priority
+
+**Business time zone** (German: Zeitzone Europe/Berlin):
+The zone "today" and "overdue" are counted in: Europe/Berlin, wherever the device is (PBI-09).
+_Avoid_: local time, device time
+
 **Follow-up date** (German: Wiedervorlage):
 The board member's own date to look at a matter again. It never changes the due date.
 _Avoid_: reminder, due date, deadline

@@ -24,7 +24,7 @@ Die Felder sind Bestandteile des betroffenen Objekts, keine eigene Note (siehe O
 | Schema | – | – | – | Kein eigenes Schema; Teil von `weg-manager.matter/v1` beziehungsweise des To-do-Schemas. |
 | Zugesagt am | `promised_on` | Datum | O | WCS `Vorgang.zugesagtAm`. Tag der Zusage. |
 | Bis wann | `due_on` | Datum | P* | WCS `Vorgang.bisWann`. Geltender Termin. *Fehlt er, Prüfvermerk „Termin erfragen“. |
-| Bedeutung | `due_kind` | Text | O | Unsere Ergänzung: was der Termin ist (siehe Wertelisten). |
+| Bedeutung | `due_kind` | Text | O | Unsere Ergänzung: was der Termin ist (siehe Wertelisten; entschieden 26.11.2026, [[DV-03 - Vorgang v1]]). Die eigene Wiedervorlage ist kein Wert hier, sondern `follow_up_on`. |
 | Herkunft | `due_source` | Text | O | Unsere Ergänzung: wer den Termin genannt hat und wo (Quelle). |
 | Prüfstand | `due_checked` | Text | O | Unsere Ergänzung: bestätigt, vorgeschlagen oder unbekannt. |
 | Uhrzeit und Zeitzone | – | Text | O | Nur wenn genannt. Ohne Uhrzeit gilt Tagesende Europe/Berlin. |
@@ -36,9 +36,9 @@ Die Felder sind Bestandteile des betroffenen Objekts, keine eigene Note (siehe O
 
 ## Wertelisten
 
-**Bedeutung (geschlossen, Vorschlag):** Zusage (`promise`), vertraglicher Termin (`contractual`), angegebene formelle Frist (`formal_deadline`), gewünschter Antworttermin (`requested_reply`), eigene Wiedervorlage (`follow_up`).
+**Bedeutung (geschlossen, entschieden 26.11.2026):** Zusage (`promise`), vertraglicher Termin (`contractual`), angegebene formelle Frist (`formal_deadline`), gewünschter Antworttermin (`requested_reply`). Die eigene Wiedervorlage ist `follow_up_on`, kein Wert dieser Liste.
 
-**Prüfstand (geschlossen, Vorschlag):** bestätigt (`confirmed`), vorgeschlagen (`proposed`), unbekannt (`unknown`).
+**Prüfstand (geschlossen, entschieden 26.11.2026):** bestätigt (`confirmed`), vorgeschlagen (`proposed`), unbekannt (`unknown`).
 
 ## Beziehungen
 

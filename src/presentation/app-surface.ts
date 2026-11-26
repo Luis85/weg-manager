@@ -6,6 +6,7 @@ import {
   type SettingsSection,
 } from "../application/routes";
 import { communitiesScreens } from "./communities/screens";
+import { contactsScreens } from "./contacts/screens";
 import { notesScreens } from "./notes/screens";
 import type {
   ModuleScreens,
@@ -26,6 +27,7 @@ export const MODULE_SCREENS: { readonly [Name in AppModuleName]: ModuleScreens<N
   shell: shellScreens,
   notes: notesScreens,
   communities: communitiesScreens,
+  contacts: contactsScreens,
 };
 
 /** The modules' screens in module order (`APP_MODULES`). */

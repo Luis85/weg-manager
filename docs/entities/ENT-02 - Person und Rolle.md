@@ -25,7 +25,7 @@ Eine Person oder Organisation mit einer Rolle in einer Gemeinschaft, etwa die Ve
 | Firma | `organization_id` | Text | O | Bei Personen die `id` der Firmen-Notiz, für die sie handeln (entschieden 23.11.2026). |
 | Rollen je Gemeinschaft | `roles` | Liste | P | WCS „rolle“ und „gemeinschaft“: je Eintrag `<id der Gemeinschaft>:<Rolle>`, etwa Beirat in der WEG und Eigentümer in der Tiefgarage (O-ENT02-1). Kodierte Liste, damit die Schlüssel flach bleiben ([[docs/adr/0007-vault-data-access.md\|ADR 0007]], Nachtrag). Ein fehlerhafter Eintrag ist ein Problem. |
 | Privat | `private` | Checkbox | P | Wahr für Eigentümer und andere Privatpersonen. Aus privaten Notizen übernimmt das Plugin nie Inhalte in Entwürfe, Karten, Berichte oder Freigaben; ein Agent liest sie nicht (O-ENT02-2). |
-| Kontakt | `email`, `phone`, `address`, `preferred_channel` | Text | O | WCS „kontakt“. Bei privaten Personen nur, wo nötig; nie in geteilten Bereichen. |
+| Kontakt | `email`, `phone` (in v1), `address`, `preferred_channel` (später) | Text | O | WCS „kontakt“. Bei privaten Personen nur, wo nötig; nie in geteilten Bereichen. |
 | Sprache | `language` | Text | O | WCS „sprache“: `de` oder `de+en`. Eigentümer immer `de+en`. |
 | Notiz | Body | Text | O | Freier Text des Menschen. |
 | Nicht mehr verwendet | `inactive` | Checkbox | O | Kennzeichnet einen Kontakt, der nicht mehr genutzt wird. Historische Bezüge bleiben. |

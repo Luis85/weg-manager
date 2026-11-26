@@ -73,3 +73,12 @@ P FR-V1; US-03. Quellkürzel: 01-Quellabdeckung (historische Quelle: Git-Commit 
 ## Refinementgrenze
 
 Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe sind offen. Anwendbare Qualitätsanforderungen und offene Entscheidungen im [[02-MVP-PRD]] gehören zur Abnahme.
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen ersten Schnitt.
+  - **Freigabe (Kern-Schnitt):** ein neues Modul `matters`. Ein Vorgang wird als Notiz angelegt und bearbeitet, mit den Pflichtfeldern aus [[ENT-04 - Vorgang]] und der Wiedervorlage. Dazu kommt eine Liste unter der Route „Vorgänge“ mit Suche und Filtern nach Thema, Bearbeitungsstand, Gemeinschaft und Verantwortlichem (Kriterium 3) und dem berechneten Prüfvermerk („überfällig“, „Termin erfragen“). Verlauf, eigene Notiz (Kriterium 5), Statuswechsel mit Anlass ([[PBI-08 - Bearbeitungsstand bewusst ändern]]) und die Vorgangsakte als eigene Seite folgen danach.
+  - **Wer:** `responsible_id` verweist auf einen Kontakt ([[PBI-02 - Personen und Rollen zuordnen]]), kein freier Text.
+  - **Verlauf (O-ENT04-4):** als datierte Liste unter der Überschrift „Verlauf“ im Text der Vorgangsnotiz. Das Plugin schreibt nur in diesen Abschnitt; der Abschnittsvertrag kommt mit dem Verlauf.
+  - **Vorgangsnummer:** die höchste Nummer im Vault plus eins. Eine doppelte Nummer, etwa nach einem Sync, erscheint als Problem, und der Mensch vergibt eine neue.
+

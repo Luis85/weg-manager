@@ -19,12 +19,12 @@ Ein einzeln nachverfolgbares und erledigbares Anliegen mit genau einem überprü
 | Feld | Schlüssel | Typ | Pflicht | Bedeutung und Regel |
 | --- | --- | --- | --- | --- |
 | Technische Identität | `id` | Text | P | `matter-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]]. Verweise anderer Notes laufen über `matter_id`. |
-| Schema | `schema` | Text | P | `weg-manager.matter/v1` (vorgeschlagen). |
+| Schema | `schema` | Text | P | `weg-manager.matter/v1`. |
 | Vorgangsnummer | `number` | Zahl | P | WCS `nr`. Eine Nummernfolge über alle Gemeinschaften, fortlaufend, nie neu vergeben, eindeutig auch bei parallelen Läufen (FR-V12). Angezeigt mit Kürzel, etwa „AW 041“. Lesbare Nummer, nicht die Identität. Beim Import übernommene Fremdnummern bleiben als Herkunft erhalten (AT-B02). |
 | Art | `kind` | Text | P | WCS `art`. Wert aus der geschlossenen Liste (siehe Wertelisten). |
 | Thema | `topic` | Text | P | WCS `thema`. Kurz, z. B. „Beleuchtung“ ([[ENT-03 - Thema]]). |
 | Zusage (Ergebnis) | `outcome` | Text | P | WCS `zusage`. Ein Satz, der das erwartete Ergebnis nennt. Ein Vorgang = ein Ergebnis, keine Bündel. |
-| Wer | `responsible` | Text | P | WCS `wer`. Verantwortliche Rolle, auch außerhalb der Verwaltung ([[ENT-02 - Person und Rolle]]). Die Eskalationsleiter gilt nur für die Verwaltung (FR-V10). Später ergänzt durch `person_id`. |
+| Wer | `responsible_id` | Text | P | WCS `wer`. Verweis auf den verantwortlichen Kontakt, auch außerhalb der Verwaltung ([[ENT-02 - Person und Rolle]]; entschieden 26.11.2026). Die Eskalationsleiter gilt nur für die Verwaltung (FR-V10). |
 | Zugesagt am | `promised_on` | Datum | O | WCS `zugesagtAm`. Tag der Zusage. |
 | Bis wann | `due_on` | Datum | P* | WCS `bisWann`. Der geltende Termin. *Fehlt er, setzt das System den Prüfvermerk „Termin erfragen“ (FR-V2). Bedeutung und Herkunft: [[ENT-05 - Termin]]. |
 | Status | `status` | Text | P | WCS `status` ohne „nicht eingehalten“. Wert aus der geschlossenen Liste. „nicht eingehalten“ ist eine getrennte Bewertung ([[ENT-16 - Beiratsbewertung]]). |
@@ -83,7 +83,7 @@ Zusage, Thema und nächster Schritt erscheinen in Karten und Entwürfen. Sie ent
 - **O-ENT04-1 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: „nicht eingehalten“ ist kein Status am Vorgang, sondern eine getrennte Bewertung in [[ENT-16 - Beiratsbewertung]]. Abweichung vom WCS.
 - **O-ENT04-2 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Die WCS-Liste bekommt die Art „Zusage Dritter“. Mängel, Angebots- und Rechnungsfragen sind Fragen oder Aufgaben Beirat mit Thema. Die Eskalationsleiter gilt nur für Zusagen der Verwaltung.
 - **O-ENT04-3 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: eine Nummernfolge über alle Gemeinschaften, wie im WCS. Gleiche Fremdnummern aus einem Import (AT-B02) bleiben als Herkunftsnummer erhalten und bekommen eine neue Vorgangsnummer.
-- **O-ENT04-4:** Wie wird der Verlauf gespeichert: als Abschnitt im Body oder als eigene Notes mit `matter_id`? Eine Liste von Objekten ist im Eigenschaftenbereich von Obsidian nicht bearbeitbar (ADR 0007).
+- **O-ENT04-4 (erledigt):** Entschieden am 26.11.2026 vom Produktverantwortlichen: Der Verlauf steht als datierte Liste unter der Überschrift „Verlauf“ im Text der Vorgangsnotiz; das Plugin schreibt nur in diesen Abschnitt ([[PBI-05 - Einen Vorgang erfassen und wiederfinden]]).
 - **O-ENT04-5 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: Die Quelle ist Pflicht, „unbekannt“ ist als sichtbare Lücke erlaubt, damit das Erfassen nie blockiert ([[DF-02 - Bearbeitung, Terminprüfung und Bewertung]]).
 - **O-ENT04-6:** Aufgabe Beirat und To-do: Doppelpflege vermeiden. Dieselbe Aufgabe wird entweder als Vorgang geführt oder als To-do mit Vorgangsbezug; es besteht keine Pflicht zu zwei Datensätzen.
 

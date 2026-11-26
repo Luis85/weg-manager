@@ -12,8 +12,14 @@ import {
 import { localDay, untilNextLocalMidnight, type TimeZone } from "../../../domain/shell";
 
 /**
- * The clock the adapter reads, the machine's time zone (an IANA name) and the timers it sets; the
- * window's, unless a test hands in one.
+ * The zone "today" is counted in (PBI-09 criterion 3, owner decision 26.11.2026): Europe/Berlin,
+ * wherever the machine is, so a due date without a time is overdue from the next day there.
+ */
+export const BUSINESS_TIME_ZONE = "Europe/Berlin";
+
+/**
+ * The clock the adapter reads, the time zone it counts days in (an IANA name) and the timers it
+ * sets; the window's, unless a test hands in one.
  */
 export type DayClock = {
   now(): Date;
@@ -24,8 +30,7 @@ export type DayClock = {
 
 const windowClock: DayClock = {
   now: () => new Date(),
-  // Read on each look, so a zone the user changes while Obsidian runs counts once the platform has it.
-  zone: () => Intl.DateTimeFormat().resolvedOptions().timeZone,
+  zone: () => BUSINESS_TIME_ZONE,
   setTimeout: (run, ms) => window.setTimeout(run, ms),
   clearTimeout: (id) => window.clearTimeout(id),
 };
@@ -53,7 +58,7 @@ const usableZone = (clock: DayClock): TimeZone => {
 };
 
 /**
- * `Today` over the machine's clock, in its time zone (`localDay`). One timer at a time, set
+ * `Today` over the machine's clock, the day in `BUSINESS_TIME_ZONE` (`localDay`). One timer at a time, set
  * to the next local midnight but never further than `DAY_CHECK_MAX_MS`; each time it fires the
  * adapter reads the clock, publishes a new day and sets the next. The timer is cleared by
  * `plugin.register`, synchronously in Obsidian's `unload()`, and when the runtime's scope closes, so

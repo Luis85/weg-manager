@@ -28,6 +28,12 @@ export type MenuEntry<R extends RouteLike> = {
   label(catalog: Catalog): string;
   /** An `i-lucide-*` icon; its `lucide:*` name must be in `SHELL_ICONS`. */
   readonly icon: string;
+  /**
+   * The entry's place in the navigation, smallest first, as in the sitemap (VIEW-00, owner
+   * decision 26.11.2026): Lage 10, Woche 20, Vorgänge 30, Postausgang 40, Kontakte 50. The
+   * settings entry comes last.
+   */
+  readonly order: number;
 };
 
 /**
@@ -96,6 +102,7 @@ export const frameMenu = <R extends RouteLike>(
     route,
     label: (catalog) => catalog.shell.frame.settings,
     icon: "i-lucide-settings",
+    order: Number.POSITIVE_INFINITY,
   };
   return [...definition.menu, settings];
 };

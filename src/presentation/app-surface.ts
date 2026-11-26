@@ -76,7 +76,7 @@ const context = frameContextOf(
 export const appSurface: SurfaceDefinition<Route> = {
   ...appRoutes,
   screen: (route) => screens[route.name],
-  menu: parts.flatMap((part) => part.menu ?? []),
+  menu: parts.flatMap((part) => part.menu ?? []).toSorted((a, b) => a.order - b.order),
   ...(context === undefined ? {} : { context }),
   sections: Object.fromEntries(SETTINGS_SECTIONS.map((id) => [id, sectionParts[id]])),
 };

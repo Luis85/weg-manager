@@ -226,30 +226,30 @@ describe("Today in Obsidian", () => {
     });
   });
 
-  describe("the machine's own clock and zone", () => {
+  describe("the machine's own clock, the day in Europe/Berlin (PBI-09)", () => {
     // No clock handed in: `windowClock`, the one the plugin runs on. The process's zone is set
-    // to one far from UTC, so a UTC day in place of the local one fails here.
+    // to one far from Berlin, so the machine's day in place of Berlin's fails here.
     afterEach(() => {
       vi.useRealTimers();
       process.env["TZ"] = "UTC";
     });
 
-    it.effect("is the local day east of UTC (Kiritimati, UTC+14)", () =>
+    it.effect("is Berlin's day on a machine east of it (Kiritimati, UTC+14)", () =>
       Effect.gen(function* () {
         const { today, scope } = yield* started(
           onMachine("Pacific/Kiritimati", "2026-11-22T12:00:00Z"),
         );
-        assert.strictEqual(yield* today.current, "2026-11-23");
+        assert.strictEqual(yield* today.current, "2026-11-22");
         yield* Scope.close(scope, Exit.void);
       }),
     );
 
-    it.effect("is the local day west of UTC (Los Angeles)", () =>
+    it.effect("is Berlin's day on a machine west of it (Los Angeles)", () =>
       Effect.gen(function* () {
         const { today, scope } = yield* started(
-          onMachine("America/Los_Angeles", "2026-11-22T03:00:00Z"),
+          onMachine("America/Los_Angeles", "2026-11-22T23:30:00Z"),
         );
-        assert.strictEqual(yield* today.current, "2026-11-21");
+        assert.strictEqual(yield* today.current, "2026-11-23");
         yield* Scope.close(scope, Exit.void);
       }),
     );

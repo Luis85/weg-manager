@@ -11,5 +11,12 @@ export const contactsScreens = {
     contacts: () => import("./index").then(({ contactsScreen }) => contactsScreen),
   },
   sections: {},
-  menu: [{ route: CONTACTS, label: (catalog) => catalog.contacts.route, icon: "i-lucide-users" }],
+  menu: [
+    {
+      route: CONTACTS,
+      label: (catalog) => catalog.contacts.route,
+      icon: "i-lucide-users",
+      order: 50,
+    },
+  ],
 } satisfies ModuleScreens<"contacts">;

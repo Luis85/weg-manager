@@ -51,12 +51,14 @@ Der Verlauf ([[PBI-12 - Verlauf nachvollziehen]], [[ENT-06 - Verlaufseintrag]]) 
 | `kind` | ja | `request`, `acknowledgement`, `reply`, `new_date`, `partial`, `fulfilment`, `dispatch`, `status_change`, `assessment` oder `note`. |
 | `actor` | ja | `board` (der Beirat) oder die `id` eines Kontakts. |
 | `status` | bei `status_change` | Der neue Bearbeitungsstand. |
+| `previous` | bei `new_date` | Der bisherige Termin, `none` ohne einen. |
 | `source` | nein | Die Quelle in Kurzform. |
 | `corrects` | nein | Die `id` des Eintrags, den dieser korrigiert. |
 | `recorded` | ja | Der Tag, an dem der Eintrag erfasst wurde. Er ersetzt nie den Tag des Geschehens. |
 | `id` | ja | Acht Zeichen, eindeutig im Vorgang. |
 
 - Das Plugin hängt nur an: Es schreibt einen neuen Eintrag hinter den letzten Eintrag des Abschnitts, legt den Abschnitt am Ende des Textes an, wenn er fehlt, und ändert oder löscht nie einen Eintrag. Eine Korrektur ist ein neuer Eintrag mit `corrects`; der alte erscheint als „korrigiert“.
+- Eine Terminänderung schreibt `due_on`, `due_kind`, `due_source` und `due_checked` (ein leerer Wert wird entfernt) und den Eintrag `new_date` mit dem bisherigen Termin in einem Schritt; sie verlangt einen Anlass. Die Wiedervorlage `follow_up_on` bleibt unberührt ([[PBI-09 - Termin und Wiedervorlage trennen]]).
 - Ein Statuswechsel schreibt `status`, `done_on` (bei `done` gesetzt, sonst entfernt) und den Eintrag `status_change` in einem Schritt. Erledigt und hinfällig verlangen Anlass und Quelle, jeder Wechsel einen Anlass ([[PBI-08 - Bearbeitungsstand bewusst ändern]]).
 - Eckige Klammern im Text schreibt das Plugin als runde, damit sie nicht als Feld gelesen werden; der Text ist eine Zeile.
 - Eine Zeile im Abschnitt, die das Plugin nicht lesen kann (etwa von Hand ohne Felder geschrieben), bleibt und erscheint, wie sie ist. Text außerhalb des Abschnitts gehört dem Menschen.
@@ -77,6 +79,9 @@ Pflicht sind `schema`, `id`, `number`, `community_id`, `kind`, `topic`, `outcome
 | `responsible_id` | Text | Die `id` des verantwortlichen Kontakts ([[DV-02 - Kontakt v1]]). | `contact-9a1d…` |
 | `promised_on` | Datum, optional | `JJJJ-MM-TT`: wann zugesagt wurde. | `2026-11-02` |
 | `due_on` | Datum, optional | `JJJJ-MM-TT`: der geltende Termin. Fehlt er bei einem offenen Vorgang, zeigt das Plugin „Termin erfragen“. | `2026-11-30` |
+| `due_kind` | Text, optional | Was der Termin ist: `promise` (Zusage), `contractual` (vertraglich), `formal_deadline` (angegebene formelle Frist), `requested_reply` (gewünschte Antwort). | `promise` |
+| `due_source` | Text, optional | Wer den Termin genannt hat und wo, eine Zeile, höchstens 100 Zeichen. | `Mail der Verwaltung` |
+| `due_checked` | Text, optional | `confirmed` (bestätigt), `proposed` (vorgeschlagen) oder `unknown`. | `confirmed` |
 | `follow_up_on` | Datum, optional | `JJJJ-MM-TT`: eigene Wiedervorlage. Ändert nie `due_on`. | `2026-11-20` |
 | `status` | Text | `open`, `unclear`, `done` oder `obsolete`. | `open` |
 | `done_on` | Datum, optional | `JJJJ-MM-TT`. Pflicht bei `status: done`, sonst leer. | `2026-12-01` |
@@ -91,6 +96,8 @@ Pflicht sind `schema`, `id`, `number`, `community_id`, `kind`, `topic`, `outcome
 - Beim Anlegen vergibt das Plugin die höchste `number` aller Vorgänge im Vault plus eins. Haben nach einem Sync zwei Vorgänge dieselbe Nummer, zeigt das Plugin `number.duplicate` an beiden; der Mensch gibt einem eine neue. Eine Nummer wird nie neu vergeben, solange ein Vorgang sie trägt.
 - Ein Vorgang wird nie gelöscht.
 - `v1` ist die Version dieses Vertrags; eine Notiz mit höherer Version zeigt das Plugin schreibgeschützt.
+- Die Schlüssel `due_kind`, `due_source`, `due_checked` und das Verlaufsfeld `previous` kamen am 26.11.2026 dazu, vor dem ersten Release mit Vorgängen; sie sind optional und bleiben deshalb in `v1`.
+- „Heute“ und damit „überfällig“ zählt das Plugin in Europe/Berlin: Ein Termin ohne Uhrzeit ist ab dem Folgetag dort überfällig.
 
 ## Ablage und Dateiname
 
@@ -116,6 +123,8 @@ Pflicht sind `schema`, `id`, `number`, `community_id`, `kind`, `topic`, `outcome
 | `topic.invalid`, `outcome.invalid`, `source.invalid`, `next-step.invalid`, `message-ref.invalid`, `link.invalid` | Kein Text, leer, zu lang oder mehrzeilig. | Wie oben. |
 | `outcome.too-long` | Nur beim Speichern: Der Dateiname hätte mehr als 255 Bytes. | Zeigt das Problem am Feld und schreibt nichts. |
 | `field.date` | Ein Datum ist kein gültiger Tag `JJJJ-MM-TT`. | Wie oben. |
+| `due-kind.unknown`, `due-checked.unknown` | Kein Wert der Liste. | Wie oben. |
+| `due-source.invalid` | Kein Text, leer, zu lang oder mehrzeilig. | Wie oben. |
 | `done-on.missing` | `status: done` ohne `done_on`. | Wie oben. |
 | `done-on.not-done` | `done_on` bei einem Status außer `done`. | Wie oben. |
 | `schema.newer`, `id.*`, `schema.malformed`, `frontmatter.unreadable` | Wie bei [[DV-01 - Gemeinschaft v1]]. | Wie dort. |

@@ -27,6 +27,11 @@ const texts = computed(
     ),
 );
 const textOf = (id: string) => texts.value.get(id) ?? id;
+/** The earlier due date of a `new_date` entry, in words. */
+const previousOf = (previous: string | undefined) => {
+  if (previous === undefined) return undefined;
+  return previous === "none" ? t.previousNone : t.previous(previous);
+};
 const shown = computed(() =>
   props.lines.map((line, at) => {
     if (line.kind === "unreadable") return { key: `u${at}`, unreadable: line.line };
@@ -41,6 +46,7 @@ const shown = computed(() =>
       status: entry.status === undefined ? undefined : t.statusTo(catalog.statuses[entry.status]),
       corrected: props.corrected.has(entry.id),
       correction: entry.corrects === undefined ? undefined : t.correction(textOf(entry.corrects)),
+      previous: previousOf(entry.previous),
     };
   }),
 );
@@ -69,8 +75,8 @@ const shown = computed(() =>
           </span>
         </p>
         <p class="wm:text-xs wm:text-muted">{{ line.meta }}</p>
-        <p v-if="line.status || line.correction" class="wm:text-xs">
-          {{ [line.status, line.correction].filter(Boolean).join(" · ") }}
+        <p v-if="line.status || line.correction || line.previous" class="wm:text-xs">
+          {{ [line.status, line.previous, line.correction].filter(Boolean).join(" · ") }}
         </p>
       </template>
     </li>

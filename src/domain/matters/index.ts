@@ -1,5 +1,7 @@
 // The public face of the matters domain (ADR 0006): other modules and layers import only this.
 export {
+  DUE_CHECKS,
+  DUE_KINDS,
   MATTER_KINDS,
   MATTER_STATUSES,
   TEXT_MAX_LENGTH,
@@ -7,6 +9,8 @@ export {
   UNKNOWN_SOURCE,
   matterType,
   shownNumber,
+  type DueCheck,
+  type DueKind,
   type MatterFields,
   type MatterKey,
   type MatterKind,
@@ -41,3 +45,4 @@ export {
   type HistoryLine,
   type StatusChangeIssue,
 } from "./history";
+export { promiseAge, validateDueChange, type DueChangeIssue } from "./rules";

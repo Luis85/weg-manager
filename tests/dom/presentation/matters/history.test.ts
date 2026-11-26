@@ -96,4 +96,33 @@ describe("a matter's history", () => {
     await screen.until(() => expect(entries(screen)[0]).toContain("- am Dienstag angerufen"));
     expect(entries(screen)[0]).toContain(t.unreadable);
   });
+
+  it("changes the due date with a reason and keeps the earlier one in the history (PBI-09)", async () => {
+    const screen = await openMatters(
+      vault(["A.md", matterNote(5, { outcome: "Lampe ersetzt", due_on: "2026-11-30" }), ""]),
+    );
+    await screen.until(() => expect(screen.names()).toEqual(["Lampe ersetzt"]));
+    await screen.click(screen.q("matter-history-toggle"));
+    await screen.until(() => expect(screen.q("due-change")).toBeDefined());
+    await screen.click(screen.q("due-change"));
+    expect((screen.q("due-on") as HTMLInputElement).value).toBe("2026-11-30");
+    await screen.type("due-on", "2026-12-15");
+    await choose(screen.q("due-kind"), "promise");
+    await screen.type("due-reason", "Neue Zusage per Mail");
+    await screen.click(screen.q("due-apply"));
+    await screen.until(() =>
+      expect(screen.q("matter-facts")?.textContent).toContain(
+        `${de.matters.screen.due("2026-12-15")} (Zusage)`,
+      ),
+    );
+    await screen.until(() => expect(entries(screen)[0]).toContain(t.previous("2026-11-30")));
+  });
+
+  it("refuses a due date change without a reason", async () => {
+    const screen = await withHistory();
+    await screen.click(screen.q("due-change"));
+    await screen.click(screen.q("due-apply"));
+    expect(screen.q("due-form")?.textContent).toContain(t.dueIssues["reason.missing"]);
+    expect(screen.notes.body(PATH)).toBe("");
+  });
 });

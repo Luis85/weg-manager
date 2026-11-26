@@ -164,7 +164,7 @@ describe("the frame's settings entry (ADR 0008, amendment 2026-11-22)", () => {
   it("comes after the modules' entries, and is worded in the UI language", async () => {
     const screen = await mounted({
       language: "en",
-      menu: [{ route: START, label: () => "Overview", icon: "i-lucide-info" }],
+      menu: [{ route: START, label: () => "Overview", icon: "i-lucide-info", order: 10 }],
     });
     expect(screen.entries().map((entry) => entry.textContent.trim())).toEqual([
       "Overview",

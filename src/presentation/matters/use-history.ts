@@ -2,6 +2,7 @@ import { useForm } from "@tanstack/vue-form";
 import { computed } from "vue";
 import {
   addHistoryEntry,
+  changeDue,
   changeStatus,
   matterHistory,
   type Matter,
@@ -9,6 +10,7 @@ import {
 import {
   BOARD_ACTOR,
   correctedIds,
+  validateDueChange,
   validateEntry,
   validateStatusChange,
   type EntryIssue,
@@ -113,5 +115,46 @@ export const useStatusForm = (matter: () => Matter, today: string, done: () => v
   const validators = (field: "to" | "reason" | "source" | "done_on") => ({
     onSubmit: issueOf(field),
   });
+  return { t, form, command, validators };
+};
+
+/**
+ * The form that changes the due date with its reason (PBI-09): the new date (blank for none) with
+ * its meaning, origin and check, prefilled with the current ones. TanStack Form whose validators
+ * call `validateDueChange`. `done` runs once the change is written.
+ */
+export const useDueForm = (matter: () => Matter, done: () => void) => {
+  const t = useMessages().matters.history;
+  const command = useCommand(changeDue);
+  const values = matter().values;
+  const defaults: {
+    due_on: string;
+    due_kind: string;
+    due_source: string;
+    due_checked: string;
+    reason: string;
+  } = {
+    due_on: values.due_on ?? "",
+    due_kind: values.due_kind ?? "",
+    due_source: values.due_source ?? "",
+    due_checked: values.due_checked ?? "",
+    reason: "",
+  };
+  const form = useForm({
+    defaultValues: defaults,
+    onSubmit: async ({ value }) => {
+      const outcome = await command.run(matter(), value);
+      if (outcome._tag === "success") done();
+    },
+  });
+  const issueOf =
+    (field: "due_on" | "reason") =>
+    ({ value }: { value: string }) => {
+      const found = validateDueChange({ ...form.state.values, [field]: value }).find(
+        (code) => (code === "reason.missing" ? "reason" : "due_on") === field,
+      );
+      return found === undefined ? undefined : t.dueIssues[found];
+    };
+  const validators = (field: "due_on" | "reason") => ({ onSubmit: issueOf(field) });
   return { t, form, command, validators };
 };

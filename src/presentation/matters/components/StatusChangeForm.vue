@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import UButton from "@nuxt/ui/components/Button.vue";
 import type { Matter } from "../../../application/matters";
 import { MATTER_STATUSES } from "../../../domain/matters";
 import { ChoiceField, TextField } from "../../notes";
-import { ErrorNotice, useMessages } from "../../shell";
+import { useMessages } from "../../shell";
 import { useStatusForm } from "../use-history";
+import PanelFormFooter from "./PanelFormFooter.vue";
 
 /**
  * Changes a matter's status with its reason (PBI-08): the new status, the reason, the source
@@ -84,16 +84,12 @@ const target = form.useSelector((state) => state.values.to);
         />
       </template>
     </form.Field>
-    <ErrorNotice v-if="command.message.value" :message="command.message.value" />
-    <div class="wm:flex wm:justify-end wm:gap-2">
-      <UButton
-        type="button"
-        color="neutral"
-        variant="outline"
-        :label="t.cancel"
-        @click="emit('cancel')"
-      />
-      <UButton type="submit" :label="t.apply" data-testid="status-apply" />
-    </div>
+    <PanelFormFooter
+      :message="command.message.value"
+      :cancel="t.cancel"
+      :apply="t.apply"
+      apply-id="status-apply"
+      @cancel="emit('cancel')"
+    />
   </form>
 </template>

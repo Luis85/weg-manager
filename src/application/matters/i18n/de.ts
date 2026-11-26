@@ -40,6 +40,9 @@ export const mattersDe: MattersCatalog = {
     responsible_id: "Wer",
     promised_on: "Zugesagt am",
     due_on: "Bis wann",
+    due_kind: "Art des Termins",
+    due_source: "Herkunft des Termins",
+    due_checked: "Prüfstand",
     follow_up_on: "Wiedervorlage",
     status: "Bearbeitungsstand",
     done_on: "Erledigt am",
@@ -58,6 +61,18 @@ export const mattersDe: MattersCatalog = {
   },
   statuses: { open: "offen", unclear: "ungeklärt", done: "erledigt", obsolete: "hinfällig" },
   checkMarks: { overdue: "überfällig", ask_for_date: "Termin erfragen" },
+  dueKinds: {
+    promise: "Zusage",
+    contractual: "vertraglich",
+    formal_deadline: "formelle Frist",
+    requested_reply: "gewünschte Antwort",
+  },
+  dueChecks: { confirmed: "bestätigt", proposed: "vorgeschlagen", unknown: "Prüfstand unbekannt" },
+  promisedAgo: (days) => (days === 1 ? "zugesagt vor 1 Tag" : `zugesagt vor ${days} Tagen`),
+  locked: {
+    title: "Stand und Termin",
+    hint: "Ändere sie über „Verlauf“ mit „Stand ändern“ oder „Termin ändern“; so steht der Anlass im Verlauf.",
+  },
   form: {
     createTitle: "Neuer Vorgang",
     editTitle: "Vorgang bearbeiten",
@@ -120,6 +135,19 @@ export const mattersDe: MattersCatalog = {
     doneOn: "Erledigt am",
     apply: "Stand ändern",
     cancel: "Abbrechen",
+    changeDue: "Termin ändern",
+    dueTitle: "Termin ändern",
+    dueOn: "Neuer Termin",
+    dueOnHint: "Leer lassen, wenn kein Termin gilt; dann zeigt der Vorgang „Termin erfragen“.",
+    dueReasonHint: "Warum sich der Termin ändert; der bisherige bleibt im Verlauf.",
+    dueApply: "Termin ändern",
+    previous: (day) => `vorher: ${day}`,
+    previousNone: "vorher: kein Termin",
+    dueIssues: {
+      "reason.missing": "Gib den Anlass an.",
+      "due-on.invalid":
+        "Das ist kein gültiger Tag. Gib ihn als JJJJ-MM-TT ein oder lass das Feld leer.",
+    },
     entryIssues: {
       "text.missing": "Beschreibe, was geschah.",
       "text.invalid": "Fasse den Eintrag in höchstens 500 Zeichen.",
@@ -155,6 +183,11 @@ export const mattersDe: MattersCatalog = {
       "Diesen Bearbeitungsstand kennt das Plugin nicht. Wähle einen aus der Liste.",
     "outcome.too-long": (_, label) =>
       `„${label}“ ergibt einen zu langen Dateinamen, weil manche Zeichen mehr Platz brauchen. Kürze den Text.`,
+    "due-kind.unknown": () =>
+      "Diese Art des Termins kennt das Plugin nicht. Wähle eine aus der Liste.",
+    "due-source.invalid": (_, label) => oneLine(label, 100),
+    "due-checked.unknown": () =>
+      "Diesen Prüfstand kennt das Plugin nicht. Wähle einen aus der Liste.",
     "done-on.missing": () => "Ein erledigter Vorgang braucht das Datum, an dem er erledigt wurde.",
     "done-on.not-done": () =>
       "Ein Erledigt-Datum gibt es nur bei „erledigt“. Leere das Datum oder setze den Stand auf erledigt.",
@@ -168,6 +201,10 @@ export const mattersDe: MattersCatalog = {
     invalidEntry: {
       title: "Eintrag nicht gespeichert",
       detail: "Einige Angaben fehlen oder passen nicht. Korrigiere sie und speichere erneut.",
+    },
+    invalidDueChange: {
+      title: "Termin nicht geändert",
+      detail: "Für diese Änderung fehlen Angaben. Ergänze sie und ändere den Termin erneut.",
     },
     invalidStatusChange: {
       title: "Stand nicht geändert",

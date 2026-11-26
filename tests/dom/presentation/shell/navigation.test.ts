@@ -79,8 +79,13 @@ describe("navigation in a surface", () => {
   it("marks an entry as the current page on every route of its screen, whatever the parameters", async () => {
     const surface = testSurface({
       menu: [
-        { route: { name: "first" }, label: () => "First", icon: "i-lucide-info" },
-        { route: { name: "item", id: "1" }, label: () => "Items", icon: "i-lucide-info" },
+        { route: { name: "first" }, label: () => "First", icon: "i-lucide-info", order: 10 },
+        {
+          route: { name: "item", id: "1" },
+          label: () => "Items",
+          icon: "i-lucide-info",
+          order: 20,
+        },
       ],
     });
     const { runtime } = make();
@@ -362,14 +367,14 @@ describe("the app frame", () => {
     expect(without.querySelector("[data-testid=frame-context]")).toBeNull();
   });
 
-  it("starts on the settings, after contacts and matters, with the switch in the context area", async () => {
+  it("starts on the settings, after matters and contacts as in the sitemap, with the switch in the context area", async () => {
     const { runtime } = make();
     const root = newRoot();
     closes.push(mountApp(root, runtime));
     await settle();
     expect(navButtons(root).map((button) => button.textContent.trim())).toEqual([
-      "Kontakte",
       "Vorgänge",
+      "Kontakte",
       "Einstellungen",
     ]);
     expect(navButtons(root).map((button) => button.getAttribute("aria-current"))).toEqual([
@@ -416,8 +421,8 @@ describe("the app frame", () => {
     closes.push(mountApp(root, runtime));
     await settle();
     expect(navButtons(root).map((button) => button.textContent.trim())).toEqual([
-      "Contacts",
       "Matters",
+      "Contacts",
       "Settings",
     ]);
   });

@@ -39,6 +39,9 @@ export const mattersEn: MattersCatalog = {
     responsible_id: "Who",
     promised_on: "Promised on",
     due_on: "Due on",
+    due_kind: "Kind of due date",
+    due_source: "Origin of the due date",
+    due_checked: "Check",
     follow_up_on: "Follow-up date",
     status: "Status",
     done_on: "Done on",
@@ -57,6 +60,18 @@ export const mattersEn: MattersCatalog = {
   },
   statuses: { open: "open", unclear: "unclear", done: "done", obsolete: "obsolete" },
   checkMarks: { overdue: "overdue", ask_for_date: "ask for a date" },
+  dueKinds: {
+    promise: "promise",
+    contractual: "by contract",
+    formal_deadline: "formal deadline",
+    requested_reply: "reply requested",
+  },
+  dueChecks: { confirmed: "confirmed", proposed: "proposed", unknown: "check unknown" },
+  promisedAgo: (days) => (days === 1 ? "promised 1 day ago" : `promised ${days} days ago`),
+  locked: {
+    title: "Status and due date",
+    hint: 'Change them under "History" with "Change status" or "Change due date", so the reason is in the history.',
+  },
   form: {
     createTitle: "New matter",
     editTitle: "Edit matter",
@@ -119,6 +134,18 @@ export const mattersEn: MattersCatalog = {
     doneOn: "Done on",
     apply: "Change status",
     cancel: "Cancel",
+    changeDue: "Change due date",
+    dueTitle: "Change due date",
+    dueOn: "New due date",
+    dueOnHint: 'Leave empty when no due date applies; the matter then shows "ask for a date".',
+    dueReasonHint: "Why the due date changes; the earlier one stays in the history.",
+    dueApply: "Change due date",
+    previous: (day) => `before: ${day}`,
+    previousNone: "before: no due date",
+    dueIssues: {
+      "reason.missing": "Enter the reason.",
+      "due-on.invalid": "This is no valid day. Enter it as YYYY-MM-DD or leave it empty.",
+    },
     entryIssues: {
       "text.missing": "Describe what happened.",
       "text.invalid": "Keep the entry to at most 500 characters.",
@@ -152,6 +179,10 @@ export const mattersEn: MattersCatalog = {
     "status.unknown": () => "The plugin does not know this status. Choose one from the list.",
     "outcome.too-long": (_, label) =>
       `"${label}" makes a file name that is too long, because some characters take more space. Shorten the text.`,
+    "due-kind.unknown": () =>
+      "The plugin does not know this kind of due date. Choose one from the list.",
+    "due-source.invalid": (_, label) => oneLine(label, 100),
+    "due-checked.unknown": () => "The plugin does not know this check. Choose one from the list.",
     "done-on.missing": () => "A done matter needs the day it was done.",
     "done-on.not-done": () =>
       'A done day belongs only to a done matter. Clear the day or set the status to "done".',
@@ -164,6 +195,10 @@ export const mattersEn: MattersCatalog = {
     invalidEntry: {
       title: "Entry not saved",
       detail: "Some details are missing or do not fit. Correct them and save again.",
+    },
+    invalidDueChange: {
+      title: "Due date not changed",
+      detail: "This change lacks details. Add them and change the due date again.",
     },
     invalidStatusChange: {
       title: "Status not changed",

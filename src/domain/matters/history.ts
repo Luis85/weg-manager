@@ -51,6 +51,8 @@ export type HistoryEntry = {
   readonly actor: string;
   /** The new status of a status change. */
   readonly status?: MatterStatus | undefined;
+  /** The due date a `new_date` entry replaced, or `none` when there was none (PBI-09). */
+  readonly previous?: string | undefined;
   readonly source?: string | undefined;
   readonly corrects?: string | undefined;
   readonly recorded_on: CalendarDay;
@@ -71,6 +73,7 @@ export const formatEntry = (entry: HistoryEntry): string => {
     ["kind", entry.kind],
     ["actor", entry.actor],
     ["status", entry.status],
+    ["previous", entry.previous],
     ["source", entry.source === undefined ? undefined : clean(entry.source)],
     ["corrects", entry.corrects],
     ["recorded", entry.recorded_on],
@@ -117,6 +120,7 @@ const parseItem = (line: string): HistoryEntry | undefined => {
     kind,
     actor,
     ...(isStatus(status) ? { status } : {}),
+    ...(fields.has("previous") ? { previous: fields.get("previous") } : {}),
     ...(fields.has("source") ? { source: fields.get("source") } : {}),
     ...(fields.has("corrects") ? { corrects: fields.get("corrects") } : {}),
     recorded_on: recorded,

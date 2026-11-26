@@ -11,6 +11,11 @@ export const mattersScreens = {
   },
   sections: {},
   menu: [
-    { route: MATTERS, label: (catalog) => catalog.matters.route, icon: "i-lucide-list-checks" },
+    {
+      route: MATTERS,
+      label: (catalog) => catalog.matters.route,
+      icon: "i-lucide-list-checks",
+      order: 30,
+    },
   ],
 } satisfies ModuleScreens<"matters">;

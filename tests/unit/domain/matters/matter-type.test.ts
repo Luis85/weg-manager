@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  DUE_CHECKS,
+  DUE_KINDS,
   MATTER_KINDS,
   MATTER_STATUSES,
   matterType,
@@ -41,6 +43,9 @@ describe("the matter note type (weg-manager.matter/v1)", () => {
       "responsible_id",
       "promised_on",
       "due_on",
+      "due_kind",
+      "due_source",
+      "due_checked",
       "follow_up_on",
       "status",
       "done_on",
@@ -61,6 +66,8 @@ describe("the matter note type (weg-manager.matter/v1)", () => {
       "board_task",
     ]);
     expect(MATTER_STATUSES).toEqual(["open", "unclear", "done", "obsolete"]);
+    expect(DUE_KINDS).toEqual(["promise", "contractual", "formal_deadline", "requested_reply"]);
+    expect(DUE_CHECKS).toEqual(["confirmed", "proposed", "unknown"]);
   });
 
   it("shows a number with the short code, three digits at least", () => {
@@ -110,6 +117,9 @@ describe("the matter note type (weg-manager.matter/v1)", () => {
       [{ due_on: "2026-02-30" }, "due_on", "field.date"],
       [{ source: "" }, "source", "source.invalid"],
       [{ next_step: "N".repeat(301) }, "next_step", "next-step.invalid"],
+      [{ due_kind: "follow_up" }, "due_kind", "due-kind.unknown"],
+      [{ due_checked: "ja" }, "due_checked", "due-checked.unknown"],
+      [{ due_source: "S".repeat(101) }, "due_source", "due-source.invalid"],
     ];
     for (const [change, key, code] of cases) {
       expect(decode({ ...NOTE, ...change }), `${key}: ${JSON.stringify(change)}`).toMatchObject({

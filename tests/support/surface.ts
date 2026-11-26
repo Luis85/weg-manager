@@ -102,8 +102,13 @@ export const testSurface = (
     }
   },
   menu: [
-    { route: { name: "first" }, label: () => "First", icon: "i-lucide-layout-dashboard" },
-    { route: { name: "second" }, label: () => "Second", icon: "i-lucide-info" },
+    {
+      route: { name: "first" },
+      label: () => "First",
+      icon: "i-lucide-layout-dashboard",
+      order: 10,
+    },
+    { route: { name: "second" }, label: () => "Second", icon: "i-lucide-info", order: 20 },
   ],
   ...extra,
 });

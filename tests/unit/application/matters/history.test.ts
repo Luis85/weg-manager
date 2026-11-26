@@ -2,8 +2,10 @@ import { assert, describe, it } from "@effect/vitest";
 import { Effect } from "effect";
 import {
   InvalidHistoryEntryError,
+  InvalidDueChangeError,
   InvalidStatusChangeError,
   addHistoryEntry,
+  changeDue,
   changeStatus,
   matterHistory,
   matterList,
@@ -127,6 +129,80 @@ describe("changeStatus", () => {
       );
       assert.deepStrictEqual(error, new InvalidStatusChangeError({ issues: ["source.missing"] }));
       assert.strictEqual((yield* stored(PATH)).frontmatter["status"], "open");
+    }).pipe(Effect.provide(fixture.layer));
+  });
+});
+
+describe("changeDue (PBI-09)", () => {
+  it.effect("writes the new due date with its meaning and the earlier one into the history", () => {
+    const fixture = mattersFixture();
+    fixture.memory.seed(PATH, matterNote(5, { due_on: "2026-11-30" }), "");
+    return Effect.gen(function* () {
+      yield* ready;
+      yield* changeDue(yield* first, {
+        due_on: "2026-12-15",
+        due_kind: "promise",
+        due_source: "Mail der Verwaltung",
+        due_checked: "confirmed",
+        reason: "Neue Zusage",
+      });
+      const written = (yield* stored(PATH)).frontmatter;
+      assert.deepStrictEqual(
+        [written["due_on"], written["due_kind"], written["due_source"], written["due_checked"]],
+        ["2026-12-15", "promise", "Mail der Verwaltung", "confirmed"],
+      );
+      assert.include(
+        fixture.memory.body(PATH) ?? "",
+        "- 2026-11-26 Neue Zusage [kind:: new_date] [actor:: board] [previous:: 2026-11-30] [recorded:: 2026-11-26]",
+      );
+    }).pipe(Effect.provide(fixture.layer));
+  });
+
+  it.effect(
+    "removes the due date and its details when it is cleared, and says there was none before",
+    () => {
+      const fixture = mattersFixture();
+      fixture.memory.seed(PATH, matterNote(5), "");
+      return Effect.gen(function* () {
+        yield* ready;
+        yield* changeDue(yield* first, {
+          due_on: "2026-12-01",
+          due_kind: "",
+          due_source: "",
+          due_checked: "",
+          reason: "Termin genannt",
+        });
+        assert.include(fixture.memory.body(PATH) ?? "", "[previous:: none]");
+        const again = yield* first;
+        yield* changeDue(again, {
+          due_on: "",
+          due_kind: "",
+          due_source: "",
+          due_checked: "",
+          reason: "Termin zurückgezogen",
+        });
+        const written = (yield* stored(PATH)).frontmatter;
+        assert.isFalse(Object.hasOwn(written, "due_on"));
+      }).pipe(Effect.provide(fixture.layer));
+    },
+  );
+
+  it.effect("refuses a change without a reason and writes nothing", () => {
+    const fixture = mattersFixture();
+    fixture.memory.seed(PATH, matterNote(5), "");
+    return Effect.gen(function* () {
+      yield* ready;
+      const error = yield* Effect.flip(
+        changeDue(yield* first, {
+          due_on: "2026-12-01",
+          due_kind: "",
+          due_source: "",
+          due_checked: "",
+          reason: "",
+        }),
+      );
+      assert.deepStrictEqual(error, new InvalidDueChangeError({ issues: ["reason.missing"] }));
+      assert.strictEqual(fixture.memory.body(PATH), "");
     }).pipe(Effect.provide(fixture.layer));
   });
 });

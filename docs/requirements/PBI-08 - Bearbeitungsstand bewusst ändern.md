@@ -6,7 +6,7 @@ actors:
   - "[[ACT-01-Beirat]]"
 release: "[[MVP - Beirat Support]]"
 status: ""
-started: ""
+started: 2026-11-26
 finished: ""
 horizon: ""
 start: ""
@@ -80,4 +80,5 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
   - **Format:** je Eintrag ein Listenpunkt unter „## Verlauf“ mit Inline-Feldern, etwa `- 2026-11-20 Anfrage per Mail an die Verwaltung [kind:: request] [actor:: board] [source:: Mail] [recorded:: 2026-11-21] [id:: …]`.
   - **Akteur:** ein Kontakt (`contact-…`) oder der Beirat selbst (`board`) als Vorgabe.
   - **Korrektur:** nur anhängen. Einträge werden nie geändert oder gelöscht; eine Korrektur ist ein neuer Eintrag mit `[corrects:: …]`, der alte erscheint als „korrigiert“.
+- 26.11.2026 (Umsetzung des ersten Schnitts): Verlauf als Abschnitt „## Verlauf“ der Vorgangsnotiz ([[DV-03 - Vorgang v1]], ADR 0007 Nachtrag vom 26.11.2026), aufklappbar an jeder Vorgangskarte, mit Eintrag von Hand und Statuswechsel mit Anlass. Der `NoteStore` schreibt dafür Frontmatter und Abschnitt in einem atomaren Schritt. Erfüllt sind Kriterium 1 (vier unterscheidbare Stände; jeder Wechsel mit Anlass, erledigt und hinfällig zusätzlich mit Quelle, erledigt mit Tag) und 3 (ein Wechsel geschieht nur bewusst; Wiedereröffnen mit Begründung). Offen: Kriterium 2 („nicht eingehalten“ in der Bewertungsschicht) und 4 (Entscheidungskarten). Tests: `tests/unit/domain/matters/history.test.ts`, `tests/unit/application/matters/history.test.ts`, `tests/dom/presentation/matters/history.test.ts`, `tests/e2e/specs/matter-history.e2e.ts`, der Vertrag des `NoteStore` (fünf neue Fälle, auch in Obsidian). `npm run verify` mit Exit 0, e2e 29 von 29 Specs grün.
 

@@ -40,6 +40,9 @@ export const mattersDe: MattersCatalog = {
     responsible_id: "Wer",
     promised_on: "Zugesagt am",
     due_on: "Bis wann",
+    due_kind: "Art des Termins",
+    due_source: "Herkunft des Termins",
+    due_checked: "Prüfstand",
     follow_up_on: "Wiedervorlage",
     status: "Bearbeitungsstand",
     done_on: "Erledigt am",
@@ -155,6 +158,11 @@ export const mattersDe: MattersCatalog = {
       "Diesen Bearbeitungsstand kennt das Plugin nicht. Wähle einen aus der Liste.",
     "outcome.too-long": (_, label) =>
       `„${label}“ ergibt einen zu langen Dateinamen, weil manche Zeichen mehr Platz brauchen. Kürze den Text.`,
+    "due-kind.unknown": () =>
+      "Diese Art des Termins kennt das Plugin nicht. Wähle eine aus der Liste.",
+    "due-source.invalid": (_, label) => oneLine(label, 100),
+    "due-checked.unknown": () =>
+      "Diesen Prüfstand kennt das Plugin nicht. Wähle einen aus der Liste.",
     "done-on.missing": () => "Ein erledigter Vorgang braucht das Datum, an dem er erledigt wurde.",
     "done-on.not-done": () =>
       "Ein Erledigt-Datum gibt es nur bei „erledigt“. Leere das Datum oder setze den Stand auf erledigt.",
@@ -168,6 +176,10 @@ export const mattersDe: MattersCatalog = {
     invalidEntry: {
       title: "Eintrag nicht gespeichert",
       detail: "Einige Angaben fehlen oder passen nicht. Korrigiere sie und speichere erneut.",
+    },
+    invalidDueChange: {
+      title: "Termin nicht geändert",
+      detail: "Für diese Änderung fehlen Angaben. Ergänze sie und ändere den Termin erneut.",
     },
     invalidStatusChange: {
       title: "Stand nicht geändert",

@@ -110,5 +110,6 @@ export type MattersCatalog = {
     readonly invalid: Text;
     readonly invalidEntry: Text;
     readonly invalidStatusChange: Text;
+    readonly invalidDueChange: Text;
   };
 };

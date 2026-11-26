@@ -39,6 +39,9 @@ export const mattersEn: MattersCatalog = {
     responsible_id: "Who",
     promised_on: "Promised on",
     due_on: "Due on",
+    due_kind: "Kind of due date",
+    due_source: "Origin of the due date",
+    due_checked: "Check",
     follow_up_on: "Follow-up date",
     status: "Status",
     done_on: "Done on",
@@ -152,6 +155,10 @@ export const mattersEn: MattersCatalog = {
     "status.unknown": () => "The plugin does not know this status. Choose one from the list.",
     "outcome.too-long": (_, label) =>
       `"${label}" makes a file name that is too long, because some characters take more space. Shorten the text.`,
+    "due-kind.unknown": () =>
+      "The plugin does not know this kind of due date. Choose one from the list.",
+    "due-source.invalid": (_, label) => oneLine(label, 100),
+    "due-checked.unknown": () => "The plugin does not know this check. Choose one from the list.",
     "done-on.missing": () => "A done matter needs the day it was done.",
     "done-on.not-done": () =>
       'A done day belongs only to a done matter. Clear the day or set the status to "done".',
@@ -164,6 +171,10 @@ export const mattersEn: MattersCatalog = {
     invalidEntry: {
       title: "Entry not saved",
       detail: "Some details are missing or do not fit. Correct them and save again.",
+    },
+    invalidDueChange: {
+      title: "Due date not changed",
+      detail: "This change lacks details. Add them and change the due date again.",
     },
     invalidStatusChange: {
       title: "Status not changed",

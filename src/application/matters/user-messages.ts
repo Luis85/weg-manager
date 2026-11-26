@@ -14,5 +14,7 @@ export const describeMattersError = (
       return { severity: "warning", ...messages.errors.invalidEntry };
     case "InvalidStatusChangeError":
       return { severity: "warning", ...messages.errors.invalidStatusChange };
+    case "InvalidDueChangeError":
+      return { severity: "warning", ...messages.errors.invalidDueChange };
   }
 };

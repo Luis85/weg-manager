@@ -32,12 +32,20 @@ export class InvalidStatusChangeError extends Schema.TaggedError<InvalidStatusCh
   { issues: Schema.Array(StatusChangeIssue) },
 ) {}
 
+/** A due date change breaks a rule (PBI-09: reason, a real day); nothing was written. */
+export class InvalidDueChangeError extends Schema.TaggedError<InvalidDueChangeError>()(
+  "InvalidDueChangeError",
+  { issues: Schema.Array(Schema.Literals(["reason.missing", "due-on.invalid"])) },
+) {}
+
 /** Every expected failure of the matters module. Each needs a text in its describer. */
-export type MattersError = InvalidMatterError | InvalidHistoryEntryError | InvalidStatusChangeError;
+export type MattersError =
+  InvalidMatterError | InvalidHistoryEntryError | InvalidStatusChangeError | InvalidDueChangeError;
 
 /** One key per member of `MattersError`; typecheck fails while one is missing or extra. */
 export const MATTERS_ERROR_TAG_KEYS = {
   InvalidMatterError: true,
   InvalidHistoryEntryError: true,
   InvalidStatusChangeError: true,
+  InvalidDueChangeError: true,
 } satisfies Record<MattersError["_tag"], true>;

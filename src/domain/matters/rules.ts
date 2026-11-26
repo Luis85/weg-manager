@@ -1,5 +1,11 @@
 import { Schema } from "effect";
-import { draftValues, fitsFileName, type FormDraft, type FormInput } from "../notes";
+import {
+  draftValues,
+  fitsFileName,
+  isCalendarDate,
+  type FormDraft,
+  type FormInput,
+} from "../notes";
 import type { CalendarDay } from "../shell";
 import { matterType, type MatterFields, type MatterKey, type MatterStatus } from "./matter-type";
 
@@ -29,6 +35,9 @@ const MatterIssueCode = Schema.Literals([
   "link.invalid",
   "done-on.missing",
   "done-on.not-done",
+  "due-kind.unknown",
+  "due-source.invalid",
+  "due-checked.unknown",
 ]);
 
 /** One field's issue, language-free (ADR 0005): the codec's codes and the matter rules (DV-03). */
@@ -180,3 +189,34 @@ export const matchesFilter = (values: FilterValues, filter: MatterFilter): boole
   (filter.status === undefined || values.status === filter.status) &&
   (filter.community === undefined || values.community_id === filter.community) &&
   (filter.responsible === undefined || values.responsible_id === filter.responsible);
+
+/** Days between two days, as text `YYYY-MM-DD`. */
+const daysBetween = (from: CalendarDay, to: CalendarDay): number =>
+  Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
+
+/**
+ * How many days a promise is old on `today` (PBI-09 criterion 4): none when the day of the promise
+ * is unknown, never a made-up zero; an import keeps `promised_on`, so it never resets the age.
+ */
+export const promiseAge = (
+  promisedOn: CalendarDay | undefined,
+  today: CalendarDay,
+): number | undefined => (promisedOn === undefined ? undefined : daysBetween(promisedOn, today));
+
+/** Why a due date change cannot be made. */
+export type DueChangeIssue = "reason.missing" | "due-on.invalid";
+
+/**
+ * The rules of a due date change (PBI-09): a reason, and a real day or none (no date asks for
+ * one). The earlier date goes into the history, so the change is never silent.
+ */
+export const validateDueChange = (input: {
+  readonly due_on: string;
+  readonly reason: string;
+}): readonly DueChangeIssue[] => {
+  const issues: DueChangeIssue[] = [];
+  if (input.reason.replace(/\s+/g, " ").trim() === "") issues.push("reason.missing");
+  const day = input.due_on.trim();
+  if (day !== "" && !isCalendarDate(day)) issues.push("due-on.invalid");
+  return issues;
+};

@@ -25,6 +25,14 @@ export type MatterKind = (typeof MATTER_KINDS)[number];
 export const MATTER_STATUSES = ["open", "unclear", "done", "obsolete"] as const;
 export type MatterStatus = (typeof MATTER_STATUSES)[number];
 
+/** What a due date is (ENT-05, PBI-09): a promise, a date by contract, a formal deadline given, a reply asked for. */
+export const DUE_KINDS = ["promise", "contractual", "formal_deadline", "requested_reply"] as const;
+export type DueKind = (typeof DUE_KINDS)[number];
+
+/** How far a due date is checked (ENT-05). */
+export const DUE_CHECKS = ["confirmed", "proposed", "unknown"] as const;
+export type DueCheck = (typeof DUE_CHECKS)[number];
+
 /** The source code of a visible source gap (DV-03). */
 export const UNKNOWN_SOURCE = "unknown";
 
@@ -61,6 +69,9 @@ export const matterType = defineNoteType({
     responsible_id: required(reference("contact")),
     promised_on: date(),
     due_on: date(),
+    due_kind: text({ schema: Schema.Literals(DUE_KINDS), issue: "due-kind.unknown" }),
+    due_source: text({ schema: lineOfText(SOURCE_MAX_LENGTH), issue: "due-source.invalid" }),
+    due_checked: text({ schema: Schema.Literals(DUE_CHECKS), issue: "due-checked.unknown" }),
     follow_up_on: date(),
     status: required(text({ schema: Schema.Literals(MATTER_STATUSES), issue: "status.unknown" })),
     done_on: date(),

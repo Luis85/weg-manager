@@ -3,6 +3,7 @@ import {
   BOARD_ACTOR,
   appendEntry,
   parseHistory,
+  validateDueChange,
   validateEntry,
   validateStatusChange,
   type EntryKind,
@@ -11,7 +12,11 @@ import {
 } from "../../domain/matters";
 import { IdGenerator, NoteStore, type FrontmatterPatch } from "../notes";
 import { today } from "../shell";
-import { InvalidHistoryEntryError, InvalidStatusChangeError } from "./errors";
+import {
+  InvalidDueChangeError,
+  InvalidHistoryEntryError,
+  InvalidStatusChangeError,
+} from "./errors";
 import { matterRecords, type Matter } from "./list";
 
 /** Where the matter's note is now: found by its id, so a note renamed meanwhile is found. */
@@ -113,4 +118,44 @@ export const changeStatus = (matter: Matter, input: StatusChangeInput) =>
         ? { set: { status: input.to }, remove: ["done_on"] }
         : { set: { status: input.to, done_on: done }, remove: [] };
     return yield* write(matter, entry, patch);
+  });
+
+/** A due date change as the dialog holds it (PBI-09). */
+export type DueChangeInput = {
+  readonly due_on: string;
+  readonly due_kind: string;
+  readonly due_source: string;
+  readonly due_checked: string;
+  readonly reason: string;
+};
+
+const DUE_KEYS = ["due_on", "due_kind", "due_source", "due_checked"] as const;
+
+/**
+ * Changes a matter's due date with its reason (PBI-09): the date with its meaning, origin and
+ * check, a blank one removed, and a `new_date` entry that keeps the earlier date (`previous`,
+ * `none` without one), in one atomic write. The follow-up date is never touched.
+ */
+export const changeDue = (matter: Matter, input: DueChangeInput) =>
+  Effect.gen(function* () {
+    const issues = validateDueChange(input);
+    if (issues.length > 0) return yield* Effect.fail(new InvalidDueChangeError({ issues }));
+    const day = yield* today;
+    const entry: HistoryEntry = {
+      id: yield* entryId,
+      occurred_on: day,
+      text: input.reason,
+      kind: "new_date",
+      actor: BOARD_ACTOR,
+      previous: matter.values.due_on ?? "none",
+      recorded_on: day,
+    };
+    const set: Record<string, string> = {};
+    const remove: string[] = [];
+    for (const key of DUE_KEYS) {
+      const value = input[key].trim();
+      if (value === "") remove.push(key);
+      else set[key] = value;
+    }
+    return yield* write(matter, entry, { set, remove });
   });

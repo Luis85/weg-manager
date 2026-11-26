@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   checkMark,
+  promiseAge,
+  validateDueChange,
   duplicateNumbers,
   matchesFilter,
   matterValues,
@@ -23,6 +25,9 @@ const input = (change: Partial<MatterInput> = {}): MatterInput => ({
   responsible_id: FIRM,
   promised_on: "",
   due_on: "2026-11-30",
+  due_kind: "",
+  due_source: "",
+  due_checked: "",
   follow_up_on: "",
   status: "open",
   done_on: "",
@@ -146,5 +151,33 @@ describe("matchesFilter", () => {
     expect(matchesFilter(values, { status: "done" })).toBe(false);
     expect(matchesFilter(values, { topic: "Heizung" })).toBe(false);
     expect(matchesFilter(values, { responsible: OTHER })).toBe(false);
+  });
+});
+
+describe("promiseAge (PBI-09 criterion 4)", () => {
+  it("counts the days since the promise, and nothing for an unknown one", () => {
+    expect(promiseAge("2026-11-02", "2026-11-26")).toBe(24);
+    expect(promiseAge("2026-11-26", "2026-11-26")).toBe(0);
+    expect(promiseAge(undefined, "2026-11-26")).toBeUndefined();
+  });
+});
+
+describe("validateDueChange", () => {
+  const change = {
+    due_on: "2026-12-15",
+    due_kind: "promise",
+    due_source: "Mail",
+    due_checked: "confirmed",
+    reason: "Neue Zusage",
+  };
+  it("passes a new due date with its reason", () => {
+    expect(validateDueChange(change)).toEqual([]);
+  });
+
+  it("needs a reason, a real day or none, and a change", () => {
+    expect(validateDueChange({ ...change, reason: " " })).toEqual(["reason.missing"]);
+    expect(validateDueChange({ ...change, due_on: "15.12." })).toEqual(["due-on.invalid"]);
+    expect(validateDueChange({ ...change, due_on: "" })).toEqual([]);
+    expect(validateDueChange({ ...change, due_on: "2026-11-30" })).toEqual([]);
   });
 });

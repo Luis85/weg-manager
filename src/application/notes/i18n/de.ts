@@ -34,6 +34,11 @@ export const notesDe: NotesCatalog = {
       title: "Notiz nicht gelöscht",
       detail: "Obsidian konnte die Notiz nicht in den Papierkorb verschieben. Versuche es erneut.",
     },
+    localRemove: {
+      title: "Original nicht entfernt",
+      detail:
+        "Die Datei liegt jetzt im Vault, aber das Original außerhalb ließ sich nicht entfernen. Lösche es selbst, wenn du es nicht mehr brauchst.",
+    },
     open: {
       title: "Notiz nicht geöffnet",
       detail: "Obsidian konnte die Notiz nicht in einem Tab öffnen. Versuche es erneut.",

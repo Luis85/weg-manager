@@ -167,3 +167,10 @@ The merge of "Writing" compares a form's saved values with the loaded ones. Unti
 - **The body stays the user's.** The plugin writes only inside the section its type's contract defines, and only by appending: entries are never changed or removed; a correction is a new entry with `[corrects:: <id>]`. Text outside the section, and every byte of it, stays. A line in the section the plugin cannot read is shown as written.
 - **Rejected.** One note per entry (robust, but many small notes) and a YAML code block (exact, but poor to read and easy to break by hand).
 
+
+## Amendment, 2026-11-26: files that are no notes, and picked files outside the vault
+
+- **Decision (owner, PBI-11).** A captured message, conversation or original is a source note, `weg-manager.source/v1` (contract `docs/contracts/DV-05 - Quelle v1.md`), that refers to its original files in the vault. The originals stay unchanged; no file gets a companion note.
+- **The port.** Files that are no notes go through a second port, `VaultFiles`: `exists`, `freePath`, `write` (bytes as a new file), `resourceUrl` (to show an image) and `open`. It only adds files and never changes or overwrites one: a taken name gets ` (2)`, ` (3)`, … before the extension, compared by `clashKey` as notes are (`planNewFile`). The Obsidian adapter uses `vault.createFolder`, `vault.createBinary`, `vault.getResourcePath` and opens a file in a new tab. `NoteStore` stays the only port for notes. A contract runs the same cases on the in-memory adapter and on the Obsidian adapter over the double.
+- **Outside the vault.** `LocalFiles` serves a move: whether a picked file can be removed, and removing it once its copy is written. Only the desktop app can, through Node's `fs`, for a file Electron gives a path for (`webUtils.getPathForFile`, else the legacy `File.path`); on mobile only a copy is offered. A failed removal is `LocalFileRemoveError`: the copy is in the vault, the original stays.
+- **Rejected.** Binary methods on `NoteStore` (its contract and fidelity tests are built around notes and their frontmatter) and `vault.adapter` (it bypasses Obsidian's vault events).

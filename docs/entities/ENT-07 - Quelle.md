@@ -59,7 +59,7 @@ Nachrichten und Protokolle können Daten anderer Eigentümer enthalten. Solche Q
 
 ## Offene Punkte
 
-- **O-ENT07-1:** Eigene Note mit Identität oder nur Felder am Vorgang und Verlaufseintrag (WCS-Form)? Die gemeinsame Nutzung einer Quelle durch mehrere Fachobjekte ist offen.
+- **O-ENT07-1:** Eigene Note mit Identität oder nur Felder am Vorgang und Verlaufseintrag (WCS-Form)? Die gemeinsame Nutzung einer Quelle durch mehrere Fachobjekte ist offen. **Entschieden am 26.11.2026** ([[PBI-11 - Nachricht und Original zuordnen]]): je Erfassung eine Quellnotiz `weg-manager.source/v1`, die auf die unveränderten Originaldateien verweist; keine Begleitnote je Datei.
 - **O-ENT07-2:** Wird die Note mit [[ENT-08 - Dokument]] und [[ENT-32 - Unterlage]] zusammengeführt?
 - **O-ENT07-3 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: `source` ist Pflicht, „unbekannt“ ist als sichtbare Lücke erlaubt.
 

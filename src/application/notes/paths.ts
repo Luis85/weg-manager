@@ -44,7 +44,7 @@ export const vaultFolder = (folder: string, foldersIn: FoldersIn): string => {
 };
 
 /** Whether a path clashes with one of `paths` (other than `except`), by `clashKey`. */
-const clashesWith = (paths: readonly string[], except?: string) => {
+export const clashesWith = (paths: readonly string[], except?: string) => {
   const keys = new Set(paths.filter((path) => path !== except).map(clashKey));
   return (path: string): boolean => keys.has(clashKey(path));
 };

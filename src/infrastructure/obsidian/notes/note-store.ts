@@ -1,12 +1,5 @@
 import { Effect, Layer, Result } from "effect";
-import {
-  TFolder,
-  normalizePath,
-  parseYaml,
-  type App,
-  type CachedMetadata,
-  type TFile,
-} from "obsidian";
+import { normalizePath, parseYaml, type App, type CachedMetadata, type TFile } from "obsidian";
 import {
   NoteNotFoundError,
   NoteStore,
@@ -32,6 +25,7 @@ import {
   writeCommand,
 } from "../../../application/notes/adapter";
 import { VaultReadError } from "../../../application/shell";
+import { vaultTree } from "./vault-tree";
 
 /** How an update fails besides the change's own failure and a failed write (`NoteWriteError`). */
 type UpdateError = NoteNotFoundError | NoteUnreadableError | NoteWriteRefusedError;
@@ -63,12 +57,7 @@ const hasUnreadableFrontmatter = (cache: CachedMetadata | null): boolean => {
 const obsidianNoteStore = (app: App): NoteStore["Service"] => {
   const { vault, metadataCache, fileManager } = app;
 
-  /** Obsidian's lookups are case-sensitive (d.ts), so clashes are found among the children. */
-  const childrenOf = (folder: string) =>
-    (folder === "/" ? vault.getRoot() : vault.getFolderByPath(folder))?.children ?? [];
-  const siblingsOf = (folder: string) => childrenOf(folder).map((child) => child.path);
-  const foldersIn = (folder: string) =>
-    childrenOf(folder).flatMap((child) => (child instanceof TFolder ? [child.path] : []));
+  const { siblingsOf, foldersIn } = vaultTree(vault);
 
   const frontmatterOf = (file: TFile) =>
     copyFrontmatter(metadataCache.getFileCache(file)?.frontmatter);

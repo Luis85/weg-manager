@@ -4,6 +4,7 @@ import type { Frontmatter, FrontmatterPatch } from "../../domain/notes";
 import type { VaultReadError } from "../shell";
 import type {
   InvalidNoteNameError,
+  LocalFileRemoveError,
   NoteNotFoundError,
   NoteOpenError,
   NotePathTakenError,
@@ -131,3 +132,55 @@ export class IdGenerator extends Context.Service<
   IdGenerator,
   { readonly uuid: Effect.Effect<string> }
 >()("weg-manager/application/IdGenerator") {}
+
+/**
+ * The vault's files that are no notes: the originals a source refers to (ADR 0007, amendment
+ * 26.11.2026). It only adds files and never changes or overwrites one; every path goes through
+ * `normalizePath`. Notes stay with `NoteStore`.
+ */
+export class VaultFiles extends Context.Service<
+  VaultFiles,
+  {
+    /** Whether a file lies at `path`. */
+    exists(path: string): Effect.Effect<boolean>;
+    /**
+     * The path a new file `name` (with its extension) would get in `folder`: the folder found as
+     * `NoteStore.create` finds it, the name, else ` (2)`, ` (3)`, … before the extension.
+     */
+    freePath(
+      folder: string,
+      name: string,
+    ): Effect.Effect<string, InvalidNoteNameError | NotePathTakenError>;
+    /** Writes `bytes` as a new file at the free path (`freePath`), the folder created as needed. */
+    write(
+      folder: string,
+      name: string,
+      bytes: Uint8Array,
+    ): Effect.Effect<string, InvalidNoteNameError | NotePathTakenError | NoteWriteError>;
+    /** An address the view can show the file with (an image), or none when it is not there. */
+    resourceUrl(path: string): Effect.Effect<string | undefined>;
+    /** Opens the file in a new Obsidian tab, as `NoteOpener` opens a note. */
+    open(path: string): Effect.Effect<void, NoteNotFoundError | NoteOpenError>;
+  }
+>()("weg-manager/application/VaultFiles") {}
+
+/** A file the user picked outside the vault: its name, its content and the host's own handle. */
+export type PickedFile = {
+  readonly name: string;
+  readonly bytes: Uint8Array;
+  /** What the host needs to remove the original after a move; opaque to the application. */
+  readonly handle: unknown;
+};
+
+/**
+ * The user's files outside the vault, as far as a move needs them (PBI-11): whether the original
+ * of a picked file can be removed (the desktop app, a file with a path), and removing it once its
+ * copy is in the vault. Nothing else outside the vault is touched.
+ */
+export class LocalFiles extends Context.Service<
+  LocalFiles,
+  {
+    movable(file: PickedFile): Effect.Effect<boolean>;
+    remove(file: PickedFile): Effect.Effect<void, LocalFileRemoveError>;
+  }
+>()("weg-manager/application/LocalFiles") {}

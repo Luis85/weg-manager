@@ -78,3 +78,11 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 ## Business Rules
 
 [[DF-08 - Quellenabdeckung]].
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen ersten Schnitt.
+  - **Datenform (O-ENT07-1, O-ENT08-1):** Je Erfassung eine Quellnotiz `weg-manager.source/v1` mit Art (Mail, Gespräch, Dokument …), Herkunft, Datum, Gemeinschaft, Vorgang oder Vorgängen und Verweisen auf die Originaldateien. Der Nachrichtentext steht im Text der Notiz. Die Originale bleiben unverändert; eine eigene Begleitnote je Datei gibt es nicht.
+  - **Dateien von außerhalb (Kriterium 5):** Vorgabe ist Kopieren; Verschieben ist im Dialog wählbar (nur am Desktop, die Datei außerhalb wird erst nach erfolgreicher Kopie entfernt). Der Zielpfad steht vor dem Speichern da. Nie wird überschrieben; eine neue Fassung bekommt ` (2)`.
+  - **Ablage:** `<Wurzelordner>/Quellen/<Kürzel>/`, benannt nach der WCS-Ablageregel `JJJJ-MM-TT Art Thema` mit der Endung der Datei.
+  - **Vorschau (Kriterium 6):** Nachrichtentext und Bilder stehen in der Vorgangsakte; PDF und andere Dateien zeigen Vault-Pfad und „In Obsidian öffnen“; eine fehlende Datei ist markiert.

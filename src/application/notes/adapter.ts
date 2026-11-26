@@ -4,4 +4,5 @@
 export { asDefect, createNote, isFileGone, trashCommand, writeCommand } from "./command";
 export { copyFrontmatter, recordNotes } from "./frontmatter";
 export { bodyOfText, newNoteText, updateNoteText } from "./note-text";
+export { planNewFile } from "./files";
 export { pathsInFolder, planRename } from "./paths";

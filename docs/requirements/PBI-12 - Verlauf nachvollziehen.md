@@ -75,3 +75,12 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 ## Business Rules
 
 [[DF-06 - Reaktion und Pause]], [[DF-14 - Kennzahlen]].
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen gemeinsamen ersten Schnitt von [[PBI-08 - Bearbeitungsstand bewusst ändern]] und [[PBI-12 - Verlauf nachvollziehen]].
+  - **Schnitt:** Der Abschnitt „Verlauf“ im Text der Vorgangsnotiz wird am Vorgang angezeigt. Ein Statuswechsel läuft über einen eigenen Dialog mit Anlass; erledigt und hinfällig verlangen zusätzlich eine Quelle. Er schreibt Status und Verlaufseintrag in einem Schritt. Einträge von Hand (Anfrage, Antwort, Notiz und die übrigen Arten) und Wiedereröffnen mit Begründung gehören dazu. „Nicht eingehalten“ (Bewertungsschicht, [[ENT-16 - Beiratsbewertung]]) folgt später.
+  - **Format:** je Eintrag ein Listenpunkt unter „## Verlauf“ mit Inline-Feldern, etwa `- 2026-11-20 Anfrage per Mail an die Verwaltung [kind:: request] [actor:: board] [source:: Mail] [recorded:: 2026-11-21] [id:: …]`.
+  - **Akteur:** ein Kontakt (`contact-…`) oder der Beirat selbst (`board`) als Vorgabe.
+  - **Korrektur:** nur anhängen. Einträge werden nie geändert oder gelöscht; eine Korrektur ist ein neuer Eintrag mit `[corrects:: …]`, der alte erscheint als „korrigiert“.
+

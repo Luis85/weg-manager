@@ -16,5 +16,9 @@ export const describeMattersError = (
       return { severity: "warning", ...messages.errors.invalidStatusChange };
     case "InvalidDueChangeError":
       return { severity: "warning", ...messages.errors.invalidDueChange };
+    case "InvalidSplitError":
+      return { severity: "warning", ...messages.errors.invalidSplit };
+    case "InvalidMergeError":
+      return { severity: "warning", ...messages.errors.invalidMerge };
   }
 };

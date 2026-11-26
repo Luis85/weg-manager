@@ -19,6 +19,7 @@ export type MatterDraft = FormDraft<MatterFields>;
 const MatterIssueCode = Schema.Literals([
   "field.missing",
   "field.reference",
+  "field.references",
   "field.date",
   "field.number",
   "number.invalid",

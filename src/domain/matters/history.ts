@@ -17,6 +17,8 @@ const ENTRY_KINDS = [
   "status_change",
   "assessment",
   "note",
+  "split",
+  "merge",
 ] as const;
 export type EntryKind = (typeof ENTRY_KINDS)[number];
 
@@ -53,6 +55,8 @@ export type HistoryEntry = {
   readonly status?: MatterStatus | undefined;
   /** The due date a `new_date` entry replaced, or `none` when there was none (PBI-09). */
   readonly previous?: string | undefined;
+  /** The other matters a `split` or `merge` entry names, by id (PBI-06, PBI-07). */
+  readonly related?: readonly string[] | undefined;
   readonly source?: string | undefined;
   readonly corrects?: string | undefined;
   readonly recorded_on: CalendarDay;
@@ -74,6 +78,7 @@ export const formatEntry = (entry: HistoryEntry): string => {
     ["actor", entry.actor],
     ["status", entry.status],
     ["previous", entry.previous],
+    ["related", entry.related?.join(" ")],
     ["source", entry.source === undefined ? undefined : clean(entry.source)],
     ["corrects", entry.corrects],
     ["recorded", entry.recorded_on],
@@ -103,6 +108,9 @@ const requiredOf = (fields: ReadonlyMap<string | undefined, string | undefined>)
   return isKind(kind) && complete ? { kind, actor, recorded, id } : undefined;
 };
 
+/** The text fields an entry may carry, kept as written. */
+const OPTIONAL_FIELDS = ["previous", "source", "corrects"] as const;
+
 /** One list item as an entry, or `undefined` when it lacks what every entry has. */
 const parseItem = (line: string): HistoryEntry | undefined => {
   const match = ITEM.exec(line);
@@ -113,6 +121,10 @@ const parseItem = (line: string): HistoryEntry | undefined => {
   if (required === undefined) return undefined;
   const { kind, actor, recorded, id } = required;
   const status = fields.get("status");
+  const optional = Object.fromEntries(
+    OPTIONAL_FIELDS.flatMap((key) => (fields.has(key) ? [[key, fields.get(key)]] : [])),
+  ) as Pick<HistoryEntry, (typeof OPTIONAL_FIELDS)[number]>;
+  const related = fields.get("related");
   return {
     id,
     occurred_on: day === "?" ? undefined : day,
@@ -120,9 +132,8 @@ const parseItem = (line: string): HistoryEntry | undefined => {
     kind,
     actor,
     ...(isStatus(status) ? { status } : {}),
-    ...(fields.has("previous") ? { previous: fields.get("previous") } : {}),
-    ...(fields.has("source") ? { source: fields.get("source") } : {}),
-    ...(fields.has("corrects") ? { corrects: fields.get("corrects") } : {}),
+    ...(related === undefined ? {} : { related: related.split(" ").filter(Boolean) }),
+    ...optional,
     recorded_on: recorded,
   };
 };

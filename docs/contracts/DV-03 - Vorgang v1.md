@@ -48,10 +48,11 @@ Der Verlauf ([[PBI-12 - Verlauf nachvollziehen]], [[ENT-06 - Verlaufseintrag]]) 
 
 | Feld | Pflicht | Regel |
 | --- | --- | --- |
-| `kind` | ja | `request`, `acknowledgement`, `reply`, `new_date`, `partial`, `fulfilment`, `dispatch`, `status_change`, `assessment` oder `note`. |
+| `kind` | ja | `request`, `acknowledgement`, `reply`, `new_date`, `partial`, `fulfilment`, `dispatch`, `status_change`, `assessment`, `note`, `split` (Aufteilung) oder `merge` (Zusammenführung). |
 | `actor` | ja | `board` (der Beirat) oder die `id` eines Kontakts. |
 | `status` | bei `status_change` | Der neue Bearbeitungsstand. |
 | `previous` | bei `new_date` | Der bisherige Termin, `none` ohne einen. |
+| `related` | bei `split` und `merge` | Die `id`s der betroffenen Vorgänge, durch Leerzeichen getrennt: bei `split` die Teile, bei `merge` im Ziel die Dublette und in der Dublette das Ziel. |
 | `source` | nein | Die Quelle in Kurzform. |
 | `corrects` | nein | Die `id` des Eintrags, den dieser korrigiert. |
 | `recorded` | ja | Der Tag, an dem der Eintrag erfasst wurde. Er ersetzt nie den Tag des Geschehens. |
@@ -89,6 +90,10 @@ Pflicht sind `schema`, `id`, `number`, `community_id`, `kind`, `topic`, `outcome
 | `next_step` | Text | Eine Zeile, höchstens 300 Zeichen: die konkrete nächste Handlung. | |
 | `message_ref` | Text, optional | Kennung einer Nachricht in einem beliebigen Postfach, eine Zeile. | |
 | `link` | Text, optional | Ein Pfad im Vault oder eine Adresse, eine Zeile. | |
+| `split_from_id` | Text, optional | Bei einem Teil: die `id` des aufgeteilten Vorgangs ([[PBI-06 - Sammelvorgänge aufteilen]]). | `matter-5d6e…` |
+| `split_into_ids` | Liste, optional | Beim aufgeteilten Vorgang: die `id`s seiner Teile. Er steht dann auf `obsolete`. | |
+| `merged_into_id` | Text, optional | Bei einer Dublette: die `id` des Vorgangs, in den sie zusammengeführt wurde ([[PBI-07 - Dubletten zusammenführen]]). Sie steht dann auf `obsolete`. | |
+| `merged_from_ids` | Liste, optional | Beim Ziel: die `id`s der Dubletten, die in ihn zusammengeführt wurden. | |
 
 ## Identität, Nummer und Version
 
@@ -109,6 +114,7 @@ Pflicht sind `schema`, `id`, `number`, `community_id`, `kind`, `topic`, `outcome
 - Beim Anlegen: `schema`, `id` und die Felder in der Reihenfolge der Tabelle, nur die mit Wert. Der Text darunter bleibt leer.
 - Beim Speichern nur die geänderten Felder, je Feld zusammengeführt mit einer Änderung außerhalb des Plugins wie bei [[DV-01 - Gemeinschaft v1]]. Unbekannte Schlüssel, Kommentare, Zeilenenden und der Text darunter bleiben.
 - Der Prüfvermerk („überfällig“, „Termin erfragen“) wird berechnet und nie gespeichert.
+- Beim Aufteilen legt das Plugin die Teile an, mit neuen Nummern ab der höchsten + 1, der Gemeinschaft, Art, Thema und Quelle des Ursprungs und `split_from_id`; danach setzt es am Ursprung `status: obsolete`, `split_into_ids` und einen Eintrag `split` im Verlauf. Beim Zusammenführen übernimmt das Ziel die gewählten Werte der Dublette, `merged_from_ids` und einen Eintrag `merge`; die Dublette erhält `status: obsolete`, `merged_into_id` und ebenfalls einen Eintrag `merge`. Jeder Verlauf bleibt in seiner Notiz.
 
 ## Probleme
 
@@ -118,7 +124,8 @@ Pflicht sind `schema`, `id`, `number`, `community_id`, `kind`, `topic`, `outcome
 | `number.invalid` | Keine ganze Zahl ab 1. | Wie oben. |
 | `number.duplicate` | Ein anderer Vorgang hat dieselbe Nummer. | Zeigt es an beiden; die Nummer ist im Formular änderbar. |
 | `number.taken` | Nur beim Speichern: Die eingegebene Nummer hat schon ein anderer Vorgang. | Zeigt das Problem am Feld und schreibt nichts. |
-| `field.reference`, `reference.missing` | `community_id` oder `responsible_id` ist keine `id` des passenden Typs oder nennt keinen vorhandenen Datensatz. | Wie oben. |
+| `field.reference`, `reference.missing` | `community_id`, `responsible_id`, `split_from_id` oder `merged_into_id` ist keine `id` des passenden Typs; `reference.missing`, wenn `community_id` oder `responsible_id` keinen vorhandenen Datensatz nennt. | Wie oben. |
+| `field.references` | `split_into_ids` oder `merged_from_ids` ist keine Liste von Vorgangs-`id`s. | Wie oben. |
 | `kind.unknown`, `status.unknown` | Kein Wert der Liste. | Wie oben. |
 | `topic.invalid`, `outcome.invalid`, `source.invalid`, `next-step.invalid`, `message-ref.invalid`, `link.invalid` | Kein Text, leer, zu lang oder mehrzeilig. | Wie oben. |
 | `outcome.too-long` | Nur beim Speichern: Der Dateiname hätte mehr als 255 Bytes. | Zeigt das Problem am Feld und schreibt nichts. |

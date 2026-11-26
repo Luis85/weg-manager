@@ -32,7 +32,7 @@ Eine datierte Information über eine Handlung, Aussage oder Änderung im fachlic
 
 ## Wertelisten
 
-**Art (geschlossen, Vorschlag):** Anfrage (`request`), Empfangsbestätigung (`acknowledgement`), sachliche Antwort (`reply`), neuer Termin (`new_date`), Teillieferung (`partial`), Erfüllung (`fulfilment`), Versand (`dispatch`, siehe [[ENT-11 - Versanddokumentation]]), Statuswechsel (`status_change`), Bewertung (`assessment`, siehe [[ENT-16 - Beiratsbewertung]]), Notiz (`note`).
+**Art (geschlossen, Vorschlag):** Anfrage (`request`), Empfangsbestätigung (`acknowledgement`), sachliche Antwort (`reply`), neuer Termin (`new_date`), Teillieferung (`partial`), Erfüllung (`fulfilment`), Versand (`dispatch`, siehe [[ENT-11 - Versanddokumentation]]), Statuswechsel (`status_change`), Bewertung (`assessment`, siehe [[ENT-16 - Beiratsbewertung]]), Notiz (`note`), Aufteilung (`split`, [[PBI-06 - Sammelvorgänge aufteilen]]), Zusammenführung (`merge`, [[PBI-07 - Dubletten zusammenführen]]). Aufteilung und Zusammenführung nennen die betroffenen Vorgänge im Feld `related`.
 
 ## Beziehungen
 

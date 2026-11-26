@@ -46,3 +46,12 @@ export {
   type StatusChangeIssue,
 } from "./history";
 export { promiseAge, validateDueChange, type DueChangeIssue } from "./rules";
+export {
+  mergeConflicts,
+  validateMerge,
+  validateSplit,
+  type MergeIssue,
+  type MergeKey,
+  type SplitIssue,
+  type SplitPart,
+} from "./lineage";

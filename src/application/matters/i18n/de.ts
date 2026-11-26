@@ -50,6 +50,10 @@ export const mattersDe: MattersCatalog = {
     next_step: "Nächster Schritt",
     message_ref: "Nachrichtenreferenz",
     link: "Link",
+    split_from_id: "Aufgeteilt aus",
+    split_into_ids: "Aufgeteilt in",
+    merged_into_id: "Zusammengeführt in",
+    merged_from_ids: "Zusammengeführt aus",
   },
   kinds: {
     manager_promise: "Zusage Verwaltung",
@@ -68,6 +72,12 @@ export const mattersDe: MattersCatalog = {
     requested_reply: "gewünschte Antwort",
   },
   dueChecks: { confirmed: "bestätigt", proposed: "vorgeschlagen", unknown: "Prüfstand unbekannt" },
+  lineage: {
+    splitInto: (numbers) => `aufgeteilt in ${numbers}`,
+    splitFrom: (number) => `aufgeteilt aus ${number}`,
+    mergedInto: (number) => `zusammengeführt in ${number}`,
+    mergedFrom: (numbers) => `zusammengeführt aus ${numbers}`,
+  },
   promisedAgo: (days) => (days === 1 ? "zugesagt vor 1 Tag" : `zugesagt vor ${days} Tagen`),
   locked: {
     title: "Stand und Termin",
@@ -104,6 +114,8 @@ export const mattersDe: MattersCatalog = {
       status_change: "Statuswechsel",
       assessment: "Bewertung",
       note: "Notiz",
+      split: "Aufteilung",
+      merge: "Zusammenführung",
     },
     board: "Beirat",
     unknownDay: "Tag unbekannt",
@@ -143,6 +155,43 @@ export const mattersDe: MattersCatalog = {
     dueApply: "Termin ändern",
     previous: (day) => `vorher: ${day}`,
     previousNone: "vorher: kein Termin",
+    split: "Aufteilen",
+    splitTitle: "In einzelne Vorgänge aufteilen",
+    splitPart: (n) => `Teil ${n}`,
+    addPart: "Teil hinzufügen",
+    removePart: (n) => `Teil ${n} entfernen`,
+    splitHint:
+      "Jeder Teil wird ein eigener Vorgang mit neuer Nummer und erbt Gemeinschaft, Art, Thema und Quelle. Dieser Vorgang wird hinfällig.",
+    splitApply: "Aufteilen",
+    merge: "Zusammenführen",
+    mergeTitle: "Dublette zusammenführen",
+    mergeWith: "Dublette",
+    mergeHint:
+      "Die Dublette wird hinfällig und verweist auf diesen Vorgang; ihr Verlauf bleibt in ihrer Notiz.",
+    noCandidates: "In dieser Gemeinschaft gibt es keinen anderen offenen Vorgang.",
+    noConflicts: "Die Angaben widersprechen sich nicht.",
+    keepTarget: "Wert dieses Vorgangs",
+    takeDuplicate: "Wert der Dublette",
+    mergeApply: "Zusammenführen",
+    emptyValue: "leer",
+    splitIssues: {
+      "reason.missing": "Gib den Anlass an.",
+      "split.closed": "Dieser Vorgang ist schon aufgeteilt oder zusammengeführt.",
+      "parts.too-few": "Teile in mindestens zwei Vorgänge auf.",
+      "outcome.missing": "Gib das Ergebnis dieses Teils an.",
+      "responsible.missing": "Wähle, wer für diesen Teil verantwortlich ist.",
+      "due-on.invalid":
+        "Das ist kein gültiger Tag. Gib ihn als JJJJ-MM-TT ein oder lass das Feld leer.",
+      "next-step.missing": "Gib den nächsten Schritt dieses Teils an.",
+    },
+    mergeIssues: {
+      "merge.same-matter": "Wähle einen anderen Vorgang als Dublette.",
+      "merge.other-community":
+        "Vorgänge verschiedener Gemeinschaften lassen sich nicht zusammenführen.",
+      "merge.already-merged": "Einer der Vorgänge ist schon zusammengeführt.",
+      "reason.missing": "Gib den Anlass an.",
+    },
+    related: (numbers) => `betrifft ${numbers}`,
     dueIssues: {
       "reason.missing": "Gib den Anlass an.",
       "due-on.invalid":
@@ -201,6 +250,15 @@ export const mattersDe: MattersCatalog = {
     invalidEntry: {
       title: "Eintrag nicht gespeichert",
       detail: "Einige Angaben fehlen oder passen nicht. Korrigiere sie und speichere erneut.",
+    },
+    invalidSplit: {
+      title: "Vorgang nicht aufgeteilt",
+      detail: "Für die Aufteilung fehlen Angaben. Ergänze sie und teile erneut auf.",
+    },
+    invalidMerge: {
+      title: "Vorgänge nicht zusammengeführt",
+      detail:
+        "Diese Vorgänge lassen sich so nicht zusammenführen. Prüfe die Angaben und versuche es erneut.",
     },
     invalidDueChange: {
       title: "Termin nicht geändert",

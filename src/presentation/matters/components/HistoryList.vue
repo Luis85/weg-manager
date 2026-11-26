@@ -13,6 +13,8 @@ const props = defineProps<{
   lines: readonly HistoryLine[];
   corrected: ReadonlySet<string>;
   contactNames: ReadonlyMap<string, string>;
+  /** The shown number of each matter by id, for a split's or merge's related matters. */
+  numbers: ReadonlyMap<string, string>;
 }>();
 
 const catalog = useMessages().matters;
@@ -32,6 +34,11 @@ const previousOf = (previous: string | undefined) => {
   if (previous === undefined) return undefined;
   return previous === "none" ? t.previousNone : t.previous(previous);
 };
+/** The matters a split or merge entry names, by number. */
+const relatedOf = (related: readonly string[] | undefined) =>
+  related === undefined || related.length === 0
+    ? undefined
+    : t.related(related.map((id) => props.numbers.get(id) ?? id).join(", "));
 const shown = computed(() =>
   props.lines.map((line, at) => {
     if (line.kind === "unreadable") return { key: `u${at}`, unreadable: line.line };
@@ -47,6 +54,7 @@ const shown = computed(() =>
       corrected: props.corrected.has(entry.id),
       correction: entry.corrects === undefined ? undefined : t.correction(textOf(entry.corrects)),
       previous: previousOf(entry.previous),
+      related: relatedOf(entry.related),
     };
   }),
 );
@@ -75,8 +83,13 @@ const shown = computed(() =>
           </span>
         </p>
         <p class="wm:text-xs wm:text-muted">{{ line.meta }}</p>
-        <p v-if="line.status || line.correction || line.previous" class="wm:text-xs">
-          {{ [line.status, line.previous, line.correction].filter(Boolean).join(" · ") }}
+        <p
+          v-if="line.status || line.correction || line.previous || line.related"
+          class="wm:text-xs"
+        >
+          {{
+            [line.status, line.previous, line.correction, line.related].filter(Boolean).join(" · ")
+          }}
         </p>
       </template>
     </li>

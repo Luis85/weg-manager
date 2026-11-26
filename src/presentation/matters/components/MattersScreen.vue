@@ -15,7 +15,7 @@ import {
 } from "../../../application/contacts";
 import { matterList, matterListChanges } from "../../../application/matters";
 import { today, todayChanges } from "../../../application/shell";
-import { matchesFilter, matterType, type MatterFilter } from "../../../domain/matters";
+import { matchesFilter, matterType, shownNumber, type MatterFilter } from "../../../domain/matters";
 import { RecordSheet, cardKey, useRecordScreen } from "../../notes";
 import { ErrorNotice, useMessages, useStream } from "../../shell";
 import MatterCard from "./MatterCard.vue";
@@ -81,6 +81,18 @@ const topics = computed(() =>
       list.value.records.flatMap((m) => (m.values.topic === undefined ? [] : [m.values.topic])),
     ),
   ].toSorted((a, b) => a.localeCompare(b, "de")),
+);
+/** The shown number of each matter by id ("AW 041"). */
+const numbers = computed(
+  () =>
+    new Map(
+      list.value.records.flatMap((matter) => {
+        const { number, community_id: community } = matter.values;
+        if (matter.id === undefined || number === undefined) return [];
+        const code = community === undefined ? undefined : shortCodes.value.get(community);
+        return [[matter.id, shownNumber(code, number)] as const];
+      }),
+    ),
 );
 const sheetTitle = computed(() =>
   editing.value?.record === undefined ? t.form.createTitle : t.form.editTitle,
@@ -159,6 +171,8 @@ const sheetTitle = computed(() =>
           :short-codes="shortCodes"
           :contact-names="contactNames"
           :contacts="contactChoices"
+          :matters="list.records"
+          :numbers="numbers"
           :data-card-key="cardKey(matter)"
           @edit="edit(matter)"
         />

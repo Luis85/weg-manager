@@ -67,3 +67,12 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 ## Business Rules
 
 [[DF-02 - Bearbeitung, Terminprüfung und Bewertung]], [[DF-13 - Historie und kontrollierte Entfernung]].
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen gemeinsamen ersten Schnitt von [[PBI-06 - Sammelvorgänge aufteilen]] und [[PBI-07 - Dubletten zusammenführen]].
+  - **Ursprung:** Nach dem Aufteilen oder Zusammenführen ist der Ursprung „hinfällig“ und trägt `split_into_ids` beziehungsweise `merged_into_id`. Die Karte zeigt „aufgeteilt in AW 042, AW 043“ beziehungsweise „zusammengeführt in AW 041“. So zählt er nie als erfüllt und nie als offen.
+  - **Widersprüche beim Zusammenführen:** Der Dialog zeigt jedes Feld, in dem sich Ziel und Dublette unterscheiden, und der Mensch wählt je Feld; Vorgabe ist der Wert des Ziels.
+  - **Teile beim Aufteilen:** Jeder Teil erbt Gemeinschaft, Art, Thema und Quelle und bekommt im Dialog eigenes Ergebnis, Termin oder Klärungsstand, Verantwortlichen und nächsten Schritt. Jeder Teil bekommt eine neue Nummer und trägt `split_from_id`.
+  - **Verlauf beim Zusammenführen:** Der Verlauf der Dublette bleibt in ihrer Notiz. Das Ziel bekommt einen Eintrag mit Verweis auf die Dublette, die Dublette einen mit Verweis auf das Ziel; nichts wird kopiert.
+- 26.11.2026 (Umsetzung des ersten Schnitts): Erfüllt sind Kriterium 1 (der Ursprung trägt `split_into_ids`, steht auf „hinfällig“ und hat einen Verlaufseintrag `split`, der die Teile nennt; jeder Teil trägt `split_from_id`; die Karte zeigt „aufgeteilt in …“ und „aufgeteilt aus …“ mit Nummern), 2 (je Teil Ergebnis, Termin oder Klärungsstand, Verantwortlicher und nächster Schritt im Dialog „Aufteilen“ im Verlauf; mindestens zwei Teile) und 3 (jeder Teil ist ein eigener Vorgang mit eigenem Stand und einer neuen Nummer ab der höchsten + 1; bestehende Nummern und `id`s bleiben). Ein aufgeteilter oder zusammengeführter Vorgang wird nicht noch einmal aufgeteilt. Tests: `tests/unit/domain/matters/lineage.test.ts`, `tests/unit/application/matters/lineage.test.ts`, `tests/dom/presentation/matters/lineage.test.ts`, `tests/e2e/specs/matter-lineage.e2e.ts`.

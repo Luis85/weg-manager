@@ -20,7 +20,7 @@ An Obsidian plugin runs inside a host it does not own. It shares the page, the C
 
 - A feature passes through four layers even when it is small. `docs/engineering/adding-a-feature.md` keeps that path short and gives a test for each layer.
 - `infrastructure` imports `presentation` (to mount the surface). A mount port would remove that edge if it ever matters.
-- Every Nuxt UI component the plugin uses must be listed in `src/styles/app.css`. Without the list, `styles.css` exceeds its 250 KB budget.
+- Every Nuxt UI component the plugin uses must be listed in `configs/tailwind-entry.ts` (until 26.11.2026 in `src/styles/app.css`). Without the list, `styles.css` exceeds its 250 KB budget.
 - Per-surface portals stack on Obsidian's modal layer. A dialog cannot escape a stacking context that Obsidian itself creates around a leaf.
 
 ## Amendment, 2026-11-21: the bridge after the module split

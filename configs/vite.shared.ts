@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import type { UserConfig } from "vite";
 import { noHeadPlugins } from "../scripts/no-head-plugins.mjs";
 import { scopeCss } from "../scripts/scope-css.mjs";
+import { writeTailwindEntry } from "./tailwind-entry.ts";
 
 export const PLUGIN_ID = "weg-manager";
 export const CSS_PREFIX = "wm";
@@ -43,7 +44,12 @@ export type SharedOptions = {
 };
 
 /** Vue + Nuxt UI + CSS ownership, shared by the plugin build, the harness and the dom tests. */
-export const sharedConfig = ({ mode, skipScope }: SharedOptions): UserConfig => ({
+export const sharedConfig = (options: SharedOptions): UserConfig => {
+  writeTailwindEntry();
+  return sharedViteConfig(options);
+};
+
+const sharedViteConfig = ({ mode, skipScope }: SharedOptions): UserConfig => ({
   plugins: [
     noHeadPlugins(),
     vue(),

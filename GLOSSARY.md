@@ -136,6 +136,18 @@ _Avoid_: event (host and vault events keep that name), log line, comment
 A change of a matter's status with its reason, written as the new status and a history entry of kind `status_change` in one step. Closing a matter needs a source too.
 _Avoid_: transition, state change
 
+**Split** (German: Aufteilung):
+Turning a collective matter into two or more matters, its parts, each with its own outcome, due date or clarification, responsible and next step. The source becomes obsolete with `split_into_ids`; each part carries `split_from_id`.
+_Avoid_: divide, fork
+
+**Duplicate** (German: Dublette):
+A matter that records the same expected outcome as another matter of the same community.
+_Avoid_: copy, clone
+
+**Merge** (German: Zusammenführung):
+Closing a duplicate into its target: the target takes the values the person chose and `merged_from_ids`, the duplicate becomes obsolete with `merged_into_id`. Each history stays in its own note.
+_Avoid_: combine, join
+
 **Correction** (German: Korrektur):
 A history entry that corrects an earlier one (`corrects`); the earlier one stays and is shown as corrected.
 _Avoid_: edit, amendment

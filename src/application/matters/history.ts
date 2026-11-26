@@ -20,7 +20,7 @@ import {
 import { matterRecords, type Matter } from "./list";
 
 /** Where the matter's note is now: found by its id, so a note renamed meanwhile is found. */
-export const pathOf = (matter: Matter) =>
+const pathOf = (matter: Matter) =>
   Effect.map(
     matterRecords.list,
     ({ records }) =>
@@ -40,8 +40,7 @@ export const entryId = IdGenerator.use((ids) => ids.uuid).pipe(
 );
 
 /** A day the form holds: trimmed, blank as unknown. */
-export const dayOf = (text: string): string | undefined =>
-  text.trim() === "" ? undefined : text.trim();
+const dayOf = (text: string): string | undefined => (text.trim() === "" ? undefined : text.trim());
 
 /** Writes `entry` into the history section, with `patch` on the frontmatter, in one write. */
 export const write = (matter: Matter, entry: HistoryEntry, patch: FrontmatterPatch) =>

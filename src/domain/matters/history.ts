@@ -108,6 +108,9 @@ const requiredOf = (fields: ReadonlyMap<string | undefined, string | undefined>)
   return isKind(kind) && complete ? { kind, actor, recorded, id } : undefined;
 };
 
+/** The text fields an entry may carry, kept as written. */
+const OPTIONAL_FIELDS = ["previous", "source", "corrects"] as const;
+
 /** One list item as an entry, or `undefined` when it lacks what every entry has. */
 const parseItem = (line: string): HistoryEntry | undefined => {
   const match = ITEM.exec(line);
@@ -118,6 +121,10 @@ const parseItem = (line: string): HistoryEntry | undefined => {
   if (required === undefined) return undefined;
   const { kind, actor, recorded, id } = required;
   const status = fields.get("status");
+  const optional = Object.fromEntries(
+    OPTIONAL_FIELDS.flatMap((key) => (fields.has(key) ? [[key, fields.get(key)]] : [])),
+  ) as Pick<HistoryEntry, (typeof OPTIONAL_FIELDS)[number]>;
+  const related = fields.get("related");
   return {
     id,
     occurred_on: day === "?" ? undefined : day,
@@ -125,12 +132,8 @@ const parseItem = (line: string): HistoryEntry | undefined => {
     kind,
     actor,
     ...(isStatus(status) ? { status } : {}),
-    ...(fields.has("previous") ? { previous: fields.get("previous") } : {}),
-    ...(fields.has("related")
-      ? { related: (fields.get("related") ?? "").split(" ").filter(Boolean) }
-      : {}),
-    ...(fields.has("source") ? { source: fields.get("source") } : {}),
-    ...(fields.has("corrects") ? { corrects: fields.get("corrects") } : {}),
+    ...(related === undefined ? {} : { related: related.split(" ").filter(Boolean) }),
+    ...optional,
     recorded_on: recorded,
   };
 };

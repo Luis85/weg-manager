@@ -21,6 +21,10 @@ const props = defineProps<{
   contactNames: ReadonlyMap<string, string>;
   /** The contacts a history entry may name as its actor. */
   contacts: readonly { readonly value: string; readonly label: string }[];
+  /** Every matter, for a merge's candidates. */
+  matters: readonly Matter[];
+  /** The shown number of each matter by id ("AW 041"), for the lineage line. */
+  numbers: ReadonlyMap<string, string>;
 }>();
 const emit = defineEmits<{ edit: [] }>();
 
@@ -75,7 +79,31 @@ const lines = computed(() => {
     step === undefined ? undefined : t.screen.nextStep(step),
   ].filter((line) => line !== undefined);
 });
-const gap = computed(() => values.value.source === UNKNOWN_SOURCE);
+/** A matter's shown number by id, or the id when it is not listed. */
+const numberOf = (id: string) => props.numbers.get(id) ?? id;
+const listOf = (ids: readonly string[]) => ids.map(numberOf).join(", ");
+/** Where the matter came from and what it became (PBI-06, PBI-07), by number. */
+const lineage = computed(() => {
+  const { split_from_id, split_into_ids, merged_into_id, merged_from_ids } = values.value;
+  return [
+    split_from_id === undefined ? undefined : t.lineage.splitFrom(numberOf(split_from_id)),
+    split_into_ids === undefined ? undefined : t.lineage.splitInto(listOf(split_into_ids)),
+    merged_into_id === undefined ? undefined : t.lineage.mergedInto(numberOf(merged_into_id)),
+    merged_from_ids === undefined ? undefined : t.lineage.mergedFrom(listOf(merged_from_ids)),
+  ]
+    .filter((part) => part !== undefined)
+    .join(" · ");
+});
+/** The small notes under the facts: the lineage, then the source gap. */
+const hints = computed(() =>
+  [
+    { id: "matter-lineage", text: lineage.value },
+    {
+      id: "matter-source-gap",
+      text: values.value.source === UNKNOWN_SOURCE ? t.screen.sourceGap : "",
+    },
+  ].filter((hint) => hint.text !== ""),
+);
 /** Whether the history shows under the card. */
 const historyOpen = shallowRef(false);
 const issues = computed(() =>
@@ -115,8 +143,13 @@ const issues = computed(() =>
         {{ mark }}
       </p>
       <p v-for="line in lines" :key="line" class="wm:text-sm wm:wrap-break-word">{{ line }}</p>
-      <p v-if="gap" class="wm:text-xs wm:text-muted" data-testid="matter-source-gap">
-        {{ t.screen.sourceGap }}
+      <p
+        v-for="hint in hints"
+        :key="hint.id"
+        class="wm:text-xs wm:text-muted"
+        :data-testid="hint.id"
+      >
+        {{ hint.text }}
       </p>
       <ul
         v-if="issues.length > 0"
@@ -158,6 +191,8 @@ const issues = computed(() =>
       :today="today"
       :contacts="contacts"
       :contact-names="contactNames"
+      :matters="matters"
+      :numbers="numbers"
     />
   </li>
 </template>

@@ -79,7 +79,7 @@ export const validateMerge = (
 };
 
 /** The fields a merge compares and lets the person choose (PBI-07 criterion 1). */
-export const MERGE_KEYS = [
+const MERGE_KEYS = [
   "kind",
   "topic",
   "outcome",
@@ -98,7 +98,7 @@ export const MERGE_KEYS = [
 export type MergeKey = (typeof MERGE_KEYS)[number];
 
 /** One field where the duplicate has a value the target lacks or holds differently. */
-export type MergeConflict = {
+type MergeConflict = {
   readonly key: MergeKey;
   readonly target: string | undefined;
   readonly duplicate: string;

@@ -1,5 +1,7 @@
 import type {
   CheckMark,
+  MergeIssue,
+  SplitIssue,
   DueCheck,
   DueChangeIssue,
   DueKind,
@@ -54,6 +56,13 @@ export type MattersCatalog = {
   readonly checkMarks: Readonly<Record<CheckMark, string>>;
   readonly dueKinds: Readonly<Record<DueKind, string>>;
   readonly dueChecks: Readonly<Record<DueCheck, string>>;
+  /** A card's lineage line (PBI-06, PBI-07): numbers of the related matters. */
+  readonly lineage: {
+    splitInto(numbers: string): string;
+    splitFrom(number: string): string;
+    mergedInto(number: string): string;
+    mergedFrom(numbers: string): string;
+  };
   /** A card's age of the promise in days (PBI-09 criterion 4). */
   promisedAgo(days: number): string;
   /** The status and due date of a matter being edited: changed only with a reason. */
@@ -124,6 +133,27 @@ export type MattersCatalog = {
     previous(day: string): string;
     readonly previousNone: string;
     readonly dueIssues: Readonly<Record<DueChangeIssue, string>>;
+    /** Split and merge (PBI-06, PBI-07). */
+    readonly split: string;
+    readonly splitTitle: string;
+    splitPart(n: number): string;
+    readonly addPart: string;
+    removePart(n: number): string;
+    readonly splitHint: string;
+    readonly splitApply: string;
+    readonly merge: string;
+    readonly mergeTitle: string;
+    readonly mergeWith: string;
+    readonly mergeHint: string;
+    readonly noCandidates: string;
+    readonly noConflicts: string;
+    readonly keepTarget: string;
+    readonly takeDuplicate: string;
+    readonly mergeApply: string;
+    readonly emptyValue: string;
+    readonly splitIssues: Readonly<Record<SplitIssue["code"], string>>;
+    readonly mergeIssues: Readonly<Record<MergeIssue, string>>;
+    related(numbers: string): string;
   };
   readonly missing: Partial<Readonly<Record<MatterKey, string>>>;
   readonly issues: IssueSentences<MatterFieldIssue>;

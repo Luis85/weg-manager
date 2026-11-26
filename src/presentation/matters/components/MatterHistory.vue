@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import UButton from "@nuxt/ui/components/Button.vue";
-import { onMounted, shallowRef, watch } from "vue";
+import { computed, onMounted, shallowRef, watch } from "vue";
 import type { Matter } from "../../../application/matters";
 import { useHistoryList } from "../use-history";
 import { useMessages } from "../../shell";
 import DueChangeForm from "./DueChangeForm.vue";
 import HistoryEntryForm from "./HistoryEntryForm.vue";
 import HistoryList from "./HistoryList.vue";
+import MergeForm from "./MergeForm.vue";
+import SplitForm from "./SplitForm.vue";
 import StatusChangeForm from "./StatusChangeForm.vue";
 
 /**
@@ -19,16 +21,48 @@ const props = defineProps<{
   today: string;
   contacts: readonly { readonly value: string; readonly label: string }[];
   contactNames: ReadonlyMap<string, string>;
+  matters: readonly Matter[];
+  numbers: ReadonlyMap<string, string>;
 }>();
 
 const t = useMessages().matters.history;
 const { history, reload, lines, corrected } = useHistoryList(() => props.matter);
-const open = shallowRef<"entry" | "status" | "due" | undefined>();
+const open = shallowRef<Form | undefined>();
 onMounted(() => void reload());
 watch(
   () => props.matter.frontmatter,
   () => void reload(),
 );
+type Form = "entry" | "status" | "due" | "split" | "merge";
+/** Whether the matter is closed by a split or a merge: it is then only history. */
+const closed = () =>
+  props.matter.values.split_into_ids !== undefined ||
+  props.matter.values.merged_into_id !== undefined;
+/** The buttons that open a form; a split or merged matter is not split or merged again. */
+const actions = computed(() => {
+  const all: { form: Form; id: string; label: string; icon?: string }[] = [
+    { form: "entry", id: "history-add", label: t.add, icon: "i-lucide-plus" },
+    { form: "status", id: "status-change", label: t.change },
+    { form: "due", id: "due-change", label: t.changeDue },
+    { form: "split", id: "split-start", label: t.split },
+    { form: "merge", id: "merge-start", label: t.merge },
+  ];
+  return closed()
+    ? all.filter((action) => action.form !== "split" && action.form !== "merge")
+    : all;
+});
+/** The open form and its props, or `undefined` while none is open. */
+const opened = computed(() => {
+  const { matter, today, contacts, matters, numbers } = props;
+  const forms = {
+    entry: { component: HistoryEntryForm, props: { matter, lines: lines.value, contacts } },
+    status: { component: StatusChangeForm, props: { matter, today } },
+    due: { component: DueChangeForm, props: { matter } },
+    split: { component: SplitForm, props: { matter, contacts } },
+    merge: { component: MergeForm, props: { matter, matters, numbers } },
+  } as const;
+  return open.value === undefined ? undefined : forms[open.value];
+});
 const done = () => {
   open.value = undefined;
   void reload();
@@ -52,52 +86,33 @@ const done = () => {
     <p v-else-if="lines.length === 0" class="wm:text-sm wm:text-muted" data-testid="history-empty">
       {{ t.empty }}
     </p>
-    <HistoryList v-else :lines="lines" :corrected="corrected" :contact-names="contactNames" />
+    <HistoryList
+      v-else
+      :lines="lines"
+      :corrected="corrected"
+      :contact-names="contactNames"
+      :numbers="numbers"
+    />
     <div v-if="open === undefined && matter.editable" class="wm:flex wm:flex-wrap wm:gap-2">
       <UButton
+        v-for="action in actions"
+        :key="action.form"
         type="button"
         size="sm"
         color="neutral"
         variant="outline"
-        icon="i-lucide-plus"
-        :label="t.add"
-        data-testid="history-add"
-        @click="open = 'entry'"
-      />
-      <UButton
-        type="button"
-        size="sm"
-        color="neutral"
-        variant="outline"
-        :label="t.change"
-        data-testid="status-change"
-        @click="open = 'status'"
-      />
-      <UButton
-        type="button"
-        size="sm"
-        color="neutral"
-        variant="outline"
-        :label="t.changeDue"
-        data-testid="due-change"
-        @click="open = 'due'"
+        :icon="action.icon"
+        :label="action.label"
+        :data-testid="action.id"
+        @click="open = action.form"
       />
     </div>
-    <HistoryEntryForm
-      v-if="open === 'entry'"
-      :matter="matter"
-      :lines="lines"
-      :contacts="contacts"
+    <component
+      :is="opened.component"
+      v-if="opened !== undefined"
+      v-bind="opened.props"
       @done="done"
       @cancel="open = undefined"
     />
-    <StatusChangeForm
-      v-if="open === 'status'"
-      :matter="matter"
-      :today="today"
-      @done="done"
-      @cancel="open = undefined"
-    />
-    <DueChangeForm v-if="open === 'due'" :matter="matter" @done="done" @cancel="open = undefined" />
   </section>
 </template>

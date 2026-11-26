@@ -47,11 +47,9 @@ export {
 } from "./history";
 export { promiseAge, validateDueChange, type DueChangeIssue } from "./rules";
 export {
-  MERGE_KEYS,
   mergeConflicts,
   validateMerge,
   validateSplit,
-  type MergeConflict,
   type MergeIssue,
   type MergeKey,
   type SplitIssue,

@@ -20,6 +20,24 @@ import {
 } from "../../domain/matters";
 import { useCommand, useMessages, useQuery } from "../shell";
 
+/** A TanStack form over `defaults` whose submit runs `write`, then `done` once it has written. */
+export const useWriteForm = <V>(
+  defaults: V,
+  write: (value: V) => Promise<{ readonly _tag: string }>,
+  done: () => void,
+) =>
+  useForm({
+    defaultValues: defaults,
+    onSubmit: async ({ value }) => whenWritten(done)(await write(value)),
+  });
+
+/** Runs `done` once a form's command has written: on success only. */
+export const whenWritten =
+  (done: () => void) =>
+  (outcome: { readonly _tag: string }): void => {
+    if (outcome._tag === "success") done();
+  };
+
 /** Which field of the entry form an issue belongs to. */
 const ENTRY_FIELD: Readonly<Record<EntryIssue, "text" | "occurred_on">> = {
   "text.missing": "text",
@@ -64,8 +82,7 @@ export const useEntryForm = (matter: () => Matter, done: () => void) => {
     defaultValues: defaults,
     onSubmit: async ({ value }) => {
       const corrects = value.corrects === "" ? undefined : value.corrects;
-      const outcome = await command.run(matter(), { ...value, corrects });
-      if (outcome._tag === "success") done();
+      whenWritten(done)(await command.run(matter(), { ...value, corrects }));
     },
   });
   const issueOf =
@@ -96,13 +113,7 @@ export const useStatusForm = (matter: () => Matter, today: string, done: () => v
     source: "",
     done_on: today,
   };
-  const form = useForm({
-    defaultValues: defaults,
-    onSubmit: async ({ value }) => {
-      const outcome = await command.run(matter(), value);
-      if (outcome._tag === "success") done();
-    },
-  });
+  const form = useWriteForm(defaults, (value) => command.run(matter(), value), done);
   const issueOf =
     (field: "to" | "reason" | "source" | "done_on") =>
     ({ value }: { value: string }) => {
@@ -140,13 +151,7 @@ export const useDueForm = (matter: () => Matter, done: () => void) => {
     due_checked: values.due_checked ?? "",
     reason: "",
   };
-  const form = useForm({
-    defaultValues: defaults,
-    onSubmit: async ({ value }) => {
-      const outcome = await command.run(matter(), value);
-      if (outcome._tag === "success") done();
-    },
-  });
+  const form = useWriteForm(defaults, (value) => command.run(matter(), value), done);
   const issueOf =
     (field: "due_on" | "reason") =>
     ({ value }: { value: string }) => {

@@ -72,6 +72,12 @@ export const mattersDe: MattersCatalog = {
     requested_reply: "gewünschte Antwort",
   },
   dueChecks: { confirmed: "bestätigt", proposed: "vorgeschlagen", unknown: "Prüfstand unbekannt" },
+  lineage: {
+    splitInto: (numbers) => `aufgeteilt in ${numbers}`,
+    splitFrom: (number) => `aufgeteilt aus ${number}`,
+    mergedInto: (number) => `zusammengeführt in ${number}`,
+    mergedFrom: (numbers) => `zusammengeführt aus ${numbers}`,
+  },
   promisedAgo: (days) => (days === 1 ? "zugesagt vor 1 Tag" : `zugesagt vor ${days} Tagen`),
   locked: {
     title: "Stand und Termin",
@@ -149,6 +155,43 @@ export const mattersDe: MattersCatalog = {
     dueApply: "Termin ändern",
     previous: (day) => `vorher: ${day}`,
     previousNone: "vorher: kein Termin",
+    split: "Aufteilen",
+    splitTitle: "In einzelne Vorgänge aufteilen",
+    splitPart: (n) => `Teil ${n}`,
+    addPart: "Teil hinzufügen",
+    removePart: (n) => `Teil ${n} entfernen`,
+    splitHint:
+      "Jeder Teil wird ein eigener Vorgang mit neuer Nummer und erbt Gemeinschaft, Art, Thema und Quelle. Dieser Vorgang wird hinfällig.",
+    splitApply: "Aufteilen",
+    merge: "Zusammenführen",
+    mergeTitle: "Dublette zusammenführen",
+    mergeWith: "Dublette",
+    mergeHint:
+      "Die Dublette wird hinfällig und verweist auf diesen Vorgang; ihr Verlauf bleibt in ihrer Notiz.",
+    noCandidates: "In dieser Gemeinschaft gibt es keinen anderen offenen Vorgang.",
+    noConflicts: "Die Angaben widersprechen sich nicht.",
+    keepTarget: "Wert dieses Vorgangs",
+    takeDuplicate: "Wert der Dublette",
+    mergeApply: "Zusammenführen",
+    emptyValue: "leer",
+    splitIssues: {
+      "reason.missing": "Gib den Anlass an.",
+      "split.closed": "Dieser Vorgang ist schon aufgeteilt oder zusammengeführt.",
+      "parts.too-few": "Teile in mindestens zwei Vorgänge auf.",
+      "outcome.missing": "Gib das Ergebnis dieses Teils an.",
+      "responsible.missing": "Wähle, wer für diesen Teil verantwortlich ist.",
+      "due-on.invalid":
+        "Das ist kein gültiger Tag. Gib ihn als JJJJ-MM-TT ein oder lass das Feld leer.",
+      "next-step.missing": "Gib den nächsten Schritt dieses Teils an.",
+    },
+    mergeIssues: {
+      "merge.same-matter": "Wähle einen anderen Vorgang als Dublette.",
+      "merge.other-community":
+        "Vorgänge verschiedener Gemeinschaften lassen sich nicht zusammenführen.",
+      "merge.already-merged": "Einer der Vorgänge ist schon zusammengeführt.",
+      "reason.missing": "Gib den Anlass an.",
+    },
+    related: (numbers) => `betrifft ${numbers}`,
     dueIssues: {
       "reason.missing": "Gib den Anlass an.",
       "due-on.invalid":

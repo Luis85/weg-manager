@@ -18,7 +18,7 @@ import {
   settingsTabContent,
   writeData,
 } from "../support";
-import { de } from "../texts";
+import { de, settingNames } from "../texts";
 
 const INTRO = (folder: string) => de.communities.screen.intro(folder);
 
@@ -68,7 +68,7 @@ describe("settings changed outside Obsidian", function () {
       timeoutMsg: "the settings tab never turned read-only",
     });
     expect((await settingsTabContent()).names).toEqual([
-      de.shell.settingsTab.logLevel.name,
+      ...settingNames(),
       de.shell.errors.readOnly.title,
     ]);
     await logLevelControl("info");

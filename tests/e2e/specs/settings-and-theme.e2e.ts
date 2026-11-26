@@ -13,7 +13,7 @@ import {
   settingsTabContent,
   writeData,
 } from "../support";
-import { de } from "../texts";
+import { de, settingNames } from "../texts";
 
 /** Theme classes on the root and the colours Obsidian and the surface resolve to. */
 const sample = () =>
@@ -42,7 +42,7 @@ describe("settings and theme in Obsidian", function () {
   it("keeps only the plugin settings in the native settings tab (PBI-49)", async function () {
     await installConsoleSpy();
     expect(await settingsTabContent()).toEqual({
-      names: [de.shell.settingsTab.logLevel.name],
+      names: settingNames(),
       inputs: 0,
     });
   });
@@ -84,7 +84,7 @@ describe("settings and theme in Obsidian", function () {
     await writeData(newer);
     await reloadPlugin();
     expect((await settingsTabContent()).names).toEqual([
-      de.shell.settingsTab.logLevel.name,
+      ...settingNames(),
       de.shell.errors.readOnly.title,
     ]);
     expect(await logLevelControl("info")).toMatchObject({ disabled: true });

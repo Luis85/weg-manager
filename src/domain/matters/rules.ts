@@ -46,8 +46,7 @@ export type MatterRuleContext = {
   readonly others: readonly OtherMatter[];
   /** The values the edited matter had when the form loaded it: kept values are not checked. */
   readonly loaded?:
-    | { readonly number?: number | undefined; readonly outcome?: string | undefined }
-    | undefined;
+    { readonly number?: number | undefined; readonly outcome?: string | undefined } | undefined;
 };
 
 /** The number a new matter gets: the highest in the vault plus one (owner decision 26.11.2026). */
@@ -78,26 +77,35 @@ const doneOnIssue = (draft: MatterDraft): MatterFieldIssue | undefined => {
     : undefined;
 };
 
-/** The rules beyond each field, at most one per key. */
-const ruleIssues = (draft: MatterDraft, context: MatterRuleContext): MatterFieldIssue[] => {
-  const { loaded } = context;
-  const number = draft.number;
-  const taken =
-    number !== undefined &&
-    number !== loaded?.number &&
-    context.others.some((other) => other.number === number);
-  const outcome = draft.outcome;
-  const tooLong =
-    outcome !== undefined &&
-    outcome !== loaded?.outcome &&
-    !fitsFileName(outcome, `Vorgang ${String(number ?? 0)}`);
-  const issues: (MatterFieldIssue | undefined)[] = [
-    taken ? { key: "number", code: "number.taken" } : undefined,
-    tooLong ? { key: "outcome", code: "outcome.too-long" } : undefined,
-    doneOnIssue(draft),
-  ];
-  return issues.filter((issue) => issue !== undefined);
+/** A number another matter has, unless the matter had it when loaded. */
+const numberIssue = (
+  draft: MatterDraft,
+  context: MatterRuleContext,
+): MatterFieldIssue | undefined => {
+  const { number } = draft;
+  if (number === undefined || number === context.loaded?.number) return undefined;
+  return context.others.some((other) => other.number === number)
+    ? { key: "number", code: "number.taken" }
+    : undefined;
 };
+
+/** An outcome too long for a file name, unless the matter had it when loaded. */
+const outcomeIssue = (
+  draft: MatterDraft,
+  context: MatterRuleContext,
+): MatterFieldIssue | undefined => {
+  const { outcome } = draft;
+  if (outcome === undefined || outcome === context.loaded?.outcome) return undefined;
+  return fitsFileName(outcome, `Vorgang ${String(draft.number ?? 0)}`)
+    ? undefined
+    : { key: "outcome", code: "outcome.too-long" };
+};
+
+/** The rules beyond each field, at most one per key. */
+const ruleIssues = (draft: MatterDraft, context: MatterRuleContext): MatterFieldIssue[] =>
+  [numberIssue(draft, context), outcomeIssue(draft, context), doneOnIssue(draft)].filter(
+    (issue) => issue !== undefined,
+  );
 
 /**
  * The rules a matter must meet to be saved (PBI-05, DV-03): the field rules of the note type, then

@@ -7,6 +7,7 @@ import {
 } from "../application/routes";
 import { communitiesScreens } from "./communities/screens";
 import { contactsScreens } from "./contacts/screens";
+import { mattersScreens } from "./matters/screens";
 import { notesScreens } from "./notes/screens";
 import type {
   ModuleScreens,
@@ -28,6 +29,7 @@ export const MODULE_SCREENS: { readonly [Name in AppModuleName]: ModuleScreens<N
   notes: notesScreens,
   communities: communitiesScreens,
   contacts: contactsScreens,
+  matters: mattersScreens,
 };
 
 /** The modules' screens in module order (`APP_MODULES`). */

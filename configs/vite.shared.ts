@@ -30,6 +30,8 @@ export const SHELL_ICONS = [
   "lucide:shield",
   "lucide:archive",
   "lucide:x",
+  "lucide:list-checks",
+  "lucide:search",
 ];
 
 export type SharedOptions = {

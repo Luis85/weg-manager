@@ -76,7 +76,10 @@ describe("validateMatter", () => {
 
   it("reports the field rules first, one issue per field", () => {
     expect(
-      validateMatter(input({ topic: "", kind: "mangel", responsible_id: "", due_on: "30.11." }), context),
+      validateMatter(
+        input({ topic: "", kind: "mangel", responsible_id: "", due_on: "30.11." }),
+        context,
+      ),
     ).toEqual([
       { key: "kind", code: "kind.unknown" },
       { key: "topic", code: "field.missing" },
@@ -131,7 +134,14 @@ describe("matchesFilter", () => {
   });
 
   it("filters by topic, status, community and responsible", () => {
-    expect(matchesFilter(values, { topic: "Beleuchtung", status: "open", community: AW, responsible: FIRM })).toBe(true);
+    expect(
+      matchesFilter(values, {
+        topic: "Beleuchtung",
+        status: "open",
+        community: AW,
+        responsible: FIRM,
+      }),
+    ).toBe(true);
     expect(matchesFilter(values, { community: TG })).toBe(false);
     expect(matchesFilter(values, { status: "done" })).toBe(false);
     expect(matchesFilter(values, { topic: "Heizung" })).toBe(false);

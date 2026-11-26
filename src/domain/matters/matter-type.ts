@@ -65,9 +65,7 @@ export const matterType = defineNoteType({
     status: required(text({ schema: Schema.Literals(MATTER_STATUSES), issue: "status.unknown" })),
     done_on: date(),
     source: required(text({ schema: lineOfText(SOURCE_MAX_LENGTH), issue: "source.invalid" })),
-    next_step: required(
-      text({ schema: lineOfText(TEXT_MAX_LENGTH), issue: "next-step.invalid" }),
-    ),
+    next_step: required(text({ schema: lineOfText(TEXT_MAX_LENGTH), issue: "next-step.invalid" })),
     message_ref: text({ schema: lineOfText(TEXT_MAX_LENGTH), issue: "message-ref.invalid" }),
     link: text({ schema: lineOfText(TEXT_MAX_LENGTH), issue: "link.invalid" }),
   },

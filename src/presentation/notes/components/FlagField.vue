@@ -2,7 +2,7 @@
 import { useId } from "vue";
 
 /**
- * One flag of the contact form as a native checkbox with its help text. A `locked` flag stays on:
+ * One flag of a record form as a native checkbox with its help text. A `locked` flag stays on:
  * it says `aria-disabled` and ignores a click, never `disabled`, so it keeps the focus.
  */
 const props = defineProps<{

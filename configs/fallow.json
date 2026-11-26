@@ -100,7 +100,13 @@
     "rules": [
       {
         "from": "domain",
-        "allow": ["domain/shell", "domain/notes", "domain/communities", "domain/contacts"]
+        "allow": [
+          "domain/shell",
+          "domain/notes",
+          "domain/communities",
+          "domain/contacts",
+          "domain/matters"
+        ]
       },
       {
         "from": "application",
@@ -110,6 +116,7 @@
           "application/notes",
           "application/communities",
           "application/contacts",
+          "application/matters",
           "application-module",
           "application-composition"
         ]
@@ -155,6 +162,7 @@
           "presentation/notes",
           "presentation/communities",
           "presentation/contacts",
+          "presentation/matters",
           "application",
           "application-composition",
           "application-describe-error",

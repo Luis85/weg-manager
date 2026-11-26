@@ -5,13 +5,9 @@ import { computed, useId, useTemplateRef } from "vue";
 import type { Community } from "../../../application/communities";
 import type { Contact } from "../../../application/contacts";
 import { CONTACT_KINDS, CONTACT_LANGUAGES } from "../../../domain/contacts";
-import { ConflictChoice, RecordFormFooter } from "../../notes";
-import { ErrorNotice } from "../../shell";
+import { ChoiceField, FlagField, RecordForm, TextField } from "../../notes";
 import { NEW_COMPANY, useContactForm } from "../use-contact-form";
-import ChoiceField from "./ChoiceField.vue";
-import FlagField from "./FlagField.vue";
 import RolesField from "./RolesField.vue";
-import TextField from "./TextField.vue";
 
 /**
  * Creates a contact or edits one (`contact` set), in one form (PBI-02); the state and rules are
@@ -27,7 +23,7 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{ done: [id: string]; cancel: [] }>();
 
-const root = useTemplateRef<HTMLFormElement>("root");
+const root = useTemplateRef<{ $el: HTMLElement }>("root");
 const {
   form,
   t,
@@ -51,7 +47,7 @@ const {
   contact: props.contact,
   contacts: () => props.contacts,
   communities: () => props.communities,
-  root: () => root.value ?? undefined,
+  root: () => root.value?.$el,
   done: (id) => emit("done", id),
 });
 const kindValue = form.useSelector((state) => state.values.kind);
@@ -83,177 +79,167 @@ const kindGroup = useId();
 </script>
 
 <template>
-  <form
+  <RecordForm
     ref="root"
-    class="wm:flex wm:min-h-full wm:flex-col"
-    novalidate
-    data-testid="contact-form"
-    @submit.prevent="submit"
+    form-id="contact-form"
+    save-id="contact-save"
+    :cancel="t.form.cancel"
+    :save="t.form.save"
+    :summary="summary"
+    :notice="notice"
+    :conflicts="conflicts"
+    :pending="pending"
+    :blocked="blocked"
+    :label="label"
+    :show="show"
+    @submit="submit"
+    @apply="resolve"
+    @cancel="emit('cancel')"
   >
-    <div class="wm:flex wm:flex-1 wm:flex-col wm:gap-4 wm:p-4 wm:sm:p-6">
-      <ErrorNotice v-if="summary" :message="summary" data-testid="form-summary" />
-      <form.Field name="name" :validators="validators('name')">
-        <template #default="{ field }">
-          <TextField
-            :label="t.fields.name"
-            :value="field.state.value"
-            :error="errorOf('name', field.state.meta)"
-            test-id="field-name"
-            required
-            autofocus
-            @change="field.handleChange"
-            @blur="field.handleBlur"
-          />
-        </template>
-      </form.Field>
-      <p
-        v-if="sameName.length > 0"
-        class="wm:text-sm wm:text-warning"
-        role="status"
-        data-testid="same-name"
-      >
-        {{ t.form.sameName(sameName.join(", ")) }}
-      </p>
-      <form.Field name="kind" :validators="validators('kind')">
-        <template #default="{ field }">
-          <fieldset data-testid="field-kind">
-            <legend class="wm:mb-1 wm:text-sm wm:font-medium">{{ t.fields.kind }}</legend>
-            <div class="wm:flex wm:gap-4">
-              <label
-                v-for="kind in CONTACT_KINDS"
-                :key="kind"
-                class="wm:flex wm:items-center wm:gap-1 wm:text-sm"
-              >
-                <input
-                  type="radio"
-                  :name="kindGroup"
-                  :value="kind"
-                  :checked="field.state.value === kind"
-                  :data-testid="`kind-${kind}`"
-                  @change="field.handleChange(kind)"
-                />
-                {{ t.kinds[kind] }}
-              </label>
-            </div>
-          </fieldset>
-        </template>
-      </form.Field>
-      <form.Field
-        v-if="kindValue === 'person'"
-        name="organization_id"
-        :validators="validators('organization_id')"
-      >
-        <template #default="{ field }">
-          <ChoiceField
-            :label="t.fields.organization_id"
-            :value="field.state.value"
-            :options="companyOptions"
-            :error="errorOf('organization_id', field.state.meta)"
-            test-id="field-organization_id"
-            @change="field.handleChange"
-            @blur="field.handleBlur"
-          />
-        </template>
-      </form.Field>
-      <UFormField
-        v-if="kindValue === 'person' && companyValue === NEW_COMPANY"
-        :label="t.form.newCompanyName"
-        :help="t.form.newCompanyHint"
-      >
-        <UInput v-model="newCompany" class="wm:w-full" data-testid="field-new-company" />
-      </UFormField>
-      <form.Field name="roles" :validators="validators('roles')">
-        <template #default="{ field }">
-          <RolesField
-            :roles="field.state.value"
-            :communities="communityOptions"
-            :error="errorOf('roles', field.state.meta)"
-            @change="(roles) => rolesChanged(roles, field.handleChange)"
-            @blur="field.handleBlur"
-          />
-        </template>
-      </form.Field>
-      <form.Field name="email" :validators="validators('email')">
-        <template #default="{ field }">
-          <TextField
-            :label="t.fields.email"
-            :value="field.state.value"
-            :error="errorOf('email', field.state.meta)"
-            type="email"
-            test-id="field-email"
-            @change="field.handleChange"
-            @blur="field.handleBlur"
-          />
-        </template>
-      </form.Field>
-      <form.Field name="phone" :validators="validators('phone')">
-        <template #default="{ field }">
-          <TextField
-            :label="t.fields.phone"
-            :value="field.state.value"
-            :error="errorOf('phone', field.state.meta)"
-            type="tel"
-            test-id="field-phone"
-            @change="field.handleChange"
-            @blur="field.handleBlur"
-          />
-        </template>
-      </form.Field>
-      <form.Field name="language" :validators="validators('language')">
-        <template #default="{ field }">
-          <ChoiceField
-            :label="t.fields.language"
-            :value="field.state.value"
-            :options="languageOptions"
-            :error="errorOf('language', field.state.meta)"
-            test-id="field-language"
-            @change="field.handleChange"
-            @blur="field.handleBlur"
-          />
-        </template>
-      </form.Field>
-      <form.Field name="private" :validators="validators('private')">
-        <template #default="{ field }">
-          <FlagField
-            :label="t.fields.private"
-            :checked="field.state.value"
-            :locked="privateLocked"
-            :help="privateLocked ? t.form.privateLocked : t.form.privateHelp"
-            :error="errorOf('private', field.state.meta)"
-            test-id="field-private"
-            @change="field.handleChange"
-          />
-        </template>
-      </form.Field>
-      <form.Field name="inactive">
-        <template #default="{ field }">
-          <FlagField
-            :label="t.fields.inactive"
-            :checked="field.state.value"
-            :help="t.form.inactiveHelp"
-            :error="false"
-            test-id="field-inactive"
-            @change="field.handleChange"
-          />
-        </template>
-      </form.Field>
-      <ConflictChoice
-        v-if="conflicts"
-        :conflicts="conflicts"
-        :disabled="pending"
-        :label="label"
-        :show="show"
-        @apply="resolve"
-      />
-      <ErrorNotice v-if="notice" :message="notice" />
-    </div>
-    <RecordFormFooter
-      :cancel="t.form.cancel"
-      :save="t.form.save"
-      :pending="pending"
-      :blocked="blocked"
-      save-id="contact-save"
-      @cancel="emit('cancel')"
-    />
-  </form>
+    <form.Field name="name" :validators="validators('name')">
+      <template #default="{ field }">
+        <TextField
+          :label="t.fields.name"
+          :value="field.state.value"
+          :error="errorOf('name', field.state.meta)"
+          test-id="field-name"
+          required
+          autofocus
+          @change="field.handleChange"
+          @blur="field.handleBlur"
+        />
+      </template>
+    </form.Field>
+    <p
+      v-if="sameName.length > 0"
+      class="wm:text-sm wm:text-warning"
+      role="status"
+      data-testid="same-name"
+    >
+      {{ t.form.sameName(sameName.join(", ")) }}
+    </p>
+    <form.Field name="kind" :validators="validators('kind')">
+      <template #default="{ field }">
+        <fieldset data-testid="field-kind">
+          <legend class="wm:mb-1 wm:text-sm wm:font-medium">{{ t.fields.kind }}</legend>
+          <div class="wm:flex wm:gap-4">
+            <label
+              v-for="kind in CONTACT_KINDS"
+              :key="kind"
+              class="wm:flex wm:items-center wm:gap-1 wm:text-sm"
+            >
+              <input
+                type="radio"
+                :name="kindGroup"
+                :value="kind"
+                :checked="field.state.value === kind"
+                :data-testid="`kind-${kind}`"
+                @change="field.handleChange(kind)"
+              />
+              {{ t.kinds[kind] }}
+            </label>
+          </div>
+        </fieldset>
+      </template>
+    </form.Field>
+    <form.Field
+      v-if="kindValue === 'person'"
+      name="organization_id"
+      :validators="validators('organization_id')"
+    >
+      <template #default="{ field }">
+        <ChoiceField
+          :label="t.fields.organization_id"
+          :value="field.state.value"
+          :options="companyOptions"
+          :error="errorOf('organization_id', field.state.meta)"
+          test-id="field-organization_id"
+          @change="field.handleChange"
+          @blur="field.handleBlur"
+        />
+      </template>
+    </form.Field>
+    <UFormField
+      v-if="kindValue === 'person' && companyValue === NEW_COMPANY"
+      :label="t.form.newCompanyName"
+      :help="t.form.newCompanyHint"
+    >
+      <UInput v-model="newCompany" class="wm:w-full" data-testid="field-new-company" />
+    </UFormField>
+    <form.Field name="roles" :validators="validators('roles')">
+      <template #default="{ field }">
+        <RolesField
+          :roles="field.state.value"
+          :communities="communityOptions"
+          :error="errorOf('roles', field.state.meta)"
+          @change="(roles) => rolesChanged(roles, field.handleChange)"
+          @blur="field.handleBlur"
+        />
+      </template>
+    </form.Field>
+    <form.Field name="email" :validators="validators('email')">
+      <template #default="{ field }">
+        <TextField
+          :label="t.fields.email"
+          :value="field.state.value"
+          :error="errorOf('email', field.state.meta)"
+          type="email"
+          test-id="field-email"
+          @change="field.handleChange"
+          @blur="field.handleBlur"
+        />
+      </template>
+    </form.Field>
+    <form.Field name="phone" :validators="validators('phone')">
+      <template #default="{ field }">
+        <TextField
+          :label="t.fields.phone"
+          :value="field.state.value"
+          :error="errorOf('phone', field.state.meta)"
+          type="tel"
+          test-id="field-phone"
+          @change="field.handleChange"
+          @blur="field.handleBlur"
+        />
+      </template>
+    </form.Field>
+    <form.Field name="language" :validators="validators('language')">
+      <template #default="{ field }">
+        <ChoiceField
+          :label="t.fields.language"
+          :value="field.state.value"
+          :options="languageOptions"
+          :error="errorOf('language', field.state.meta)"
+          test-id="field-language"
+          @change="field.handleChange"
+          @blur="field.handleBlur"
+        />
+      </template>
+    </form.Field>
+    <form.Field name="private" :validators="validators('private')">
+      <template #default="{ field }">
+        <FlagField
+          :label="t.fields.private"
+          :checked="field.state.value"
+          :locked="privateLocked"
+          :help="privateLocked ? t.form.privateLocked : t.form.privateHelp"
+          :error="errorOf('private', field.state.meta)"
+          test-id="field-private"
+          @change="field.handleChange"
+        />
+      </template>
+    </form.Field>
+    <form.Field name="inactive">
+      <template #default="{ field }">
+        <FlagField
+          :label="t.fields.inactive"
+          :checked="field.state.value"
+          :help="t.form.inactiveHelp"
+          :error="false"
+          test-id="field-inactive"
+          @change="field.handleChange"
+        />
+      </template>
+    </form.Field>
+  </RecordForm>
 </template>

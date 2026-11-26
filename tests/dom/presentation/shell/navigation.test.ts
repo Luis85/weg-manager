@@ -362,16 +362,18 @@ describe("the app frame", () => {
     expect(without.querySelector("[data-testid=frame-context]")).toBeNull();
   });
 
-  it("starts on the settings, after the contacts (PBI-02), with the switch in the context area", async () => {
+  it("starts on the settings, after contacts and matters, with the switch in the context area", async () => {
     const { runtime } = make();
     const root = newRoot();
     closes.push(mountApp(root, runtime));
     await settle();
     expect(navButtons(root).map((button) => button.textContent.trim())).toEqual([
       "Kontakte",
+      "Vorgänge",
       "Einstellungen",
     ]);
     expect(navButtons(root).map((button) => button.getAttribute("aria-current"))).toEqual([
+      null,
       null,
       "page",
     ]);
@@ -398,7 +400,7 @@ describe("the app frame", () => {
     } as const);
     closes.push(mountApp(root, runtime, { navigation }));
     await settle();
-    const settings = () => navButtons(root)[1] as HTMLButtonElement;
+    const settings = () => navButtons(root)[2] as HTMLButtonElement;
     expect(settings().textContent.trim()).toBe("Einstellungen");
     expect(settings().getAttribute("aria-current")).toBe("page");
     expect(barred(settings())).toBe(true);
@@ -415,6 +417,7 @@ describe("the app frame", () => {
     await settle();
     expect(navButtons(root).map((button) => button.textContent.trim())).toEqual([
       "Contacts",
+      "Matters",
       "Settings",
     ]);
   });

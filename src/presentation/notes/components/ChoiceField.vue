@@ -2,7 +2,7 @@
 import { useId } from "vue";
 
 /**
- * One choice of the contact form as a native `select` (Obsidian styles it, every screen reader
+ * One choice of a record form as a native `select` (Obsidian styles it, every screen reader
  * knows it): label, options and its issue (`error`), which the select names.
  */
 defineProps<{

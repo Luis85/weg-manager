@@ -24,5 +24,4 @@ export {
   type CheckMark,
   type MatterFilter,
   type MatterInput,
-  type MatterRuleContext,
 } from "./rules";

@@ -27,7 +27,11 @@ const decode = (frontmatter: Record<string, unknown>) =>
 
 describe("the matter note type (weg-manager.matter/v1)", () => {
   it("is version 1 of `matter` with its keys in file order, filed in Vorgänge", () => {
-    expect([matterType.type, matterType.version, matterType.folder]).toEqual(["matter", 1, "Vorgänge"]);
+    expect([matterType.type, matterType.version, matterType.folder]).toEqual([
+      "matter",
+      1,
+      "Vorgänge",
+    ]);
     expect(matterType.keys).toEqual([
       "number",
       "community_id",
@@ -75,7 +79,12 @@ describe("the matter note type (weg-manager.matter/v1)", () => {
         message_ref: "<abc@example.org>",
         link: "Ablage/Angebot.pdf",
       }),
-    ).toMatchObject({ kind: "editable", id: ID, issues: [], values: { number: 41, status: "open" } });
+    ).toMatchObject({
+      kind: "editable",
+      id: ID,
+      issues: [],
+      values: { number: 41, status: "open" },
+    });
   });
 
   it("names missing required fields", () => {
@@ -103,7 +112,7 @@ describe("the matter note type (weg-manager.matter/v1)", () => {
       [{ next_step: "N".repeat(301) }, "next_step", "next-step.invalid"],
     ];
     for (const [change, key, code] of cases) {
-      expect(decode({ ...NOTE, ...change }), JSON.stringify(change)).toMatchObject({
+      expect(decode({ ...NOTE, ...change }), `${key}: ${JSON.stringify(change)}`).toMatchObject({
         issues: [{ key, code }],
       });
     }

@@ -73,3 +73,12 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 ## Business Rules
 
 [[DF-02 - Bearbeitung, Terminprüfung und Bewertung]], [[DF-03 - Terminbedeutung]], [[DF-04 - Fehlender Termin]].
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen ersten Schnitt.
+  - **Schnitt:** Am Vorgang kommen Bedeutung des Termins (`due_kind`: Zusage, vertraglich, formelle Frist, gewünschte Antwort), Herkunft (`due_source`) und Prüfstand (`due_checked`: bestätigt, vorgeschlagen, unbekannt) dazu. „Termin ändern“ ist ein eigener Dialog und schreibt die bisherige Fassung als Verlaufseintrag „neuer Termin“. Die Wiedervorlage bleibt ein eigenes Datum. Die Karte zeigt Bedeutung, Prüfstand und das Alter der Zusage; ohne Termin zeigt sie Klärungsstand, Wer, nächsten Schritt und Wiedervorlage (Kriterium 2).
+  - **Zeitzone (Kriterium 3):** „Heute“ rechnet das Plugin immer in Europe/Berlin, unabhängig von der Zeitzone des Geräts.
+  - **Sperren:** Beim Bearbeiten sind Bearbeitungsstand und Termin im Vorgangsformular nur Anzeige; sie ändern sich über „Stand ändern“ und „Termin ändern“, jeweils mit Verlaufseintrag. Beim Anlegen sind beide setzbar.
+  - **Navigation:** Die Einträge folgen der Sitemap (Lage · Woche · Vorgänge · Postausgang · Kontakte · Einstellungen), über eine Ordnungszahl je Eintrag.
+

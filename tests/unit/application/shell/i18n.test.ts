@@ -65,6 +65,30 @@ describe("catalogs", () => {
     }
   });
 
+  it("returns a sentence from every text function in both languages", () => {
+    // One sample for every parameter: a list (join, map, length), with the fields an issue
+    // carries, so each function runs; a broken template throws or returns nothing.
+    const sample = Object.assign(["AW 005"], {
+      min: 1,
+      max: 9,
+      version: 2,
+      from: 1,
+      allowed: ["a"],
+    });
+    const functions = (value: unknown, path = ""): [string, (...args: unknown[]) => unknown][] => {
+      if (typeof value === "function") return [[path, value as (...args: unknown[]) => unknown]];
+      if (typeof value !== "object" || value === null) return [];
+      return Object.entries(value).flatMap(([key, inner]) => functions(inner, `${path}.${key}`));
+    };
+    for (const catalog of [de, en] as Catalog[]) {
+      const empty = functions(catalog).filter(([, text]) => {
+        const result = text(...Array.from({ length: Math.max(text.length, 2) }, () => sample));
+        return typeof result !== "string" || result.trim() === "";
+      });
+      expect(empty.map(([path]) => path)).toEqual([]);
+    }
+  });
+
   it("words every domain issue in both languages", () => {
     expect(ISSUES.map((issue) => describeIssue(issue, de.shell))).toEqual([
       "Die Einstellungsdatei enthält keine gültigen Einstellungen.",
@@ -108,13 +132,34 @@ describe("surface texts", () => {
         "copy-diagnostics": "Copy diagnostics",
       },
     ]);
-    expect(en.shell.settingsTab).toEqual({
-      logLevel: {
-        name: "Log level",
-        desc: "How much the plugin writes to the developer console.",
-        labels: { error: "Errors", warn: "Warnings", info: "Information", debug: "Details" },
-      },
+    expect(en.shell.settingsTab.logLevel).toEqual({
+      name: "Log level",
+      desc: "How much the plugin writes to the developer console.",
+      labels: { error: "Errors", warn: "Warnings", info: "Information", debug: "Details" },
     });
+    expect(
+      [
+        en.shell.settingsTab.weekStart,
+        en.shell.settingsTab.weekMinutes,
+        en.shell.settingsTab.weekDecisions,
+        en.shell.settingsTab.acuteDays,
+      ].map((texts) => texts.name),
+    ).toEqual([
+      "Start of the week",
+      "Time target of the week",
+      "Regular decisions per week",
+      "Deadline for acute problems",
+    ]);
+    expect(
+      [0, 1, 3].map((n) => [
+        en.shell.settingsTab.acuteDays.days(n),
+        de.shell.settingsTab.acuteDays.days(n),
+      ]),
+    ).toEqual([
+      ["on the day itself", "am Tag selbst"],
+      ["1 day before", "1 Tag vorher"],
+      ["3 days before", "3 Tage vorher"],
+    ]);
   });
 
   it("words the app frame and the not-found state", () => {

@@ -8,6 +8,7 @@ import {
 import { communitiesScreens } from "./communities/screens";
 import { contactsScreens } from "./contacts/screens";
 import { mattersScreens } from "./matters/screens";
+import { weekScreens } from "./week/screens";
 import { notesScreens } from "./notes/screens";
 import type {
   ModuleScreens,
@@ -30,6 +31,7 @@ export const MODULE_SCREENS: { readonly [Name in AppModuleName]: ModuleScreens<N
   communities: communitiesScreens,
   contacts: contactsScreens,
   matters: mattersScreens,
+  week: weekScreens,
 };
 
 /** The modules' screens in module order (`APP_MODULES`). */

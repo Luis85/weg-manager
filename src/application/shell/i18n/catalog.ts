@@ -1,4 +1,4 @@
-import type { LogLevel, SettingsIssue } from "../../../domain/shell";
+import type { LogLevel, SettingsIssue, Weekday } from "../../../domain/shell";
 import type { ReadOnlySettingsError } from "../errors";
 import type { UserMessageAction } from "../user-messages";
 
@@ -56,6 +56,19 @@ export type ShellCatalog = {
     readonly copyDiagnostics: string;
   };
   readonly settingsTab: {
+    /** The weekly work (PBI-13 criterion 5). */
+    readonly weekStart: {
+      readonly name: string;
+      readonly desc: string;
+      readonly labels: Readonly<Record<Weekday, string>>;
+    };
+    readonly weekMinutes: {
+      readonly name: string;
+      readonly desc: string;
+      minutes(n: number): string;
+    };
+    readonly weekDecisions: { readonly name: string; readonly desc: string };
+    readonly acuteDays: { readonly name: string; readonly desc: string; days(n: number): string };
     readonly logLevel: {
       readonly name: string;
       readonly desc: string;

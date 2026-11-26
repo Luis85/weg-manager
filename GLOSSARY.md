@@ -164,6 +164,22 @@ _Avoid_: attachment, evidence, document (a document is one original file)
 A file a source refers to, filed unchanged in the community's sources folder; a new version never overwrites an earlier one.
 _Avoid_: attachment, upload
 
+**Week** (German: Woche):
+The board member's weekly work, from the day the setting "start of the week" names; its view holds the briefing, later the decisions.
+_Avoid_: sprint, period
+
+**Weekly briefing** (German: Wochenlage, Lage):
+At most seven sentences about what is overdue, acute, due soon, without a date, open, unclear or new, each naming its records, computed from the vault when the week view opens, never by a background run.
+_Avoid_: report, digest, summary
+
+**Week note** (German: Wochennotiz):
+The note `weg-manager.week/v1` of one week, named by its first day, whose body is the briefing as the board member edited it.
+_Avoid_: journal, log
+
+**Coverage** (German: Grundlage, Quellenabdeckung):
+What a briefing rests on: when it was computed, the sources taken into account, the unchecked ones and the known gaps (DF-08).
+_Avoid_: completeness
+
 **Correction** (German: Korrektur):
 A history entry that corrects an earlier one (`corrects`); the earlier one stays and is shown as corrected.
 _Avoid_: edit, amendment

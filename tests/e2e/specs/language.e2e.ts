@@ -83,7 +83,13 @@ describe("UI language in Obsidian", function () {
       "WEG Manager: Copy diagnostics",
       "WEG Manager: Open view",
     ]);
-    expect((await settingsTabContent()).names).toEqual(["Log level"]);
+    expect((await settingsTabContent()).names).toEqual([
+      "Log level",
+      "Start of the week",
+      "Time target of the week",
+      "Regular decisions per week",
+      "Deadline for acute problems",
+    ]);
   });
 
   it("shows notices in English", async function () {

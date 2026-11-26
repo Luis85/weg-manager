@@ -55,6 +55,7 @@ describe("SettingsService.reload", () => {
         ["Alt", "Neu"],
       );
       assert.deepStrictEqual(yield* service.current, {
+        ...DEFAULT_SETTINGS,
         schemaVersion: 1,
         rootFolder: "Neu",
         logLevel: "info",

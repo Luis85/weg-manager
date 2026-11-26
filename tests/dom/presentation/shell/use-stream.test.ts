@@ -112,6 +112,10 @@ describe("useSettings and useSettingsStatus", () => {
       schemaVersion: 1,
       logLevel: "debug",
       rootFolder: "WEG Manager",
+      weekStart: "monday",
+      weekMinutes: 60,
+      weekDecisions: 7,
+      acuteDays: 2,
     });
     const status = await runtime.runPromise(SettingsService.use((service) => service.status));
     expect(exposed.status.value).toEqual(status);

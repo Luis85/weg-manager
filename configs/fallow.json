@@ -106,7 +106,8 @@
           "domain/notes",
           "domain/communities",
           "domain/contacts",
-          "domain/matters"
+          "domain/matters",
+          "domain/week"
         ]
       },
       {
@@ -118,6 +119,7 @@
           "application/communities",
           "application/contacts",
           "application/matters",
+          "application/week",
           "application-module",
           "application-composition"
         ]
@@ -164,6 +166,7 @@
           "presentation/communities",
           "presentation/contacts",
           "presentation/matters",
+          "presentation/week",
           "application",
           "application-composition",
           "application-describe-error",

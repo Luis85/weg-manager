@@ -367,17 +367,19 @@ describe("the app frame", () => {
     expect(without.querySelector("[data-testid=frame-context]")).toBeNull();
   });
 
-  it("starts on the settings, after matters and contacts as in the sitemap, with the switch in the context area", async () => {
+  it("starts on the settings, after week, matters and contacts as in the sitemap, with the switch in the context area", async () => {
     const { runtime } = make();
     const root = newRoot();
     closes.push(mountApp(root, runtime));
     await settle();
     expect(navButtons(root).map((button) => button.textContent.trim())).toEqual([
+      "Woche",
       "Vorgänge",
       "Kontakte",
       "Einstellungen",
     ]);
     expect(navButtons(root).map((button) => button.getAttribute("aria-current"))).toEqual([
+      null,
       null,
       null,
       "page",
@@ -405,7 +407,7 @@ describe("the app frame", () => {
     } as const);
     closes.push(mountApp(root, runtime, { navigation }));
     await settle();
-    const settings = () => navButtons(root)[2] as HTMLButtonElement;
+    const settings = () => navButtons(root)[3] as HTMLButtonElement;
     expect(settings().textContent.trim()).toBe("Einstellungen");
     expect(settings().getAttribute("aria-current")).toBe("page");
     expect(barred(settings())).toBe(true);
@@ -421,6 +423,7 @@ describe("the app frame", () => {
     closes.push(mountApp(root, runtime));
     await settle();
     expect(navButtons(root).map((button) => button.textContent.trim())).toEqual([
+      "Week",
       "Matters",
       "Contacts",
       "Settings",

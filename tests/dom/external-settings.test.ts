@@ -70,10 +70,26 @@ describe("settings changed outside Obsidian", () => {
 
   it("turns the settings read-only for a file from a newer version and never writes it", async () => {
     const { plugin, registry, arrive, tab } = await withOpenView();
-    expect(tab()).toMatchObject({ names: ["Protokollstufe"], disabled: false });
+    expect(tab()).toMatchObject({
+      names: [
+        "Protokollstufe",
+        "Wochenbeginn",
+        "Zeitziel der Woche",
+        "Reguläre Entscheidungen pro Woche",
+        "Frist für akute Probleme",
+      ],
+      disabled: false,
+    });
     await arrive({ schemaVersion: 2, logLevel: "debug" });
     expect(tab()).toMatchObject({
-      names: ["Protokollstufe", "Einstellungen schreibgeschützt"],
+      names: [
+        "Protokollstufe",
+        "Wochenbeginn",
+        "Zeitziel der Woche",
+        "Reguläre Entscheidungen pro Woche",
+        "Frist für akute Probleme",
+        "Einstellungen schreibgeschützt",
+      ],
       disabled: true,
     });
     expect(noticeTexts()).toEqual([expect.stringContaining("schreibgeschützt")]);
@@ -90,7 +106,17 @@ describe("settings changed outside Obsidian", () => {
     expect(noticeTexts()).toEqual([expect.stringContaining("nicht lesbar")]);
     registry.setFailLoadData(false);
     await arrive({ rootFolder: "Wieder da", logLevel: "info" });
-    expect(tab()).toMatchObject({ names: ["Protokollstufe"], value: "info", disabled: false });
+    expect(tab()).toMatchObject({
+      names: [
+        "Protokollstufe",
+        "Wochenbeginn",
+        "Zeitziel der Woche",
+        "Reguläre Entscheidungen pro Woche",
+        "Frist für akute Probleme",
+      ],
+      value: "info",
+      disabled: false,
+    });
     expect(intro()).toContain("„Wieder da/Gemeinschaften“");
     expect(registry.saved).toEqual([]);
     plugin.unload();

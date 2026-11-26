@@ -16,11 +16,42 @@ export const LOG_LEVELS = ["error", "warn", "info", "debug"] as const;
 
 export type LogLevel = (typeof LOG_LEVELS)[number];
 
+/** The day a week starts on (PBI-13): the board member's weekly work begins that day. */
+export const WEEKDAYS = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+] as const;
+export type Weekday = (typeof WEEKDAYS)[number];
+
+/** The ranges of the week's numbers (PBI-13 criterion 5): whole numbers within them. */
+export const WEEK_LIMITS = {
+  weekMinutes: { min: 15, max: 240 },
+  weekDecisions: { min: 1, max: 20 },
+  acuteDays: { min: 0, max: 14 },
+} as const;
+
+/** A whole number within `limits`. */
+const WholeWithin = ({ min, max }: { readonly min: number; readonly max: number }) =>
+  Schema.Finite.check(
+    Schema.makeFilter((value: number) => Number.isInteger(value) && value >= min && value <= max),
+  );
+
 export type Settings = {
   readonly schemaVersion: 1;
   readonly logLevel: LogLevel;
   /** Vault-relative folder of the plugin's notes. No interface edits it yet (ADR 0007). */
   readonly rootFolder: string;
+  /** The weekly work (PBI-13): the day the week starts, the time aimed at in minutes, the regular
+   * decisions per week (K-05) and how many days before its deadline a problem counts as acute. */
+  readonly weekStart: Weekday;
+  readonly weekMinutes: number;
+  readonly weekDecisions: number;
+  readonly acuteDays: number;
 };
 
 export type EditableSettings = Omit<Settings, "schemaVersion">;
@@ -36,6 +67,25 @@ export const SettingsIssue = Schema.Union([
     allowed: Schema.Array(Schema.Literals(LOG_LEVELS)),
   }),
   Schema.Struct({ code: Schema.Literal("rootFolder.invalid"), max: Schema.Number }),
+  Schema.Struct({
+    code: Schema.Literal("weekStart.unknown"),
+    allowed: Schema.Array(Schema.Literals(WEEKDAYS)),
+  }),
+  Schema.Struct({
+    code: Schema.Literal("weekMinutes.invalid"),
+    min: Schema.Number,
+    max: Schema.Number,
+  }),
+  Schema.Struct({
+    code: Schema.Literal("weekDecisions.invalid"),
+    min: Schema.Number,
+    max: Schema.Number,
+  }),
+  Schema.Struct({
+    code: Schema.Literal("acuteDays.invalid"),
+    min: Schema.Number,
+    max: Schema.Number,
+  }),
 ]);
 
 export type SettingsIssue = typeof SettingsIssue.Type;
@@ -63,6 +113,30 @@ const FIELDS: SettingsFields<EditableSettings, FieldIssue> = {
     schema: RootFolder,
     default: DEFAULT_ROOT_FOLDER,
     issue: { code: "rootFolder.invalid", max: ROOT_FOLDER_MAX_LENGTH },
+    omitWhenDefault: true,
+  },
+  weekStart: {
+    schema: Schema.Literals(WEEKDAYS),
+    default: "monday",
+    issue: { code: "weekStart.unknown", allowed: WEEKDAYS },
+    omitWhenDefault: true,
+  },
+  weekMinutes: {
+    schema: WholeWithin(WEEK_LIMITS.weekMinutes),
+    default: 60,
+    issue: { code: "weekMinutes.invalid", ...WEEK_LIMITS.weekMinutes },
+    omitWhenDefault: true,
+  },
+  weekDecisions: {
+    schema: WholeWithin(WEEK_LIMITS.weekDecisions),
+    default: 7,
+    issue: { code: "weekDecisions.invalid", ...WEEK_LIMITS.weekDecisions },
+    omitWhenDefault: true,
+  },
+  acuteDays: {
+    schema: WholeWithin(WEEK_LIMITS.acuteDays),
+    default: 2,
+    issue: { code: "acuteDays.invalid", ...WEEK_LIMITS.acuteDays },
     omitWhenDefault: true,
   },
 };

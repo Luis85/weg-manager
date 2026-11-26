@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import type { LogLevel } from "../../domain/shell";
+import type { EditableSettings, LogLevel } from "../../domain/shell";
 import { buildDiagnostics } from "./diagnostics";
 import { Clipboard, Messages, Notifier } from "./ports";
 import { SettingsService } from "./settings-service";
@@ -24,3 +24,10 @@ export const copyDiagnostics = Effect.gen(function* () {
     ),
   );
 });
+
+/** Changes the settings of the weekly work (PBI-13 criterion 5), all or nothing. */
+export const setWeekSettings = (patch: Partial<Pick<EditableSettings, WeekSettingKey>>) =>
+  SettingsService.use((settings) => settings.update(patch));
+
+/** The settings of the weekly work, edited in Obsidian's settings tab. */
+export type WeekSettingKey = "weekStart" | "weekMinutes" | "weekDecisions" | "acuteDays";

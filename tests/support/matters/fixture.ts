@@ -1,7 +1,7 @@
 import { Layer } from "effect";
 import { communityType } from "../../../src/domain/communities";
 import { contactType } from "../../../src/domain/contacts";
-import { matterType } from "../../../src/domain/matters";
+import { matterType, todoType } from "../../../src/domain/matters";
 import { sequentialIdGenerator } from "../../../src/infrastructure/memory/notes";
 import { memoryToday } from "../../../src/infrastructure/memory/shell";
 import { communityId, communityNote } from "../communities/fixture";
@@ -38,12 +38,25 @@ export const matterNote = (n: number, extra: Record<string, unknown> = {}) => ({
   ...extra,
 });
 
+export const TODO_FOLDER = "WEG Manager/To-dos";
+
+/** A valid to-do note's frontmatter titled `title`; `extra` overrides any key. */
+export const todoNote = (n: number, title: string, extra: Record<string, unknown> = {}) => ({
+  schema: "weg-manager.todo/v1",
+  id: `todo-00000000-0000-4000-8000-${n.toString(16).padStart(12, "0")}`,
+  title,
+  community_id: AW,
+  responsible: "board",
+  status: "open",
+  ...extra,
+});
+
 /**
  * The matters module over the note index (communities, contacts, matters), the in-memory
  * `NoteStore` and a sequential id generator, with community 101 and contact 201 in the vault.
  */
 export const mattersFixture = () => {
-  const index = indexFixture({ types: [communityType, contactType, matterType] });
+  const index = indexFixture({ types: [communityType, contactType, matterType, todoType] });
   index.memory.seed(
     "WEG Manager/Gemeinschaften/Ahornweg.md",
     communityNote(101, { name: "Ahornweg", short_code: "AW" }),

@@ -74,3 +74,11 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 ## Business Rules
 
 [[DF-04 - Fehlender Termin]].
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen ersten Schnitt.
+  - **Zustände:** offen, wartend, erledigt und entfallen. Warten braucht einen Grund und eine Wiedervorlage, Entfallen einen Grund. „In Arbeit“ entfällt (wie O-ENT12-2).
+  - **Ort:** Ein Segment „Vorgänge | To-dos“ in der Ansicht Vorgänge, wie VIEW-03, mit Schnelleingabe und Gruppen „Überfällig“, „Diese Woche“, „Später“. Der Verlauf eines Vorgangs zeigt seine To-dos.
+  - **Klärungsliste (Kriterium 4):** Ein offener oder ungeklärter Vorgang ohne offenes oder wartendes To-do erscheint in der Klärungsliste. Der nächste Schritt am Vorgang bleibt Pflicht.
+  - **Verantwortlich:** der Beirat als Vorgabe oder ein Kontakt der Gemeinschaft, wie der Akteur eines Verlaufseintrags.

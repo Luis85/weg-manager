@@ -7,6 +7,7 @@ export {
   InvalidMergeError,
   InvalidSplitError,
   InvalidStatusChangeError,
+  InvalidTodoError,
 } from "./errors";
 export { addHistoryEntry, changeDue, changeStatus, matterHistory } from "./history";
 export { describeMatterIssue } from "./i18n/describe";
@@ -15,3 +16,11 @@ export { shownName, type Matter } from "./list";
 export { mattersModule } from "./module";
 export { MATTERS } from "./routes";
 export { createMatter, matterList, matterListChanges, updateMatter } from "./use-cases";
+export {
+  completeTodo,
+  createTodo,
+  todoList,
+  todoListChanges,
+  updateTodo,
+  type Todo,
+} from "./todos";

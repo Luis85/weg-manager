@@ -32,7 +32,7 @@ Ein konkret ausführbarer Arbeitsschritt des Beirats, getrennt von einer fremden
 
 ## Wertelisten
 
-**Status (geschlossen):** offen (`open`), erledigt (`done`) wie im WCS, dazu entfallen (`dropped`) für überholte To-dos. Entschieden am 22.11.2026.
+**Status (geschlossen):** offen (`open`), erledigt (`done`) wie im WCS, dazu entfallen (`dropped`) für überholte To-dos. Entschieden am 22.11.2026. Ergänzt am 26.11.2026 ([[PBI-10 - Eigenes To-do nachhalten]]): wartend (`waiting`) mit Grund und Wiedervorlage.
 
 ## Beziehungen
 
@@ -45,7 +45,7 @@ Gehört genau einer Gemeinschaft und kann ohne Vorgangsbezug geführt werden. Ei
 - Die Erledigung eines Versand- oder Prüf-To-dos erfüllt keine fremde Zusage ([[DF-07 - Wahl, Entwurf und Versand]]).
 - Wiederholte Entscheidungsvorbereitung erzeugt kein doppeltes To-do.
 - Ein Entwurf am To-do wird nie automatisch gesendet.
-- Übergänge: offen → erledigt; offen → entfallen (mit Grund).
+- Übergänge: offen → erledigt; offen → wartend (mit Grund und Wiedervorlage); wartend → offen oder erledigt; offen oder wartend → entfallen (mit Grund).
 
 ## Datenschutz
 

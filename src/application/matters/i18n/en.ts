@@ -1,5 +1,6 @@
 import type { MattersCatalog } from "./catalog";
 import { lineIssues } from "./line-issues";
+import { todosEn } from "./todos-en";
 
 const oneLine = (label: string, max: number) =>
   `Enter one line of at most ${max} characters for "${label}".`;
@@ -206,6 +207,7 @@ export const mattersEn: MattersCatalog = {
       "done-on.invalid": "This is no valid day. Enter it as YYYY-MM-DD.",
     },
   },
+  todos: todosEn,
   missing: {
     community_id: "Choose a community.",
     kind: "Choose a kind.",

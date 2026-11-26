@@ -14,6 +14,7 @@ import type {
   MatterStatus,
 } from "../../../domain/matters";
 import type { IssueSentences } from "../../notes";
+import type { TodosCatalog } from "./todos-catalog";
 
 type Text = { readonly title: string; readonly detail: string };
 
@@ -155,6 +156,8 @@ export type MattersCatalog = {
     readonly mergeIssues: Readonly<Record<MergeIssue, string>>;
     related(numbers: string): string;
   };
+  /** The to-dos (PBI-10). */
+  readonly todos: TodosCatalog;
   readonly missing: Partial<Readonly<Record<MatterKey, string>>>;
   readonly issues: IssueSentences<MatterFieldIssue>;
   readonly errors: {

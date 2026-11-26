@@ -2,6 +2,7 @@
 import { useWeek } from "../use-week";
 import WeekBriefing from "./WeekBriefing.vue";
 import WeekCoverage from "./WeekCoverage.vue";
+import WeekDecisions from "./WeekDecisions.vue";
 import WeekLists from "./WeekLists.vue";
 
 /**
@@ -10,7 +11,8 @@ import WeekLists from "./WeekLists.vue";
  * index holds; the week starts on the day the settings tab names.
  */
 const week = useWeek();
-const { t, briefing, labels, outcomes, sentenceText, computedText, note, savedText, reload } = week;
+const { t, briefing, selection, steps, labels, outcomes } = week;
+const { sentenceText, computedText, note, savedText, reload } = week;
 </script>
 
 <template>
@@ -34,6 +36,7 @@ const { t, briefing, labels, outcomes, sentenceText, computedText, note, savedTe
       :week="note"
       @saved="reload"
     />
+    <WeekDecisions :selection="selection" :labels="labels" :outcomes="outcomes" :steps="steps" />
     <WeekLists :briefing="briefing" :labels="labels" :outcomes="outcomes" />
   </div>
 </template>

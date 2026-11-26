@@ -62,6 +62,26 @@ export const weekDe: WeekCatalog = {
     scope:
       "Grundlage sind die erfassten Quellen. Das Plugin liest kein Postfach und kennt nicht jeden Eingang.",
   },
+  decisions: {
+    title: "Entscheidungen",
+    budget: (selected, budget) => `${selected}/${budget} reguläre Entscheidungen`,
+    hint: "Über alle Gemeinschaften zusammen, ausgewählt nach Frist und Alter der Zusage.",
+    none: "Keine reguläre Entscheidung steht an.",
+    urgentTitle: "Dringend · zusätzlich",
+    urgentHint:
+      "Überfällig oder bis Wochenende beziehungsweise zur Frist für akute Probleme fällig. Zählt nicht ins Budget.",
+    backlogTitle: (count) => `Rückstand (${count})`,
+    reasons: {
+      overdue: (day) => `überfällig seit ${day}`,
+      "due-this-week": (day) => `fällig ${day}`,
+      due: (day) => `nächster Termin ${day}`,
+      age: (days) => `Zusage vor ${days} Tagen`,
+      "age-unknown": () => "ohne Termin, Alter der Zusage unbekannt",
+    },
+    nextStep: (step) => `Nächster Schritt: ${step}`,
+    focusPending:
+      "Die Schwerpunkte der letzten Woche zählen für die Auswahl, sobald es die Übergabe gibt.",
+  },
   errors: {
     changed: {
       title: "Lage nicht gespeichert",

@@ -12,3 +12,10 @@ export {
   type SentenceCode,
 } from "./briefing";
 export { weekType, type WeekFields } from "./week-type";
+export {
+  decisionSelection,
+  type Candidate,
+  type Selection,
+  type SelectionInput,
+  type SelectionReason,
+} from "./selection";

@@ -7,6 +7,7 @@ import {
   NoteUnreadableError,
   applyPatch,
   type Frontmatter,
+  type BodyEdit,
   type FrontmatterChange,
   type NewNote,
   type Note,
@@ -155,7 +156,7 @@ export const memoryNoteStore = () => {
       },
     );
 
-  const update = <E>(path: string, change: FrontmatterChange<E>) =>
+  const update = <E>(path: string, change: FrontmatterChange<E>, edit?: BodyEdit) =>
     Effect.flatMap(find(path), (found) =>
       write((): Result.Result<Note, E | NoteNotFoundError | NoteUnreadableError> => {
         const current = notes.get(found.path);
@@ -169,8 +170,10 @@ export const memoryNoteStore = () => {
         if (Result.isFailure(decided)) return Result.fail(decided.failure);
         const next = { ...copyFrontmatter(current.frontmatter) };
         applyPatch(next, decided.success);
-        notes.set(found.path, { frontmatter: next, body: current.body });
-        if (differs(current.frontmatter, next)) modified(found.path);
+        // What `edit` throws is a defect, as what `change` throws.
+        const body = edit === undefined ? current.body : edit(current.body, "\n");
+        notes.set(found.path, { frontmatter: next, body });
+        if (differs(current.frontmatter, next) || body !== current.body) modified(found.path);
         return Result.succeed<Note>({ path: found.path, frontmatter: copyFrontmatter(next) });
       }),
     );
@@ -219,6 +222,7 @@ export const memoryNoteStore = () => {
           frontmatter: copyFrontmatter(found.stored.frontmatter),
         })),
       ),
+    readBody: (path) => Effect.flatMap(find(path), (found) => read(() => found.stored.body)),
     create,
     update,
     trash,

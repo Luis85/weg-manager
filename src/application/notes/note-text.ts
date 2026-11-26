@@ -11,6 +11,7 @@ import {
   NoteUnreadableError,
   NoteWriteRefusedError,
   applyPatch,
+  type BodyEdit,
   type Frontmatter,
   type FrontmatterChange,
   type FrontmatterPatch,
@@ -79,9 +80,21 @@ const refused = () => Result.fail(new NoteWriteRefusedError({ reason: "layout" }
  * reads exactly the frontmatter the patch means, every other key equal and in its order; if not,
  * nothing is written (`NoteWriteRefusedError`, reason `layout`). Broken YAML, or YAML that is no
  * map, is `NoteUnreadableError`, and `change` is not asked. A patch that changes nothing returns
- * `text` as it is. What `change` throws reaches the caller.
+ * `text` as it is. With `body`, the same write also edits the body (`editBody`). What `change` or
+ * `body` throws reaches the caller.
  */
 export const updateNoteText = <E>(
+  text: string,
+  change: FrontmatterChange<E>,
+  parse: ParseYaml,
+  body?: BodyEdit,
+): Result.Result<UpdatedText, E | NoteUnreadableError | NoteWriteRefusedError> => {
+  const edited = editFrontmatter(text, change, parse);
+  return body === undefined || Result.isFailure(edited) ? edited : editBody(edited.success, body);
+};
+
+/** The frontmatter part of `updateNoteText`: the text with only the patch's lines changed. */
+const editFrontmatter = <E>(
   text: string,
   change: FrontmatterChange<E>,
   parse: ParseYaml,
@@ -110,4 +123,28 @@ export const updateNoteText = <E>(
   return Result.isSuccess(reread) && same(reread.success, expected)
     ? Result.succeed({ text: edited.success, frontmatter: expected })
     : refused();
+};
+
+/**
+ * The body part of `updateNoteText`: `body` gets the text after the frontmatter block and the
+ * note's line break, and its result replaces that text; the block and a BOM stay byte for byte.
+ * A body it returns unchanged writes nothing.
+ */
+const editBody = (
+  updated: UpdatedText,
+  body: BodyEdit,
+): Result.Result<UpdatedText, NoteWriteRefusedError> => {
+  const note = splitNoteText(updated.text);
+  if (Result.isFailure(note)) return refused();
+  const { rest, eol } = note.success;
+  const next = body(rest, eol);
+  if (next === rest) return Result.succeed(updated);
+  const head = updated.text.slice(0, updated.text.length - rest.length);
+  return Result.succeed({ text: `${head}${next}`, frontmatter: updated.frontmatter });
+};
+
+/** The body of a note's text: what follows its frontmatter block, or all of it without a block. */
+export const bodyOfText = (text: string): string => {
+  const note = splitNoteText(text);
+  return Result.isSuccess(note) ? note.success.rest : text;
 };

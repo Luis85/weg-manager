@@ -1,3 +1,4 @@
+import { bodyContract } from "./contract-body";
 import { describe } from "@effect/vitest";
 import { clashContract } from "./contract-clashes";
 import { folderContract } from "./contract-folders";
@@ -16,6 +17,7 @@ export const noteStoreContract = (name: string, make: () => NoteStoreFixture) =>
   describe(`NoteStore contract: ${name}`, () => {
     readContract(make);
     writeContract(make);
+    bodyContract(make);
     clashContract(make);
     folderContract(make);
   });

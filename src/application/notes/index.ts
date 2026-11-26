@@ -33,6 +33,7 @@ export {
   IdGenerator,
   NoteOpener,
   NoteStore,
+  type BodyEdit,
   type Frontmatter,
   type FrontmatterChange,
   type FrontmatterPatch,

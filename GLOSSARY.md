@@ -148,6 +148,14 @@ _Avoid_: copy, clone
 Closing a duplicate into its target: the target takes the values the person chose and `merged_from_ids`, the duplicate becomes obsolete with `merged_into_id`. Each history stays in its own note.
 _Avoid_: combine, join
 
+**To-do** (German: To-do):
+The board's own next step, a note of its own: one community, a matter optional, open, waiting (with a reason and a follow-up date), done or dropped (with a reason). Doing it never fulfils anyone else's promise.
+_Avoid_: task (a matter of kind `board_task` is a matter), action item
+
+**Clarification list** (German: Klärungsliste):
+The open and unclear matters that no open or waiting to-do carries forward; computed, never stored.
+_Avoid_: backlog, inbox
+
 **Correction** (German: Korrektur):
 A history entry that corrects an earlier one (`corrects`); the earlier one stays and is shown as corrected.
 _Avoid_: edit, amendment
@@ -186,4 +194,4 @@ _Avoid_: walking skeleton, demo, prototype
 
 ## Not yet named
 
-The domain model follows the WCS data dictionary (K-20); its German terms and fields are in `docs/entities/00 - Fachliches Domänenmodell.md`. Verlaufseintrag, Eskalation, Entscheidungskarte, To-do, Übergabe, Prüfvermerk, Person und Rolle, Thema, Termin, Quelle and the other entities in `docs/entities/` get their English term here when their slice is planned. The keys in the entity notes are proposals until then. Host and vault events keep the name event; they are not the domain's Verlaufseintrag.
+The domain model follows the WCS data dictionary (K-20); its German terms and fields are in `docs/entities/00 - Fachliches Domänenmodell.md`. Verlaufseintrag, Eskalation, Entscheidungskarte, Übergabe, Prüfvermerk, Person und Rolle, Thema, Termin, Quelle and the other entities in `docs/entities/` get their English term here when their slice is planned. The keys in the entity notes are proposals until then. Host and vault events keep the name event; they are not the domain's Verlaufseintrag.

@@ -19,7 +19,7 @@ Ein konkret ausführbarer Arbeitsschritt des Beirats, getrennt von einer fremden
 | Feld | Schlüssel | Typ | Pflicht | Bedeutung und Regel |
 | --- | --- | --- | --- | --- |
 | Technische Identität | `id` | Text | P | `todo-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]]. Ersetzt die WCS-`id`. |
-| Schema | `schema` | Text | P | `weg-manager.todo/v1` (vorgeschlagen). |
+| Schema | `schema` | Text | P | `weg-manager.todo/v1`, Dateivertrag [[DV-04 - To-do v1]]. |
 | Titel | `title` | Text | P | WCS `titel`. Konkrete Handlung. |
 | Vorgang | `matter_id` | Text | O | WCS `nr`. Bezogener Vorgang. Ein To-do darf ohne Vorgang stehen. |
 | Gemeinschaft | `community_id` | Text | P | WCS `gemeinschaft` (dort optional). Bei uns Pflicht (O-ENT12-1). |

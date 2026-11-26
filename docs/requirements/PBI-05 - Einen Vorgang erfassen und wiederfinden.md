@@ -6,7 +6,7 @@ actors:
   - "[[ACT-01-Beirat]]"
 release: "[[MVP - Beirat Support]]"
 status: ""
-started: ""
+started: 2026-11-26
 finished: ""
 horizon: ""
 start: ""
@@ -73,3 +73,13 @@ P FR-V1; US-03. Quellkürzel: 01-Quellabdeckung (historische Quelle: Git-Commit 
 ## Refinementgrenze
 
 Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe sind offen. Anwendbare Qualitätsanforderungen und offene Entscheidungen im [[02-MVP-PRD]] gehören zur Abnahme.
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen ersten Schnitt.
+  - **Freigabe (Kern-Schnitt):** ein neues Modul `matters`. Ein Vorgang wird als Notiz angelegt und bearbeitet, mit den Pflichtfeldern aus [[ENT-04 - Vorgang]] und der Wiedervorlage. Dazu kommt eine Liste unter der Route „Vorgänge“ mit Suche und Filtern nach Thema, Bearbeitungsstand, Gemeinschaft und Verantwortlichem (Kriterium 3) und dem berechneten Prüfvermerk („überfällig“, „Termin erfragen“). Verlauf, eigene Notiz (Kriterium 5), Statuswechsel mit Anlass ([[PBI-08 - Bearbeitungsstand bewusst ändern]]) und die Vorgangsakte als eigene Seite folgen danach.
+  - **Wer:** `responsible_id` verweist auf einen Kontakt ([[PBI-02 - Personen und Rollen zuordnen]]), kein freier Text.
+  - **Verlauf (O-ENT04-4):** als datierte Liste unter der Überschrift „Verlauf“ im Text der Vorgangsnotiz. Das Plugin schreibt nur in diesen Abschnitt; der Abschnittsvertrag kommt mit dem Verlauf.
+  - **Vorgangsnummer:** die höchste Nummer im Vault plus eins. Eine doppelte Nummer, etwa nach einem Sync, erscheint als Problem, und der Mensch vergibt eine neue.
+- 26.11.2026 (Umsetzung des ersten Schnitts): Modul `matters` in allen Schichten, Dateivertrag [[DV-03 - Vorgang v1]], eigene Route „Vorgänge“ in der Navigation. Erfüllt sind Kriterium 1 (Nummer, Gemeinschaft, Art, Thema, erwartetes Ergebnis, Verantwortlicher als Kontakt, Quelle oder Quellenlücke `unknown`, nächster Schritt, dazu Termine, Wiedervorlage, Nachrichtenreferenz und Link), 2 (ein Thema bündelt Vorgänge, ohne ihren Stand zu verbinden) und 3 (Suche über Thema, Ergebnis, nächsten Schritt und Nummer; Filter nach Thema, Bearbeitungsstand, Gemeinschaft und Verantwortlichem). Kriterium 4 gilt, weil ein Vorgang ohne vorherige Schritte angelegt wird; der Import von Altfällen ist [[PBI-04 - Geprüften Bestand übernehmen]]. Offen: Kriterium 5 (eigene Notiz im Verlauf) mit dem Verlauf. Der Prüfvermerk („überfällig“, „Termin erfragen“) wird berechnet und nie gespeichert. In der Navigation steht „Kontakte“ noch vor „Vorgänge“, weil die Einträge der Reihenfolge der Module folgen; die Reihenfolge der Sitemap (Vorgänge vor Kontakte) braucht eine eigene Ordnung der Einträge. Tests: `tests/unit/domain/matters/`, `tests/unit/application/matters/`, `tests/dom/presentation/matters/screen.test.ts`, `tests/e2e/specs/matters.e2e.ts`. `npm run verify` mit Exit 0, e2e 28 von 28 Specs grün.
+

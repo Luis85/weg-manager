@@ -1,5 +1,6 @@
 import type { MattersCatalog } from "./catalog";
 import { lineIssues } from "./line-issues";
+import { todosDe } from "./todos-de";
 
 const oneLine = (label: string, max: number) =>
   `Gib für „${label}“ eine Zeile mit höchstens ${max} Zeichen ein.`;
@@ -211,6 +212,7 @@ export const mattersDe: MattersCatalog = {
       "done-on.invalid": "Das ist kein gültiger Tag. Gib ihn als JJJJ-MM-TT ein.",
     },
   },
+  todos: todosDe,
   missing: {
     community_id: "Wähle eine Gemeinschaft.",
     kind: "Wähle eine Art.",

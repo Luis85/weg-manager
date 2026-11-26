@@ -74,3 +74,12 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 ## Business Rules
 
 [[DF-04 - Fehlender Termin]].
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen ersten Schnitt.
+  - **Zustände:** offen, wartend, erledigt und entfallen. Warten braucht einen Grund und eine Wiedervorlage, Entfallen einen Grund. „In Arbeit“ entfällt (wie O-ENT12-2).
+  - **Ort:** Ein Segment „Vorgänge | To-dos“ in der Ansicht Vorgänge, wie VIEW-03, mit Schnelleingabe und Gruppen „Überfällig“, „Diese Woche“, „Später“. Der Verlauf eines Vorgangs zeigt seine To-dos.
+  - **Klärungsliste (Kriterium 4):** Ein offener oder ungeklärter Vorgang ohne offenes oder wartendes To-do erscheint in der Klärungsliste. Der nächste Schritt am Vorgang bleibt Pflicht.
+  - **Verantwortlich:** der Beirat als Vorgabe oder ein Kontakt der Gemeinschaft, wie der Akteur eines Verlaufseintrags.
+- 26.11.2026 (Umsetzung des ersten Schnitts): Erfüllt sind Kriterium 1 (das To-do ist eine eigene Notiz `weg-manager.todo/v1`, [[DV-04 - To-do v1]], mit Gemeinschaft, optionalem Vorgang derselben Gemeinschaft, Verantwortlichem – Beirat oder Kontakt –, Zustand, Fälligkeit und Wiedervorlage), 2 (offen, wartend, erledigt und entfallen; Warten braucht Grund und Wiedervorlage, Entfallen einen Grund; „in Arbeit“ entfällt nach der Entscheidung), 3 („Erledigt“ schreibt nur das To-do, nie den Vorgang) und 4 (die Klärungsliste im Segment „To-dos“ zeigt offene und ungeklärte Vorgänge ohne offenes oder wartendes To-do und legt per Knopf eines an, vorbelegt mit dem nächsten Schritt). Die To-dos stehen im Segment „Vorgänge | To-dos“ der Ansicht Vorgänge, mit Schnelleingabe und den Gruppen „Überfällig“, „Diese Woche“ (bis Sonntag), „Später“, Erledigtes eingeklappt; der Verlauf eines Vorgangs zeigt seine To-dos. Nicht im Schnitt: Herkunft je To-do (Entscheidung, Übergabe) und der Entwurf am To-do (ENT-10). Tests: `tests/unit/domain/matters/todo.test.ts`, `tests/unit/application/matters/todos.test.ts`, `tests/dom/presentation/matters/todos.test.ts`, `tests/e2e/specs/todos.e2e.ts`.

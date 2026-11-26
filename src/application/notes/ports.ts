@@ -144,6 +144,12 @@ export class VaultFiles extends Context.Service<
     /** Whether a file lies at `path`. */
     exists(path: string): Effect.Effect<boolean>;
     /**
+     * The path of the file a link (`linkpath`, the target of a wikilink) in the note at `from`
+     * leads to, as Obsidian resolves it: a full path, or a shortest name after Obsidian updated
+     * the link on a rename. None when no file matches.
+     */
+    resolve(linkpath: string, from: string): Effect.Effect<string | undefined>;
+    /**
      * The path a new file `name` (with its extension) would get in `folder`: the folder found as
      * `NoteStore.create` finds it, the name, else ` (2)`, ` (3)`, … before the extension.
      * `planned` are paths a caller is about to write too: they count as taken.

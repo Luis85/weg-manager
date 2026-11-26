@@ -24,6 +24,10 @@ export const vaultFilesLayer = (app: App): Layer.Layer<VaultFiles> => {
 
   return Layer.succeed(VaultFiles)({
     exists: (path) => Effect.sync(() => fileAt(path) !== null),
+    resolve: (linkpath, from) =>
+      Effect.sync(
+        () => app.metadataCache.getFirstLinkpathDest(linkpath, normalizePath(from))?.path,
+      ),
     freePath: (folder, name, planned) =>
       Effect.map(plan(folder, name, planned), ({ path }) => path),
     write: (folder, name, bytes) =>

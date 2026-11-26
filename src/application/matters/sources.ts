@@ -176,7 +176,8 @@ export const sourceFiles = (source: Source) =>
     const store = yield* VaultFiles;
     return yield* Effect.forEach(source.values.files ?? [], (entry) =>
       Effect.gen(function* () {
-        const path = linkedPath(entry);
+        const linked = linkedPath(entry);
+        const path = (yield* store.resolve(linked, source.path)) ?? linked;
         const url = yield* store.resourceUrl(path);
         const file: SourceFile = {
           path,

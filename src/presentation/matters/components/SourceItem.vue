@@ -41,7 +41,7 @@ const body = computed(() => (text.value.value ?? "").trim());
     class="wm:flex wm:flex-col wm:gap-1 wm:border-l-2 wm:border-default wm:pl-2 wm:text-sm"
     data-testid="source"
   >
-    <p class="wm:font-medium wm:wrap-break-word" data-testid="source-subject">
+    <p class="wm:font-medium wm:wrap-break-word" data-testid="source-title">
       {{ values.subject ?? source.fileName }}
     </p>
     <p class="wm:text-xs wm:text-muted">{{ head }}</p>

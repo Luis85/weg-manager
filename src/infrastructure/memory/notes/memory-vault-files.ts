@@ -37,6 +37,14 @@ export const memoryVaultFiles = () => {
     planNewFile(folder, name, normalizePath, siblingsOf, foldersIn, planned);
   const layer = Layer.succeed(VaultFiles)({
     exists: (path) => Effect.sync(() => files.has(normalizePath(path))),
+    // As Obsidian: the exact path, else the one file whose name the link names.
+    resolve: (linkpath) =>
+      Effect.sync(() => {
+        const exact = normalizePath(linkpath);
+        if (files.has(exact)) return exact;
+        const named = [...files.keys()].filter((path) => path.endsWith(`/${exact}`));
+        return named.length === 1 ? named[0] : undefined;
+      }),
     freePath: (folder, name, planned) =>
       Effect.map(plan(folder, name, planned), ({ path }) => path),
     write: (folder, name, bytes) =>

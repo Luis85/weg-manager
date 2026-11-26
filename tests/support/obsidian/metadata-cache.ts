@@ -87,7 +87,11 @@ export const isMap = (value: unknown): value is Record<string, unknown> =>
  */
 export class MetadataCache
   extends Events
-  implements Uses<Obsidian.MetadataCache, "getFileCache" | "getCache" | "offref" | "trigger">
+  implements
+    Uses<
+      Obsidian.MetadataCache,
+      "getFileCache" | "getCache" | "getFirstLinkpathDest" | "offref" | "trigger"
+    >
 {
   private readonly caches = new Map<TFile, CachedMetadata>();
   private readonly withheld = new Set<string>();
@@ -102,6 +106,14 @@ export class MetadataCache
     vault.indexedAtStartup = (file) => {
       this.caches.set(file, indexOf(vault.textOf(file)));
     };
+  }
+
+  /** As Obsidian: the file at the exact path, else the one file whose name the link names. */
+  getFirstLinkpathDest(linkpath: string, _sourcePath: string): TFile | null {
+    const exact = this.vault.getFileByPath(linkpath);
+    if (exact !== null) return exact;
+    const named = this.vault.getFiles().filter((file) => file.path.endsWith(`/${linkpath}`));
+    return named.length === 1 ? (named[0] ?? null) : null;
   }
 
   getFileCache(file: TFile): CachedMetadata | null {

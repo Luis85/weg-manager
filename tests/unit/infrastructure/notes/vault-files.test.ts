@@ -78,6 +78,20 @@ const vaultFilesContract = (name: string, make: () => Fixture) => {
       }).pipe(Effect.provide(fixture.layer));
     });
 
+    it.effect("resolves a link as Obsidian does: full path, or the name after a rename", () => {
+      const fixture = make();
+      return Effect.gen(function* () {
+        yield* Effect.promise(() => fixture.seed("Q/AW/Angebot.pdf"));
+        const files = yield* VaultFiles;
+        assert.strictEqual(
+          yield* files.resolve("Q/AW/Angebot.pdf", "Q/Quelle.md"),
+          "Q/AW/Angebot.pdf",
+        );
+        assert.strictEqual(yield* files.resolve("Angebot.pdf", "Q/Quelle.md"), "Q/AW/Angebot.pdf");
+        assert.isUndefined(yield* files.resolve("Fehlt.pdf", "Q/Quelle.md"));
+      }).pipe(Effect.provide(fixture.layer));
+    });
+
     it.effect("opens only a file that is there", () => {
       const fixture = make();
       return Effect.gen(function* () {

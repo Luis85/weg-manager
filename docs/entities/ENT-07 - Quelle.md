@@ -19,7 +19,7 @@ Der nachvollziehbare Herkunftsbezug einer fachlichen Aussage, etwa eine Nachrich
 | Feld | Schlüssel | Typ | Pflicht | Bedeutung und Regel |
 | --- | --- | --- | --- | --- |
 | Technische Identität | `id` | Text | P | `source-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]], nur falls die Quelle eine eigene Note wird (O-ENT07-1). |
-| Schema | `schema` | Text | P | `weg-manager.source/v1` (vorgeschlagen), nur bei eigener Note. |
+| Schema | `schema` | Text | P | `weg-manager.source/v1`, Dateivertrag [[DV-05 - Quelle v1]]. |
 | Art der Quelle | `source` | Text | P | WCS `Vorgang.quelle` und `VerlaufEintrag.quelle`: Mail, Protokoll, Versammlung, Dokument, Gespräch. |
 | Nachrichtenreferenz | `message_ref` | Text | O | Ersetzt WCS `mailRef`. Kennung der Nachricht in einem beliebigen Postfach. |
 | Link | `link` | Text | O | WCS `Vorgang.link`. Fundstelle in der Ablage im Vault ([[ENT-08 - Dokument]]). |

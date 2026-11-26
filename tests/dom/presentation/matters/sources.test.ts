@@ -62,7 +62,7 @@ describe("a matter's sources (PBI-11)", () => {
     expect(screen.text("source-mode")).toContain(t.form.moveUnavailable);
     await screen.click(screen.q("source-save"));
     await screen.until(() => expect(screen.q("source-form")).toBeUndefined());
-    await screen.until(() => expect(screen.text("source-subject")).toBe("Angebot Beleuchtung"));
+    await screen.until(() => expect(screen.text("source-title")).toBe("Angebot Beleuchtung"));
     await screen.until(() => expect(screen.text("source-body")).toBe("Anbei das Angebot."));
     await screen.until(() => expect(screen.q("source-image")).toBeDefined());
     expect(screen.text("source-file")).toContain(target);

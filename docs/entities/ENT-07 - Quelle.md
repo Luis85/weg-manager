@@ -19,7 +19,7 @@ Der nachvollziehbare Herkunftsbezug einer fachlichen Aussage, etwa eine Nachrich
 | Feld | Schlüssel | Typ | Pflicht | Bedeutung und Regel |
 | --- | --- | --- | --- | --- |
 | Technische Identität | `id` | Text | P | `source-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]], nur falls die Quelle eine eigene Note wird (O-ENT07-1). |
-| Schema | `schema` | Text | P | `weg-manager.source/v1` (vorgeschlagen), nur bei eigener Note. |
+| Schema | `schema` | Text | P | `weg-manager.source/v1`, Dateivertrag [[DV-05 - Quelle v1]]. |
 | Art der Quelle | `source` | Text | P | WCS `Vorgang.quelle` und `VerlaufEintrag.quelle`: Mail, Protokoll, Versammlung, Dokument, Gespräch. |
 | Nachrichtenreferenz | `message_ref` | Text | O | Ersetzt WCS `mailRef`. Kennung der Nachricht in einem beliebigen Postfach. |
 | Link | `link` | Text | O | WCS `Vorgang.link`. Fundstelle in der Ablage im Vault ([[ENT-08 - Dokument]]). |
@@ -59,7 +59,7 @@ Nachrichten und Protokolle können Daten anderer Eigentümer enthalten. Solche Q
 
 ## Offene Punkte
 
-- **O-ENT07-1:** Eigene Note mit Identität oder nur Felder am Vorgang und Verlaufseintrag (WCS-Form)? Die gemeinsame Nutzung einer Quelle durch mehrere Fachobjekte ist offen.
+- **O-ENT07-1:** Eigene Note mit Identität oder nur Felder am Vorgang und Verlaufseintrag (WCS-Form)? Die gemeinsame Nutzung einer Quelle durch mehrere Fachobjekte ist offen. **Entschieden am 26.11.2026** ([[PBI-11 - Nachricht und Original zuordnen]]): je Erfassung eine Quellnotiz `weg-manager.source/v1`, die auf die unveränderten Originaldateien verweist; keine Begleitnote je Datei.
 - **O-ENT07-2:** Wird die Note mit [[ENT-08 - Dokument]] und [[ENT-32 - Unterlage]] zusammengeführt?
 - **O-ENT07-3 (erledigt):** Entschieden am 22.11.2026 vom Produktverantwortlichen: `source` ist Pflicht, „unbekannt“ ist als sichtbare Lücke erlaubt.
 

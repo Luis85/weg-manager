@@ -1,8 +1,12 @@
 import { Layer } from "effect";
 import { communityType } from "../../../src/domain/communities";
 import { contactType } from "../../../src/domain/contacts";
-import { matterType, todoType } from "../../../src/domain/matters";
-import { sequentialIdGenerator } from "../../../src/infrastructure/memory/notes";
+import { matterType, sourceType, todoType } from "../../../src/domain/matters";
+import {
+  memoryLocalFiles,
+  memoryVaultFiles,
+  sequentialIdGenerator,
+} from "../../../src/infrastructure/memory/notes";
 import { memoryToday } from "../../../src/infrastructure/memory/shell";
 import { communityId, communityNote } from "../communities/fixture";
 import { contactId, contactNote } from "../contacts/fixture";
@@ -56,7 +60,9 @@ export const todoNote = (n: number, title: string, extra: Record<string, unknown
  * `NoteStore` and a sequential id generator, with community 101 and contact 201 in the vault.
  */
 export const mattersFixture = () => {
-  const index = indexFixture({ types: [communityType, contactType, matterType, todoType] });
+  const index = indexFixture({
+    types: [communityType, contactType, matterType, todoType, sourceType],
+  });
   index.memory.seed(
     "WEG Manager/Gemeinschaften/Ahornweg.md",
     communityNote(101, { name: "Ahornweg", short_code: "AW" }),
@@ -67,5 +73,12 @@ export const mattersFixture = () => {
   );
   const ids = sequentialIdGenerator();
   const today = memoryToday("2026-11-26");
-  return { ...index, layer: Layer.mergeAll(index.layer, ids.layer, today.layer) };
+  const files = memoryVaultFiles();
+  const local = memoryLocalFiles();
+  return {
+    ...index,
+    files,
+    local,
+    layer: Layer.mergeAll(index.layer, ids.layer, today.layer, files.layer, local.layer),
+  };
 };

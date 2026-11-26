@@ -135,7 +135,9 @@ export class Vault
       | "read"
       | "cachedRead"
       | "create"
+      | "createBinary"
       | "createFolder"
+      | "getResourcePath"
       | "process"
       | "offref"
       | "trigger"
@@ -230,6 +232,15 @@ export class Vault
     this.trigger("create", file);
     this.indexer(file);
     return file;
+  }
+
+  /** As `create`, for a file that is no note: it keeps a text of the data's length. */
+  createBinary(path: string, data: ArrayBuffer): Promise<TFile> {
+    return this.create(path, "\u0000".repeat(data.byteLength));
+  }
+
+  getResourcePath(file: TFile): string {
+    return `app://local/${file.path}`;
   }
 
   async createFolder(path: string): Promise<TFolder> {

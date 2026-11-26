@@ -33,6 +33,15 @@ export class NoteWriteError extends Schema.TaggedError<NoteWriteError>()("NoteWr
   cause: Schema.Defect(),
 }) {}
 
+/**
+ * A file picked outside the vault could not be removed after it was copied in (a move): the copy
+ * is in the vault, the original stays where it was. Its cause is the system's failure.
+ */
+export class LocalFileRemoveError extends Schema.TaggedError<LocalFileRemoveError>()(
+  "LocalFileRemoveError",
+  { cause: Schema.Defect() },
+) {}
+
 /** Obsidian could not open the note in a tab: its own failure, which the user can retry. */
 export class NoteOpenError extends Schema.TaggedError<NoteOpenError>()("NoteOpenError", {
   cause: Schema.Defect(),
@@ -78,7 +87,8 @@ export type NotesError =
   | NoteOpenError
   | NoteEditConflictError
   | NoteWriteRefusedError
-  | NoteIndexReadError;
+  | NoteIndexReadError
+  | LocalFileRemoveError;
 
 /** One key per member of `NotesError`; typecheck fails while one is missing or extra. */
 export const NOTES_ERROR_TAG_KEYS = {
@@ -92,4 +102,5 @@ export const NOTES_ERROR_TAG_KEYS = {
   NoteEditConflictError: true,
   NoteWriteRefusedError: true,
   NoteIndexReadError: true,
+  LocalFileRemoveError: true,
 } satisfies Record<NotesError["_tag"], true>;

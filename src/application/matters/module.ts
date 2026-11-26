@@ -1,4 +1,4 @@
-import { matterType, todoType } from "../../domain/matters";
+import { matterType, sourceType, todoType } from "../../domain/matters";
 import { defineModule } from "../module";
 import { MATTERS_ERROR_TAG_KEYS } from "./errors";
 import { mattersDe } from "./i18n/de";
@@ -15,6 +15,6 @@ export const mattersModule = defineModule({
   name: "matters",
   catalog: { de: mattersDe, en: mattersEn },
   errors: { tags: MATTERS_ERROR_TAG_KEYS, describe: describeMattersError },
-  noteTypes: [matterType, todoType],
+  noteTypes: [matterType, todoType, sourceType],
   routes: [MattersRoute],
 });

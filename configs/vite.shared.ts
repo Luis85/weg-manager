@@ -33,6 +33,7 @@ export const SHELL_ICONS = [
   "lucide:list-checks",
   "lucide:search",
   "lucide:history",
+  "lucide:paperclip",
 ];
 
 export type SharedOptions = {

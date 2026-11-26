@@ -7,8 +7,10 @@ import { useMessages } from "../../shell";
 import DueChangeForm from "./DueChangeForm.vue";
 import HistoryEntryForm from "./HistoryEntryForm.vue";
 import HistoryList from "./HistoryList.vue";
+import MatterSources from "./MatterSources.vue";
 import MatterTodos from "./MatterTodos.vue";
 import MergeForm from "./MergeForm.vue";
+import SourceForm from "./SourceForm.vue";
 import SplitForm from "./SplitForm.vue";
 import StatusChangeForm from "./StatusChangeForm.vue";
 
@@ -26,7 +28,9 @@ const props = defineProps<{
   numbers: ReadonlyMap<string, string>;
 }>();
 
-const t = useMessages().matters.history;
+const catalog = useMessages().matters;
+const t = catalog.history;
+const sources = catalog.sources;
 const { history, reload, lines, corrected } = useHistoryList(() => props.matter);
 const open = shallowRef<Form | undefined>();
 onMounted(() => void reload());
@@ -34,7 +38,7 @@ watch(
   () => props.matter.frontmatter,
   () => void reload(),
 );
-type Form = "entry" | "status" | "due" | "split" | "merge";
+type Form = "entry" | "status" | "due" | "source" | "split" | "merge";
 /** Whether the matter is closed by a split or a merge: it is then only history. */
 const closed = () =>
   props.matter.values.split_into_ids !== undefined ||
@@ -45,6 +49,7 @@ const actions = computed(() => {
     { form: "entry", id: "history-add", label: t.add, icon: "i-lucide-plus" },
     { form: "status", id: "status-change", label: t.change },
     { form: "due", id: "due-change", label: t.changeDue },
+    { form: "source", id: "source-add", label: sources.add, icon: "i-lucide-paperclip" },
     { form: "split", id: "split-start", label: t.split },
     { form: "merge", id: "merge-start", label: t.merge },
   ];
@@ -59,6 +64,7 @@ const opened = computed(() => {
     entry: { component: HistoryEntryForm, props: { matter, lines: lines.value, contacts } },
     status: { component: StatusChangeForm, props: { matter, today } },
     due: { component: DueChangeForm, props: { matter } },
+    source: { component: SourceForm, props: { matter, today } },
     split: { component: SplitForm, props: { matter, contacts } },
     merge: { component: MergeForm, props: { matter, matters, numbers } },
   } as const;
@@ -95,6 +101,7 @@ const done = () => {
       :numbers="numbers"
     />
     <MatterTodos :matter="matter" />
+    <MatterSources :matter="matter" />
     <div v-if="open === undefined && matter.editable" class="wm:flex wm:flex-wrap wm:gap-2">
       <UButton
         v-for="action in actions"

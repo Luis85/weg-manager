@@ -79,6 +79,8 @@ export type NotesCatalog = {
     readonly write: Text;
     readonly trash: Text;
     readonly open: Text;
+    /** A moved file was copied into the vault, but its original could not be removed. */
+    readonly localRemove: Text;
     readonly editConflict: Text;
     readonly writeRefused: {
       readonly title: string;

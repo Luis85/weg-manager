@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { MatterFieldIssue, TodoFieldIssue } from "../../domain/matters";
+import { MatterFieldIssue, SourceFieldIssue, TodoFieldIssue } from "../../domain/matters";
 
 const EntryIssue = Schema.Literals(["text.missing", "text.invalid", "occurred-on.invalid"]);
 const StatusChangeIssue = Schema.Literals([
@@ -77,6 +77,12 @@ export class InvalidTodoError extends Schema.TaggedError<InvalidTodoError>()("In
   issues: Schema.Array(TodoFieldIssue),
 }) {}
 
+/** A source the user wants to capture breaks a rule (PBI-11); nothing was written. */
+export class InvalidSourceError extends Schema.TaggedError<InvalidSourceError>()(
+  "InvalidSourceError",
+  { issues: Schema.Array(SourceFieldIssue) },
+) {}
+
 /** Every expected failure of the matters module. Each needs a text in its describer. */
 export type MattersError =
   | InvalidMatterError
@@ -85,7 +91,8 @@ export type MattersError =
   | InvalidDueChangeError
   | InvalidSplitError
   | InvalidMergeError
-  | InvalidTodoError;
+  | InvalidTodoError
+  | InvalidSourceError;
 
 /** One key per member of `MattersError`; typecheck fails while one is missing or extra. */
 export const MATTERS_ERROR_TAG_KEYS = {
@@ -96,4 +103,5 @@ export const MATTERS_ERROR_TAG_KEYS = {
   InvalidSplitError: true,
   InvalidMergeError: true,
   InvalidTodoError: true,
+  InvalidSourceError: true,
 } satisfies Record<MattersError["_tag"], true>;

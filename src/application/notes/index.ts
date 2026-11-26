@@ -8,6 +8,7 @@ export {
   NoteNotFoundError,
   NotePathTakenError,
   NoteTrashError,
+  LocalFileRemoveError,
   NoteOpenError,
   NoteUnreadableError,
   NoteWriteError,
@@ -31,8 +32,11 @@ export {
 } from "./record-list";
 export {
   IdGenerator,
+  LocalFiles,
   NoteOpener,
   NoteStore,
+  VaultFiles,
+  type PickedFile,
   type BodyEdit,
   type Frontmatter,
   type FrontmatterChange,

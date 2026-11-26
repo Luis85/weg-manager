@@ -156,6 +156,14 @@ _Avoid_: task (a matter of kind `board_task` is a matter), action item
 The open and unclear matters that no open or waiting to-do carries forward; computed, never stored.
 _Avoid_: backlog, inbox
 
+**Source** (German: Quelle):
+One capture of a mail, letter, portal message, conversation, meeting or document, with its origin, for one community and the matters it backs: a note of its own whose body is the message text and which refers to its originals.
+_Avoid_: attachment, evidence, document (a document is one original file)
+
+**Original** (German: Original, Originaldatei):
+A file a source refers to, filed unchanged in the community's sources folder; a new version never overwrites an earlier one.
+_Avoid_: attachment, upload
+
 **Correction** (German: Korrektur):
 A history entry that corrects an earlier one (`corrects`); the earlier one stays and is shown as corrected.
 _Avoid_: edit, amendment
@@ -194,4 +202,4 @@ _Avoid_: walking skeleton, demo, prototype
 
 ## Not yet named
 
-The domain model follows the WCS data dictionary (K-20); its German terms and fields are in `docs/entities/00 - Fachliches Domänenmodell.md`. Verlaufseintrag, Eskalation, Entscheidungskarte, Übergabe, Prüfvermerk, Person und Rolle, Thema, Termin, Quelle and the other entities in `docs/entities/` get their English term here when their slice is planned. The keys in the entity notes are proposals until then. Host and vault events keep the name event; they are not the domain's Verlaufseintrag.
+The domain model follows the WCS data dictionary (K-20); its German terms and fields are in `docs/entities/00 - Fachliches Domänenmodell.md`. Verlaufseintrag, Eskalation, Entscheidungskarte, Übergabe, Prüfvermerk, Person und Rolle, Thema, Termin and the other entities in `docs/entities/` get their English term here when their slice is planned. The keys in the entity notes are proposals until then. Host and vault events keep the name event; they are not the domain's Verlaufseintrag.

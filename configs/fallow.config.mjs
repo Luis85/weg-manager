@@ -60,6 +60,7 @@ export const fallowConfig = (folders) => ({
         patterns: [
           "src/application/notes/adapter.ts",
           "src/application/notes/command.ts",
+          "src/application/notes/files.ts",
           "src/application/notes/frontmatter.ts",
           "src/application/notes/note-text.ts",
           "src/application/notes/paths.ts",

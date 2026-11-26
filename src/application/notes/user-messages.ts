@@ -33,6 +33,7 @@ const PLAIN: {
   NoteOpenError: { text: "open", severity: "error", retry: true },
   NoteEditConflictError: { text: "editConflict", severity: "warning", retry: false },
   NoteIndexReadError: { text: "indexRead", severity: "warning", retry: true },
+  LocalFileRemoveError: { text: "localRemove", severity: "warning", retry: false },
 };
 
 /** The text of a notes error. `describeError` (`src/application/user-messages.ts`) hands it here. */

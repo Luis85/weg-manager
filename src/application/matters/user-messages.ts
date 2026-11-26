@@ -22,5 +22,7 @@ export const describeMattersError = (
       return { severity: "warning", ...messages.errors.invalidMerge };
     case "InvalidTodoError":
       return { severity: "warning", ...messages.todos.error };
+    case "InvalidSourceError":
+      return { severity: "warning", ...messages.sources.error };
   }
 };

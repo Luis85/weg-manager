@@ -62,7 +62,7 @@ Dokumente können Daten anderer Eigentümer enthalten (Einzelabrechnungen, Proto
 
 ## Offene Punkte
 
-- **O-ENT08-1:** Bekommt jedes Dokument eine Begleitnote mit Frontmatter, oder reichen Datei und Link? Speicherorte und Dateiaufteilung sind offen.
+- **O-ENT08-1:** Bekommt jedes Dokument eine Begleitnote mit Frontmatter, oder reichen Datei und Link? Speicherorte und Dateiaufteilung sind offen. **Entschieden am 26.11.2026** ([[PBI-11 - Nachricht und Original zuordnen]]): je Erfassung eine Quellnotiz `weg-manager.source/v1`, die auf die unveränderten Originaldateien verweist; keine Begleitnote je Datei.
 - **O-ENT08-2:** Zusammenführung mit [[ENT-32 - Unterlage]] (Soll-Liste) und [[ENT-07 - Quelle]]: ein Objekt mit Soll- und Ist-Stand oder drei getrennte?
 - **O-ENT08-3:** Wo liegt die Liste „Private Daten“ (WCS FR-E3), und wer pflegt sie?
 

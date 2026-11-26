@@ -34,6 +34,11 @@ export const notesEn: NotesCatalog = {
       title: "Note not deleted",
       detail: "Obsidian couldn't move the note to the trash. Try again.",
     },
+    localRemove: {
+      title: "Original not removed",
+      detail:
+        "The file is now in the vault, but its original outside could not be removed. Delete it yourself if you no longer need it.",
+    },
     open: {
       title: "Note not opened",
       detail: "Obsidian couldn't open the note in a tab. Try again.",

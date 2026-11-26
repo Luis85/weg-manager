@@ -1,11 +1,11 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
-import { community, communityText, fileText, writeNote } from "../communities";
+import { community, fileText, writeNote } from "../communities";
+import { MANAGER, writeCommunityAndManager } from "../matters";
 import { ROOT, expectNotice, installConsoleSpy, openView, pluginProblems } from "../support";
 import { de } from "../texts";
 
 const AW = community(1, { name: "Ahornweg", short_code: "AW" });
-const MANAGER = "contact-00000000-0000-4000-8000-0000000000c9";
 const PATH = "WEG Manager/Vorgänge/Die Lampe ist ersetzt.md";
 const ID = /^id: (matter-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/m;
 
@@ -21,20 +21,7 @@ const lines = (...parts: string[]) => [...parts, ""].join("\n");
 describe("matters: capture and find", function () {
   it("opens the matters from the frame's navigation", async function () {
     await installConsoleSpy();
-    await writeNote("WEG Manager/Gemeinschaften/Ahornweg.md", communityText(AW));
-    await writeNote(
-      "WEG Manager/Kontakte/Verwaltung.md",
-      lines(
-        "---",
-        "schema: weg-manager.contact/v1",
-        `id: ${MANAGER}`,
-        "name: Verwaltung",
-        "kind: company",
-        "roles:",
-        `  - ${AW.id}:manager`,
-        "---",
-      ),
-    );
+    await writeCommunityAndManager(AW);
     await writeNote(
       "WEG Manager/Vorgänge/Alt.md",
       lines(

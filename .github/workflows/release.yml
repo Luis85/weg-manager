@@ -1,9 +1,11 @@
 # Release a version (bare semver, no "v"). Two ways to start it:
 #
-#   by hand  "Run workflow" on main with the version (workflow_dispatch). This is the way for an
-#            agent or anyone who cannot push tags: the workflow creates the tag on the commit it
-#            built, together with the release. The version must be the one in manifest.json on main
-#            and must not have a tag yet.
+#   by hand  "Run workflow" on main (workflow_dispatch) with the version: `current` (the default,
+#            the version in manifest.json) or that bare x.y.z. This is the way for an agent or anyone
+#            who cannot push tags: the workflow creates the tag on the commit it built, together with
+#            the release. The version must not have a tag yet. `prerelease` (default off) marks it a
+#            pre-release for BRAT testers; Obsidian and its plugin directory read only full
+#            releases. `dry_run` builds, tests and packages everything and publishes nothing.
 #   by tag   push a tag x.y.z that is on main.
 #
 # Two jobs, so that the job with write permissions never runs repository code:
@@ -22,8 +24,9 @@
 #            files (the signed build-provenance attestation the Obsidian developer docs recommend,
 #            "Release your plugin with GitHub Actions") and creates the GitHub release with exactly
 #            those files. Obsidian and BRAT install only the first three; the notices file is for
-#            people who read the licences. A 0.x release is a pre-release (BRAT). Started by hand,
-#            it creates the tag on the built commit; a tag the release creates starts no second run.
+#            people who read the licences. Started by hand, it is a full release unless prerelease
+#            is set, and it creates the tag on the built commit; a tag the release creates starts no
+#            second run. A pushed 0.x tag is a pre-release.
 #
 # First run: 0.2.0, started by hand. The start by a pushed tag has not run yet; see
 # docs/engineering/releasing.md.
@@ -35,9 +38,18 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to release, bare x.y.z; must equal the version in manifest.json on main"
+        description: "current (the manifest version on main) or that bare x.y.z"
         required: true
+        default: current
         type: string
+      prerelease:
+        description: "Mark it a pre-release for BRAT testers (Obsidian's directory reads full releases only)"
+        type: boolean
+        default: false
+      dry_run:
+        description: "Build, test and package without creating a tag or a release"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -53,6 +65,8 @@ jobs:
     timeout-minutes: 45
     outputs:
       tag: ${{ steps.version.outputs.tag }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+      publish: ${{ steps.version.outputs.publish }}
     steps:
       # Full history, so that the commit can be compared with main.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -74,6 +88,8 @@ jobs:
           REF: ${{ github.ref }}
           REF_NAME: ${{ github.ref_name }}
           INPUT_VERSION: ${{ inputs.version }}
+          PRERELEASE: ${{ inputs.prerelease }}
+          DRY_RUN: ${{ inputs.dry_run }}
         run: node scripts/release-version.mjs
       - name: The commit must be on main
         env:
@@ -165,6 +181,8 @@ jobs:
 
   release:
     needs: build
+    # A dry run stops after the build: nothing is tagged, attested or published.
+    if: ${{ needs.build.outputs.publish == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -191,11 +209,12 @@ jobs:
           GH_REPO: ${{ github.repository }}
           EVENT: ${{ github.event_name }}
           TAG: ${{ needs.build.outputs.tag }}
+          PRERELEASE: ${{ needs.build.outputs.prerelease }}
           SHA: ${{ github.sha }}
         run: |
           flags=()
-          # Major version 0 is a pre-release, so it reaches BRAT testers without being "Latest".
-          if [ "${TAG%%.*}" = "0" ]; then flags+=(--prerelease); fi
+          # A pre-release reaches BRAT testers without being "Latest"; Obsidian reads full releases.
+          if [ "$PRERELEASE" = "true" ]; then flags+=(--prerelease); fi
           # Started by hand, the release creates the tag on the commit the build job built, so the
           # tag must not exist: with an existing tag `gh` would ignore --target. Started by a tag,
           # that tag must exist.

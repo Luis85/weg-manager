@@ -7,7 +7,9 @@ import { appNoteTypes } from "./note-types";
 import {
   noteIndexLayer,
   type IdGenerator,
+  type LocalFiles,
   type NoteOpener,
+  type VaultFiles,
   type NoteStore,
   type NoteTypeRegistry,
 } from "./notes";
@@ -54,6 +56,9 @@ export type AppAdapters = {
   readonly idGenerator: Layer.Layer<IdGenerator>;
   /** Opens a note for the user in the host, beside the plugin's view. */
   readonly noteOpener: Layer.Layer<NoteOpener>;
+  /** The vault's files that are no notes, and the picked files outside the vault (PBI-11). */
+  readonly vaultFiles: Layer.Layer<VaultFiles>;
+  readonly localFiles: Layer.Layer<LocalFiles>;
   /**
    * Publishes the host's events. Built last, so every service that subscribes to the event bus
    * while it is built (the note index) sees `LayoutReady` and `VaultReady`, which the adapter may
@@ -98,9 +103,13 @@ export const appServicesLayer = (
   );
   const notes = noteIndexLayer(options.noteTypes ?? appNoteTypes).pipe(
     Layer.provideMerge(
-      Layer.mergeAll(adapters.noteStore, adapters.idGenerator, adapters.noteOpener).pipe(
-        Layer.provideMerge(shell),
-      ),
+      Layer.mergeAll(
+        adapters.noteStore,
+        adapters.idGenerator,
+        adapters.noteOpener,
+        adapters.vaultFiles,
+        adapters.localFiles,
+      ).pipe(Layer.provideMerge(shell)),
     ),
   );
   const features = servicesLayerOf(APP_MODULES, notes);

@@ -14,7 +14,12 @@ import {
   type Language,
   type UserMessage,
 } from "../../src/application/shell";
-import { memoryNoteStore, sequentialIdGenerator } from "../../src/infrastructure/memory/notes";
+import {
+  memoryLocalFiles,
+  memoryNoteStore,
+  memoryVaultFiles,
+  sequentialIdGenerator,
+} from "../../src/infrastructure/memory/notes";
 import { localDay } from "../../src/domain/shell";
 import { deviceStoreInMemory, memoryToday } from "../../src/infrastructure/memory/shell";
 import { consoleSinkLayer } from "../../src/infrastructure/logging/console-sink";
@@ -172,6 +177,8 @@ export const harnessLayer = (
       noteStore: failingOnce(scenario).pipe(Layer.provideMerge(memory.layer)),
       idGenerator: sequentialIdGenerator().layer,
       noteOpener: memory.opener,
+      vaultFiles: memoryVaultFiles().layer,
+      localFiles: memoryLocalFiles().layer,
       // As the host event adapter is in the plugin: the browser has no metadata cache to wait
       // for, so the vault is ready at once and the index builds from the in-memory notes.
       hostEvents: vaultReadyAtOnce,

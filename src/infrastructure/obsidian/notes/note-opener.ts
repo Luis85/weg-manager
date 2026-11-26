@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
 import { normalizePath, type App } from "obsidian";
-import { NoteNotFoundError, NoteOpenError, NoteOpener } from "../../../application/notes";
-import { isFileGone } from "../../../application/notes/adapter";
+import { NoteNotFoundError, NoteOpener } from "../../../application/notes";
+import { openInTab } from "./vault-tree";
 
 /**
  * The `NoteOpener` on Obsidian: the note opens in a new tab (`getLeaf("tab")`), made the active
@@ -16,12 +16,6 @@ export const noteOpenerLayer = (app: App): Layer.Layer<NoteOpener> =>
       Effect.suspend(() => {
         const file = app.vault.getFileByPath(normalizePath(path));
         if (file === null || file.extension !== "md") return Effect.fail(new NoteNotFoundError());
-        return Effect.tryPromise({
-          try: () => app.workspace.getLeaf("tab").openFile(file, { active: true }),
-          catch: (cause) =>
-            isFileGone(cause) || app.vault.getFileByPath(file.path) !== file
-              ? new NoteNotFoundError()
-              : new NoteOpenError({ cause }),
-        });
+        return Effect.tryPromise(openInTab(app, file));
       }),
   });

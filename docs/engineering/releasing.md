@@ -9,13 +9,18 @@ Versions are bare `x.y.z`. Tags carry no `v`; `.npmrc` sets `tag-version-prefix=
 
    The bump refuses a version that is not greater than the current one. Commit `package.json`, `package-lock.json`, `manifest.json` and `versions.json` (`chore: release 0.3.0`) and bring the commit to `main` through a pull request, like every change.
 2. When the pull request is merged and CI on `main` is green, start the release. A release publishes, so start it only when the owner asked for it. There is no further approval click: no protected `release` environment (owner decision, 2026-11-22), so a started release publishes when its checks pass. Either way works:
-   - **By hand, the way for an agent:** run the workflow `Release` on `main` with the input `version` set to the new version. In the browser: Actions, Release, "Run workflow". With the GitHub CLI: `gh workflow run release.yml --ref main -f version=0.3.0`. An agent with the GitHub tools starts `release.yml` on the ref `main` with the input `version`. No tag has to be pushed: the workflow creates the tag on the commit it built, together with the release. It refuses a ref other than `main`, a version that is not a bare `x.y.z`, a version that differs from `manifest.json`, and a version that already has a tag.
+   - **By hand, the way for an agent:** run the workflow `Release` on `main`. Its inputs (taken from the workflow of the owner's other plugin, 2026-11-26):
+     - `version`: `current` (the default: the version in `manifest.json` on `main`) or that bare `x.y.z`.
+     - `prerelease` (default off): mark it a pre-release for BRAT testers. **Obsidian's community directory and its update check read only full releases**, so a release meant for the marketplace stays a full release; while the major version is 0 the version number itself says "alpha".
+     - `dry_run` (default off): build, gate, e2e and package exactly as for a release, and stop before the `release` job, so nothing is tagged, attested or published. A dry run also works for a version that already has a tag.
+
+     In the browser: Actions, Release, "Run workflow". With the GitHub CLI: `gh workflow run release.yml --ref main -f version=current`. An agent with the GitHub tools starts `release.yml` on the ref `main` with these inputs. No tag has to be pushed: the workflow creates the tag on the commit it built, together with the release. It refuses a ref other than `main`, a version that is not a bare `x.y.z` or `current`, a version that differs from `manifest.json`, and (unless it is a dry run) a version that already has a tag.
    - **By tag:** `git tag 0.3.0 origin/main && git push origin 0.3.0`.
 
    (Where direct pushes to `main` are allowed, plain `npm version 0.3.0` on `main` followed by `git push --follow-tags` bumps and tags in one step.)
 3. `.github/workflows/release.yml` runs two jobs:
    - `build` (read-only token, credentials not persisted, `fetch-depth: 0`), in this order:
-     1. Node from `.nvmrc`, then `node scripts/release-version.mjs`: the version (the tag, or the input of a start by hand; a start by hand must be on `main` and its tag must not exist yet).
+     1. Node from `.nvmrc`, then `node scripts/release-version.mjs`: the version (the tag, or the input of a start by hand, `current` read from `manifest.json`; a start by hand must be on `main` and its tag must not exist yet, unless it is a dry run), whether it is a pre-release and whether it is published.
      2. The commit must be an ancestor of `origin/main`: release from `main` only.
      3. `node scripts/check-versions.mjs --tag 0.3.0`, before the install and the 20 to 30 minutes of gate and e2e: the tag equals the `manifest.json` version, `package.json` and `manifest.json` carry the same version, and `versions.json` has the entry for it, equal to `minAppVersion`. The same script runs without `--tag` as `npm run check:versions`, the fourth check of the gate's first stage.
      4. `npm ci`, then `npm run verify` (the gate: it builds and checks `dist/` and `THIRD-PARTY-NOTICES.txt`).
@@ -24,7 +29,7 @@ Versions are bare `x.y.z`. Tags carry no `v`; `.npmrc` sets `tag-version-prefix=
      7. `sha256sum --check` of the staged files against the hashes of step 5: the job fails when `main.js`, `manifest.json`, `styles.css` or the notices file changed meanwhile. Only then `release/` (the folder `weg-manager/` with the three plugin files, and `THIRD-PARTY-NOTICES.txt` beside it) is uploaded as the artifact `release-files`.
 
      So the released files are the ones the gate built. The workflow does not rely on the e2e rebuild producing the same bytes (two builds in a row on one machine gave identical files, which was not shown on the runner).
-   - `release` (`contents: write`, `id-token: write`, `attestations: write`; no checkout, no `npm`) downloads that artifact, attests the four assets and creates the GitHub release with `main.js`, `manifest.json`, `styles.css` and `THIRD-PARTY-NOTICES.txt`. The release is marked a pre-release while the major version is 0 (the tag starts with `0.`).
+   - `release` (`contents: write`, `id-token: write`, `attestations: write`; no checkout, no `npm`; skipped for a dry run) downloads that artifact, attests the four assets and creates the GitHub release with `main.js`, `manifest.json`, `styles.css` and `THIRD-PARTY-NOTICES.txt`. A start by hand is a full release unless `prerelease` is set; a pushed tag of major version 0 is a pre-release.
 
    `release:package` fails when the tag and `manifest.json` disagree, when `dist/` fails the `check:dist` invariants (a stale or development build), when `versions.json` has no entry for the manifest version equal to its `minAppVersion`, or when `THIRD-PARTY-NOTICES.txt` is missing or empty.
 4. To install by hand, copy the three plugin files (`main.js`, `manifest.json`, `styles.css`) to `<vault>/.obsidian/plugins/weg-manager/` and enable the plugin.
@@ -37,7 +42,9 @@ The workflow first ran for 0.2.0, started by hand, and passed; the start by a pu
 
 Raise `minAppVersion` in `manifest.json` before you bump whenever the plugin starts using a newer Obsidian API.
 
-0.2.0 is the first release: a pre-release (see *Beta testing with BRAT* below) for the owner's manual checks in a personal vault (see [testing.md](testing.md#manual-checks-in-obsidian)).
+0.2.0 is the first release: a pre-release (see *Beta testing with BRAT* below) for the owner's manual checks in a personal vault (see [testing.md](testing.md#manual-checks-in-obsidian)). 0.3.0 is the first full release, for the submission to Obsidian's community directory (owner decision, 2026-11-26: 0.1.0 was not possible, since 0.2.0 and 0.2.1 were published; the alpha goes on in 0.x).
+
+**No backwards compatibility before 1.0.0** (owner decision, 2026-11-26). While the major version is 0, a release may change a note contract, a setting or a frontmatter key without a migration; the contract pages in `docs/contracts/` say what is current. From 1.0.0 on, a change to a contract needs a new version and a migration (ADR 0007).
 
 ## Third-party notices
 

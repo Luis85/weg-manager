@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import {
   duplicateNumbers,
   matterType,
@@ -53,3 +54,16 @@ export const matterRecords = defineRecords({
 
 /** The name a list shows: the matter's outcome, else its file name. */
 export const shownName = matterRecords.shownName;
+
+/** The community of each matter by id: what a rule of the same community compares with (DF-12). */
+export const matterCommunities = Effect.map(
+  matterRecords.list,
+  ({ records }) =>
+    new Map(
+      records.flatMap((matter) =>
+        matter.id === undefined || matter.values.community_id === undefined
+          ? []
+          : [[matter.id, matter.values.community_id] as const],
+      ),
+    ),
+);

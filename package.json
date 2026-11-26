@@ -1,6 +1,6 @@
 {
   "name": "weg-manager",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "Keep the communities of a German condominium (WEG) advisory board as notes in your vault.",

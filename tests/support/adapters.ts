@@ -2,7 +2,12 @@ import { Layer } from "effect";
 import type { AppAdapters } from "../../src/application/app-services-layer";
 import type { DeviceValue } from "../../src/application/shell";
 import type { CalendarDay } from "../../src/domain/shell";
-import { memoryNoteStore, sequentialIdGenerator } from "../../src/infrastructure/memory/notes";
+import {
+  memoryLocalFiles,
+  memoryNoteStore,
+  memoryVaultFiles,
+  sequentialIdGenerator,
+} from "../../src/infrastructure/memory/notes";
 import { deviceStoreInMemory, memoryToday } from "../../src/infrastructure/memory/shell";
 import {
   inMemoryStore,
@@ -39,6 +44,8 @@ export const testAdapters = (options: TestAdaptersOptions = {}) => {
   const clipboard = recordingClipboard();
   const logger = recordingSink();
   const notes = memoryNoteStore();
+  const files = memoryVaultFiles();
+  const localFiles = memoryLocalFiles();
   const today = memoryToday(options.today ?? TEST_TODAY);
   const adapters: AppAdapters = {
     settingsStore: store.layer,
@@ -52,7 +59,9 @@ export const testAdapters = (options: TestAdaptersOptions = {}) => {
     noteStore: notes.layer,
     idGenerator: sequentialIdGenerator().layer,
     noteOpener: notes.opener,
+    vaultFiles: files.layer,
+    localFiles: localFiles.layer,
     hostEvents: options.hostEvents ?? Layer.empty,
   };
-  return { adapters, store, notifier, clipboard, logger, notes, today };
+  return { adapters, store, notifier, clipboard, logger, notes, files, localFiles, today };
 };

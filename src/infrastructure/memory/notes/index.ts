@@ -3,3 +3,4 @@
 export { TEST_ONLY_MARKER, memoryNoteStore } from "./memory-note-store";
 export { normalizePath } from "./normalize-path";
 export { sequentialIdGenerator } from "./id-generator";
+export { memoryLocalFiles, memoryVaultFiles } from "./memory-vault-files";

@@ -1,55 +1,12 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { de } from "../../../../src/application/messages";
 import { NoteStore } from "../../../../src/application/notes";
-import { closeAll, openRoute, settle, type Memory } from "../../../support/communities/screen";
-import {
-  AW,
-  FOLDER,
-  MANAGER,
-  communityNote,
-  contactNote,
-  matterNote,
-} from "../../../support/matters/fixture";
+import { AW, FOLDER, MANAGER, matterNote } from "../../../support/matters/fixture";
+import { TG, choose, closeAll, openMatters as open, vault } from "../../../support/matters/screen";
 
 afterEach(closeAll);
 
 const t = de.matters;
-const TG = "community-00000000-0000-4000-8000-000000000066";
-
-/** Ahornweg (AW), Tiefgarage (TG), the manager and `matters`. */
-const vault =
-  (...matters: [string, Record<string, unknown>][]) =>
-  (notes: Memory) => {
-    notes.seed(
-      "WEG Manager/Gemeinschaften/Ahornweg.md",
-      communityNote(101, { name: "Ahornweg", short_code: "AW" }),
-    );
-    notes.seed(
-      "WEG Manager/Gemeinschaften/Tiefgarage.md",
-      communityNote(102, { id: TG, name: "Tiefgarage", short_code: "TG", color: "blue" }),
-    );
-    notes.seed(
-      "WEG Manager/Kontakte/Verwaltung.md",
-      contactNote(201, AW, { name: "Verwaltung", kind: "company", roles: [`${AW}:manager`] }),
-    );
-    for (const [path, frontmatter] of matters) notes.seed(`${FOLDER}/${path}`, frontmatter);
-  };
-
-const choose = async (element: Element | undefined, value: string) => {
-  if (!(element instanceof HTMLSelectElement)) throw new Error("no select");
-  element.value = value;
-  element.dispatchEvent(new Event("change"));
-  await settle();
-};
-
-const open = async (seed: (notes: Memory) => void) => {
-  const screen = await openRoute({ name: "matters" }, "matters-screen", {
-    seed,
-    today: "2026-11-26",
-  });
-  const names = () => screen.all("matter-name").map((element) => element.textContent.trim());
-  return { ...screen, names };
-};
 
 describe("the matters screen", () => {
   it("lists matters newest number first with the short code, facts and the check mark", async () => {

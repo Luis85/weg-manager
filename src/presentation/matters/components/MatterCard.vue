@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import UButton from "@nuxt/ui/components/Button.vue";
 import UIcon from "@nuxt/ui/components/Icon.vue";
-import { computed } from "vue";
+import { computed, shallowRef } from "vue";
 import { describeMatterIssue, shownName, type Matter } from "../../../application/matters";
 import { UNKNOWN_SOURCE, checkMark, shownNumber } from "../../../domain/matters";
 import { OpenNoteButton } from "../../notes";
 import { useMessages } from "../../shell";
+import MatterHistory from "./MatterHistory.vue";
 
 /**
  * One matter in the list (VIEW-03): its number with the community's short code, the outcome, the
@@ -18,6 +19,8 @@ const props = defineProps<{
   today: string;
   shortCodes: ReadonlyMap<string, string>;
   contactNames: ReadonlyMap<string, string>;
+  /** The contacts a history entry may name as its actor. */
+  contacts: readonly { readonly value: string; readonly label: string }[];
 }>();
 const emit = defineEmits<{ edit: [] }>();
 
@@ -57,6 +60,8 @@ const lines = computed(() => {
   ].filter((line) => line !== undefined);
 });
 const gap = computed(() => values.value.source === UNKNOWN_SOURCE);
+/** Whether the history shows under the card. */
+const historyOpen = shallowRef(false);
 const issues = computed(() =>
   props.matter.issues.map((issue) => describeMatterIssue(issue, catalog)),
 );
@@ -118,6 +123,25 @@ const issues = computed(() =>
       data-focus="edit"
       data-testid="matter-edit"
       @click="emit('edit')"
+    />
+    <UButton
+      type="button"
+      size="sm"
+      color="neutral"
+      variant="ghost"
+      icon="i-lucide-history"
+      :label="historyOpen ? t.history.hide : t.history.show"
+      :aria-label="t.history.showLabel(name)"
+      :aria-expanded="historyOpen ? 'true' : 'false'"
+      data-testid="matter-history-toggle"
+      @click="historyOpen = !historyOpen"
+    />
+    <MatterHistory
+      v-if="historyOpen"
+      :matter="matter"
+      :today="today"
+      :contacts="contacts"
+      :contact-names="contactNames"
     />
   </li>
 </template>

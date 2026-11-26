@@ -6,7 +6,7 @@ import { MATTER_STATUSES, type MatterStatus } from "./matter-type";
 export const HISTORY_HEADING = "## Verlauf";
 
 /** What kind of history entry it is (ENT-06). */
-export const ENTRY_KINDS = [
+const ENTRY_KINDS = [
   "request",
   "acknowledgement",
   "reply",
@@ -35,7 +35,7 @@ export const MANUAL_ENTRY_KINDS = [
 export const BOARD_ACTOR = "board";
 
 /** The longest entry text. */
-export const ENTRY_TEXT_MAX_LENGTH = 500;
+const ENTRY_TEXT_MAX_LENGTH = 500;
 
 /**
  * One entry of a matter's history (ENT-06). `occurred_on` is when it happened, `undefined` when
@@ -90,19 +90,25 @@ const isKind = (value: string | undefined): value is EntryKind =>
 const isStatus = (value: string | undefined): value is MatterStatus =>
   (MATTER_STATUSES as readonly string[]).includes(value ?? "");
 
+/** The fields every entry has, or `undefined` when one is missing or the kind is unknown. */
+const requiredOf = (fields: ReadonlyMap<string | undefined, string | undefined>) => {
+  const kind = fields.get("kind");
+  const actor = fields.get("actor");
+  const recorded = fields.get("recorded");
+  const id = fields.get("id");
+  const complete = actor !== undefined && recorded !== undefined && id !== undefined;
+  return isKind(kind) && complete ? { kind, actor, recorded, id } : undefined;
+};
+
 /** One list item as an entry, or `undefined` when it lacks what every entry has. */
 const parseItem = (line: string): HistoryEntry | undefined => {
   const match = ITEM.exec(line);
   if (match === null) return undefined;
   const [, day, text, rest] = match as unknown as [string, string, string, string];
   const fields = new Map([...rest.matchAll(FIELD)].map((found) => [found[1], found[2]?.trim()]));
-  const kind = fields.get("kind");
-  const actor = fields.get("actor");
-  const recorded = fields.get("recorded");
-  const id = fields.get("id");
-  if (!isKind(kind) || actor === undefined || recorded === undefined || id === undefined) {
-    return undefined;
-  }
+  const required = requiredOf(fields);
+  if (required === undefined) return undefined;
+  const { kind, actor, recorded, id } = required;
   const status = fields.get("status");
   return {
     id,

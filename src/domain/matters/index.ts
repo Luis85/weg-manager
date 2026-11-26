@@ -27,7 +27,6 @@ export {
 } from "./rules";
 export {
   BOARD_ACTOR,
-  ENTRY_KINDS,
   HISTORY_HEADING,
   MANUAL_ENTRY_KINDS,
   appendEntry,

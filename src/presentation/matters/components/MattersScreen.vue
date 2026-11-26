@@ -158,6 +158,7 @@ const sheetTitle = computed(() =>
           :today="day"
           :short-codes="shortCodes"
           :contact-names="contactNames"
+          :contacts="contactChoices"
           :data-card-key="cardKey(matter)"
           @edit="edit(matter)"
         />

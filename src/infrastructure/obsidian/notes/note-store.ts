@@ -10,6 +10,7 @@ import {
 import {
   NoteNotFoundError,
   NoteStore,
+  type BodyEdit,
   type FrontmatterChange,
   type NewNote,
   type Note,
@@ -26,6 +27,7 @@ import {
   recordNotes,
   planRename,
   trashCommand,
+  bodyOfText,
   updateNoteText,
   writeCommand,
 } from "../../../application/notes/adapter";
@@ -103,13 +105,13 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
    * still list the file then, until its file watcher reports the delete (measured in 1.15.1), so
    * the rejection itself says it, as well as the file being gone from the vault.
    */
-  const update = <E>(path: string, change: FrontmatterChange<E>) =>
+  const update = <E>(path: string, change: FrontmatterChange<E>, body?: BodyEdit) =>
     Effect.flatMap(find(path), (file) =>
       writeCommand(async (): Promise<Result.Result<Note, E | UpdateError>> => {
         const decided: { outcome?: ReturnType<typeof updateNoteText<E>> } = {};
         try {
           await vault.process(file, (text) => {
-            const outcome = asDefect(() => updateNoteText(text, change, parseYaml));
+            const outcome = asDefect(() => updateNoteText(text, change, parseYaml, body));
             decided.outcome = outcome;
             return Result.isSuccess(outcome) ? outcome.success.text : text;
           });
@@ -197,6 +199,14 @@ const obsidianNoteStore = (app: App): NoteStore["Service"] => {
     read: (path) =>
       Effect.flatMap(find(path), (file) =>
         vaultRead(() => ({ path: file.path, frontmatter: frontmatterOf(file) })),
+      ),
+    // `read`, never `cachedRead`: the cached text outlives a file deleted outside (L43).
+    readBody: (path) =>
+      Effect.flatMap(find(path), (file) =>
+        Effect.tryPromise({
+          try: () => vault.read(file),
+          catch: (cause) => new VaultReadError({ cause }),
+        }).pipe(Effect.map(bodyOfText)),
       ),
     create,
     update,

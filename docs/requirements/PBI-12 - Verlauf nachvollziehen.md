@@ -8,7 +8,7 @@ actors:
   - "[[ACT-06-Kommunikationswerkzeug]]"
 release: "[[MVP - Beirat Support]]"
 status: ""
-started: ""
+started: 2026-11-26
 finished: ""
 horizon: ""
 start: ""
@@ -75,3 +75,13 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 ## Business Rules
 
 [[DF-06 - Reaktion und Pause]], [[DF-14 - Kennzahlen]].
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen gemeinsamen ersten Schnitt von [[PBI-08 - Bearbeitungsstand bewusst ändern]] und [[PBI-12 - Verlauf nachvollziehen]].
+  - **Schnitt:** Der Abschnitt „Verlauf“ im Text der Vorgangsnotiz wird am Vorgang angezeigt. Ein Statuswechsel läuft über einen eigenen Dialog mit Anlass; erledigt und hinfällig verlangen zusätzlich eine Quelle. Er schreibt Status und Verlaufseintrag in einem Schritt. Einträge von Hand (Anfrage, Antwort, Notiz und die übrigen Arten) und Wiedereröffnen mit Begründung gehören dazu. „Nicht eingehalten“ (Bewertungsschicht, [[ENT-16 - Beiratsbewertung]]) folgt später.
+  - **Format:** je Eintrag ein Listenpunkt unter „## Verlauf“ mit Inline-Feldern, etwa `- 2026-11-20 Anfrage per Mail an die Verwaltung [kind:: request] [actor:: board] [source:: Mail] [recorded:: 2026-11-21] [id:: …]`.
+  - **Akteur:** ein Kontakt (`contact-…`) oder der Beirat selbst (`board`) als Vorgabe.
+  - **Korrektur:** nur anhängen. Einträge werden nie geändert oder gelöscht; eine Korrektur ist ein neuer Eintrag mit `[corrects:: …]`, der alte erscheint als „korrigiert“.
+- 26.11.2026 (Umsetzung des ersten Schnitts): Verlauf als Abschnitt „## Verlauf“ der Vorgangsnotiz ([[DV-03 - Vorgang v1]], ADR 0007 Nachtrag vom 26.11.2026), aufklappbar an jeder Vorgangskarte, mit Eintrag von Hand und Statuswechsel mit Anlass. Der `NoteStore` schreibt dafür Frontmatter und Abschnitt in einem atomaren Schritt. Erfüllt sind Kriterium 1 (Tag des Geschehens, Erfassungstag, Akteur und Quelle getrennt; der Erfasser ist heute immer der Beirat), 2 (Empfangsbestätigung, Antwort, neuer Termin, Teillieferung und Erfüllung sind eigene Arten), 3 (Korrektur als neuer Eintrag, der alte erscheint als korrigiert; ein unbekannter Tag bleibt `?`) und 4 (nichts behauptet Manipulationssicherheit: Der Verlauf ist Text der Notiz). Tests: `tests/unit/domain/matters/history.test.ts`, `tests/unit/application/matters/history.test.ts`, `tests/dom/presentation/matters/history.test.ts`, `tests/e2e/specs/matter-history.e2e.ts`, der Vertrag des `NoteStore` (fünf neue Fälle, auch in Obsidian). `npm run verify` mit Exit 0, e2e 29 von 29 Specs grün.
+

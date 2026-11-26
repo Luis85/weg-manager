@@ -23,6 +23,13 @@ export type { Frontmatter, FrontmatterPatch } from "../../domain/notes";
  */
 export type Note = { readonly path: string; readonly frontmatter: Frontmatter };
 
+/**
+ * An edit of a note's body, in the same atomic write as its frontmatter (ADR 0007, amendment
+ * 26.11.2026): it gets the body as the file holds it now and the note's line break, and returns
+ * the new body. Pure; a type's contract says which section of the body it may change.
+ */
+export type BodyEdit = (body: string, eol: string) => string;
+
 export type NewNote = {
   /** Vault folder, created with its parents when missing; `""` or `"/"` is the vault root. */
   readonly folder: string;
@@ -52,6 +59,11 @@ export class NoteStore extends Context.Service<
     /** The note at `path`; a note without frontmatter, or whose YAML is broken, has `{}`. */
     read(path: string): Effect.Effect<Note, NoteNotFoundError | VaultReadError>;
     /**
+     * The note's body as the file holds it now (not a cached copy): the text after its
+     * frontmatter block, or the whole text when it has none.
+     */
+    readBody(path: string): Effect.Effect<string, NoteNotFoundError | VaultReadError>;
+    /**
      * The paths of the Markdown notes in `folder` or below (`/` is the whole vault) whose
      * frontmatter block cannot be read: broken YAML, or YAML that is no map. `list` leaves them
      * out and `read` gives `{}`, so this is the only way to find them. Sorted by path. The folder
@@ -68,13 +80,14 @@ export class NoteStore extends Context.Service<
       note: NewNote,
     ): Effect.Effect<Note, InvalidNoteNameError | NotePathTakenError | NoteWriteError>;
     /**
-     * Runs `change` on the current frontmatter inside one atomic write; the body is untouched.
-     * What `change` throws is a defect. The Obsidian adapter changes only the lines of the keys
+     * Runs `change` on the current frontmatter inside one atomic write; the body is untouched,
+     * unless `body` edits it in the same write. What `change` or `body` throws is a defect. The Obsidian adapter changes only the lines of the keys
      * the patch changes and refuses (`NoteWriteRefusedError`, `layout`) a note it cannot edit so.
      */
     update<E>(
       path: string,
       change: FrontmatterChange<E>,
+      body?: BodyEdit,
     ): Effect.Effect<
       Note,
       E | NoteNotFoundError | NoteUnreadableError | NoteWriteRefusedError | NoteWriteError

@@ -18,9 +18,9 @@ Eine datierte Information über eine Handlung, Aussage oder Änderung im fachlic
 
 | Feld | Schlüssel | Typ | Pflicht | Bedeutung und Regel |
 | --- | --- | --- | --- | --- |
-| Technische Identität | `id` | Text | P | `history-entry-<uuid>` nach [[docs/adr/0007-vault-data-access.md\|ADR 0007]], falls der Eintrag eine eigene Note ist (O-ENT06-1). |
-| Schema | `schema` | Text | P | `weg-manager.history-entry/v1` (vorgeschlagen), nur bei eigener Note. |
-| Vorgang | `matter_id` | Text | P | Bezug zum Vorgang. Im WCS implizit, weil der Eintrag in `Vorgang.verlauf` steht. |
+| Technische Identität | `id` | Text | P | Acht Zeichen, eindeutig im Vorgang: Der Eintrag ist ein Listenpunkt im Abschnitt „Verlauf“ der Vorgangsnotiz, keine eigene Note (entschieden 26.11.2026, [[DV-03 - Vorgang v1]]). |
+
+| Vorgang | – | – | P | Implizit: Der Eintrag steht in der Notiz seines Vorgangs, wie im WCS in `Vorgang.verlauf`. |
 | Am | `occurred_on` | Datum | P | WCS `am`. Tag, an dem es geschah. Unbekannt bleibt unbekannt. |
 | Von | `actor` | Text | P | WCS `von`. Dokumentierter Akteur: Beirat, Agent, Verwaltung oder eine andere Rolle ([[ENT-02 - Person und Rolle]]). |
 | Text | `text` | Text | P | WCS `text`. Was geschah. |

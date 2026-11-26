@@ -120,6 +120,18 @@ _Avoid_: flag, warning, rating
 The board member's own date to look at a matter again. It never changes the due date.
 _Avoid_: reminder, due date, deadline
 
+**History entry** (German: Verlaufseintrag):
+One dated line of a matter's history, in the section "Verlauf" of its note: what happened, when (or that the day is unknown), by whom, from which source and when it was recorded. Entries are only ever appended.
+_Avoid_: event (host and vault events keep that name), log line, comment
+
+**Status change** (German: Statuswechsel):
+A change of a matter's status with its reason, written as the new status and a history entry of kind `status_change` in one step. Closing a matter needs a source too.
+_Avoid_: transition, state change
+
+**Correction** (German: Korrektur):
+A history entry that corrects an earlier one (`corrects`); the earlier one stays and is shown as corrected.
+_Avoid_: edit, amendment
+
 **Contact** (German: Kontakt):
 A person or a company the board member deals with, kept as one note of type `contact` in the folder `Kontakte`. A contact has a role in one or more communities; the role gives it no authority.
 _Avoid_: addressee, stakeholder, user, person (a person is one kind of contact)

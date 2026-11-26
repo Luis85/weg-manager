@@ -12,7 +12,7 @@ const CONTRACT = "NoteStore contract in Obsidian";
  * wrote this: a contract that shrinks must be seen here too, not only a case that fails. A case
  * added to the contract raises it.
  */
-const CASES = 53;
+const CASES = 58;
 
 /**
  * The cases that need failing writes. The fixture makes the vault read-only with `chmod`, which

@@ -1,5 +1,6 @@
 import { Cause, Effect, Exit } from "effect";
 import type { App } from "obsidian";
+import { bodyContract } from "../../support/notes/contract-body";
 import { clashContract } from "../../support/notes/contract-clashes";
 import { folderContract } from "../../support/notes/contract-folders";
 import { readContract } from "../../support/notes/contract-reads";
@@ -29,7 +30,7 @@ const outcome = (
 };
 
 /**
- * Runs the NoteStore contract's read, write, clash and folder cases (`contract-*.ts`, through
+ * Runs the NoteStore contract's read, write, body, clash and folder cases (`contract-*.ts`, through
  * `contract-shim.ts`) against the real Obsidian adapter in this vault, one after the other. Each
  * case starts on the vault as it was before the first: what a case left is deleted, and the
  * runner waits until the vault no longer lists it and the metadata cache has caught up.
@@ -44,6 +45,7 @@ export const runContract = async (app: App): Promise<CaseResult[]> => {
   describe("NoteStore contract in Obsidian", () => {
     readContract(make);
     writeContract(make);
+    bodyContract(make);
     clashContract(make);
     folderContract(make);
   });

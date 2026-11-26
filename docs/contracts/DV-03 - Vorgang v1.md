@@ -33,7 +33,33 @@ next_step: Bei der Verwaltung nachfragen, ob der Elektriker beauftragt ist.
 ---
 ```
 
-Darunter darf beliebiger Text stehen. Er gehört dem Menschen; der Abschnitt „Verlauf“ folgt mit dem Verlauf ([[PBI-12 - Verlauf nachvollziehen]]).
+Darunter darf beliebiger Text stehen. Er gehört dem Menschen, bis auf den Abschnitt „Verlauf“.
+
+## Abschnitt „Verlauf“
+
+Der Verlauf ([[PBI-12 - Verlauf nachvollziehen]], [[ENT-06 - Verlaufseintrag]]) steht im Text der Notiz unter der Überschrift `## Verlauf`, bis zur nächsten Überschrift der Ebene 1 oder 2. Je Eintrag ein Listenpunkt: der Tag, an dem es geschah (`?`, wenn er unbekannt ist), der Text, dann Inline-Felder in dieser Reihenfolge:
+
+```markdown
+## Verlauf
+
+- 2026-11-20 Anfrage per Mail an die Verwaltung [kind:: request] [actor:: board] [source:: Mail] [recorded:: 2026-11-21] [id:: a1b2c3d4]
+- 2026-11-25 Lampe ist ersetzt [kind:: status_change] [actor:: board] [status:: done] [source:: Foto per Mail] [recorded:: 2026-11-26] [id:: b2c3d4e5]
+```
+
+| Feld | Pflicht | Regel |
+| --- | --- | --- |
+| `kind` | ja | `request`, `acknowledgement`, `reply`, `new_date`, `partial`, `fulfilment`, `dispatch`, `status_change`, `assessment` oder `note`. |
+| `actor` | ja | `board` (der Beirat) oder die `id` eines Kontakts. |
+| `status` | bei `status_change` | Der neue Bearbeitungsstand. |
+| `source` | nein | Die Quelle in Kurzform. |
+| `corrects` | nein | Die `id` des Eintrags, den dieser korrigiert. |
+| `recorded` | ja | Der Tag, an dem der Eintrag erfasst wurde. Er ersetzt nie den Tag des Geschehens. |
+| `id` | ja | Acht Zeichen, eindeutig im Vorgang. |
+
+- Das Plugin hängt nur an: Es schreibt einen neuen Eintrag hinter den letzten Eintrag des Abschnitts, legt den Abschnitt am Ende des Textes an, wenn er fehlt, und ändert oder löscht nie einen Eintrag. Eine Korrektur ist ein neuer Eintrag mit `corrects`; der alte erscheint als „korrigiert“.
+- Ein Statuswechsel schreibt `status`, `done_on` (bei `done` gesetzt, sonst entfernt) und den Eintrag `status_change` in einem Schritt. Erledigt und hinfällig verlangen Anlass und Quelle, jeder Wechsel einen Anlass ([[PBI-08 - Bearbeitungsstand bewusst ändern]]).
+- Eckige Klammern im Text schreibt das Plugin als runde, damit sie nicht als Feld gelesen werden; der Text ist eine Zeile.
+- Eine Zeile im Abschnitt, die das Plugin nicht lesen kann (etwa von Hand ohne Felder geschrieben), bleibt und erscheint, wie sie ist. Text außerhalb des Abschnitts gehört dem Menschen.
 
 ## Schlüssel
 

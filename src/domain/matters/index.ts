@@ -25,3 +25,19 @@ export {
   type MatterFilter,
   type MatterInput,
 } from "./rules";
+export {
+  BOARD_ACTOR,
+  HISTORY_HEADING,
+  MANUAL_ENTRY_KINDS,
+  appendEntry,
+  correctedIds,
+  formatEntry,
+  parseHistory,
+  validateEntry,
+  validateStatusChange,
+  type EntryIssue,
+  type EntryKind,
+  type HistoryEntry,
+  type HistoryLine,
+  type StatusChangeIssue,
+} from "./history";

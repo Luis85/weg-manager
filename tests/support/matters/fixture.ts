@@ -3,6 +3,7 @@ import { communityType } from "../../../src/domain/communities";
 import { contactType } from "../../../src/domain/contacts";
 import { matterType } from "../../../src/domain/matters";
 import { sequentialIdGenerator } from "../../../src/infrastructure/memory/notes";
+import { memoryToday } from "../../../src/infrastructure/memory/shell";
 import { communityId, communityNote } from "../communities/fixture";
 import { contactId, contactNote } from "../contacts/fixture";
 import { indexFixture } from "../notes/index-fixture";
@@ -52,5 +53,6 @@ export const mattersFixture = () => {
     contactNote(201, AW, { name: "Verwaltung", kind: "company", roles: [`${AW}:manager`] }),
   );
   const ids = sequentialIdGenerator();
-  return { ...index, layer: Layer.mergeAll(index.layer, ids.layer) };
+  const today = memoryToday("2026-11-26");
+  return { ...index, layer: Layer.mergeAll(index.layer, ids.layer, today.layer) };
 };

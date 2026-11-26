@@ -3,6 +3,7 @@ import { contactsModule } from "./contacts";
 import { mattersModule } from "./matters";
 import { notesModule } from "./notes";
 import { shellModule } from "./shell";
+import { weekModule } from "./week";
 
 /**
  * Every module of the plugin, in load order: the core modules `shell` and `notes` first, then the
@@ -19,6 +20,7 @@ export const APP_MODULES = [
   communitiesModule,
   contactsModule,
   mattersModule,
+  weekModule,
 ] as const;
 
 /** The manifest of any module of the plugin. */

@@ -35,6 +35,7 @@ export const SHELL_ICONS = [
   "lucide:search",
   "lucide:history",
   "lucide:paperclip",
+  "lucide:calendar-days",
 ];
 
 export type SharedOptions = {

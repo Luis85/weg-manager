@@ -65,6 +65,30 @@ describe("catalogs", () => {
     }
   });
 
+  it("returns a sentence from every text function in both languages", () => {
+    // One sample for every parameter: a list (join, map, length), with the fields an issue
+    // carries, so each function runs; a broken template throws or returns nothing.
+    const sample = Object.assign(["AW 005"], {
+      min: 1,
+      max: 9,
+      version: 2,
+      from: 1,
+      allowed: ["a"],
+    });
+    const functions = (value: unknown, path = ""): [string, (...args: unknown[]) => unknown][] => {
+      if (typeof value === "function") return [[path, value as (...args: unknown[]) => unknown]];
+      if (typeof value !== "object" || value === null) return [];
+      return Object.entries(value).flatMap(([key, inner]) => functions(inner, `${path}.${key}`));
+    };
+    for (const catalog of [de, en] as Catalog[]) {
+      const empty = functions(catalog).filter(([, text]) => {
+        const result = text(...Array.from({ length: Math.max(text.length, 2) }, () => sample));
+        return typeof result !== "string" || result.trim() === "";
+      });
+      expect(empty.map(([path]) => path)).toEqual([]);
+    }
+  });
+
   it("words every domain issue in both languages", () => {
     expect(ISSUES.map((issue) => describeIssue(issue, de.shell))).toEqual([
       "Die Einstellungsdatei enthält keine gültigen Einstellungen.",

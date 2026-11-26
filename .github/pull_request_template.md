@@ -11,7 +11,7 @@
 - [ ] `npm run verify` passes locally (the pre-push hook runs it)
 - [ ] Tests were written first and seen to fail
 - [ ] New expected failures are tagged `AppError`s with a `describeError` text
-- [ ] New Nuxt UI components are listed in `src/styles/app.css`; new icons in `SHELL_ICONS`
+- [ ] New Nuxt UI components are listed in `configs/tailwind-entry.ts`; new icons in `SHELL_ICONS`
 - [ ] For a new view: the checklist for a new view in `docs/engineering/adding-a-feature.md`
 
 ## Manual check in Obsidian

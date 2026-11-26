@@ -242,6 +242,9 @@ export const fallowConfig = (folders) => ({
     "wdio-obsidian-reporter",
     "@wdio/local-runner",
     "@wdio/mocha-framework",
+    // Not a package: the Tailwind entry configs/tailwind-entry.ts writes into node_modules, which
+    // src/styles/app.css imports by path, as Nuxt UI's own node_modules/.nuxt-ui/ui.css.
+    ".weg-manager",
   ],
   overrides: [{ files: ["tests/support/obsidian/**"], rules: { "unused-class-members": "off" } }],
 });

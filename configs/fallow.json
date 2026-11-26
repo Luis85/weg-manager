@@ -268,7 +268,8 @@
     "@eslint/js",
     "wdio-obsidian-reporter",
     "@wdio/local-runner",
-    "@wdio/mocha-framework"
+    "@wdio/mocha-framework",
+    ".weg-manager"
   ],
   "overrides": [
     {

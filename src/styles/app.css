@@ -1,35 +1,10 @@
-/* stylelint-disable at-rule-no-unknown -- Tailwind v4 source directives (@source, @theme); the build compiles them away, styles.css has none. */
 /*
- * Plugin stylesheet. No Tailwind preflight: Obsidian owns the page; bridge.css carries the small
- * reset this plugin needs. Every selector is scoped under .weg-manager-root and @layer blocks are
+ * Plugin stylesheet. Tailwind and Nuxt UI come in through the generated entry (configs/tailwind-entry.ts
+ * writes it at build time, as Nuxt UI writes node_modules/.nuxt-ui/ui.css), so no Tailwind at-rule
+ * is in the checked-in CSS. Every selector is scoped under .weg-manager-root and @layer blocks are
  * unwrapped at build time (scripts/scope-css.mjs).
  */
-@layer theme, base, components, utilities;
-@import "tailwindcss/theme.css" layer(theme) prefix(wm);
-@import "tailwindcss/utilities.css" layer(utilities) source(none);
-@source "../presentation";
-@import "@nuxt/ui";
-
-/*
- * Nuxt UI scans every component theme by default, which overruns the styles.css budget. Generate
- * classes only for the components the plugin renders (and the ones they render inside).
- * Adding a Nuxt UI component means adding its theme and .vue file here.
- */
-@source not "../../node_modules/.nuxt-ui/ui";
-@source not "../../node_modules/@nuxt/ui/dist/runtime/components";
-@source "../../node_modules/.nuxt-ui/ui/{app,alert,avatar,button,card,form-field,icon,input,link,modal,skeleton,slideover,textarea}.ts";
-@source "../../node_modules/@nuxt/ui/dist/runtime/components/{App,Alert,Avatar,Button,Card,FormField,Icon,Input,Link,LinkBase,Modal,Skeleton,Slideover,Textarea}.vue";
-
-/*
- * Unused palettes. Nuxt UI's ui.css declares a static "old-neutral" palette (literal colours) and
- * maps "neutral" to --ui-color-neutral-*, both for its runtime colors plugin, which is a no-op
- * here (scripts/no-head-plugins.mjs). Colour roles come from bridge.css, so nothing reads them.
- */
-@theme {
-  --color-old-neutral-*: initial;
-  --color-neutral-*: initial;
-}
-
+@import "../../node_modules/.weg-manager/tailwind.css";
 @import "./tokens.css";
 @import "./bridge.css";
 @import "./communities.css";

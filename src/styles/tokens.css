@@ -1,4 +1,3 @@
-/* stylelint-disable at-rule-no-unknown -- Tailwind v4 source directives (@source, @theme); the build compiles them away, styles.css has none. */
 /* Plugin tokens, mapped once from Obsidian's theme variables so light/dark and themes follow the host. */
 :root {
   --wm-bg: var(--background-primary);
@@ -40,16 +39,4 @@
    * Obsidian's own field border (`--background-modifier-border`) is 1.27:1 in light.
    */
   --wm-line-strong: color-mix(in oklab, var(--text-muted) 70%, var(--background-primary));
-}
-
-/*
- * Tailwind's text scale (emitted as --wm-text-*) follows Obsidian's UI font sizes, so the plugin
- * scales with the user's interface font size. The rem fallbacks only apply outside Obsidian
- * (browser harness). xl and 2xl stay on Tailwind's scale: Obsidian has no larger UI size.
- */
-@theme {
-  --text-xs: var(--font-ui-smaller, 0.75rem);
-  --text-sm: var(--font-ui-small, 0.875rem);
-  --text-base: var(--font-ui-medium, 1rem);
-  --text-lg: var(--font-ui-large, 1.125rem);
 }

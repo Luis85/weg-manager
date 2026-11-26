@@ -208,6 +208,15 @@ export const mattersDe: MattersCatalog = {
       title: "Eintrag nicht gespeichert",
       detail: "Einige Angaben fehlen oder passen nicht. Korrigiere sie und speichere erneut.",
     },
+    invalidSplit: {
+      title: "Vorgang nicht aufgeteilt",
+      detail: "Für die Aufteilung fehlen Angaben. Ergänze sie und teile erneut auf.",
+    },
+    invalidMerge: {
+      title: "Vorgänge nicht zusammengeführt",
+      detail:
+        "Diese Vorgänge lassen sich so nicht zusammenführen. Prüfe die Angaben und versuche es erneut.",
+    },
     invalidDueChange: {
       title: "Termin nicht geändert",
       detail: "Für diese Änderung fehlen Angaben. Ergänze sie und ändere den Termin erneut.",

@@ -15,6 +15,7 @@ export type SplitIssue = {
   readonly part: number | undefined;
   readonly code:
     | "reason.missing"
+    | "split.closed"
     | "parts.too-few"
     | "outcome.missing"
     | "responsible.missing"

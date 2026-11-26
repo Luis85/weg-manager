@@ -132,5 +132,7 @@ export type MattersCatalog = {
     readonly invalidEntry: Text;
     readonly invalidStatusChange: Text;
     readonly invalidDueChange: Text;
+    readonly invalidSplit: Text;
+    readonly invalidMerge: Text;
   };
 };

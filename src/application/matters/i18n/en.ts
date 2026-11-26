@@ -202,6 +202,14 @@ export const mattersEn: MattersCatalog = {
       title: "Entry not saved",
       detail: "Some details are missing or do not fit. Correct them and save again.",
     },
+    invalidSplit: {
+      title: "Matter not split",
+      detail: "The split lacks details. Add them and split again.",
+    },
+    invalidMerge: {
+      title: "Matters not merged",
+      detail: "These matters cannot be merged like this. Check the details and try again.",
+    },
     invalidDueChange: {
       title: "Due date not changed",
       detail: "This change lacks details. Add them and change the due date again.",

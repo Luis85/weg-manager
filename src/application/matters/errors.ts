@@ -38,9 +38,48 @@ export class InvalidDueChangeError extends Schema.TaggedError<InvalidDueChangeEr
   { issues: Schema.Array(Schema.Literals(["reason.missing", "due-on.invalid"])) },
 ) {}
 
+const SplitIssueSchema = Schema.Struct({
+  part: Schema.UndefinedOr(Schema.Number),
+  code: Schema.Literals([
+    "reason.missing",
+    "split.closed",
+    "parts.too-few",
+    "outcome.missing",
+    "responsible.missing",
+    "due-on.invalid",
+    "next-step.missing",
+  ]),
+});
+
+/** A split breaks a rule (PBI-06); nothing was written. */
+export class InvalidSplitError extends Schema.TaggedError<InvalidSplitError>()(
+  "InvalidSplitError",
+  { issues: Schema.Array(SplitIssueSchema) },
+) {}
+
+/** A merge breaks a rule (PBI-07); nothing was written. */
+export class InvalidMergeError extends Schema.TaggedError<InvalidMergeError>()(
+  "InvalidMergeError",
+  {
+    issues: Schema.Array(
+      Schema.Literals([
+        "merge.same-matter",
+        "merge.other-community",
+        "merge.already-merged",
+        "reason.missing",
+      ]),
+    ),
+  },
+) {}
+
 /** Every expected failure of the matters module. Each needs a text in its describer. */
 export type MattersError =
-  InvalidMatterError | InvalidHistoryEntryError | InvalidStatusChangeError | InvalidDueChangeError;
+  | InvalidMatterError
+  | InvalidHistoryEntryError
+  | InvalidStatusChangeError
+  | InvalidDueChangeError
+  | InvalidSplitError
+  | InvalidMergeError;
 
 /** One key per member of `MattersError`; typecheck fails while one is missing or extra. */
 export const MATTERS_ERROR_TAG_KEYS = {
@@ -48,4 +87,6 @@ export const MATTERS_ERROR_TAG_KEYS = {
   InvalidHistoryEntryError: true,
   InvalidStatusChangeError: true,
   InvalidDueChangeError: true,
+  InvalidSplitError: true,
+  InvalidMergeError: true,
 } satisfies Record<MattersError["_tag"], true>;

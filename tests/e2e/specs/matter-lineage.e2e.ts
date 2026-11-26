@@ -1,11 +1,11 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
-import { community, communityText, fileText, writeNote } from "../communities";
+import { community, fileText, writeNote } from "../communities";
+import { MANAGER, writeCommunityAndManager } from "../matters";
 import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
 import { de } from "../texts";
 
 const AW = community(1, { name: "Ahornweg", short_code: "AW" });
-const MANAGER = "contact-00000000-0000-4000-8000-0000000000c9";
 const SOURCE = "WEG Manager/Vorgänge/Lampen.md";
 const TWIN = "WEG Manager/Vorgänge/Lampe doppelt.md";
 const lines = (...parts: string[]) => [...parts, ""].join("\n");
@@ -48,20 +48,7 @@ const fillPart = async (index: number, outcome: string) => {
 describe("matters: split and merge", function () {
   it("splits a matter into two parts with new numbers", async function () {
     await installConsoleSpy();
-    await writeNote("WEG Manager/Gemeinschaften/Ahornweg.md", communityText(AW));
-    await writeNote(
-      "WEG Manager/Kontakte/Verwaltung.md",
-      lines(
-        "---",
-        "schema: weg-manager.contact/v1",
-        `id: ${MANAGER}`,
-        "name: Verwaltung",
-        "kind: company",
-        "roles:",
-        `  - ${AW.id}:manager`,
-        "---",
-      ),
-    );
+    await writeCommunityAndManager(AW);
     await writeNote(SOURCE, matterText("01", 5, "Lampen ersetzt", "Nachfragen"));
     await writeNote(TWIN, matterText("02", 6, "Lampe doppelt", "Termin"));
     await openView();

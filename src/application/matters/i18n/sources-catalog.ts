@@ -3,6 +3,14 @@ import type { IssueSentences } from "../../notes";
 
 type Text = { readonly title: string; readonly detail: string };
 
+/** The sentences of the one-line fields, from a language's `oneLine(label, max)`. */
+export const sourceLineIssues = (oneLine: (label: string, max: number) => string) => ({
+  "subject.invalid": (_: unknown, label: string) => oneLine(label, 120),
+  "origin.invalid": (_: unknown, label: string) => oneLine(label, 100),
+  "message-ref.invalid": (_: unknown, label: string) => oneLine(label, 300),
+  "link.invalid": (_: unknown, label: string) => oneLine(label, 300),
+});
+
 /** The texts of the sources (PBI-11): the capture dialog and a matter's sources. */
 export type SourcesCatalog = {
   readonly kinds: Readonly<Record<SourceKind, string>>;

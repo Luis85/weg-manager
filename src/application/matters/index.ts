@@ -34,8 +34,5 @@ export {
   sourceList,
   sourceListChanges,
   sourceText,
-  type Capture,
-  type Filing,
   type Source,
-  type SourceFile,
 } from "./sources";

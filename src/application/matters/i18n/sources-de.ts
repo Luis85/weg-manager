@@ -1,4 +1,4 @@
-import type { SourcesCatalog } from "./sources-catalog";
+import { sourceLineIssues, type SourcesCatalog } from "./sources-catalog";
 
 const oneLine = (label: string, max: number) =>
   `Gib für „${label}“ eine Zeile mit höchstens ${max} Zeichen ein.`;
@@ -32,10 +32,7 @@ export const sourcesDe: SourcesCatalog = {
     origin: "Gib an, woher die Quelle kommt, etwa „Mail der Verwaltung“.",
   },
   issues: {
-    "subject.invalid": (_, label) => oneLine(label, 120),
-    "origin.invalid": (_, label) => oneLine(label, 100),
-    "message-ref.invalid": (_, label) => oneLine(label, 300),
-    "link.invalid": (_, label) => oneLine(label, 300),
+    ...sourceLineIssues(oneLine),
     "kind.unknown": () => "Diese Art kennt das Plugin nicht. Wähle eine aus der Liste.",
     "matter.other-community": () =>
       "Ein Vorgang gehört zu einer anderen Gemeinschaft. Ordne nur Vorgänge dieser Gemeinschaft zu.",

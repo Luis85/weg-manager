@@ -16,7 +16,7 @@ import {
 } from "../../domain/notes";
 import { defineRecords, type RecordRow } from "../notes";
 import { InvalidTodoError } from "./errors";
-import { matterRecords } from "./list";
+import { matterCommunities } from "./list";
 
 /** An issue of a to-do field: the codec's, the rules', or a missing community or matter. */
 export type TodoIssue =
@@ -56,19 +56,6 @@ export const todoList = todoRecords.list;
 
 /** The to-dos: the current list first, then each change. */
 export const todoListChanges = todoRecords.changes;
-
-/** The community of each matter by id: what the rule of the same community compares with. */
-const matterCommunities = Effect.map(
-  matterRecords.list,
-  ({ records }) =>
-    new Map(
-      records.flatMap((matter) =>
-        matter.id === undefined || matter.values.community_id === undefined
-          ? []
-          : [[matter.id, matter.values.community_id] as const],
-      ),
-    ),
-);
 
 /** The values to save, or the issues why not. */
 const checked = (input: TodoInput, draft: FormDraft<TodoFields> = todoValues(input)) =>

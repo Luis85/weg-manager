@@ -11,7 +11,6 @@ import {
   required,
   text,
   type FormInput,
-  type RecordValues,
 } from "../notes";
 import { TEXT_MAX_LENGTH } from "./matter-type";
 
@@ -71,7 +70,6 @@ export const sourceType = defineNoteType({
 
 export type SourceFields = typeof sourceType.fields;
 export type SourceKey = (typeof sourceType.keys)[number];
-export type SourceValues = RecordValues<SourceFields>;
 export type SourceInput = FormInput<SourceFields>;
 
 /** One field's issue of a source, language-free (ADR 0005). */

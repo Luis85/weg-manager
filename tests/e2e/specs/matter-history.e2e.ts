@@ -1,11 +1,11 @@
 import { browser, expect } from "@wdio/globals";
 import { describe, it } from "mocha";
-import { community, communityText, fileText, writeNote } from "../communities";
+import { community, fileText, writeNote } from "../communities";
+import { MANAGER, writeCommunityAndManager } from "../matters";
 import { ROOT, installConsoleSpy, openView, pluginProblems } from "../support";
 import { de } from "../texts";
 
 const AW = community(1, { name: "Ahornweg", short_code: "AW" });
-const MANAGER = "contact-00000000-0000-4000-8000-0000000000c9";
 const PATH = "WEG Manager/Vorgänge/Lampe ersetzt.md";
 const lines = (...parts: string[]) => [...parts, ""].join("\n");
 const ITEM = /^- \d{4}-\d{2}-\d{2} .* \[id:: [0-9a-f]{8}\]$/;
@@ -17,20 +17,7 @@ const ITEM = /^- \d{4}-\d{2}-\d{2} .* \[id:: [0-9a-f]{8}\]$/;
 describe("matters: history and status change", function () {
   it("opens a matter's history from its card", async function () {
     await installConsoleSpy();
-    await writeNote("WEG Manager/Gemeinschaften/Ahornweg.md", communityText(AW));
-    await writeNote(
-      "WEG Manager/Kontakte/Verwaltung.md",
-      lines(
-        "---",
-        "schema: weg-manager.contact/v1",
-        `id: ${MANAGER}`,
-        "name: Verwaltung",
-        "kind: company",
-        "roles:",
-        `  - ${AW.id}:manager`,
-        "---",
-      ),
-    );
+    await writeCommunityAndManager(AW);
     await writeNote(
       PATH,
       lines(

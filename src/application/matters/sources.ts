@@ -25,7 +25,7 @@ import {
 } from "../notes";
 import { SettingsService, today } from "../shell";
 import { InvalidSourceError } from "./errors";
-import { matterRecords } from "./list";
+import { matterCommunities } from "./list";
 
 /** An issue of a source field: the codec's, the rules', or a missing community or matter. */
 export type SourceIssue =
@@ -59,19 +59,6 @@ export const sourceList = sourceRecords.list;
 
 /** The sources: the current list first, then each change. */
 export const sourceListChanges = sourceRecords.changes;
-
-/** The community of each matter by id: what the rule of the same community compares with. */
-const matterCommunities = Effect.map(
-  matterRecords.list,
-  ({ records }) =>
-    new Map(
-      records.flatMap((matter) =>
-        matter.id === undefined || matter.values.community_id === undefined
-          ? []
-          : [[matter.id, matter.values.community_id] as const],
-      ),
-    ),
-);
 
 /** What a capture needs to place its originals: the community, the kind, the subject, the day. */
 export type Filing = {
@@ -119,7 +106,7 @@ export const plannedPaths = (filing: Filing, files: readonly { readonly name: st
 export const canMove = (files: readonly PickedFile[]) =>
   Effect.flatMap(LocalFiles, (local) =>
     Effect.map(
-      Effect.forEach(files, local.movable),
+      Effect.forEach(files, (file) => local.movable(file)),
       (each) => each.length > 0 && each.every(Boolean),
     ),
   );
@@ -167,7 +154,7 @@ export const captureSource = (capture: Capture) =>
     }
     if (capture.move) {
       const local = yield* LocalFiles;
-      yield* Effect.forEach(capture.files, local.remove, { discard: true });
+      yield* Effect.forEach(capture.files, (file) => local.remove(file), { discard: true });
     }
     return note;
   });
@@ -175,7 +162,7 @@ export const captureSource = (capture: Capture) =>
 const IMAGE = /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i;
 
 /** An original of a source as the matter's file shows it (criterion 6). */
-export type SourceFile = {
+type SourceFile = {
   readonly path: string;
   readonly name: string;
   readonly missing: boolean;

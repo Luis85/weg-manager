@@ -85,5 +85,4 @@ export {
   type SourceInput,
   type SourceKey,
   type SourceKind,
-  type SourceValues,
 } from "./source";

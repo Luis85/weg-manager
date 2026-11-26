@@ -21,6 +21,8 @@ import { ErrorNotice, useMessages, useStream } from "../../shell";
 import MatterCard from "./MatterCard.vue";
 import MatterFilters from "./MatterFilters.vue";
 import MatterForm from "./MatterForm.vue";
+import SegmentSwitch from "./SegmentSwitch.vue";
+import TodosPanel from "./TodosPanel.vue";
 
 /**
  * The matters screen (VIEW-03, route `matters`, PBI-05): every matter from the note index, newest
@@ -54,6 +56,12 @@ const {
   close,
 } = screen;
 
+/** Which part of the screen shows (VIEW-03): the matters or the to-dos. */
+const segment = shallowRef<"matters" | "todos">("matters");
+const segments = [
+  { value: "matters", label: t.todos.segments.matters },
+  { value: "todos", label: t.todos.segments.todos },
+] as const;
 const filter = shallowRef<MatterFilter>({});
 const shown = computed(() =>
   list.value.records.filter((matter) => matchesFilter(matter.values, filter.value)),
@@ -94,6 +102,14 @@ const numbers = computed(
       }),
     ),
 );
+const addShown = computed(() => !empty.value && segment.value === "matters");
+const loadingVisible = computed(() => loading.value && loadingShown.value);
+const hasRecords = computed(() => list.value.records.length > 0);
+const shownText = computed(() =>
+  shown.value.length === 0
+    ? t.screen.noMatch
+    : t.screen.shown(shown.value.length, list.value.records.length),
+);
 const sheetTitle = computed(() =>
   editing.value?.record === undefined ? t.form.createTitle : t.form.editTitle,
 );
@@ -109,7 +125,7 @@ const sheetTitle = computed(() =>
         </p>
       </div>
       <UButton
-        v-if="!empty"
+        v-if="addShown"
         type="button"
         icon="i-lucide-plus"
         :label="t.screen.add"
@@ -119,64 +135,75 @@ const sheetTitle = computed(() =>
         @click="create"
       />
     </header>
-    <ErrorNotice
-      v-if="failure"
-      :message="failure"
-      :handlers="{ retry: retry }"
-      data-testid="matters-failure"
+    <SegmentSwitch
+      :segments="segments"
+      :current="segment"
+      :label="t.todos.segments.label"
+      @change="(next) => (segment = next)"
     />
-    <div
-      v-if="loading && loadingShown"
-      role="status"
-      aria-busy="true"
-      data-testid="matters-loading"
-    >
-      <USkeleton class="wm:h-16 wm:w-full" aria-hidden="true" />
-      <span class="wm:sr-only">{{ t.screen.loading }}</span>
-    </div>
-    <div
-      v-if="empty"
-      class="wm:flex wm:flex-col wm:items-start wm:gap-2"
-      data-testid="matters-empty"
-    >
-      <p class="wm:text-sm">{{ t.screen.empty }}</p>
-      <UButton
-        type="button"
-        icon="i-lucide-plus"
-        :label="t.screen.add"
-        data-focus="add"
-        data-testid="matter-add"
-        @click="create"
+    <TodosPanel
+      v-if="segment === 'todos'"
+      :matters="list.records"
+      :communities="communityChoices"
+      :contacts="contacts.records"
+      :contact-names="contactNames"
+      :numbers="numbers"
+      :community="selection.id"
+      :today="day"
+    />
+    <template v-else>
+      <ErrorNotice
+        v-if="failure"
+        :message="failure"
+        :handlers="{ retry: retry }"
+        data-testid="matters-failure"
       />
-    </div>
-    <template v-else-if="list.records.length > 0">
-      <MatterFilters
-        :filter="filter"
-        :topics="topics"
-        :communities="communityChoices"
-        :responsible="contactChoices"
-        @change="(next) => (filter = next)"
-      />
-      <p class="wm:text-xs wm:text-muted" role="status" data-testid="matters-shown">
-        {{
-          shown.length === 0 ? t.screen.noMatch : t.screen.shown(shown.length, list.records.length)
-        }}
-      </p>
-      <ul class="wm:flex wm:flex-col wm:gap-2" :aria-label="t.screen.title" data-testid="matters">
-        <MatterCard
-          v-for="matter in shown"
-          :key="cardKey(matter)"
-          :matter="matter"
-          :today="day"
-          :short-codes="shortCodes"
-          :contact-names="contactNames"
-          :contacts="contactChoices"
-          :matters="list.records"
-          :numbers="numbers"
-          :data-card-key="cardKey(matter)"
-          @edit="edit(matter)"
+      <div v-if="loadingVisible" role="status" aria-busy="true" data-testid="matters-loading">
+        <USkeleton class="wm:h-16 wm:w-full" aria-hidden="true" />
+        <span class="wm:sr-only">{{ t.screen.loading }}</span>
+      </div>
+      <div
+        v-if="empty"
+        class="wm:flex wm:flex-col wm:items-start wm:gap-2"
+        data-testid="matters-empty"
+      >
+        <p class="wm:text-sm">{{ t.screen.empty }}</p>
+        <UButton
+          type="button"
+          icon="i-lucide-plus"
+          :label="t.screen.add"
+          data-focus="add"
+          data-testid="matter-add"
+          @click="create"
         />
-      </ul>
+      </div>
+      <template v-else-if="hasRecords">
+        <MatterFilters
+          :filter="filter"
+          :topics="topics"
+          :communities="communityChoices"
+          :responsible="contactChoices"
+          @change="(next) => (filter = next)"
+        />
+        <p class="wm:text-xs wm:text-muted" role="status" data-testid="matters-shown">
+          {{ shownText }}
+        </p>
+        <ul class="wm:flex wm:flex-col wm:gap-2" :aria-label="t.screen.title" data-testid="matters">
+          <MatterCard
+            v-for="matter in shown"
+            :key="cardKey(matter)"
+            :matter="matter"
+            :today="day"
+            :short-codes="shortCodes"
+            :contact-names="contactNames"
+            :contacts="contactChoices"
+            :matters="list.records"
+            :numbers="numbers"
+            :data-card-key="cardKey(matter)"
+            @edit="edit(matter)"
+          />
+        </ul>
+      </template>
     </template>
     <RecordSheet :title="sheetTitle" :state="screen">
       <template #body>

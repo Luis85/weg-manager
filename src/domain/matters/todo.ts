@@ -110,9 +110,10 @@ export const validateTodo = (
   context: TodoRuleContext,
 ): readonly TodoFieldIssue[] => {
   const draft = todoValues(input);
-  const issues = todoType
+  const issues: TodoFieldIssue[] = todoType
     .check(draft)
-    .map((issue) => ({ key: issue.key as TodoKey, code: issue.code }) as TodoFieldIssue);
+    // `check` reports the type's own keys only.
+    .map((issue) => ({ key: issue.key as TodoKey, code: issue.code }));
   const broken = new Set(issues.map((issue) => issue.key));
   for (const issue of [...statusIssues(draft), ...matterIssue(draft, context)]) {
     if (!broken.has(issue.key)) issues.push(issue);

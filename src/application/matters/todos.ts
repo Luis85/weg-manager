@@ -8,7 +8,12 @@ import {
   type TodoInput,
   type TodoValues,
 } from "../../domain/matters";
-import { editedValues, type FormDraft, type MissingReference } from "../../domain/notes";
+import {
+  editedValues,
+  type FormDraft,
+  type MissingReference,
+  type RecordIssue,
+} from "../../domain/notes";
 import { defineRecords, type RecordRow } from "../notes";
 import { InvalidTodoError } from "./errors";
 import { matterRecords } from "./list";
@@ -16,6 +21,9 @@ import { matterRecords } from "./list";
 /** An issue of a to-do field: the codec's, the rules', or a missing community or matter. */
 export type TodoIssue =
   TodoFieldIssue | (MissingReference & { readonly key: "community_id" | "matter_id" });
+
+/** An issue of a to-do note: of the note as a whole, or of one field (by key). */
+export type TodoNoteIssue = RecordIssue | TodoIssue;
 
 /** One to-do note as the screen shows it. */
 export type Todo = RecordRow<TodoFields, TodoIssue>;
@@ -34,7 +42,7 @@ const byDate = (a: Todo, b: Todo): number => {
  * The to-do records (ADR 0007, PBI-10): named and filed by their title, `To-do` when the title
  * leaves no usable file name, earliest date first. To-dos are never deleted; a dropped one stays.
  */
-export const todoRecords = defineRecords({
+const todoRecords = defineRecords({
   type: todoType,
   title: "title",
   fallbackName: () => "To-do",

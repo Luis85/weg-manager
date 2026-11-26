@@ -65,6 +65,7 @@ describe("to-dos (PBI-10)", () => {
       assert.instanceOf(other, InvalidTodoError);
       assert.deepStrictEqual(other.issues, [{ key: "matter_id", code: "matter.other-community" }]);
       const waiting = yield* Effect.flip(createTodo(input({ status: "waiting" })));
+      assert.instanceOf(waiting, InvalidTodoError);
       assert.deepStrictEqual(
         waiting.issues.map((issue) => issue.code),
         ["follow-up.missing", "reason.missing"],

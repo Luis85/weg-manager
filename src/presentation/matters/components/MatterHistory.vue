@@ -7,6 +7,7 @@ import { useMessages } from "../../shell";
 import DueChangeForm from "./DueChangeForm.vue";
 import HistoryEntryForm from "./HistoryEntryForm.vue";
 import HistoryList from "./HistoryList.vue";
+import MatterTodos from "./MatterTodos.vue";
 import MergeForm from "./MergeForm.vue";
 import SplitForm from "./SplitForm.vue";
 import StatusChangeForm from "./StatusChangeForm.vue";
@@ -93,6 +94,7 @@ const done = () => {
       :contact-names="contactNames"
       :numbers="numbers"
     />
+    <MatterTodos :matter="matter" />
     <div v-if="open === undefined && matter.editable" class="wm:flex wm:flex-wrap wm:gap-2">
       <UButton
         v-for="action in actions"

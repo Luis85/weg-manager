@@ -127,8 +127,9 @@ describe("the to-do groups", () => {
   });
 });
 
+const matter = (id: string, status: "open" | "unclear" | "done") => ({ id, values: { status } });
+
 describe("the clarification list (PBI-10 criterion 4)", () => {
-  const matter = (id: string, status: "open" | "unclear" | "done") => ({ id, values: { status } });
   it("holds the open and unclear matters without an open or waiting to-do", () => {
     const matters = [
       matter("m1", "open"),

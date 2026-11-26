@@ -12,7 +12,7 @@ import {
 import { today, todayChanges } from "../../application/shell";
 import { saveWeekText, weekList, weekListChanges, weekText } from "../../application/week";
 import { shownNumber } from "../../domain/matters";
-import { weekBriefing, type Sentence } from "../../domain/week";
+import { decisionSelection, weekBriefing, type Sentence } from "../../domain/week";
 import { useCommand, useMessages, useQuery, useSettings, useStream } from "../shell";
 
 /**
@@ -66,6 +66,25 @@ export const useWeek = () => {
         ),
       ]),
   );
+  /** The decisions of the week (PBI-14): computed on opening, as the briefing is. */
+  const selection = computed(() =>
+    decisionSelection({
+      today: day.value,
+      weekStart: settings.value.weekStart,
+      acuteDays: settings.value.acuteDays,
+      budget: settings.value.weekDecisions,
+      matters: matters.value.records,
+    }),
+  );
+  /** A matter's next step by id, on its decision card. */
+  const steps = computed(
+    () =>
+      new Map(
+        matters.value.records.flatMap((m) =>
+          m.values.next_step === undefined ? [] : [[m.id ?? "", m.values.next_step] as const],
+        ),
+      ),
+  );
   /** A matter's outcome by id, beside its number in the deadlines. */
   const outcomes = computed(
     () => new Map(matters.value.records.map((m) => [m.id ?? "", m.values.outcome ?? m.fileName])),
@@ -96,6 +115,8 @@ export const useWeek = () => {
   return {
     t,
     briefing,
+    selection,
+    steps,
     labels,
     outcomes,
     sentenceText,

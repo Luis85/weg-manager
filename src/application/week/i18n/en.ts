@@ -63,6 +63,25 @@ export const weekEn: WeekCatalog = {
     scope:
       "The basis is the captured sources. The plugin reads no mailbox and does not know every message.",
   },
+  decisions: {
+    title: "Decisions",
+    budget: (selected, budget) => `${selected}/${budget} regular decisions`,
+    hint: "Over all communities together, chosen by deadline and age of the promise.",
+    none: "No regular decision is pending.",
+    urgentTitle: "Urgent · on top",
+    urgentHint:
+      "Overdue, or due by the end of the week or the deadline for acute problems. Not counted in the budget.",
+    backlogTitle: (count) => `Backlog (${count})`,
+    reasons: {
+      overdue: (day) => `overdue since ${day}`,
+      "due-this-week": (day) => `due ${day}`,
+      due: (day) => `next date ${day}`,
+      age: (days) => `promised ${days} days ago`,
+      "age-unknown": () => "no due date, age of the promise unknown",
+    },
+    nextStep: (step) => `Next step: ${step}`,
+    focusPending: "Last week's focus items count for the selection once the handover exists.",
+  },
   errors: {
     changed: {
       title: "Briefing not saved",

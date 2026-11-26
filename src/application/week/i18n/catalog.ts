@@ -45,5 +45,25 @@ export type WeekCatalog = {
     /** That no mailbox is read: the sources are what was captured (DF-08). */
     readonly scope: string;
   };
+  /** The decisions of the week (PBI-14). */
+  readonly decisions: {
+    readonly title: string;
+    budget(selected: number, budget: number): string;
+    readonly hint: string;
+    readonly none: string;
+    readonly urgentTitle: string;
+    readonly urgentHint: string;
+    backlogTitle(count: number): string;
+    readonly reasons: {
+      readonly overdue: (day: string) => string;
+      readonly "due-this-week": (day: string) => string;
+      readonly due: (day: string) => string;
+      readonly age: (days: number) => string;
+      readonly "age-unknown": () => string;
+    };
+    nextStep(step: string): string;
+    /** That the last focus items count only once the handover exists (PBI-25). */
+    readonly focusPending: string;
+  };
   readonly errors: { readonly changed: Text };
 };

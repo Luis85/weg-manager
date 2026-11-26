@@ -180,6 +180,14 @@ _Avoid_: journal, log
 What a briefing rests on: when it was computed, the sources taken into account, the unchecked ones and the known gaps (DF-08).
 _Avoid_: completeness
 
+**Decision selection** (German: Entscheidungsauswahl):
+The decisions the week puts forward: the urgent ones (overdue, or due by the acute deadline or the week's end) on top of the budget, all shown, and at most the budget of regular ones over every community, by due date, then by the age of the promise; computed, never stored.
+_Avoid_: queue, backlog (that is what is not chosen)
+
+**Backlog** (German: Rückstand):
+The regular candidates of the week that the budget leaves out; they stay visible.
+_Avoid_: overflow (urgent ones are no overflow), archive
+
 **Correction** (German: Korrektur):
 A history entry that corrects an earlier one (`corrects`); the earlier one stays and is shown as corrected.
 _Avoid_: edit, amendment

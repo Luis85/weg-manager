@@ -57,6 +57,13 @@ describe("week", function () {
     await expect(root.$("[data-testid=week-computed]")).toHaveText(
       expect.stringContaining("beim Öffnen berechnet"),
     );
+    // PBI-14: an overdue matter is an urgent decision on top of the budget.
+    await expect(root.$("[data-testid=decision-urgent]")).toHaveText(
+      expect.stringContaining("AW 005 Lampe ersetzt"),
+    );
+    await expect(root.$("[data-testid=decisions-budget]")).toHaveText(
+      de.week.decisions.budget(0, 7),
+    );
   });
 
   it("saves the edited briefing as this week's note", async function () {

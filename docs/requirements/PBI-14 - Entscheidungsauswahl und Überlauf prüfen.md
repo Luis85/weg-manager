@@ -68,3 +68,12 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 ## Business Rules
 
 [[DF-09 - Begrenzte Auswahl und Dringlichkeit]].
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen ersten Schnitt.
+  - **Kandidaten:** Jeder offene oder ungeklärte Vorgang ist ein Kandidat; die Auswahl wird beim Öffnen der Ansicht Woche berechnet und nicht gespeichert. Eine Entscheidungskarte mit Optionen (ENT-09) entsteht erst mit [[PBI-15 - Eine Entscheidungsvorlage prüfen]].
+  - **Dringend (Kriterium 3):** überfällig, oder fällig bis zur Einstellung „Frist für akute Probleme“ oder bis zum Ende der Woche. Dringende Fälle zählen nicht ins Budget und bleiben alle sichtbar. Ein Sitzungsdatum braucht es nicht.
+  - **Schwerpunkte (Kriterium 2):** Vorerst zählen Frist und Alter; dass die letzten Schwerpunkte erst mit der Übergabe ([[PBI-25 - Nächste Wochenarbeit vorbereiten]]) zählen, steht sichtbar daneben.
+  - **Ort:** ein Abschnitt „Entscheidungen“ in der Ansicht Woche mit Budget (etwa 5/7), den regulären Karten mit Auswahlgrund, „Dringend · zusätzlich“ und eingeklapptem „Rückstand“.
+- 26.11.2026 (Umsetzung des ersten Schnitts): Erfüllt sind Kriterium 1 (bis zur Einstellung „Reguläre Entscheidungen pro Woche“, Vorgabe 7, über alle Gemeinschaften zusammen; jede Karte zeigt Nummer mit Kürzel, Ergebnis, Auswahlgrund und nächsten Schritt), 2 (Auswahlgrund nach Frist, dann Alter der Zusage; ein unbekanntes Alter steht als „Alter der Zusage unbekannt“ da und zählt nie als 0; dass die Schwerpunkte erst mit der Übergabe zählen, steht daneben), 3 (überfällige und bis Wochenende oder zur Frist für akute Probleme fällige Vorgänge stehen unter „Dringend · zusätzlich“, alle sichtbar, außerhalb des Budgets; neun dringende neben sieben regulären sind getestet) und 4 (der Rest steht eingeklappt als „Rückstand“, ohne Aufräummodus). Tests: `tests/unit/domain/week/selection.test.ts`, `tests/dom/presentation/week/decisions.test.ts`, `tests/e2e/specs/week.e2e.ts`.

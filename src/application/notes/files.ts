@@ -22,6 +22,7 @@ export const planNewFile = (
   normalize: Normalize,
   siblingsOf: SiblingsOf,
   foldersIn: FoldersIn,
+  planned: readonly string[] = [],
 ): Effect.Effect<
   { readonly folder: string; readonly path: string },
   InvalidNoteNameError | NotePathTakenError
@@ -30,7 +31,7 @@ export const planNewFile = (
     const [stem, extension] = splitExtension(name);
     yield* checkNoteName(stem);
     const found = normalize(vaultFolder(normalize(folder), foldersIn));
-    const taken = clashesWith(siblingsOf(found));
+    const taken = clashesWith([...siblingsOf(found), ...planned]);
     for (let attempt = 1; attempt <= MAX_NAME_ATTEMPTS; attempt += 1) {
       const path = normalize(`${found}/${clashName(stem, attempt)}${extension}`);
       if (!taken(path)) return { folder: found, path };

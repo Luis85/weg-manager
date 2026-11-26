@@ -60,6 +60,10 @@ const vaultFilesContract = (name: string, make: () => Fixture) => {
         yield* Effect.promise(() => fixture.seed("Q/Angebot.pdf"));
         const files = yield* VaultFiles;
         assert.strictEqual(yield* files.freePath("Q", "Angebot.pdf"), "Q/Angebot (2).pdf");
+        assert.strictEqual(
+          yield* files.freePath("Q", "Angebot.pdf", ["Q/Angebot (2).pdf"]),
+          "Q/Angebot (3).pdf",
+        );
         assert.strictEqual(yield* files.write("Q", "angebot.PDF", BYTES), "Q/angebot (2).PDF");
         assert.strictEqual(yield* files.write("Q", "Angebot.pdf", BYTES), "Q/Angebot (3).pdf");
       }).pipe(Effect.provide(fixture.layer));

@@ -1,5 +1,6 @@
 import { describeRecordIssue, type NotesCatalog } from "../../notes";
 import type { MatterIssue, MatterNoteIssue } from "../list";
+import type { SourceIssue, SourceNoteIssue } from "../sources";
 import type { TodoIssue, TodoNoteIssue } from "../todos";
 import type { MattersCatalog } from "./catalog";
 
@@ -14,3 +15,9 @@ export const describeTodoIssue = (
   issue: TodoNoteIssue,
   texts: { readonly notes: NotesCatalog; readonly matters: MattersCatalog },
 ): string => describeRecordIssue<TodoIssue>(issue, texts.notes, texts.matters.todos);
+
+/** One issue of a source note or form as a sentence of the catalog's language. */
+export const describeSourceIssue = (
+  issue: SourceNoteIssue,
+  texts: { readonly notes: NotesCatalog; readonly matters: MattersCatalog },
+): string => describeRecordIssue<SourceIssue>(issue, texts.notes, texts.matters.sources);

@@ -33,11 +33,12 @@ export const memoryVaultFiles = () => {
     return [...children];
   };
   const foldersIn = (folder: string) => siblingsOf(folder).filter((path) => !files.has(path));
-  const plan = (folder: string, name: string) =>
-    planNewFile(folder, name, normalizePath, siblingsOf, foldersIn);
+  const plan = (folder: string, name: string, planned: readonly string[] = []) =>
+    planNewFile(folder, name, normalizePath, siblingsOf, foldersIn, planned);
   const layer = Layer.succeed(VaultFiles)({
     exists: (path) => Effect.sync(() => files.has(normalizePath(path))),
-    freePath: (folder, name) => Effect.map(plan(folder, name), ({ path }) => path),
+    freePath: (folder, name, planned) =>
+      Effect.map(plan(folder, name, planned), ({ path }) => path),
     write: (folder, name, bytes) =>
       Effect.map(plan(folder, name), ({ path }) => {
         files.set(path, bytes.slice());

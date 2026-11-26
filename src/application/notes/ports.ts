@@ -146,10 +146,12 @@ export class VaultFiles extends Context.Service<
     /**
      * The path a new file `name` (with its extension) would get in `folder`: the folder found as
      * `NoteStore.create` finds it, the name, else ` (2)`, ` (3)`, … before the extension.
+     * `planned` are paths a caller is about to write too: they count as taken.
      */
     freePath(
       folder: string,
       name: string,
+      planned?: readonly string[],
     ): Effect.Effect<string, InvalidNoteNameError | NotePathTakenError>;
     /** Writes `bytes` as a new file at the free path (`freePath`), the folder created as needed. */
     write(

@@ -18,13 +18,14 @@ import { openInTab, vaultTree } from "./vault-tree";
 export const vaultFilesLayer = (app: App): Layer.Layer<VaultFiles> => {
   const { vault } = app;
   const { siblingsOf, foldersIn } = vaultTree(vault);
-  const plan = (folder: string, name: string) =>
-    planNewFile(folder, name, normalizePath, siblingsOf, foldersIn);
+  const plan = (folder: string, name: string, planned: readonly string[] = []) =>
+    planNewFile(folder, name, normalizePath, siblingsOf, foldersIn, planned);
   const fileAt = (path: string) => vault.getFileByPath(normalizePath(path));
 
   return Layer.succeed(VaultFiles)({
     exists: (path) => Effect.sync(() => fileAt(path) !== null),
-    freePath: (folder, name) => Effect.map(plan(folder, name), ({ path }) => path),
+    freePath: (folder, name, planned) =>
+      Effect.map(plan(folder, name, planned), ({ path }) => path),
     write: (folder, name, bytes) =>
       Effect.flatMap(plan(folder, name), (planned) =>
         writeCommand(async () => {

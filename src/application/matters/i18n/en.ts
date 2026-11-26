@@ -1,5 +1,6 @@
 import type { MattersCatalog } from "./catalog";
 import { lineIssues } from "./line-issues";
+import { sourcesEn } from "./sources-en";
 import { todosEn } from "./todos-en";
 
 const oneLine = (label: string, max: number) =>
@@ -208,6 +209,7 @@ export const mattersEn: MattersCatalog = {
     },
   },
   todos: todosEn,
+  sources: sourcesEn,
   missing: {
     community_id: "Choose a community.",
     kind: "Choose a kind.",

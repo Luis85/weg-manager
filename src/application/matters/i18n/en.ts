@@ -60,6 +60,18 @@ export const mattersEn: MattersCatalog = {
   },
   statuses: { open: "open", unclear: "unclear", done: "done", obsolete: "obsolete" },
   checkMarks: { overdue: "overdue", ask_for_date: "ask for a date" },
+  dueKinds: {
+    promise: "promise",
+    contractual: "by contract",
+    formal_deadline: "formal deadline",
+    requested_reply: "reply requested",
+  },
+  dueChecks: { confirmed: "confirmed", proposed: "proposed", unknown: "check unknown" },
+  promisedAgo: (days) => (days === 1 ? "promised 1 day ago" : `promised ${days} days ago`),
+  locked: {
+    title: "Status and due date",
+    hint: 'Change them under "History" with "Change status" or "Change due date", so the reason is in the history.',
+  },
   form: {
     createTitle: "New matter",
     editTitle: "Edit matter",
@@ -122,6 +134,18 @@ export const mattersEn: MattersCatalog = {
     doneOn: "Done on",
     apply: "Change status",
     cancel: "Cancel",
+    changeDue: "Change due date",
+    dueTitle: "Change due date",
+    dueOn: "New due date",
+    dueOnHint: 'Leave empty when no due date applies; the matter then shows "ask for a date".',
+    dueReasonHint: "Why the due date changes; the earlier one stays in the history.",
+    dueApply: "Change due date",
+    previous: (day) => `before: ${day}`,
+    previousNone: "before: no due date",
+    dueIssues: {
+      "reason.missing": "Enter the reason.",
+      "due-on.invalid": "This is no valid day. Enter it as YYYY-MM-DD or leave it empty.",
+    },
     entryIssues: {
       "text.missing": "Describe what happened.",
       "text.invalid": "Keep the entry to at most 500 characters.",

@@ -4,6 +4,7 @@ import { onMounted, shallowRef, watch } from "vue";
 import type { Matter } from "../../../application/matters";
 import { useHistoryList } from "../use-history";
 import { useMessages } from "../../shell";
+import DueChangeForm from "./DueChangeForm.vue";
 import HistoryEntryForm from "./HistoryEntryForm.vue";
 import HistoryList from "./HistoryList.vue";
 import StatusChangeForm from "./StatusChangeForm.vue";
@@ -22,7 +23,7 @@ const props = defineProps<{
 
 const t = useMessages().matters.history;
 const { history, reload, lines, corrected } = useHistoryList(() => props.matter);
-const open = shallowRef<"entry" | "status" | undefined>();
+const open = shallowRef<"entry" | "status" | "due" | undefined>();
 onMounted(() => void reload());
 watch(
   () => props.matter.frontmatter,
@@ -72,6 +73,15 @@ const done = () => {
         data-testid="status-change"
         @click="open = 'status'"
       />
+      <UButton
+        type="button"
+        size="sm"
+        color="neutral"
+        variant="outline"
+        :label="t.changeDue"
+        data-testid="due-change"
+        @click="open = 'due'"
+      />
     </div>
     <HistoryEntryForm
       v-if="open === 'entry'"
@@ -88,5 +98,6 @@ const done = () => {
       @done="done"
       @cancel="open = undefined"
     />
+    <DueChangeForm v-if="open === 'due'" :matter="matter" @done="done" @cancel="open = undefined" />
   </section>
 </template>

@@ -96,14 +96,35 @@ describe("the matters screen", () => {
     );
   });
 
-  it("refuses a done matter without its day, at the field", async () => {
-    const screen = await open(vault(["A.md", matterNote(5, { outcome: "Lampe ersetzt" })]));
+  it("shows status and due date read-only when editing (PBI-09)", async () => {
+    const screen = await open(
+      vault(["A.md", matterNote(5, { outcome: "Lampe ersetzt", due_on: "2026-11-30" })]),
+    );
     await screen.until(() => expect(screen.names()).toEqual(["Lampe ersetzt"]));
     await screen.click(screen.q("matter-edit"));
-    await choose(screen.q("field-status"), "done");
-    await screen.click(screen.q("matter-save"));
-    expect(screen.q("matter-form")?.textContent).toContain(
-      t.issues["done-on.missing"]({ key: "done_on", code: "done-on.missing" }, t.fields.done_on),
+    expect(screen.q("field-status")).toBeUndefined();
+    expect(screen.q("field-due_on")).toBeUndefined();
+    expect(screen.text("matter-locked")).toContain(`offen · ${t.screen.due("2026-11-30")}`);
+    expect(screen.text("matter-locked")).toContain(t.locked.hint);
+  });
+
+  it("shows the due date's meaning and check and the promise's age (criterion 4)", async () => {
+    const screen = await open(
+      vault([
+        "A.md",
+        matterNote(5, {
+          outcome: "Lampe ersetzt",
+          promised_on: "2026-11-02",
+          due_on: "2026-11-30",
+          due_kind: "promise",
+          due_checked: "confirmed",
+        }),
+      ]),
+    );
+    await screen.until(() =>
+      expect(screen.q("matter-facts")?.textContent).toContain(
+        `${t.screen.due("2026-11-30")} (Zusage, bestätigt) · ${t.promisedAgo(24)}`,
+      ),
     );
   });
 });

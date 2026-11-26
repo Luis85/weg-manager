@@ -3,7 +3,7 @@ import UButton from "@nuxt/ui/components/Button.vue";
 import UIcon from "@nuxt/ui/components/Icon.vue";
 import { computed, shallowRef } from "vue";
 import { describeMatterIssue, shownName, type Matter } from "../../../application/matters";
-import { UNKNOWN_SOURCE, checkMark, shownNumber } from "../../../domain/matters";
+import { UNKNOWN_SOURCE, checkMark, promiseAge, shownNumber } from "../../../domain/matters";
 import { OpenNoteButton } from "../../notes";
 import { useMessages } from "../../shell";
 import MatterHistory from "./MatterHistory.vue";
@@ -35,13 +35,29 @@ const number = computed(() => {
     : shownNumber(community === undefined ? undefined : props.shortCodes.get(community), value);
 });
 const facts = computed(() => {
-  const { status, kind, topic, due_on: due, follow_up_on: followUp } = values.value;
+  const { status, kind, topic, follow_up_on: followUp } = values.value;
   return [
     status === undefined ? undefined : t.statuses[status],
     kind === undefined ? undefined : t.kinds[kind],
     topic,
-    due === undefined ? t.screen.noDue : t.screen.due(due),
+    due.value,
     followUp === undefined ? undefined : t.screen.followUp(followUp),
+  ]
+    .filter((part) => part !== undefined)
+    .join(" · ");
+});
+/** The due date with what it is and how far it is checked, and the promise's age (PBI-09). */
+const due = computed(() => {
+  const { due_on: day, due_kind: kind, due_checked: checked, promised_on: promised } = values.value;
+  const detail = [
+    kind === undefined ? undefined : t.dueKinds[kind],
+    checked === undefined ? undefined : t.dueChecks[checked],
+  ].filter((part) => part !== undefined);
+  const date = day === undefined ? t.screen.noDue : t.screen.due(day);
+  const age = promiseAge(promised, props.today);
+  return [
+    detail.length === 0 ? date : `${date} (${detail.join(", ")})`,
+    age === undefined ? undefined : t.promisedAgo(age),
   ]
     .filter((part) => part !== undefined)
     .join(" · ");

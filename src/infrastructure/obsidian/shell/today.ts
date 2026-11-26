@@ -15,7 +15,7 @@ import { localDay, untilNextLocalMidnight, type TimeZone } from "../../../domain
  * The zone "today" is counted in (PBI-09 criterion 3, owner decision 26.11.2026): Europe/Berlin,
  * wherever the machine is, so a due date without a time is overdue from the next day there.
  */
-export const BUSINESS_TIME_ZONE = "Europe/Berlin";
+const BUSINESS_TIME_ZONE = "Europe/Berlin";
 
 /**
  * The clock the adapter reads, the time zone it counts days in (an IANA name) and the timers it

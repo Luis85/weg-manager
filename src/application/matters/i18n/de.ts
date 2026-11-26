@@ -61,6 +61,18 @@ export const mattersDe: MattersCatalog = {
   },
   statuses: { open: "offen", unclear: "ungeklärt", done: "erledigt", obsolete: "hinfällig" },
   checkMarks: { overdue: "überfällig", ask_for_date: "Termin erfragen" },
+  dueKinds: {
+    promise: "Zusage",
+    contractual: "vertraglich",
+    formal_deadline: "formelle Frist",
+    requested_reply: "gewünschte Antwort",
+  },
+  dueChecks: { confirmed: "bestätigt", proposed: "vorgeschlagen", unknown: "Prüfstand unbekannt" },
+  promisedAgo: (days) => (days === 1 ? "zugesagt vor 1 Tag" : `zugesagt vor ${days} Tagen`),
+  locked: {
+    title: "Stand und Termin",
+    hint: "Ändere sie über „Verlauf“ mit „Stand ändern“ oder „Termin ändern“; so steht der Anlass im Verlauf.",
+  },
   form: {
     createTitle: "Neuer Vorgang",
     editTitle: "Vorgang bearbeiten",
@@ -123,6 +135,19 @@ export const mattersDe: MattersCatalog = {
     doneOn: "Erledigt am",
     apply: "Stand ändern",
     cancel: "Abbrechen",
+    changeDue: "Termin ändern",
+    dueTitle: "Termin ändern",
+    dueOn: "Neuer Termin",
+    dueOnHint: "Leer lassen, wenn kein Termin gilt; dann zeigt der Vorgang „Termin erfragen“.",
+    dueReasonHint: "Warum sich der Termin ändert; der bisherige bleibt im Verlauf.",
+    dueApply: "Termin ändern",
+    previous: (day) => `vorher: ${day}`,
+    previousNone: "vorher: kein Termin",
+    dueIssues: {
+      "reason.missing": "Gib den Anlass an.",
+      "due-on.invalid":
+        "Das ist kein gültiger Tag. Gib ihn als JJJJ-MM-TT ein oder lass das Feld leer.",
+    },
     entryIssues: {
       "text.missing": "Beschreibe, was geschah.",
       "text.invalid": "Fasse den Eintrag in höchstens 500 Zeichen.",

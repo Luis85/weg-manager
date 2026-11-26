@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import UButton from "@nuxt/ui/components/Button.vue";
 import { computed } from "vue";
 import type { Matter } from "../../../application/matters";
 import { BOARD_ACTOR, MANUAL_ENTRY_KINDS, type HistoryLine } from "../../../domain/matters";
 import { ChoiceField, TextField } from "../../notes";
-import { ErrorNotice } from "../../shell";
 import { useEntryForm } from "../use-history";
+import PanelFormFooter from "./PanelFormFooter.vue";
 
 /**
  * Adds an entry to a matter's history by hand (PBI-12): its kind, what happened, the day (empty
@@ -118,16 +117,12 @@ const corrects = computed(() => [
         />
       </template>
     </form.Field>
-    <ErrorNotice v-if="command.message.value" :message="command.message.value" />
-    <div class="wm:flex wm:justify-end wm:gap-2">
-      <UButton
-        type="button"
-        color="neutral"
-        variant="outline"
-        :label="t.cancel"
-        @click="emit('cancel')"
-      />
-      <UButton type="submit" :label="t.save" data-testid="entry-save" />
-    </div>
+    <PanelFormFooter
+      :message="command.message.value"
+      :cancel="t.cancel"
+      :apply="t.save"
+      apply-id="entry-save"
+      @cancel="emit('cancel')"
+    />
   </form>
 </template>

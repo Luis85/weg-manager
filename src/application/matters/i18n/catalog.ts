@@ -1,5 +1,8 @@
 import type {
   CheckMark,
+  DueCheck,
+  DueChangeIssue,
+  DueKind,
   EntryIssue,
   EntryKind,
   StatusChangeIssue,
@@ -49,6 +52,15 @@ export type MattersCatalog = {
   readonly kinds: Readonly<Record<MatterKind, string>>;
   readonly statuses: Readonly<Record<MatterStatus, string>>;
   readonly checkMarks: Readonly<Record<CheckMark, string>>;
+  readonly dueKinds: Readonly<Record<DueKind, string>>;
+  readonly dueChecks: Readonly<Record<DueCheck, string>>;
+  /** A card's age of the promise in days (PBI-09 criterion 4). */
+  promisedAgo(days: number): string;
+  /** The status and due date of a matter being edited: changed only with a reason. */
+  readonly locked: {
+    readonly title: string;
+    readonly hint: string;
+  };
   readonly form: {
     readonly createTitle: string;
     readonly editTitle: string;
@@ -103,6 +115,15 @@ export type MattersCatalog = {
     readonly cancel: string;
     readonly entryIssues: Readonly<Record<EntryIssue, string>>;
     readonly statusIssues: Readonly<Record<StatusChangeIssue, string>>;
+    readonly changeDue: string;
+    readonly dueTitle: string;
+    readonly dueOn: string;
+    readonly dueOnHint: string;
+    readonly dueReasonHint: string;
+    readonly dueApply: string;
+    previous(day: string): string;
+    readonly previousNone: string;
+    readonly dueIssues: Readonly<Record<DueChangeIssue, string>>;
   };
   readonly missing: Partial<Readonly<Record<MatterKey, string>>>;
   readonly issues: IssueSentences<MatterFieldIssue>;

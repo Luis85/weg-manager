@@ -4,7 +4,7 @@ import { useTemplateRef } from "vue";
 import type { Community } from "../../../application/communities";
 import type { Contact } from "../../../application/contacts";
 import type { Matter } from "../../../application/matters";
-import { UNKNOWN_SOURCE } from "../../../domain/matters";
+import { DUE_CHECKS, DUE_KINDS, UNKNOWN_SOURCE } from "../../../domain/matters";
 import { ChoiceField, RecordForm, TextField } from "../../notes";
 import { useMatterForm } from "../use-matter-form";
 
@@ -58,10 +58,42 @@ const toNumber = (text: string): number | undefined =>
   text.trim() === "" ? undefined : Number(text);
 /** The text fields in file order: key, input type, required, help. */
 const texts = [
-  { key: "topic", required: true },
-  { key: "outcome", required: true },
+  { key: "topic", required: true, autofocus: true },
+  { key: "outcome", required: true, autofocus: false },
 ] as const;
-const dates = ["promised_on", "due_on", "follow_up_on", "done_on"] as const;
+/** The dates the form sets: all of them on create; on edit not the due and done dates (PBI-09). */
+const dates = isNew
+  ? (["promised_on", "due_on", "follow_up_on", "done_on"] as const)
+  : (["promised_on", "follow_up_on"] as const);
+const dueChoices = ["due_kind", "due_checked"] as const;
+/** The help beside a date: the follow-up date's alone. */
+const dateHelp: Partial<Record<(typeof dates)[number], string>> = {
+  follow_up_on: t.form.followUpHint,
+};
+/** The fields of the tail that are required. */
+const required: ReadonlySet<string> = new Set(["next_step"]);
+/** The number as its field shows it. */
+const numberText = (value: number | undefined): string =>
+  value === undefined ? "" : String(value);
+const none = { value: "", label: t.form.choose };
+const dueKinds = [none, ...DUE_KINDS.map((kind) => ({ value: kind, label: t.dueKinds[kind] }))];
+const dueChecks = [
+  none,
+  ...DUE_CHECKS.map((check) => ({ value: check, label: t.dueChecks[check] })),
+];
+const dueOptions = { due_kind: dueKinds, due_checked: dueChecks };
+/** What an edited matter's status and due date are, read-only here. */
+const lockedFacts = (() => {
+  const values = props.matter?.values;
+  if (values === undefined) return "";
+  return [
+    values.status === undefined ? undefined : t.statuses[values.status],
+    values.due_on === undefined ? t.screen.noDue : t.screen.due(values.due_on),
+    values.done_on === undefined ? undefined : `${t.fields.done_on} ${values.done_on}`,
+  ]
+    .filter((part) => part !== undefined)
+    .join(" · ");
+})();
 const tail = ["next_step", "message_ref", "link"] as const;
 </script>
 
@@ -90,7 +122,7 @@ const tail = ["next_step", "message_ref", "link"] as const;
       <template #default="{ field }">
         <TextField
           :label="t.fields.number"
-          :value="field.state.value === undefined ? '' : String(field.state.value)"
+          :value="numberText(field.state.value)"
           :error="errorOf('number', field.state.meta)"
           type="number"
           test-id="field-number"
@@ -139,7 +171,7 @@ const tail = ["next_step", "message_ref", "link"] as const;
           :error="errorOf(item.key, field.state.meta)"
           :test-id="`field-${item.key}`"
           :required="item.required"
-          :autofocus="item.key === 'topic'"
+          :autofocus="item.autofocus"
           @change="field.handleChange"
           @blur="field.handleBlur"
         />
@@ -158,19 +190,55 @@ const tail = ["next_step", "message_ref", "link"] as const;
         />
       </template>
     </form.Field>
-    <form.Field name="status" :validators="validators('status')">
-      <template #default="{ field }">
-        <ChoiceField
-          :label="t.fields.status"
-          :value="field.state.value"
-          :options="statuses"
-          :error="errorOf('status', field.state.meta)"
-          test-id="field-status"
-          @change="field.handleChange"
-          @blur="field.handleBlur"
-        />
-      </template>
-    </form.Field>
+    <template v-if="isNew">
+      <form.Field name="status" :validators="validators('status')">
+        <template #default="{ field }">
+          <ChoiceField
+            :label="t.fields.status"
+            :value="field.state.value"
+            :options="statuses"
+            :error="errorOf('status', field.state.meta)"
+            test-id="field-status"
+            @change="field.handleChange"
+            @blur="field.handleBlur"
+          />
+        </template>
+      </form.Field>
+      <form.Field v-for="key in dueChoices" :key="key" :name="key" :validators="validators(key)">
+        <template #default="{ field }">
+          <ChoiceField
+            :label="t.fields[key]"
+            :value="field.state.value"
+            :options="dueOptions[key]"
+            :error="errorOf(key, field.state.meta)"
+            :test-id="`field-${key}`"
+            @change="field.handleChange"
+            @blur="field.handleBlur"
+          />
+        </template>
+      </form.Field>
+      <form.Field name="due_source" :validators="validators('due_source')">
+        <template #default="{ field }">
+          <TextField
+            :label="t.fields.due_source"
+            :value="field.state.value"
+            :error="errorOf('due_source', field.state.meta)"
+            test-id="field-due_source"
+            @change="field.handleChange"
+            @blur="field.handleBlur"
+          />
+        </template>
+      </form.Field>
+    </template>
+    <div
+      v-else
+      class="wm:rounded-md wm:border wm:border-default wm:p-3 wm:text-sm"
+      data-testid="matter-locked"
+    >
+      <p class="wm:font-medium">{{ t.locked.title }}</p>
+      <p>{{ lockedFacts }}</p>
+      <p class="wm:text-xs wm:text-muted">{{ t.locked.hint }}</p>
+    </div>
     <div class="wm:grid wm:grid-cols-1 wm:gap-4 wm:sm:grid-cols-2">
       <form.Field v-for="key in dates" :key="key" :name="key" :validators="validators(key)">
         <template #default="{ field }">
@@ -178,7 +246,7 @@ const tail = ["next_step", "message_ref", "link"] as const;
             :label="t.fields[key]"
             :value="field.state.value"
             :error="errorOf(key, field.state.meta)"
-            :help="key === 'follow_up_on' ? t.form.followUpHint : undefined"
+            :help="dateHelp[key]"
             type="date"
             :test-id="`field-${key}`"
             @change="field.handleChange"
@@ -221,7 +289,7 @@ const tail = ["next_step", "message_ref", "link"] as const;
           :value="field.state.value"
           :error="errorOf(key, field.state.meta)"
           :test-id="`field-${key}`"
-          :required="key === 'next_step'"
+          :required="required.has(key)"
           @change="field.handleChange"
           @blur="field.handleBlur"
         />

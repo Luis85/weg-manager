@@ -11,6 +11,13 @@ export const shellEn: ShellCatalog = {
     "migration.failed": ({ from }) =>
       `The settings from schema version ${from} couldn't be upgraded to the current version.`,
     "logLevel.unknown": ({ allowed }) => `The log level must be one of ${allowed.join(", ")}.`,
+    "weekStart.unknown": () => "The start of the week must be a weekday from Monday to Sunday.",
+    "weekMinutes.invalid": ({ min, max }) =>
+      `The time target must be a whole number from ${min} to ${max} minutes.`,
+    "weekDecisions.invalid": ({ min, max }) =>
+      `The number of regular decisions must be a whole number from ${min} to ${max}.`,
+    "acuteDays.invalid": ({ min, max }) =>
+      `The deadline for acute problems must be a whole number from ${min} to ${max} days.`,
     "rootFolder.invalid": ({ max }) =>
       `The root folder must be a vault folder path of at most ${max} characters, with "/" between folder names, without folder names that start with "." (Obsidian hides such folders) and without the characters * " \\ < > : | ?.`,
   },
@@ -67,6 +74,33 @@ export const shellEn: ShellCatalog = {
       name: "Log level",
       desc: "How much the plugin writes to the developer console.",
       labels: { error: "Errors", warn: "Warnings", info: "Information", debug: "Details" },
+    },
+    weekStart: {
+      name: "Start of the week",
+      desc: "The day your weekly work begins. The week in the Week view counts from it.",
+      labels: {
+        monday: "Monday",
+        tuesday: "Tuesday",
+        wednesday: "Wednesday",
+        thursday: "Thursday",
+        friday: "Friday",
+        saturday: "Saturday",
+        sunday: "Sunday",
+      },
+    },
+    weekMinutes: {
+      name: "Time target of the week",
+      desc: "How long the weekly work should take, preparation and follow-up included.",
+      minutes: (n) => `${n} minutes`,
+    },
+    weekDecisions: {
+      name: "Regular decisions per week",
+      desc: "How many decisions the week puts forward at most. Urgent ones come on top and stay visible.",
+    },
+    acuteDays: {
+      name: "Deadline for acute problems",
+      desc: "How many days before its date a matter counts as acute and appears beyond the regular selection.",
+      days: (n) => (n === 0 ? "on the day itself" : n === 1 ? "1 day before" : `${n} days before`),
     },
   },
   frame: {

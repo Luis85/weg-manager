@@ -12,6 +12,13 @@ export const shellDe: ShellCatalog = {
       `Die Einstellungen aus Schemaversion ${from} ließen sich nicht auf die aktuelle Version umstellen.`,
     "logLevel.unknown": ({ allowed }) =>
       `Die Protokollstufe muss eine von ${allowed.join(", ")} sein.`,
+    "weekStart.unknown": () => "Der Wochenbeginn muss ein Wochentag von Montag bis Sonntag sein.",
+    "weekMinutes.invalid": ({ min, max }) =>
+      `Das Zeitziel muss eine ganze Zahl von ${min} bis ${max} Minuten sein.`,
+    "weekDecisions.invalid": ({ min, max }) =>
+      `Die Anzahl regulärer Entscheidungen muss eine ganze Zahl von ${min} bis ${max} sein.`,
+    "acuteDays.invalid": ({ min, max }) =>
+      `Die Frist für akute Probleme muss eine ganze Zahl von ${min} bis ${max} Tagen sein.`,
     "rootFolder.invalid": ({ max }) =>
       `Der Wurzelordner muss ein Ordnerpfad im Vault mit höchstens ${max} Zeichen sein, mit „/“ zwischen den Ordnernamen, ohne Ordnernamen, die mit „.“ beginnen (solche Ordner blendet Obsidian aus), und ohne die Zeichen * " \\ < > : | ?.`,
   },
@@ -69,6 +76,33 @@ export const shellDe: ShellCatalog = {
       name: "Protokollstufe",
       desc: "Wie ausführlich das Plugin in die Entwicklerkonsole schreibt.",
       labels: { error: "Fehler", warn: "Warnungen", info: "Informationen", debug: "Details" },
+    },
+    weekStart: {
+      name: "Wochenbeginn",
+      desc: "Der Tag, an dem deine Wochenarbeit beginnt. Ab ihm zählt die Woche in der Ansicht Woche.",
+      labels: {
+        monday: "Montag",
+        tuesday: "Dienstag",
+        wednesday: "Mittwoch",
+        thursday: "Donnerstag",
+        friday: "Freitag",
+        saturday: "Samstag",
+        sunday: "Sonntag",
+      },
+    },
+    weekMinutes: {
+      name: "Zeitziel der Woche",
+      desc: "Wie lange die Wochenarbeit dauern soll, Vor- und Nachbereitung eingeschlossen.",
+      minutes: (n) => `${n} Minuten`,
+    },
+    weekDecisions: {
+      name: "Reguläre Entscheidungen pro Woche",
+      desc: "Wie viele Entscheidungen die Woche höchstens vorlegt. Dringendes kommt zusätzlich und bleibt sichtbar.",
+    },
+    acuteDays: {
+      name: "Frist für akute Probleme",
+      desc: "Ab wie vielen Tagen vor einem Termin ein Vorgang als akut gilt und über die reguläre Auswahl hinaus erscheint.",
+      days: (n) => (n === 0 ? "am Tag selbst" : n === 1 ? "1 Tag vorher" : `${n} Tage vorher`),
     },
   },
   frame: {

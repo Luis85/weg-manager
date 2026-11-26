@@ -65,7 +65,13 @@ describe("UI language follows Obsidian", () => {
     });
     expect(registry.ribbonIcons.map(({ title }) => title)).toEqual(["WEG Manager"]);
     expect(await tabTexts(registry)).toEqual({
-      names: ["Protokollstufe"],
+      names: [
+        "Protokollstufe",
+        "Wochenbeginn",
+        "Zeitziel der Woche",
+        "Reguläre Entscheidungen pro Woche",
+        "Frist für akute Probleme",
+      ],
       levels: ["Fehler", "Warnungen", "Informationen", "Details"],
     });
     plugin.unload();
@@ -82,7 +88,13 @@ describe("UI language follows Obsidian", () => {
       // The product name in every language, so the entry id does not change with the language.
       expect(registry.ribbonIcons.map(({ title }) => title)).toEqual(["WEG Manager"]);
       expect(await tabTexts(registry)).toEqual({
-        names: ["Log level"],
+        names: [
+          "Log level",
+          "Start of the week",
+          "Time target of the week",
+          "Regular decisions per week",
+          "Deadline for acute problems",
+        ],
         levels: ["Errors", "Warnings", "Information", "Details"],
       });
       plugin.unload();

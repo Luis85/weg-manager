@@ -108,13 +108,34 @@ describe("surface texts", () => {
         "copy-diagnostics": "Copy diagnostics",
       },
     ]);
-    expect(en.shell.settingsTab).toEqual({
-      logLevel: {
-        name: "Log level",
-        desc: "How much the plugin writes to the developer console.",
-        labels: { error: "Errors", warn: "Warnings", info: "Information", debug: "Details" },
-      },
+    expect(en.shell.settingsTab.logLevel).toEqual({
+      name: "Log level",
+      desc: "How much the plugin writes to the developer console.",
+      labels: { error: "Errors", warn: "Warnings", info: "Information", debug: "Details" },
     });
+    expect(
+      [
+        en.shell.settingsTab.weekStart,
+        en.shell.settingsTab.weekMinutes,
+        en.shell.settingsTab.weekDecisions,
+        en.shell.settingsTab.acuteDays,
+      ].map((texts) => texts.name),
+    ).toEqual([
+      "Start of the week",
+      "Time target of the week",
+      "Regular decisions per week",
+      "Deadline for acute problems",
+    ]);
+    expect(
+      [0, 1, 3].map((n) => [
+        en.shell.settingsTab.acuteDays.days(n),
+        de.shell.settingsTab.acuteDays.days(n),
+      ]),
+    ).toEqual([
+      ["on the day itself", "am Tag selbst"],
+      ["1 day before", "1 Tag vorher"],
+      ["3 days before", "3 Tage vorher"],
+    ]);
   });
 
   it("words the app frame and the not-found state", () => {

@@ -4,6 +4,7 @@ import {
   assert,
   constantFrom,
   dictionary,
+  integer,
   oneof,
   property,
   record,
@@ -15,6 +16,7 @@ import { describe, expect, it } from "vitest";
 import {
   LOG_LEVELS,
   ROOT_FOLDER_MAX_LENGTH,
+  WEEKDAYS,
   decodeSettings,
   encodeSettings,
   validatePatch,
@@ -52,6 +54,10 @@ const validSettings: Arbitrary<Settings> = record({
   rootFolder: array(segment, { minLength: 1, maxLength: 4 })
     .map((parts) => parts.join("/"))
     .filter((path) => path.length <= ROOT_FOLDER_MAX_LENGTH),
+  weekStart: constantFrom(...WEEKDAYS),
+  weekMinutes: integer({ min: 15, max: 240 }),
+  weekDecisions: integer({ min: 1, max: 20 }),
+  acuteDays: integer({ min: 0, max: 14 }),
 });
 
 /** Arbitrary files that look like settings: the right keys with arbitrary values, plus noise. */

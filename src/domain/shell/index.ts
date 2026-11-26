@@ -4,6 +4,8 @@ export {
   DEFAULT_SETTINGS,
   LOG_LEVELS,
   SettingsIssue,
+  WEEKDAYS,
+  WEEK_LIMITS,
   decodeSettings,
   encodeSettings,
   validatePatch,
@@ -11,5 +13,6 @@ export {
   type EditableSettings,
   type LogLevel,
   type Settings,
+  type Weekday,
 } from "./settings";
 export { runMigrations, type Migrations } from "./settings-codec";

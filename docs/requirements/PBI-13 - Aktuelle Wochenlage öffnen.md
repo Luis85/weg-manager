@@ -82,3 +82,11 @@ Fachlich prüfbarer Entwurf. Aufwand, technische Lösung und Umsetzungsfreigabe 
 ## Business Rules
 
 [[DF-08 - Quellenabdeckung]].
+
+## Kommentare
+
+- 26.11.2026: Entscheidungen des Produktverantwortlichen und Umsetzungsfreigabe für einen ersten Schnitt.
+  - **Ort:** eine eigene Ansicht „Woche“ in der Navigation zwischen Lage und Vorgänge (VIEW-02), die später auch die Entscheidungen trägt (PBI-14 bis PBI-17).
+  - **Lage-Text:** Das Plugin berechnet bis zu sieben Sätze aus den Daten (überfällig, Fristen der nächsten 14 Tage, offene To-dos, Klärungsliste, Quellen), jeder mit Verweis auf seine Vorgänge, ohne KI (K-11). Der Mensch kann den Text bearbeiten und als Wochennotiz `weg-manager.week/v1` speichern.
+  - **Einstellungen (Kriterium 5):** Wochentag, Zeitziel, Anzahl regulärer Entscheidungen und Frist bei akuten Problemen stehen in Obsidians Einstellungs-Tab (eine Stelle je Einstellung, PBI-49).
+  - **Schnitt:** Kriterien 1 bis 5 – Lage, Fristen der nächsten 14 Tage, eigene To-dos, Abdeckung (Zeitpunkt, berücksichtigte Quellen, ungeprüfte Unterlagen, bekannte Lücken), Prüfung beim Öffnen, Einstellungen. Die Entscheidungsauswahl folgt mit PBI-14; ihre Einstellung entsteht schon hier.
